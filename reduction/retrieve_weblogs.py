@@ -1,6 +1,7 @@
 import numpy as np
 import tarfile
 from astroquery.alma import Alma
+import os
 
 alma = Alma()
 alma.cache_location = Alma.cache_location = '.'
@@ -31,6 +32,9 @@ weblogs_band3 = alma.get_files_from_tarballs(band3tarballs,
 weblogs_band6 = alma.get_files_from_tarballs(band6tarballs,
                                              path='.',
                                              regex=r'.*\.weblog.tgz')
+
+if not os.path.exists('2017.1.01355.L'):
+    os.mkdir('2017.1.01355.L')
 
 weblogs = weblogs_band3+weblogs_band6
 for logfile in weblogs:
