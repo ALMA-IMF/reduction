@@ -86,10 +86,15 @@ def plot_bp_stuff(vis, spw, intent='CALIBRATE_BANDPASS#ON_SOURCE',
                                        tb.getcol('ANTENNA1'))
         tb.close()
 
+        # select on spw and optionally antenna
         match = spwid == spw
         if ant is not None:
             match &= antennae == int(ant)
+
         ax3 = pl.subplot(3,1,2)
-        ax3.plot(time[match], gains[:,0,match].T, linestyle='-', alpha=0.5)
+        # gains are complex, so we plot the angle of the gains.  If this was
+        # amplitude calibration, one would use np.abs(gains) instead.
+        ax3.plot(time[match], np.angle(gains[:,0,match].T)*180/np.pi,
+                 linestyle='-', alpha=0.5)
 
     return mydata, avgdata
