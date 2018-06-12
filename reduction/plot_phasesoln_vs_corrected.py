@@ -56,7 +56,7 @@ def plot_bp_stuff(vis, spw, intent='CALIBRATE_BANDPASS#ON_SOURCE',
 
     # Select a single antenna if requested
     if ant is not None:
-        ant = "{0:02d}".format(ant)
+        ant = "{0:02d}".format(int(ant))
         antsel = np.char.find(mydata['axis_info']['ifr_axis']['ifr_shortname'], ant) != -1
     else:
         antsel = np.ones_like(mydata['axis_info']['ifr_axis']['ifr_shortname'], dtype='bool')
