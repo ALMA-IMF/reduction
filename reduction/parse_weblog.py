@@ -1,14 +1,26 @@
 import os
 import numpy as np
 from astropy import table
+from astropy import units as u
 
 def get_human_readable_name(weblog):
 
     for directory, dirnames, filenames in os.walk(weblog):
+        if 't2-1_details.html' in filenames:
+            with open(os.path.join(directory, 't2-1_details.html')) as fh:
+                txt = fh.read()
+
+            max_baseline = re.compile("<th>Max Baseline</th>\s*<td>([0-9a-z\. ]*)</td>").search(txt).groups()[0]
+            max_baseline = u.Quantity(max_baseline)
+
+            array_name = ('7MorTP' if max_baseline < 100*u.m else 'TM2'
+                          if max_baseline < 1000*u.m else 'TM1')
+            break
+    
+    for directory, dirnames, filenames in os.walk(weblog):
         if 't2-2-3.html' in filenames:
             with open(os.path.join(directory, 't2-2-3.html')) as fh:
                 txt = fh.read()
-    
             array_table = table.Table.read(txt, format='ascii.html')
             antenna_size, = map(int, set(array_table['Diameter']))
             break
@@ -33,7 +45,19 @@ def get_human_readable_name(weblog):
             source_name, = set(array_table[mask]['Source Name'])
             break
 
-    return "{0}_a_{1:02d}_{2}M".format(source_name, band, antenna_size, )
+    if array_name == '7MorTP':
+        if antenna_size == 7:
+            array_name = '7M'
+        elif antenna_size == 12:
+            array_name = 'TP'
+        else:
+            raise
+
+    sbname = "{0}_a_{1:02d}_{2}".format(source_name, band, array_name, )
+
+    print(sbname, max_baseline)
+
+    return sbname
 
 def weblog_names(list_of_weblogs):
     return {get_human_readable_name(weblog): weblog
