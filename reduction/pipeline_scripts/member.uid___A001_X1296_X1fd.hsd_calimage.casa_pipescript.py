@@ -1,0 +1,28 @@
+from recipes.almahelpers import fixsyscaltimes # SACM/JAO - Fixes
+__rethrow_casa_exceptions = True
+context = h_init()
+context.set_state('ProjectSummary', 'proposal_code', '2017.1.01355.L')
+context.set_state('ProjectSummary', 'piname', 'unknown')
+context.set_state('ProjectSummary', 'proposal_title', 'unknown')
+context.set_state('ProjectStructure', 'ous_part_id', 'X113490217')
+context.set_state('ProjectStructure', 'ous_title', 'Undefined')
+context.set_state('ProjectStructure', 'ppr_file', '/opt/dared/opt/qa56.1712.1/mnt/dataproc/2017.1.01355.L_2018_07_02T11_45_04.304/SOUS_uid___A001_X1296_X1f5/GOUS_uid___A001_X1296_X1f6/MOUS_uid___A001_X1296_X1fd/working/PPR_uid___A001_X1296_X1fe.xml')
+context.set_state('ProjectStructure', 'ps_entity_id', 'uid://A001/X1220/Xddd')
+context.set_state('ProjectStructure', 'recipe_name', 'hsd_calimage')
+context.set_state('ProjectStructure', 'ous_entity_id', 'uid://A001/X1220/Xdd9')
+context.set_state('ProjectStructure', 'ousstatus_entity_id', 'uid://A001/X1296/X1fd')
+try:
+    hsd_importdata(vis=['uid___A002_Xcf3a9c_X2efb', 'uid___A002_Xcf4672_X1a17'], session=['session_1', 'session_2'])
+    hsd_flagdata(pipelinemode="automatic")
+    h_tsyscal(pipelinemode="automatic")
+    hsd_tsysflag(pipelinemode="automatic")
+    hsd_skycal(pipelinemode="automatic")
+    hsd_k2jycal(pipelinemode="automatic")
+    hsd_applycal(pipelinemode="automatic")
+    hsd_baseline(pipelinemode="automatic")
+    hsd_blflag(pipelinemode="automatic")
+    hsd_baseline(pipelinemode="automatic")
+    hsd_blflag(pipelinemode="automatic")
+    hsd_imaging(pipelinemode="automatic")
+finally:
+    h_save()
