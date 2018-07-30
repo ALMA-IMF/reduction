@@ -22,39 +22,10 @@ try:
     hifa_fluxcalflag(pipelinemode="automatic")
     hif_rawflagchans(pipelinemode="automatic")
     hif_refant(pipelinemode="automatic")
-    #flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms',antenna='CM06',correlation="YY")
     h_tsyscal(pipelinemode="automatic")
     flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
              mode='manual', spw='16:990~1100', field="G328.25", reason='N2HP_line')
     hifa_tsysflag(pipelinemode="automatic")
-    # Here implementing manual flagging following Roberto's suggestion
-    #
-    # hifa_tsysflag(pipelinemode="automatic")
-    #
-    # The Tsys calibration table is analyzed and deviant points are flagged.
-    #
-    #flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
-#         mode='summary')
-#    flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
-#         mode='summary')
- #   
- #   flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
-#         mode='summary')
-#    flagdata(flagbackup=False,
-#         vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
-#         reason='any', mode='list', action='apply', savepars=False,
-#         inpfile=["mode='summary' name='before'", "spw='18' antenna='CM06' timerange='2017/11/12/17:05:20~2017/11/12/17:05:21' reason='max_abs'","spw='18' antenna='CM06' timerange='2017/11/12/17:30:21~2017/11/12/17:30:22' reason='max_abs'","spw='18' antenna='CM06' timerange='2017/11/12/17:17:51~2017/11/12/17:17:53' reason='max_abs'", "spw='18' antenna='CM06' timerange='2017/11/12/17:03:22~2017/11/12/17:03:24' reason='max_abs'", "spw='18' antenna='CM06' timerange='2017/11/12/17:15:58~2017/11/12/17:15:59' reason='max_abs'", "spw='18' antenna='CM06' timerange='2017/11/12/17:28:28~2017/11/12/17:28:30' reason='max_abs'", "mode='summary' name='after'"])
-    
-#    flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
-#         mode='summary')
-#    
-#    flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
-#         mode='summary')
-    #flagdata(vis='uid___A002_Xc6d2f9_X4380.ms.h_tsyscal.s6_3.tsyscal.tbl',        # mode='summary')
-    #flagdata(vis='uid___A002_Xc6d2f9_X4380.ms.h_tsyscal.s6_3.tsyscal.tbl',         #mode='summary')
-#    flagdata(vis='uid___A002_Xc6c0d5_X3f2e.ms.h_tsyscal.s6_1.tsyscal.tbl',
-#             mode='manual', spw='16:990~1100', reason='N2HP_line')
-   
     hifa_antpos(pipelinemode="automatic")
     hifa_wvrgcalflag(pipelinemode="automatic")
     hif_lowgainflag(pipelinemode="automatic")
