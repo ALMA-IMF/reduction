@@ -2,11 +2,13 @@ import os
 import numpy as np
 from astropy import table
 from astropy import units as u
+import re
 
 def get_human_readable_name(weblog):
 
     for directory, dirnames, filenames in os.walk(weblog):
         if 't2-1_details.html' in filenames:
+            #print("Found {0}:{1}".format(directory, "t2-1_details.html"))
             with open(os.path.join(directory, 't2-1_details.html')) as fh:
                 txt = fh.read()
 
@@ -15,6 +17,7 @@ def get_human_readable_name(weblog):
 
             array_name = ('7MorTP' if max_baseline < 100*u.m else 'TM2'
                           if max_baseline < 1000*u.m else 'TM1')
+            #print("array_name = {0}".format(array_name))
             break
     
     for directory, dirnames, filenames in os.walk(weblog):
@@ -68,4 +71,7 @@ def make_links(weblog_maps):
     assert len(reverse_map) == len(weblog_maps)
 
     for k,v in weblog_maps.items():
-        os.symlink('../{0}'.format(v), 'humanreadable/{0}'.format(k))
+        try:
+            os.symlink('../{0}'.format(v), 'humanreadable/{0}'.format(k))
+        except FileExistsError:
+            pass

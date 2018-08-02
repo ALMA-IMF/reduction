@@ -38,6 +38,10 @@ existing_weblog_fns = [x.split("/")[-1] for x in existing_tarballs]
 weblog_urls_to_download = [row['URL'] for row,fn in zip(weblog_files, weblog_fns) if fn not in existing_weblog_fns]
 print("Found {0} *new* weblogs to download".format(len(weblog_urls_to_download)))
 
+for fn in weblog_urls_to_download:
+    if 'tgz' not in fn:
+        raise ValueError
+
 weblog_tarballs = alma.download_files(weblog_urls_to_download)
 
 if not os.path.exists('2017.1.01355.L'):
