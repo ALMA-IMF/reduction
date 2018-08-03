@@ -1,3 +1,49 @@
+"""
+Instructions:
+
+    Run this script from within a casa-pipeline session, e.g., using casa
+    --pipeline -r 5.1.0-74 on an NRAO lustre system, or just using the
+    appropriate version of CASA elsewhere.  You'll then need to enter your ALMA
+    archive username and password.
+
+    The program will download the full set of raw data products and associated
+    calibration products, then it will run the pipeline and produce the MSes,
+    including the .ms.split.cal files.
+
+REQUIREMENTS:
+    
+    This is the tricky part.  You need astroquery installed.  In principle,
+    this is straightforward, but there may be significant 'gotchas' along the
+    way.
+
+    Start CASA and install astroquery by running these commands:
+    (1) Install pip:
+        >>> from setuptools.command import easy_install
+        >>> easy_install.main(['--user', 'pip'])
+    (2) now quit CASA, then reopen it
+        >>> import pip
+        >>> pip.main(['install', 'astroquery', '--user'])
+    (3) now quit CASA, reopen it again.  
+    (3)a If CASA loads, try:
+        >>> import astroquery
+        >>> import keyring
+        If that works, continue and you're set!
+    (3)b If CASA fails to load with a message about shutil_get_terminal_size,
+        see https://github.com/astropy/astroquery/issues/1219.  You will need
+        to run the following command using python, /NOT/ using CASA!
+        $ python -c "import pip; pip.main(['install', 'backports.shutil_get_terminal_size', '--user'])"
+        After this, CASA should load again
+
+MORE NOTES:
+
+    If you run the script and get an error about keyring, try:
+
+        >>> import pip
+        >>> pip.main(['install', 'keyrings.alt', '--user'])
+
+    and try again.
+
+"""
 from astroquery.alma import Alma
 import six
 import runpy
