@@ -4,12 +4,16 @@ each out into one MS per spectral window.  Also, dump metadata files that will
 instruct the imaging script how to merge these single-window MSes into a final
 cube.
 """
+import os
 import glob
 import json
+import numpy as np
 
 from taskinit import casalog
 from taskinit import msmdtool
-from task_split import split
+from tasks import split
+
+from parse_contdotdat import parse_contdotdat
 
 msmd = msmdtool()
 
@@ -88,15 +92,18 @@ for band in bands:
                                       .format(band=band, field=field,
                                               spw=newid, base_uid=base_uid))
 
-                casalog.post("Splitting {0}'s spw {2} to {1}".format(vis, outvis,
-                                                                     spws[newid]),
-                             origin='make_imaging_scripts',
-                            )
+                if os.path.exists(outvis):
+                    casalog.post("Skipping {0} because it's done".format(outvis))
+                else:
+                    casalog.post("Splitting {0}'s spw {2} to {1}".format(vis, outvis,
+                                                                         spws[newid]),
+                                 origin='make_imaging_scripts',
+                                )
 
-                split(vis=invis,
-                      spw=spws[newid],
-                      outputvis=outvis,
-                      datacolumn='corrected')
+                    split(vis=invis,
+                          spw=spws[newid],
+                          outputvis=outvis,
+                          datacolumn='data')
 
                 if outvis in to_image[band][field][newid]:
                     raise ValueError()
@@ -106,3 +113,55 @@ for band in bands:
 
 with open('to_image.json', 'w') as fh:
     json.dump(to_image, fh)
+
+
+
+# split the continuum data
+
+for band in bands:
+    for field in fields:
+
+        mymd = metadata[band][field]
+
+        for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
+
+            contfile = os.path.join(path, '../calibration/cont.dat')
+
+            cont_channels = parse_contdotdat(contfile)
+
+            visfile = os.path.join(path, vis)
+            contvis = os.path.join(path, "continuum_"+vis)
+
+            flagmanager(vis=visfile, mode='save',
+                        versionname='before_cont_flags')
+
+            initweights(vis=visfile, wtmode='weight', dowtsp=True)
+
+            raise "TODO: convert cont_channels to line_channels"
+
+
+            flagdata(vis=visfile, mode='manual', spw=linechannels,
+                     flagbackup=False)
+
+            # determine target widths
+            msmd.open(visfile)
+            targetwidth = 125000 # 125 MHz
+            widths = []
+            for spw in spws:
+                chwid = np.abs(np.mean(msmd.chanwidths(spw)))
+                widths.append(int(chwidth/targetwidth))
+
+            # Average the channels within spws
+            rmtables(contvis)
+            os.system('rm -rf ' + contvis + '.flagversions')
+
+            split(vis=visfile,
+                  spw=contspws,      
+                  outputvis=contvis,
+                  width=widths,
+                  datacolumn='data')
+
+
+            # If you flagged any line channels, restore the previous flags
+            flagmanager(vis=visfile, mode='restore',
+                        versionname='before_cont_flags')

@@ -3,7 +3,7 @@ Assumes SPW, Field, and Band will be specified
 """
 
 import json
-from task_tclean import tclean
+from tasks import tclean
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
