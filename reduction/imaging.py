@@ -3,6 +3,7 @@ Assumes SPW, Field, and Band will be specified
 """
 
 import json
+from task_tclean import tclean
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
@@ -32,3 +33,6 @@ tclean(vis=vis,
        gridder='mosaic',
        restoringbeam='common',
        chanchunks=-1)
+
+
+# TODO: Save the desired files, maybe as FITS or maybe not?

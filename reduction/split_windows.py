@@ -1,6 +1,8 @@
 """
-Make an imaging script based on a template assuming that all .split.cal files
-in the current directory have some science targets in them
+Find all .split.cal files in the current directory and subdirectory, and split
+each out into one MS per spectral window.  Also, dump metadata files that will
+instruct the imaging script how to merge these single-window MSes into a final
+cube.
 """
 import glob
 import json
