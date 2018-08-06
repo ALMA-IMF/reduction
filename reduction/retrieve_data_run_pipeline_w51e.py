@@ -74,7 +74,8 @@ for filename in data:
         with tarfile.open(filename) as tf:
             tf.extractall('.')
 
-SPACESAVING = 3
+# to do diagnostic plotting, we need the MS, not just the science-only calibrated MS
+SPACESAVING = 1
 DOSPLIT = True
 
 for dirpath, dirnames, filenames in os.walk('.'):
@@ -100,8 +101,67 @@ for dirpath, dirnames, filenames in os.walk('.'):
             else:
                 raise ValueError("Landed in the wrong directory.")
 
+# # assemble the data into the right location
+# for dirpath, dirnames, filenames in os.walk('.'):
+#     for fn in dirnames:
+#         if fn[-10:] == ".split.cal":
+#             mspath = os.path.join(dirpath, fn)
+# 
+#             msmd.open(mspath)
+#             fieldnames = np.array(msmd.fieldnames())
+#             field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
+#             assert len(np.unique(field)) == 1
+#             field = field[0]
+#             msmd.close()
+# 
+#             if not os.path.exists(field):
+#                 os.mkdir(field)
+# 
+#             os.symlink(mspath, field)
+#         elif fn in ("cont.dat", ):
+# 
+#             with open(os.path.join(dirpath, "cont.dat"), 'r') as fh:
+#                 firstline = fh.readline()
+# 
+#             field = firstline.strip().split()[-1]
+# 
+#             if not os.path.exists(field):
+#                 os.mkdir(field)
+# 
+#             for fn in ("cont.dat", "flux.csv", "antennapos.csv"):
+#                 fpath = os.path.join(dirpath, fn)
+#                 uid = dirpath.split(".")[-1].split("/")[0]
+# 
+#                 os.symlink(fpath, os.path.join(field, uid+"_"+fn))
+
 
 """
 2018-08-03 16:12:15     INFO    casa::scriptForPI::     *** ALMA scriptForPI ***
 2018-08-03 20:21:59     INFO    casa::scriptForPI::     ALMA scriptForPI completed.
+
+2018-08-05 16:20:33     INFO    casa::scriptForPI::     ALMA scriptForPI completed.
+2018-08-03 20:48:52     INFO    casa::pipeline_runner:: Running script member.uid___A001_X1296_X213.scriptForPI.py in ./science_goal.uid___A001_X1296_X211/group.uid___A001_X1296_X212/member.uid___A001_X1296_X213/script
+2018-08-05 02:52:55     INFO    casa::pipeline_runner:: Done running script member.uid___A001_X1296_X213.scriptForPI.py in ./science_goal.uid___A001_X1296_X211/group.uid___A001_X1296_X212/member.uid___A001_X1296_X213/script
+2018-08-05 02:53:13     INFO    casa::pipeline_runner:: Running script member.uid___A001_X1296_X215.scriptForPI.py in ./science_goal.uid___A001_X1296_X211/group.uid___A001_X1296_X212/member.uid___A001_X1296_X215/script
+2018-08-05 05:15:20     INFO    casa::pipeline_runner:: Done running script member.uid___A001_X1296_X215.scriptForPI.py in ./science_goal.uid___A001_X1296_X211/group.uid___A001_X1296_X212/member.uid___A001_X1296_X215/script
+2018-08-05 05:16:43     INFO    casa::pipeline_runner:: Running script member.uid___A001_X1296_X107.scriptForPI.py in ./science_goal.uid___A001_X1296_X105/group.uid___A001_X1296_X106/member.uid___A001_X1296_X107/script
+2018-08-05 12:51:44     INFO    casa::pipeline_runner:: Done running script member.uid___A001_X1296_X107.scriptForPI.py in ./science_goal.uid___A001_X1296_X105/group.uid___A001_X1296_X106/member.uid___A001_X1296_X107/script
+2018-08-05 12:52:02     INFO    casa::pipeline_runner:: Running script member.uid___A001_X1296_X109.scriptForPI.py in ./science_goal.uid___A001_X1296_X105/group.uid___A001_X1296_X106/member.uid___A001_X1296_X109/script
+2018-08-05 14:39:11     INFO    casa::pipeline_runner:: Done running script member.uid___A001_X1296_X109.scriptForPI.py in ./science_goal.uid___A001_X1296_X105/group.uid___A001_X1296_X106/member.uid___A001_X1296_X109/script
+2018-08-05 14:39:49     INFO    casa::pipeline_runner:: Running script member.uid___A001_X1296_X10b.scriptForPI.py in ./science_goal.uid___A001_X1296_X105/group.uid___A001_X1296_X106/member.uid___A001_X1296_X10b/script
+2018-08-05 16:20:33     INFO    casa::pipeline_runner:: Done running script member.uid___A001_X1296_X10b.scriptForPI.py in ./science_goal.uid___A001_X1296_X105/group.uid___A001_X1296_X106/member.uid___A001_X1296_X10b/script
+(subtract 24 h)
+
+casa-20180803-160946.log:2018-08-03 16:12:15    INFO    casa::scriptForPI::     *** ALMA scriptForPI ***
+casa-20180803-160946.log:2018-08-03 20:21:59    INFO    casa::scriptForPI::     ALMA scriptForPI completed.
+casa-20180803-160946.log:2018-08-03 20:48:52    INFO    casa::scriptForPI::     *** ALMA scriptForPI ***
+casa-20180803-160946.log:2018-08-05 02:52:55    INFO    casa::scriptForPI::     ALMA scriptForPI completed.
+casa-20180803-160946.log:2018-08-05 02:53:13    INFO    casa::scriptForPI::     *** ALMA scriptForPI ***
+casa-20180803-160946.log:2018-08-05 05:15:20    INFO    casa::scriptForPI::     ALMA scriptForPI completed.
+casa-20180803-160946.log:2018-08-05 05:16:43    INFO    casa::scriptForPI::     *** ALMA scriptForPI ***
+casa-20180803-160946.log:2018-08-05 12:51:44    INFO    casa::scriptForPI::     ALMA scriptForPI completed.
+casa-20180803-160946.log:2018-08-05 12:52:02    INFO    casa::scriptForPI::     *** ALMA scriptForPI ***
+casa-20180803-160946.log:2018-08-05 14:39:11    INFO    casa::scriptForPI::     ALMA scriptForPI completed.
+casa-20180803-160946.log:2018-08-05 14:39:49    INFO    casa::scriptForPI::     *** ALMA scriptForPI ***
+casa-20180803-160946.log:2018-08-05 16:20:33    INFO    casa::scriptForPI::     ALMA scriptForPI completed.
 """
