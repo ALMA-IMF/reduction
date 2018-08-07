@@ -13,7 +13,7 @@ from taskinit import casalog
 from taskinit import msmdtool
 from tasks import split
 
-from parse_contdotdat import parse_contdotdat
+from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels
 
 msmd = msmdtool()
 
