@@ -127,29 +127,35 @@ for band in bands:
 
             contfile = os.path.join(path, '../calibration/cont.dat')
 
-            cont_channels = parse_contdotdat(contfile)
+            cont_channel_selection = parse_contdotdat(contfile)
 
             visfile = os.path.join(path, vis)
             contvis = os.path.join(path, "continuum_"+vis)
+
+            # determine target widths
+            msmd.open(visfile)
+            targetwidth = 125000 # 125 MHz
+            widths = []
+            freqs = []
+            for spw in spws:
+                chwid = np.abs(np.mean(msmd.chanwidths(spw)))
+                widths.append(int(chwidth/targetwidth))
+                freqs.append(msmd.chanfreqs(spw))
+
+            linechannels = contchannels_to_linechannels(cont_channel_selection,
+                                                        freqs)
+
+            msmd.close()
 
             flagmanager(vis=visfile, mode='save',
                         versionname='before_cont_flags')
 
             initweights(vis=visfile, wtmode='weight', dowtsp=True)
 
-            raise "TODO: convert cont_channels to line_channels"
-
 
             flagdata(vis=visfile, mode='manual', spw=linechannels,
                      flagbackup=False)
 
-            # determine target widths
-            msmd.open(visfile)
-            targetwidth = 125000 # 125 MHz
-            widths = []
-            for spw in spws:
-                chwid = np.abs(np.mean(msmd.chanwidths(spw)))
-                widths.append(int(chwidth/targetwidth))
 
             # Average the channels within spws
             rmtables(contvis)
