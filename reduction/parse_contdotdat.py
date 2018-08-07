@@ -29,8 +29,6 @@ def contchannels_to_linechannels(contsel, freqslist):
 
     new_sel = []
 
-    frqslo,frqshi = [],[]
-
     for spw,freq in freqslist.items():
         fmin, fmax = np.min(freq), np.max(freq)
         if fmin > fmax:
@@ -44,11 +42,6 @@ def contchannels_to_linechannels(contsel, freqslist):
 
             if fhi < fmax and flo > fmin:
                 selected |= (freq > flo) & (freq < fhi)
-                print(selstr, fmin,fmax, flo, fhi, selected.sum())
-                raise
-
-            frqslo.append(flo)
-            frqshi.append(fhi)
 
 
         # invert from continuum to line
