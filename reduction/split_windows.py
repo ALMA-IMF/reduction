@@ -136,11 +136,11 @@ for band in bands:
             msmd.open(visfile)
             targetwidth = 125000 # 125 MHz
             widths = []
-            freqs = []
+            freqs = {}
             for spw in spws:
                 chwid = np.abs(np.mean(msmd.chanwidths(spw)))
-                widths.append(int(chwidth/targetwidth))
-                freqs.append(msmd.chanfreqs(spw))
+                widths.append(int(chwid/targetwidth))
+                freqs[spw] = msmd.chanfreqs(spw)
 
             linechannels = contchannels_to_linechannels(cont_channel_selection,
                                                         freqs)
