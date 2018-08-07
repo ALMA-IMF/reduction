@@ -11,7 +11,7 @@ import numpy as np
 
 from taskinit import casalog
 from taskinit import msmdtool
-from tasks import split
+from tasks import split, flagmanager, initweights, flagdata, rmtables
 
 from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels
 
