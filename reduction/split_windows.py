@@ -29,7 +29,9 @@ for dirpath, dirnames, filenames in os.walk('.'):
     for fn in dirnames:
         if fn[-10:] == ".split.cal":
 
-            print(fn)
+            casalog.post("Collecting metadata for {0}".format(fn),
+                         origin='make_imaging_scripts',
+                        )
 
             msmd.open(os.path.join(dirpath, fn))
             summary = msmd.summary()
@@ -93,7 +95,9 @@ for band in bands:
                                               spw=newid, base_uid=base_uid))
 
                 if os.path.exists(outvis):
-                    casalog.post("Skipping {0} because it's done".format(outvis))
+                    casalog.post("Skipping {0} because it's done".format(outvis),
+                                 origin='make_imaging_scripts',
+                                )
                 else:
                     casalog.post("Splitting {0}'s spw {2} to {1}".format(vis, outvis,
                                                                          spws[newid]),
@@ -109,7 +113,7 @@ for band in bands:
                     raise ValueError()
 
                 to_image[band][field][newid].append(outvis)
-            
+
 
 with open('to_image.json', 'w') as fh:
     json.dump(to_image, fh)
@@ -130,44 +134,55 @@ for band in bands:
             cont_channel_selection = parse_contdotdat(contfile)
 
             visfile = os.path.join(path, vis)
-            contvis = os.path.join(path, "continuum_"+vis)
+            contvis = os.path.join(path, "continuum_"+vis+".cont")
 
-            # determine target widths
-            msmd.open(visfile)
-            targetwidth = 125000 # 125 MHz
-            widths = []
-            freqs = {}
-            for spw in spws:
-                chwid = np.abs(np.mean(msmd.chanwidths(spw)))
-                widths.append(int(chwid/targetwidth))
-                freqs[spw] = msmd.chanfreqs(spw)
-
-            linechannels = contchannels_to_linechannels(cont_channel_selection,
-                                                        freqs)
-
-            msmd.close()
-
-            flagmanager(vis=visfile, mode='save',
-                        versionname='before_cont_flags')
-
-            initweights(vis=visfile, wtmode='weight', dowtsp=True)
+            if os.path.exists(contvis):
+                casalog.post("Skipping {0} because it's done".format(contvis),
+                             origin='make_imaging_scripts',
+                            )
+            else:
+                casalog.post("Flagging and splitting {0} to {1} for continuum"
+                             .format(visfile, contvis),
+                             origin='make_imaging_scripts',
+                            )
 
 
-            flagdata(vis=visfile, mode='manual', spw=linechannels,
-                     flagbackup=False)
+                # determine target widths
+                msmd.open(visfile)
+                targetwidth = 10e6 # 10 MHz
+                widths = []
+                freqs = {}
+                for spw in spws:
+                    chwid = np.abs(np.mean(msmd.chanwidths(spw)))
+                    widths.append(int(targetwidth/chwid))
+                    freqs[spw] = msmd.chanfreqs(spw)
+
+                linechannels = contchannels_to_linechannels(cont_channel_selection,
+                                                            freqs)
+
+                msmd.close()
+
+                flagmanager(vis=visfile, mode='save',
+                            versionname='before_cont_flags')
+
+                initweights(vis=visfile, wtmode='weight', dowtsp=True)
 
 
-            # Average the channels within spws
-            rmtables(contvis)
-            os.system('rm -rf ' + contvis + '.flagversions')
-
-            split(vis=visfile,
-                  spw=contspws,      
-                  outputvis=contvis,
-                  width=widths,
-                  datacolumn='data')
+                flagdata(vis=visfile, mode='manual', spw=linechannels,
+                         flagbackup=False)
 
 
-            # If you flagged any line channels, restore the previous flags
-            flagmanager(vis=visfile, mode='restore',
-                        versionname='before_cont_flags')
+                # Average the channels within spws
+                rmtables(contvis)
+                os.system('rm -rf ' + contvis + '.flagversions')
+
+                split(vis=visfile,
+                      spw=",".join(map(str,spws)),
+                      outputvis=contvis,
+                      width=widths,
+                      datacolumn='data')
+
+
+                # If you flagged any line channels, restore the previous flags
+                flagmanager(vis=visfile, mode='restore',
+                            versionname='before_cont_flags')
