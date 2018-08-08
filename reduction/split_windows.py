@@ -11,7 +11,7 @@ import numpy as np
 
 from taskinit import casalog
 from taskinit import msmdtool
-from tasks import split, flagmanager, initweights, flagdata, rmtables
+from tasks import split, flagmanager, initweights, flagdata, rmtables, concat
 
 from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels
 
@@ -83,9 +83,11 @@ for band in bands:
         assert len(set(window_lens)) == 1
         nspws = len(mymd['spws'][0])
 
+        to_image[band] = {field: {}}
+
         # do the splits
         for newid in range(nspws):
-            to_image[band] = {field: {newid: []}}
+            to_image[band][field][newid] = []
             for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
                 base_uid = vis.split(".")[0]
                 invis = os.path.join(path, vis)
@@ -121,9 +123,11 @@ with open('to_image.json', 'w') as fh:
 
 
 # split the continuum data
-
+cont_to_merge = {}
 for band in bands:
     for field in fields:
+
+        cont_to_merge[band] = {field: []}
 
         mymd = metadata[band][field]
 
@@ -135,6 +139,8 @@ for band in bands:
 
             visfile = os.path.join(path, vis)
             contvis = os.path.join(path, "continuum_"+vis+".cont")
+
+            cont_to_merge[band][field].append(contvis)
 
             if os.path.exists(contvis):
                 casalog.post("Skipping {0} because it's done".format(contvis),
@@ -186,3 +192,24 @@ for band in bands:
                 # If you flagged any line channels, restore the previous flags
                 flagmanager(vis=visfile, mode='restore',
                             versionname='before_cont_flags')
+
+        member_uid = path.split("member.")[-1].split("/")[0]
+        merged_continuum_fn = os.path.join(path,
+                                           "{field}_{band}_{muid}_continuum_merged.cal.ms"
+                                           .format(field=field,
+                                                   band=band,
+                                                   muid=member_uid)
+                                          )
+
+        if os.path.exists(merged_continuum_fn):
+            casalog.post("Skipping merged continuum {0} because it's done".format(merged_continuum_fn),
+                         origin='make_imaging_scripts',
+                        )
+        else:
+            casalog.post("Merging continuum for {0} {1} into {2}"
+                         .format(merged_continuum_fn, field, band),
+                         origin='make_imaging_scripts',
+                        )
+
+            concat(vis=cont_to_merge[band][field],
+                   concatvis=merged_continuum_fn,)
