@@ -173,7 +173,9 @@ for band in bands:
                 flagmanager(vis=visfile, mode='save',
                             versionname='before_cont_flags')
 
-                initweights(vis=visfile, wtmode='weight', dowtsp=True)
+                # not clear why this is done in other imaging scripts, but it
+                # seems to achieve the wrong effect.
+                #initweights(vis=visfile, wtmode='weight', dowtsp=True)
 
 
                 flagdata(vis=visfile, mode='manual', spw=linechannels,

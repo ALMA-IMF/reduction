@@ -5,7 +5,7 @@ Assumes SPW, Field, and Band will be specified
 import json
 import os
 from tasks import tclean, uvcontsub
-from parse_contdotdat import parse_contdotdat
+from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 
 # Load the pipeline heuristics tools
 from h_init_cli import h_init_cli as h_init
@@ -55,7 +55,8 @@ for band in to_image:
                        weighting='briggs',
                        robust=0.0,
                        gridder='mosaic',
-                       restoringbeam='common',
+                       restoringbeam='', # do not use restoringbeam='common'
+                       # it results in bad edge channels dominating the beam
                        chanchunks=-1)
 
 
@@ -69,12 +70,14 @@ for band in to_image:
 
             contfile = os.path.join(path, '../calibration/cont.dat')
 
-            cont_channel_selection = parse_contdotdat(contfile)
+            cont_freq_selection = parse_contdotdat(contfile)
 
             for vv in vis:
                 if not os.path.exists(vv+".contsub"):
+                    new_freq_selection = freq_selection_overlap(vv,
+                                                                cont_freq_selection)
                     uvcontsub(vis=vv,
-                              fitspw=cont_channel_selection,
+                              fitspw=new_freq_selection,
                               excludechans=False, # fit the regions in fitspw
                               combine='spw', # redundant since we're working on single spw's
                               solint='int',
@@ -98,5 +101,5 @@ for band in to_image:
                        weighting='briggs',
                        robust=0.0,
                        gridder='mosaic',
-                       restoringbeam='common',
+                       restoringbeam='',
                        chanchunks=-1)
