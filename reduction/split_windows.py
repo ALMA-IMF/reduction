@@ -108,6 +108,7 @@ for band in bands:
 
                     split(vis=invis,
                           spw=spws[newid],
+                          field=field,
                           outputvis=outvis,
                           datacolumn='data')
 
@@ -121,6 +122,7 @@ with open('to_image.json', 'w') as fh:
     json.dump(to_image, fh)
 
 
+cont_mses = []
 
 # split the continuum data
 cont_to_merge = {}
@@ -184,6 +186,7 @@ for band in bands:
 
                 split(vis=visfile,
                       spw=",".join(map(str,spws)),
+                      field=field,
                       outputvis=contvis,
                       width=widths,
                       datacolumn='data')
@@ -213,3 +216,8 @@ for band in bands:
 
             concat(vis=cont_to_merge[band][field],
                    concatvis=merged_continuum_fn,)
+        cont_mses.append(merged_continuum_fn)
+
+with open('continuum_mses.txt', 'w') as fh:
+    for line in cont_mses:
+        fh.write(line+'\n')
