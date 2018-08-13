@@ -63,6 +63,10 @@ def contchannels_to_linechannels(contsel, freqslist):
 
 def freq_selection_overlap(ms, freqsel, spw=0):
     """
+    For a given frequency selection string (e.g., '215~216GHz;900~950GHz'),
+    find the subset of the `;`-separated entries that overlap with the
+    measurement set and return those.
+
     Parameters
     ----------
     ms : str
