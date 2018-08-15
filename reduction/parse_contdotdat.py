@@ -95,7 +95,13 @@ def freq_selection_overlap(ms, freqsel, spw=0):
         flo = qq.convert({'value':float(lo), 'unit':unit}, 'Hz')['value']
         fhi = qq.convert({'value':float(hi), 'unit':unit}, 'Hz')['value']
 
-        if (fhi < fmax) or (flo > fmin):
+        if ((fhi < fmax) and (fhi > fmin)) and ((flo > fmin) and (flo < fmax)):
             new_sel.append(selstr)
+        elif ((fhi < fmax) and (fhi > fmin)) and not ((flo > fmin) and (flo < fmax)):
+            new_selstr = "{0}~{1}GHz".format(fmin / 1e9, fhi / 1e9)
+            new_sel.append(new_selstr)
+        elif (not ((fhi < fmax) and (fhi > fmin))) and ((flo > fmin) and (flo < fmax)):
+            new_selstr = "{0}~{1}GHz".format(flo / 1e9, fmax / 1e9)
+            new_sel.append(new_selstr)
 
-    return ";".join(new_sel)
+    return "{0}:".format(spw) + ";".join(new_sel)

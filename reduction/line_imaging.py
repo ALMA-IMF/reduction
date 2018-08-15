@@ -6,6 +6,8 @@ import json
 import os
 from tasks import tclean, uvcontsub
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
+from spectral_cube import SpectralCube
+from astropy import units as u
 
 # Load the pipeline heuristics tools
 from h_init_cli import h_init_cli as h_init
@@ -39,6 +41,40 @@ for band in to_image:
 
             if not os.path.exists(lineimagename+".image"):
                 # json is in unicode by default, but CASA rejects unicode
+                # first iteration makes a dirty image to estimate the RMS
+                tclean(vis=vis,
+                       imagename=lineimagename,
+                       field=[field.encode()]*len(vis),
+                       specmode='cube',
+                       outframe='LSRK',
+                       veltype='radio',
+                       niter=0,
+                       # don't use these for dirty:
+                       #usemask='auto-multithresh',
+                       #scales=[0,3,9,27,81],
+                       deconvolver='multiscale',
+                       interactive=False,
+                       cell=cellsize,
+                       imsize=imsize,
+                       weighting='briggs',
+                       robust=0.0,
+                       gridder='mosaic',
+                       restoringbeam='', # do not use restoringbeam='common'
+                       # it results in bad edge channels dominating the beam
+                       chanchunks=-1)
+
+                # estimate RMS
+                imgcube = SpectralCube.read(lineimagename+".image",
+                                            format='casa_image')
+                rms = imgcube.with_mask(imgcube != 0*imgcube.unit).mad_std()
+                if rms.unit.is_equivalent(u.Jy):
+                    threshold = "{0}mJy".format(rms.to(u.mJy).value * 3)
+                else:
+                    # assume Jy
+                    threshold = "{0}mJy".format(rms.value / 1e3 * 3)
+
+
+                # continue imaging using a threshold
                 tclean(vis=vis,
                        imagename=lineimagename,
                        field=[field.encode()]*len(vis),
@@ -46,7 +82,14 @@ for band in to_image:
                        outframe='LSRK',
                        veltype='radio',
                        niter=2000,
+                       threshold=threshold,
                        usemask='auto-multithresh',
+                       # the sidelobethreshold is very awkward/wrong with 7m+12m
+                       # combined data.  Instead, favor the more direct
+                       # noisethreshold
+                       sidelobethreshold=1.0,
+                       # start with the default of 5-sigma?
+                       noisethreshold=5.0,
                        deconvolver='multiscale',
                        scales=[0,3,9,27,81],
                        interactive=False,
@@ -92,7 +135,10 @@ for band in to_image:
                        outframe='LSRK',
                        veltype='radio',
                        niter=2000,
+                       threshold=threshold,
                        usemask='auto-multithresh',
+                       sidelobethreshold=1.0,
+                       noisethreshold=5.0,
                        deconvolver='multiscale',
                        scales=[0,3,9,27,81],
                        interactive=False,
