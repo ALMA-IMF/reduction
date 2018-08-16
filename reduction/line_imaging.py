@@ -21,6 +21,10 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
+# we're forced to use a hard-coded threshold at the moment.
+# This threshold is ~10x the requested RMS
+threshold = '0.3mJy'
+
 for band in to_image:
     for field in to_image[band]:
         for spw in to_image[band][field]:
@@ -63,15 +67,19 @@ for band in to_image:
                        # it results in bad edge channels dominating the beam
                        chanchunks=-1)
 
-                # estimate RMS
-                imgcube = SpectralCube.read(lineimagename+".image",
-                                            format='casa_image')
-                rms = imgcube.with_mask(imgcube != 0*imgcube.unit).mad_std()
-                if rms.unit.is_equivalent(u.Jy):
-                    threshold = "{0}mJy".format(rms.to(u.mJy).value * 3)
-                else:
-                    # assume Jy
-                    threshold = "{0}mJy".format(rms.value / 1e3 * 3)
+                # # estimate RMS
+                # imgcube = SpectralCube.read(lineimagename+".image",
+                #                             format='casa_image')
+                # rms = imgcube.with_mask(imgcube !=
+                #                         0*imgcube.unit).mad_std(how='slice',
+                #                                                 axis=(1,2))
+                # median_rms = np.median(rms)
+                # if rms.unit.is_equivalent(u.Jy):
+                #     threshold = "{0}mJy".format(rms.to(u.mJy).value * 3)
+                # else:
+                #     # assume Jy
+                #     threshold = "{0}mJy".format(rms.value / 1e3 * 3)
+                threshold = '0.3mJy'
 
 
                 # continue imaging using a threshold
