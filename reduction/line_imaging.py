@@ -6,8 +6,6 @@ import json
 import os
 from tasks import tclean, uvcontsub
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
-from spectral_cube import SpectralCube
-from astropy import units as u
 
 # Load the pipeline heuristics tools
 from h_init_cli import h_init_cli as h_init
@@ -67,19 +65,11 @@ for band in to_image:
                        # it results in bad edge channels dominating the beam
                        chanchunks=-1)
 
-                # # estimate RMS
-                # imgcube = SpectralCube.read(lineimagename+".image",
-                #                             format='casa_image')
-                # rms = imgcube.with_mask(imgcube !=
-                #                         0*imgcube.unit).mad_std(how='slice',
-                #                                                 axis=(1,2))
-                # median_rms = np.median(rms)
-                # if rms.unit.is_equivalent(u.Jy):
-                #     threshold = "{0}mJy".format(rms.to(u.mJy).value * 3)
-                # else:
-                #     # assume Jy
-                #     threshold = "{0}mJy".format(rms.value / 1e3 * 3)
+                ia.open(lineimagename+".image")
+                stats = ia.statistics(robust=True)
+                threshold = "{0}mJy".format()
                 threshold = '0.3mJy'
+                ia.close()
 
 
                 # continue imaging using a threshold
