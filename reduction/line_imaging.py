@@ -19,10 +19,6 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
-# we're forced to use a hard-coded threshold at the moment.
-# This threshold is ~10x the requested RMS
-threshold = '0.3mJy'
-
 for band in to_image:
     for field in to_image[band]:
         for spw in to_image[band][field]:
@@ -67,8 +63,8 @@ for band in to_image:
 
                 ia.open(lineimagename+".image")
                 stats = ia.statistics(robust=True)
-                threshold = "{0}mJy".format()
-                threshold = '0.3mJy'
+                rms = float(stats['medabsdevmed'] * 1.482602218505602)
+                threshold = "{0:0.4f}Jy".format(5*rms)
                 ia.close()
 
 
