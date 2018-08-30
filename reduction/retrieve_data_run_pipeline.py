@@ -64,7 +64,9 @@ if sourcename is None:
 
 alma = Alma()
 alma.cache_location = Alma.cache_location = '.'
-username = six.moves.input("Username: ")
+username = os.getenv('USERNAME')
+if username is None:
+    username = six.moves.input("Username: ")
 alma.login(username)
 
 results = alma.query(payload=dict(project_code='2017.1.01355.L'), public=False, cache=False)
