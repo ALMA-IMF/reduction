@@ -17,7 +17,7 @@ from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels
 
 msmd = msmdtool()
 
-# list all fields you want to make imaging scripts for here
+# band name : frequency range (GHz)
 bands = {'B3': (80, 110),
          'B6': (210, 250),
         }
@@ -69,7 +69,8 @@ with open('metadata.json', 'w') as fh:
     json.dump(metadata, fh)
 
 
-fields = set(x for x in metadata['B3'])
+# extract the fields from the metadata
+fields = set(x for x in metadata['B3']) | set(x for x in metadata['B6'])
 
 to_image = {}
 
@@ -80,12 +81,15 @@ for band in bands:
 
         window_lens = [len(x) for x in mymd['spws']]
         # all SPW sets must have the same length
-        assert len(set(window_lens)) == 1
+        if len(set(window_lens)) != 1:
+            raise ValueError("There are spectral windows with different "
+                             "lengths, which we can't handle.  Field={0}, "
+                             "band={1}".format(field, band))
         nspws = len(mymd['spws'][0])
 
         to_image[band] = {field: {}}
 
-        # do the splits
+        # do the individual window splits
         for newid in range(nspws):
             to_image[band][field][newid] = []
             for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
@@ -110,7 +114,10 @@ for band in bands:
                           spw=spws[newid],
                           field=field,
                           outputvis=outvis,
-                          datacolumn='data')
+                          # there is no corrected_data column because we're
+                          # splitting from split MSes
+                          datacolumn='data',
+                         )
 
                 if outvis in to_image[band][field][newid]:
                     raise ValueError()
@@ -135,6 +142,8 @@ for band in bands:
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
+            # the cont.dat file should be in the calibration/ directory in the
+            # same SB folder
             contfile = os.path.join(path, '../calibration/cont.dat')
 
             cont_channel_selection = parse_contdotdat(contfile)
