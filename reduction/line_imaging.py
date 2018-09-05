@@ -12,6 +12,9 @@ from h_init_cli import h_init_cli as h_init
 from hifa_importdata_cli import hifa_importdata_cli as hifa_importdata
 from hif_makeimlist_cli import hif_makeimlist_cli as hif_makeimlist
 
+from taskinit import msmdtool
+msmd = msmdtool()
+
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
 
@@ -19,13 +22,33 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
+def is_7m(ms):
+    """
+    Determine if a measurement set includes 7m data
+    """
+    msmd.open(ms)
+    diameter = msmd.antennadiameter(0)['value']
+    if diameter == 7.0:
+        return True
+    else:
+        return False
+
 for band in to_image:
     for field in to_image[band]:
         for spw in to_image[band][field]:
 
             vis = list(map(str, to_image[band][field][spw]))
+            if os.getenv('EXCLUDE_7M'):
+                vis = [ms for ms in vis if not(is_7m(vis))]
+                suffix = '12M'
+            else:
+                suffix = '7M12M'
+
             lineimagename = os.path.join(imaging_root,
-                                         "{0}_{1}_spw{2}_lines".format(field, band, spw))
+                                         "{0}_{1}_spw{2}_{3}_lines".format(field,
+                                                                           band,
+                                                                           spw,
+                                                                           suffix))
 
             context = h_init()
             hifa_importdata(vis=vis)

@@ -77,6 +77,10 @@ to_image = {}
 for band in bands:
     for field in fields:
 
+        if field not in metadata[band]:
+            casalog.post("Skipping {0}:{1} because it has no metadata"
+                         .format(band, field), origin='make_imaging_scripts',)
+            continue
         mymd = metadata[band][field]
 
         window_lens = [len(x) for x in mymd['spws']]
