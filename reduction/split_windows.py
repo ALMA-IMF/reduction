@@ -5,13 +5,12 @@ instruct the imaging script how to merge these single-window MSes into a final
 cube.
 """
 import os
-import glob
 import json
 import numpy as np
 
 from taskinit import casalog
 from taskinit import msmdtool
-from tasks import split, flagmanager, initweights, flagdata, rmtables, concat
+from tasks import split, flagmanager, flagdata, rmtables, concat
 
 from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels
 
@@ -22,6 +21,9 @@ bands = {'B3': (80, 110),
          'B6': (210, 250),
         }
 
+def logprint(string):
+    casalog.post(string, origin='make_imaging_scripts')
+    print(string)
 
 metadata = {b:{} for b in bands}
 
@@ -29,9 +31,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
     for fn in dirnames:
         if fn[-10:] == ".split.cal":
 
-            casalog.post("Collecting metadata for {0}".format(fn),
-                         origin='make_imaging_scripts',
-                        )
+            logprint("Collecting metadata for {0}".format(fn))
 
             msmd.open(os.path.join(dirpath, fn))
             summary = msmd.summary()
@@ -78,8 +78,8 @@ for band in bands:
     for field in fields:
 
         if field not in metadata[band]:
-            casalog.post("Skipping {0}:{1} because it has no metadata"
-                         .format(band, field), origin='make_imaging_scripts',)
+            logprint("Skipping {0}:{1} because it has no metadata"
+                         .format(band, field))
             continue
         mymd = metadata[band][field]
 
@@ -105,14 +105,11 @@ for band in bands:
                                               spw=newid, base_uid=base_uid))
 
                 if os.path.exists(outvis):
-                    casalog.post("Skipping {0} because it's done".format(outvis),
-                                 origin='make_imaging_scripts',
-                                )
+                    logprint("Skipping {0} because it's done".format(outvis))
                 else:
-                    casalog.post("Splitting {0}'s spw {2} to {1}".format(vis, outvis,
-                                                                         spws[newid]),
-                                 origin='make_imaging_scripts',
-                                )
+                    logprint("Splitting {0}'s spw {2} to {1}".format(vis,
+                                                                     outvis,
+                                                                     spws[newid]),)
 
                     split(vis=invis,
                           spw=spws[newid],
@@ -158,14 +155,10 @@ for band in bands:
             cont_to_merge[band][field].append(contvis)
 
             if os.path.exists(contvis):
-                casalog.post("Skipping {0} because it's done".format(contvis),
-                             origin='make_imaging_scripts',
-                            )
+                logprint("Skipping {0} because it's done".format(contvis),)
             else:
-                casalog.post("Flagging and splitting {0} to {1} for continuum"
-                             .format(visfile, contvis),
-                             origin='make_imaging_scripts',
-                            )
+                logprint("Flagging and splitting {0} to {1} for continuum"
+                         .format(visfile, contvis),)
 
 
                 # determine target widths
@@ -220,14 +213,11 @@ for band in bands:
                                           )
 
         if os.path.exists(merged_continuum_fn):
-            casalog.post("Skipping merged continuum {0} because it's done".format(merged_continuum_fn),
-                         origin='make_imaging_scripts',
-                        )
+            logprint("Skipping merged continuum {0} because it's done"
+                     .format(merged_continuum_fn),)
         else:
-            casalog.post("Merging continuum for {0} {1} into {2}"
-                         .format(merged_continuum_fn, field, band),
-                         origin='make_imaging_scripts',
-                        )
+            logprint("Merging continuum for {0} {1} into {2}"
+                     .format(merged_continuum_fn, field, band),)
 
             concat(vis=cont_to_merge[band][field],
                    concatvis=merged_continuum_fn,)
