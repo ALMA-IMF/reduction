@@ -12,8 +12,9 @@ from h_init_cli import h_init_cli as h_init
 from hifa_importdata_cli import hifa_importdata_cli as hifa_importdata
 from hif_makeimlist_cli import hif_makeimlist_cli as hif_makeimlist
 
-from taskinit import msmdtool
+from taskinit import msmdtool, iatool
 msmd = msmdtool()
+ia = iatool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
@@ -33,13 +34,18 @@ def is_7m(ms):
     else:
         return False
 
+# set the 'chanchunks' parameter globally.
+# CASAguides recommend chanchunks=-1, but this resulted in:
+# 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
+chanchunks = os.getenv('CHANCHUNKS') or 16
+
 for band in to_image:
     for field in to_image[band]:
         for spw in to_image[band][field]:
 
             vis = list(map(str, to_image[band][field][spw]))
             if os.getenv('EXCLUDE_7M'):
-                vis = [ms for ms in vis if not(is_7m(vis))]
+                vis = [ms for ms in vis if not(is_7m(ms))]
                 suffix = '12M'
             else:
                 suffix = '7M12M'
@@ -82,7 +88,7 @@ for band in to_image:
                        gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
-                       chanchunks=-1)
+                       chanchunks=chanchunks)
 
                 ia.open(lineimagename+".image")
                 stats = ia.statistics(robust=True)
@@ -117,7 +123,7 @@ for band in to_image:
                        gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
-                       chanchunks=-1)
+                       chanchunks=chanchunks)
 
 
             # TODO: Save the desired files, maybe as FITS or maybe not?
@@ -165,4 +171,4 @@ for band in to_image:
                        robust=0.0,
                        gridder='mosaic',
                        restoringbeam='',
-                       chanchunks=-1)
+                       chanchunks=chanchunks)

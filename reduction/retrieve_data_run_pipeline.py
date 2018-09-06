@@ -10,10 +10,18 @@ Instructions:
     calibration products, then it will run the pipeline and produce the MSes,
     including the .ms.split.cal files.
 
+    If you run the code non-interactively, i.e., via a script, you need to
+    specify your username on the ALMA servers using the USERNAME shell
+    environmental variable.  You will also need to set up automatic authentication
+    by doing this interactively in python *once*:
+
+        >>> from astroquery.alma import Alma
+        >>> Alma.login(username='your_username', store_password=True)
+
     A sourcename must be specified via the SOURCENAME shell environmental
     variable.  E.g., you could call:
 
-        SOURCENAME="W51-E" casa --pipeline -r 5.1.0-74 -c "execfile('retrieve_data_run_pipeline.py')"
+        USERNAME="me" SOURCENAME="W51-E" casa --pipeline -r 5.1.0-74 -c "execfile('retrieve_data_run_pipeline.py')"
 
 REQUIREMENTS:
     
