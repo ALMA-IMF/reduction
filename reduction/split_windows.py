@@ -49,7 +49,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
             spws = msmd.spwsforfield(field)
 
             if field in metadata[band]:
-                metadata[band][field]['path'].append(dirpath),
+                metadata[band][field]['path'].append(os.path.abspath(dirpath)),
                 metadata[band][field]['vis'].append(fn)
                 metadata[band][field]['spws'].append(spws.tolist())
             else:
@@ -68,6 +68,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
 with open('metadata.json', 'w') as fh:
     json.dump(metadata, fh)
 
+logprint("Completed metadata assembly")
 
 # extract the fields from the metadata
 fields = set(x for x in metadata['B3']) | set(x for x in metadata['B6'])
@@ -79,7 +80,7 @@ for band in bands:
 
         if field not in metadata[band]:
             logprint("Skipping {0}:{1} because it has no metadata"
-                         .format(band, field))
+                     .format(band, field))
             continue
         mymd = metadata[band][field]
 
@@ -129,6 +130,7 @@ for band in bands:
 with open('to_image.json', 'w') as fh:
     json.dump(to_image, fh)
 
+logprint("Completed line ms splitting.  Moving on to continuum splitting")
 
 cont_mses = []
 

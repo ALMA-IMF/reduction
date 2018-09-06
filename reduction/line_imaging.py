@@ -90,14 +90,16 @@ for band in to_image:
                        # it results in bad edge channels dominating the beam
                        chanchunks=chanchunks)
 
-                # no .image file is produced, only a residual
-                ia.open(lineimagename+".residual")
-                stats = ia.statistics(robust=True)
-                rms = float(stats['medabsdevmed'] * 1.482602218505602)
-                threshold = "{0:0.4f}Jy".format(5*rms)
-                ia.close()
+            # the threshold needs to be computed if any imaging is to be done
+            # no .image file is produced, only a residual
+            ia.open(lineimagename+".residual")
+            stats = ia.statistics(robust=True)
+            rms = float(stats['medabsdevmed'] * 1.482602218505602)
+            threshold = "{0:0.4f}Jy".format(5*rms)
+            ia.close()
 
 
+            if not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 tclean(vis=vis,
                        imagename=lineimagename,
