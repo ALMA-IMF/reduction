@@ -66,7 +66,7 @@ for band in to_image:
 
             # start with cube imaging
 
-            if not os.path.exists(lineimagename+".image"):
+            if not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
                 # json is in unicode by default, but CASA rejects unicode
                 # first iteration makes a dirty image to estimate the RMS
                 tclean(vis=vis,
@@ -90,7 +90,8 @@ for band in to_image:
                        # it results in bad edge channels dominating the beam
                        chanchunks=chanchunks)
 
-                ia.open(lineimagename+".image")
+                # no .image file is produced, only a residual
+                ia.open(lineimagename+".residual")
                 stats = ia.statistics(robust=True)
                 rms = float(stats['medabsdevmed'] * 1.482602218505602)
                 threshold = "{0:0.4f}Jy".format(5*rms)
