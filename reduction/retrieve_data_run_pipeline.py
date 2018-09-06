@@ -36,7 +36,7 @@ REQUIREMENTS:
     (2) now quit CASA, then reopen it
         >>> import pip
         >>> pip.main(['install', 'astroquery', '--user'])
-    (3) now quit CASA, reopen it again.  
+    (3) now quit CASA, reopen it again.
     (3)a If CASA loads, try:
         >>> import astroquery
         >>> import keyring
@@ -57,6 +57,7 @@ MORE NOTES:
     and try again.
 
 """
+import numpy as np
 from astroquery.alma import Alma
 import six
 import runpy
