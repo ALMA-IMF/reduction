@@ -7,10 +7,12 @@ import os
 from tasks import tclean, uvcontsub
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 
-# Load the pipeline heuristics tools
-from h_init_cli import h_init_cli as h_init
-from hifa_importdata_cli import hifa_importdata_cli as hifa_importdata
-from hif_makeimlist_cli import hif_makeimlist_cli as hif_makeimlist
+#the pipeline version of CASA isn't compatible with the version of tclean we
+#want to use
+# # Load the pipeline heuristics tools
+# from h_init_cli import h_init_cli as h_init
+# from hifa_importdata_cli import hifa_importdata_cli as hifa_importdata
+# from hif_makeimlist_cli import hif_makeimlist_cli as hif_makeimlist
 
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
@@ -56,13 +58,15 @@ for band in to_image:
                                                                            spw,
                                                                            suffix))
 
-            context = h_init()
-            hifa_importdata(vis=vis)
-            res = hif_makeimlist(specmode='cube')
+            #context = h_init()
+            #hifa_importdata(vis=vis)
+            #res = hif_makeimlist(specmode='cube')
+            imsize = [3000,3000]
+            cellsize = ['0.05arcsec', '0.05arcsec']
 
             # Force a square image
-            imsize = [max(res.targets[0]['imsize'])]*2
-            cellsize = [res.targets[0]['cell'][0]]*2
+            #imsize = [max(res.targets[0]['imsize'])]*2
+            #cellsize = [res.targets[0]['cell'][0]]*2
 
             # start with cube imaging
 

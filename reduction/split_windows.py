@@ -149,6 +149,10 @@ for band in bands:
             # same SB folder
             contfile = os.path.join(path, '../calibration/cont.dat')
 
+            if not os.path.exists(contfile):
+                logprint("No cont.dat file found for {0}.  Skipping."
+                         .format(path))
+                continue
             cont_channel_selection = parse_contdotdat(contfile)
 
             visfile = os.path.join(path, vis)
