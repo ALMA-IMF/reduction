@@ -141,6 +141,11 @@ for band in bands:
 
         cont_to_merge[band] = {field: []}
 
+        if field not in metadata[band]:
+            logprint("Skipping {0}:{1} because it has no metadata"
+                     .format(band, field))
+            continue
+
         mymd = metadata[band][field]
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
