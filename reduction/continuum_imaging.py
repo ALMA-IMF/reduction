@@ -1,0 +1,76 @@
+"""
+Assumes SPW, Field, and Band will be specified
+"""
+
+import os
+from tasks import tclean, exportfits, plotms
+from taskinit import msmdtool
+msmd = msmdtool()
+
+imaging_root = "imaging_results"
+if not os.path.exists(imaging_root):
+    os.mkdir(imaging_root)
+
+with open('continuum_mses.txt', 'r') as fh:
+    continuum_mses = [x.strip() for x in fh.readlines()]
+
+for continuum_ms in continuum_mses:
+
+    # strip off .cal.ms
+    basename = os.path.split(continuum_ms[:-7])[1]
+
+    field = basename.split("_")[0]
+
+    if os.getenv('EXCLUDE_7M'):
+        msmd.open(continuum_ms)
+        antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
+        msmd.close()
+        suffix = '12M'
+    else:
+        antennae = ""
+        suffix = '7M12M'
+
+
+    contimagename = os.path.join(imaging_root, basename) + "_" + suffix
+
+    # make a diagnostic plot to show the UV distribution
+    plotms(vis=continuum_ms,
+           xaxis='uvwave',
+           yaxis='amp',
+           avgchannel=1000, # minimum possible # of channels
+           plotfile=contimagename+".uvwave_vs_amp.png",
+           showlegend=True,
+           showgui=False,
+           antenna=antennae,
+          )
+
+    imsize = [3000,3000]
+    cellsize = ['0.05arcsec', '0.05arcsec']
+
+    for robust in (-2, 0, 2):
+        imname = contimagename+"_robust{0}".format(robust)
+
+        if not os.path.exists(imname+".image.tt0"):
+            tclean(vis=continuum_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   gridder='mosaic',
+                   specmode='mfs',
+                   deconvolver='mtmfs',
+                   scales=[0,3,9,27,81],
+                   nterms=2,
+                   outframe='LSRK',
+                   veltype='radio',
+                   niter=10000,
+                   usemask='auto-multithresh',
+                   interactive=False,
+                   cell=cellsize,
+                   imsize=imsize,
+                   weighting='briggs',
+                   robust=robust,
+                   pbcor=True,
+                   antenna=antennae,
+                  )
+
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits")
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
