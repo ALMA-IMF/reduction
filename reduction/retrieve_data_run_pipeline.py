@@ -24,7 +24,7 @@ Instructions:
         USERNAME="me" SOURCENAME="W51-E" casa --pipeline -r 5.1.0-74 -c "execfile('retrieve_data_run_pipeline.py')"
 
 REQUIREMENTS:
-    
+
     This is the tricky part.  You need astroquery installed.  In principle,
     this is straightforward, but there may be significant 'gotchas' along the
     way.
