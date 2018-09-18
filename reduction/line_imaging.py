@@ -31,6 +31,7 @@ def is_7m(ms):
     """
     msmd.open(ms)
     diameter = msmd.antennadiameter(0)['value']
+    msmd.close()
     if diameter == 7.0:
         return True
     else:
