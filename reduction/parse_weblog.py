@@ -19,7 +19,7 @@ def get_human_readable_name(weblog):
                           if max_baseline < 1000*u.m else 'TM1')
             #print("array_name = {0}".format(array_name))
             break
-    
+
     for directory, dirnames, filenames in os.walk(weblog):
         if 't2-2-3.html' in filenames:
             with open(os.path.join(directory, 't2-2-3.html')) as fh:
@@ -32,7 +32,7 @@ def get_human_readable_name(weblog):
         if 't2-2-2.html' in filenames:
             with open(os.path.join(directory, 't2-2-2.html')) as fh:
                 txt = fh.read()
-    
+
             array_table = table.Table.read(txt, format='ascii.html')
             band_string, = set(array_table['Band'])
             band = int(band_string.split()[-1])
@@ -42,7 +42,7 @@ def get_human_readable_name(weblog):
         if 't2-2-1.html' in filenames:
             with open(os.path.join(directory, 't2-2-1.html')) as fh:
                 txt = fh.read()
-    
+
             array_table = table.Table.read(txt, format='ascii.html')
             mask = np.array(['TARGET' in intent for intent in array_table['Intent']], dtype='bool')
             source_name, = set(array_table[mask]['Source Name'])
