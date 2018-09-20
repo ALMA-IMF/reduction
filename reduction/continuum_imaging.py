@@ -58,7 +58,7 @@ for continuum_ms in continuum_mses:
 
     context = h_init()
     hifa_importdata(vis=continuum_ms)
-    res = hif_makeimlist(specmode='cube')
+    res = hif_makeimlist(specmode='mfs') # or cont, I don't know which!
 
     # Force a square image using the pipeline heuristic values
     imsize = [max(res.targets[0]['imsize'])]*2
