@@ -3,6 +3,18 @@ Find all .split.cal files in the current directory and subdirectory, and split
 each out into one MS per spectral window.  Also, dump metadata files that will
 instruct the imaging script how to merge these single-window MSes into a final
 cube.
+
+In order to run this code, you need to be able to import ``parse_contdotdat``,
+which means to need to add the directory that contains that file to your path.
+You can do this in two ways:
+
+    (1) In python:
+        import sys
+        sys.path.append('/path/that/contains/file/')
+    (2) From the command line (if you're using a BASH-like shell):
+        export SCRIPT_DIR='/path/that/contains/file/'
+        export PYTHONPATH=$SCRIPT_DIR:$PYTHONPATH
+
 """
 import os
 import json
