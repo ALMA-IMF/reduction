@@ -10,6 +10,12 @@ You can set the following environmental variables for this script:
 
 import os
 from tasks import tclean, exportfits, plotms
+
+# Load the pipeline heuristics tools
+from h_init_cli import h_init_cli as h_init
+from hifa_importdata_cli import hifa_importdata_cli as hifa_importdata
+from hif_makeimlist_cli import hif_makeimlist_cli as hif_makeimlist
+
 from taskinit import msmdtool
 msmd = msmdtool()
 
@@ -50,8 +56,14 @@ for continuum_ms in continuum_mses:
            antenna=antennae,
           )
 
-    imsize = [3000,3000]
-    cellsize = ['0.05arcsec', '0.05arcsec']
+    context = h_init()
+    hifa_importdata(vis=continuum_ms)
+    res = hif_makeimlist(specmode='cube')
+
+    # Force a square image using the pipeline heuristic values
+    imsize = [max(res.targets[0]['imsize'])]*2
+    cellsize = [res.targets[0]['cell'][0]]*2
+
 
     for robust in (-2, 0, 2):
         imname = contimagename+"_robust{0}".format(robust)
