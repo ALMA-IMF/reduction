@@ -20,14 +20,6 @@ import glob
 from tasks import tclean, uvcontsub
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 
-#the pipeline version of CASA isn't compatible with the version of tclean we
-#want to use, but that will change with CASA-5.4-pipeline
-# Load the pipeline heuristics tools
-from h_init_cli import h_init_cli as h_init
-from hifa_importdata_cli import hifa_importdata_cli as hifa_importdata
-from hif_makeimlist_cli import hif_makeimlist_cli as hif_makeimlist
-from h_restore_cli import h_restore_cli as h_restore
-
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
 ia = iatool()
@@ -62,17 +54,6 @@ for band in to_image:
 
             vis = list(map(str, to_image[band][field][spw]))
 
-            for ms in vis:
-                # try to find the pipeline .context file, which should be in
-                # the same directory as the ms
-                # (if there are may mses being combined, we'll select just one,
-                # which might not be optimal...)
-                basepath = os.path.split(ms)[0]
-                pipe_context = glob.glob(os.path.join(basepath, 'working/*context'))
-                if len(pipe_context) == 1:
-                    pipe_context = pipe_context[0]
-                    break
-
 
             if os.getenv('EXCLUDE_7M'):
                 vis = [ms for ms in vis if not(is_7m(ms))]
@@ -86,19 +67,9 @@ for band in to_image:
                                                                            spw,
                                                                            suffix))
 
-            context = h_init()
-            if pipe_context and len(vis) == 1:
-                # only use the pipeline context if there's just one MS
-                # otherwise, it's important that we assess the joint
-                # contributions of all the MSes
-                h_restore(pipe_context)
-            else:
-                hifa_importdata(vis=vis)
-            res = hif_makeimlist(specmode='cube')
 
-            # Force a square image using the pipeline heuristic values
-            imsize = [max(res.targets[0]['imsize'])]*2
-            cellsize = [res.targets[0]['cell'][0]]*2
+            imsize = [3000, 3000]
+            cellsize = ['0.05arcsec', '0.05arcsec']
 
             # start with cube imaging
 
