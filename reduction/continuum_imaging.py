@@ -43,7 +43,7 @@ for continuum_ms in continuum_mses:
     plotms(vis=continuum_ms,
            xaxis='uvwave',
            yaxis='amp',
-           avgchannel=1000, # minimum possible # of channels
+           avgchannel='1000', # minimum possible # of channels
            plotfile=contimagename+".uvwave_vs_amp.png",
            showlegend=True,
            showgui=False,
