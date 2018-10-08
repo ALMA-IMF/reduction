@@ -60,11 +60,39 @@ def get_human_readable_name(weblog):
 
     print(sbname, max_baseline)
 
-    return sbname
+    return sbname, max_baseline
 
 def weblog_names(list_of_weblogs):
-    return {get_human_readable_name(weblog): weblog
-            for weblog in list_of_weblogs}
+    data = [(get_human_readable_name(weblog), weblog)
+            for weblog in list_of_weblogs]
+    hrns = [x[0][0] for x in data]
+    if len(set(hrns)) < len(data):
+        for nm in set(hrns):
+            if hrns.count(nm) > 1:
+                print("Fixing {0}".format(nm))
+                dupes = [ii for ii,x in enumerate(hrns) if x==nm]
+                assert len(dupes) == 2
+                bl1 = data[dupes[0]][0][1]
+                bl2 = data[dupes[1]][0][1]
+                if bl1 < bl2:
+                    # short = TM2
+                    # long = TM1
+                    data[dupes[0]] = \
+                        (((data[dupes[0]][0][0].replace('TM1','TM2'),
+                           data[dupes[0]][0][1])), data[dupes[0]][1])
+                    data[dupes[1]] = \
+                        (((data[dupes[1]][0][0].replace('TM2','TM1'),
+                           data[dupes[1]][0][1]), data[dupes[1]][1]))
+                else:
+                    data[dupes[1]] = \
+                        (((data[dupes[1]][0][0].replace('TM1','TM2'),
+                           data[dupes[1]][0][1]), data[dupes[1]][1]))
+                    data[dupes[0]] = \
+                        (((data[dupes[0]][0][0].replace('TM2','TM1'),
+                           data[dupes[0]][0][1]), data[dupes[0]][1]))
+
+    rslt = {x[0][0]: x[1] for x in data}
+    return rslt
 
 def make_links(weblog_maps):
     reverse_map = {v:k for k,v in weblog_maps.items()}

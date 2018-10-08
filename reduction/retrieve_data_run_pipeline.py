@@ -78,7 +78,8 @@ if username is None:
     username = six.moves.input("Username: ")
 alma.login(username)
 
-results = alma.query(payload=dict(project_code='2017.1.01355.L'), public=False, cache=False)
+results = alma.query(payload=dict(project_code='2017.1.01355.L'),
+                     public=False, cache=False)
 
 mask = results['Source name'] == sourcename
 
