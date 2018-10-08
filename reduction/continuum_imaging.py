@@ -17,6 +17,8 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
+# load the list of continuum MSes from a file
+# (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
 with open('continuum_mses.txt', 'r') as fh:
     continuum_mses = [x.strip() for x in fh.readlines()]
 
