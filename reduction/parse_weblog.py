@@ -2,6 +2,7 @@ import os
 import numpy as np
 from astropy import table
 from astropy import units as u
+from bs4 import BeautifulSoup
 import re
 
 def get_human_readable_name(weblog):
@@ -61,6 +62,33 @@ def get_human_readable_name(weblog):
     print(sbname, max_baseline)
 
     return sbname, max_baseline
+
+
+def get_calibrator_fluxes(weblog):
+
+    for directory, dirnames, filenames in os.walk(weblog):
+        if 't2-4m_details.html' in filenames and 'stage15' in directory:
+            with open(os.path.join(directory, 't2-4m_details.html')) as fh:
+                txt = fh.read()
+
+            soup = BeautifulSoup(txt)
+
+            tbl = soup.findAll('table')[1]
+            rows = tbl.findAll('tr')
+
+            data = {}
+            for row_a,row_b in zip(rows[3::2],rows[4::2]):
+                source = row_a.findAll('td')[1].text
+                uid = row_a.findAll('td')[0].text
+                spw = row_a.findAll('td')[2].text
+                freq = row_a.findAll('td')[3].text
+                flux = row_a.findAll('td')[4].text
+                catflux = row_b.findAll('td')[0].text
+
+                data[(source, uid, spw, freq)] = (flux, catflux)
+
+            return data
+
 
 def weblog_names(list_of_weblogs):
     data = [(get_human_readable_name(weblog), weblog)
