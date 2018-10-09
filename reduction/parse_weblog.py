@@ -2,6 +2,7 @@ import os
 import numpy as np
 from astropy import table
 from astropy import units as u
+from astropy.utils.console import ProgressBar
 from bs4 import BeautifulSoup
 import re
 
@@ -94,14 +95,18 @@ def get_calibrator_fluxes(weblog):
             tbl = tbls[0]
             rows = tbl.findAll('tr')
 
+            uid, source, freq, spw = None,None,None,None
+
             data = {}
             for row_a,row_b in zip(rows[3::2],rows[4::2]):
-                uid = get_matching_text(row_a.findAll('td'), 'uid')
-                source = get_matching_text(row_a.findAll('td'), 'PHASE')
-                freq = get_matching_text(row_a.findAll('td'), 'GHz')
+                uid = get_matching_text(row_a.findAll('td'), 'uid') or uid
+                source = get_matching_text(row_a.findAll('td'), 'PHASE') or source
+                freq = get_matching_text(row_a.findAll('td'), 'GHz') or freq
+                spw = get_matching_text(row_a.findAll('td'), re.compile('^[0-9][0-9]$')) or spw
                 flux_txt = get_matching_text(row_a.findAll('td'), 'Jy')
                 catflux_txt = get_matching_text(row_b.findAll('td'), 'Jy')
-                spw = get_matching_text(row_b.findAll('td'), re.compile('^[0-9][0-9]$'))
+
+                assert spw is not None
 
                 fscale = 1e-3 if 'mJy' in flux_txt else 1
                 cscale = 1e-3 if 'mJy' in catflux_txt else 1
@@ -119,16 +124,25 @@ def get_calibrator_fluxes(weblog):
 
 def get_all_fluxes(weblog_list):
 
-    data_list = []
-    for weblog in weblog_list:
+    data_dict = {}
+    for weblog in ProgressBar(weblog_list):
         try:
-            data = get_calibrator_fluxes(weblog)
-            data_list.append(data)
+            date,data = get_calibrator_fluxes(weblog)
+            name = get_human_readable_name(weblog)
+            data_dict[name] = date,data
         except ValueError:
             continue
 
-    flux_data = {date:data
-                 for (date,data) in data_list}
+    flux_data = {name[0]:
+                 {'date': date,
+                  'ms': key[1],
+                  'calibrator': key[0],
+                  'spw': key[2],
+                  'freq': key[3],
+                  'measurement': value}
+                 for key,value in data.items()
+                 for name,data_list in data_dict.items()
+                 for date,data in [data_list]}
 
     return flux_data
 
