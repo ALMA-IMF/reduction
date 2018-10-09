@@ -80,7 +80,18 @@ def get_calibrator_fluxes(weblog):
                 txt = fh.read()
 
             soup = BeautifulSoup(txt, 'html5lib')
-            date = soup.findAll('td')[3].text.split()[0]
+            date_tbls = [xx for xx in soup.findAll('table')
+                         if 'summary' in xx.attrs
+                         and xx.attrs['summary'] == 'Measurement Set Summaries']
+            assert len(date_tbls) == 1
+            date_tbl = date_tbls[0]
+
+            date_map = {}
+            for row in date_tbl.findAll('tr'):
+                if 'uid___' in row.text:
+                    uid = row.find('td').find('a').text
+                    date = row.findAll('td')[3].text.split()[0]
+                    date_map[uid] = date
 
         if 't2-4m_details.html' in filenames and 'stage15' in directory:
             with open(os.path.join(directory, 't2-4m_details.html')) as fh:
@@ -115,11 +126,13 @@ def get_calibrator_fluxes(weblog):
                 eflux = float(flux_txt.split()[3]) * fscale
                 catflux = float(catflux_txt.strip().split()[0]) * cscale
 
-                data[(source, uid, spw, freq)] = {'measured':flux,
-                                                  'error': eflux,
-                                                  'catalog': catflux}
+                date = date_map[uid]
 
-            return date,data
+                data[(source, uid, spw, freq, date)] = {'measured':flux,
+                                                        'error': eflux,
+                                                        'catalog': catflux}
+
+            return data
     raise ValueError("{0} is not a valid weblog (it may be missing stage15)".format(weblog))
 
 def get_all_fluxes(weblog_list):
@@ -127,22 +140,23 @@ def get_all_fluxes(weblog_list):
     data_dict = {}
     for weblog in ProgressBar(weblog_list):
         try:
-            date,data = get_calibrator_fluxes(weblog)
-            name = get_human_readable_name(weblog)
-            data_dict[name] = date,data
+            data = get_calibrator_fluxes(weblog)
+            name,_ = get_human_readable_name(weblog)
+            data_dict[name] = data
         except ValueError:
             continue
 
-    flux_data = {name[0]:
-                 {'date': date,
-                  'ms': key[1],
-                  'calibrator': key[0],
-                  'spw': key[2],
-                  'freq': key[3],
-                  'measurement': value}
-                 for key,value in data.items()
+    flux_data = {name:{ii:
+                       {'date': key[4],
+                        'ms': key[1],
+                        'calibrator': key[0],
+                        'spw': key[2],
+                        'freq': key[3],
+                        'measurement': value}
+                       for ii,(key,value) in enumerate(data.items())
+                      }
                  for name,data_list in data_dict.items()
-                 for date,data in [data_list]}
+                }
 
     return flux_data
 
