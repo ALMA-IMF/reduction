@@ -63,31 +63,74 @@ def get_human_readable_name(weblog):
 
     return sbname, max_baseline
 
+def get_matching_text(list_of_elts, text):
+    if hasattr(text, 'search'):
+        match = [xx.text for xx in list_of_elts if text.search(xx.text)]
+    else:
+        match = [xx.text for xx in list_of_elts if text in xx.text]
+    if len(match) >= 1:
+        return match[0]
 
 def get_calibrator_fluxes(weblog):
 
     for directory, dirnames, filenames in os.walk(weblog):
+        if 't1-1.html' in filenames:
+            with open(os.path.join(directory, 't1-1.html')) as fh:
+                txt = fh.read()
+
+            soup = BeautifulSoup(txt, 'html5lib')
+            date = soup.findAll('td')[3].text.split()[0]
+
         if 't2-4m_details.html' in filenames and 'stage15' in directory:
             with open(os.path.join(directory, 't2-4m_details.html')) as fh:
                 txt = fh.read()
 
-            soup = BeautifulSoup(txt)
+            soup = BeautifulSoup(txt, 'html5lib')
 
-            tbl = soup.findAll('table')[1]
+            tbls = [xx for xx in soup.findAll('table')
+                    if 'summary' in xx.attrs
+                    and xx.attrs['summary'] == 'Flux density results']
+            assert len(tbls) == 1
+            tbl = tbls[0]
             rows = tbl.findAll('tr')
 
             data = {}
             for row_a,row_b in zip(rows[3::2],rows[4::2]):
-                source = row_a.findAll('td')[1].text
-                uid = row_a.findAll('td')[0].text
-                spw = row_a.findAll('td')[2].text
-                freq = row_a.findAll('td')[3].text
-                flux = row_a.findAll('td')[4].text
-                catflux = row_b.findAll('td')[0].text
+                uid = get_matching_text(row_a.findAll('td'), 'uid')
+                source = get_matching_text(row_a.findAll('td'), 'PHASE')
+                freq = get_matching_text(row_a.findAll('td'), 'GHz')
+                flux_txt = get_matching_text(row_a.findAll('td'), 'Jy')
+                catflux_txt = get_matching_text(row_b.findAll('td'), 'Jy')
+                spw = get_matching_text(row_b.findAll('td'), re.compile('^[0-9][0-9]$'))
 
-                data[(source, uid, spw, freq)] = (flux, catflux)
+                fscale = 1e-3 if 'mJy' in flux_txt else 1
+                cscale = 1e-3 if 'mJy' in catflux_txt else 1
 
-            return data
+                flux = float(flux_txt.split()[0]) * fscale
+                eflux = float(flux_txt.split()[3]) * fscale
+                catflux = float(catflux_txt.strip().split()[0]) * cscale
+
+                data[(source, uid, spw, freq)] = {'measured':flux,
+                                                  'error': eflux,
+                                                  'catalog': catflux}
+
+            return date,data
+    raise ValueError("{0} is not a valid weblog (it may be missing stage15)".format(weblog))
+
+def get_all_fluxes(weblog_list):
+
+    data_list = []
+    for weblog in weblog_list:
+        try:
+            data = get_calibrator_fluxes(weblog)
+            data_list.append(data)
+        except ValueError:
+            continue
+
+    flux_data = {date:data
+                 for (date,data) in data_list}
+
+    return flux_data
 
 
 def weblog_names(list_of_weblogs):
