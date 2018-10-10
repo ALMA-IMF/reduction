@@ -3,10 +3,18 @@ import numpy as np
 from astropy import table
 from astropy import units as u
 from astropy.utils.console import ProgressBar
+from astroquery.alma import Alma
 from bs4 import BeautifulSoup
 import re
 
-def get_human_readable_name(weblog):
+def get_mous_to_sb_mapping(project_code):
+
+    tbl = Alma.query(payload={'project_code': project_code}, cache=False,
+                     public=False)['Member ous id','SB name']
+    mapping = {row['Member ous id']: row['SB name'] for row in tbl}
+    return mapping
+
+def get_human_readable_name(weblog, mapping=None):
 
     for directory, dirnames, filenames in os.walk(weblog):
         if 't2-1_details.html' in filenames:
@@ -22,45 +30,68 @@ def get_human_readable_name(weblog):
             #print("array_name = {0}".format(array_name))
             break
 
-    for directory, dirnames, filenames in os.walk(weblog):
-        if 't2-2-3.html' in filenames:
-            with open(os.path.join(directory, 't2-2-3.html')) as fh:
-                txt = fh.read()
-            array_table = table.Table.read(txt, format='ascii.html')
-            antenna_size, = map(int, set(array_table['Diameter']))
-            break
 
-    for directory, dirnames, filenames in os.walk(weblog):
-        if 't2-2-2.html' in filenames:
-            with open(os.path.join(directory, 't2-2-2.html')) as fh:
-                txt = fh.read()
+    if mapping is None:
+        for directory, dirnames, filenames in os.walk(weblog):
+            if 't2-2-3.html' in filenames:
+                with open(os.path.join(directory, 't2-2-3.html')) as fh:
+                    txt = fh.read()
+                array_table = table.Table.read(txt, format='ascii.html')
+                antenna_size, = map(int, set(array_table['Diameter']))
+                break
 
-            array_table = table.Table.read(txt, format='ascii.html')
-            band_string, = set(array_table['Band'])
-            band = int(band_string.split()[-1])
-            break
+        for directory, dirnames, filenames in os.walk(weblog):
+            if 't2-2-2.html' in filenames:
+                with open(os.path.join(directory, 't2-2-2.html')) as fh:
+                    txt = fh.read()
 
-    for directory, dirnames, filenames in os.walk(weblog):
-        if 't2-2-1.html' in filenames:
-            with open(os.path.join(directory, 't2-2-1.html')) as fh:
-                txt = fh.read()
+                array_table = table.Table.read(txt, format='ascii.html')
+                band_string, = set(array_table['Band'])
+                band = int(band_string.split()[-1])
+                break
 
-            array_table = table.Table.read(txt, format='ascii.html')
-            mask = np.array(['TARGET' in intent for intent in array_table['Intent']], dtype='bool')
-            source_name, = set(array_table[mask]['Source Name'])
-            break
+        for directory, dirnames, filenames in os.walk(weblog):
+            if 't2-2-1.html' in filenames:
+                with open(os.path.join(directory, 't2-2-1.html')) as fh:
+                    txt = fh.read()
 
-    if array_name == '7MorTP':
-        if antenna_size == 7:
-            array_name = '7M'
-        elif antenna_size == 12:
-            array_name = 'TP'
-        else:
-            raise
+                array_table = table.Table.read(txt, format='ascii.html')
+                mask = np.array(['TARGET' in intent for intent in array_table['Intent']], dtype='bool')
+                source_name, = set(array_table[mask]['Source Name'])
+                break
 
-    sbname = "{0}_a_{1:02d}_{2}".format(source_name, band, array_name, )
+        if array_name == '7MorTP':
+            if antenna_size == 7:
+                array_name = '7M'
+            elif antenna_size == 12:
+                array_name = 'TP'
+            else:
+                raise
 
-    print(sbname, max_baseline)
+        sbname = "{0}_a_{1:02d}_{2}".format(source_name, band, array_name, )
+
+        print(sbname, max_baseline)
+
+    else:
+        for directory, dirnames, filenames in os.walk(weblog):
+            if 't1-1.html' in filenames:
+                with open(os.path.join(directory, 't1-1.html')) as fh:
+                    txt = fh.read()
+
+                soup = BeautifulSoup(txt, 'html5lib')
+                overview_tbls = [xx for xx in soup.findAll('table')
+                                 if 'summary' in xx.attrs and
+                                 xx.attrs['summary'] == 'Data Details']
+                assert len(overview_tbls) == 1
+                overview_table = overview_tbls[0]
+
+                for row in overview_table.findAll('tr'):
+                    if 'OUS Status Entity id' in row.text:
+                        for td in row.findAll('td'):
+                            if 'uid' in td.text:
+                                uid = td.text
+
+                sbname = mapping[uid]
 
     return sbname, max_baseline
 
@@ -161,8 +192,8 @@ def get_all_fluxes(weblog_list):
     return flux_data
 
 
-def weblog_names(list_of_weblogs):
-    data = [(get_human_readable_name(weblog), weblog)
+def weblog_names(list_of_weblogs, mapping):
+    data = [(get_human_readable_name(weblog, mapping), weblog)
             for weblog in list_of_weblogs]
     hrns = [x[0][0] for x in data]
     if len(set(hrns)) < len(data):
