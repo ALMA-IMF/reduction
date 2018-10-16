@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from astropy import table
+from astropy.table import Table,Column
 from astropy import units as u
 from astropy.utils.console import ProgressBar
 from astroquery.alma import Alma
@@ -143,7 +144,7 @@ def get_calibrator_fluxes(weblog):
             for row_a,row_b in zip(rows[3::2],rows[4::2]):
                 uid = get_matching_text(row_a.findAll('td'), 'uid') or uid
                 source = get_matching_text(row_a.findAll('td'), 'PHASE') or source
-                freq = get_matching_text(row_a.findAll('td'), 'GHz') or freq
+                freqstr = get_matching_text(row_a.findAll('td'), 'GHz') or freq
                 spw = get_matching_text(row_a.findAll('td'), re.compile('^[0-9][0-9]$')) or spw
                 flux_txt = get_matching_text(row_a.findAll('td'), 'Jy')
                 catflux_txt = get_matching_text(row_b.findAll('td'), 'Jy')
@@ -158,6 +159,9 @@ def get_calibrator_fluxes(weblog):
                 catflux = float(catflux_txt.strip().split()[0]) * cscale
 
                 date = date_map[uid]
+
+                freq = float(freqstr.split()[0])
+                #freqres = float(freqstr.split()[2])
 
                 data[(source, uid, spw, freq, date)] = {'measured':flux,
                                                         'error': eflux,
@@ -190,6 +194,22 @@ def get_all_fluxes(weblog_list):
                 }
 
     return flux_data
+
+def fluxes_to_table(flux_dict):
+
+    sbname = Column(name='SB name', data=[name for name,item in flux_dict.items() for row in item])
+    uid = Column(name='UID', data=[data['ms'] for name,item in flux_dict.items() for num,data in item.items()])
+    calname = Column(name='Calibrator', data=[data['calibrator'] for name,item in flux_dict.items() for num,data in item.items()])
+    spw = Column(name='SPW', data=[data['spw'] for name,item in flux_dict.items() for num,data in item.items()])
+    date = Column(name='Date', data=[data['date'] for name,item in flux_dict.items() for num,data in item.items()])
+    freq = Column(name='Frequency', data=[data['freq'] for name,item in flux_dict.items() for num,data in item.items()])
+    flux = Column(name='Flux', data=[data['measurement']['measured'] for name,item in flux_dict.items() for num,data in item.items()])
+    eflux = Column(name='Flux error', data=[data['measurement']['error'] for name,item in flux_dict.items() for num,data in item.items()])
+    catflux = Column(name='Catalog flux', data=[data['measurement']['catalog'] for name,item in flux_dict.items() for num,data in item.items()])
+
+    tbl = Table([sbname, uid, calname, spw, date, freq, flux, eflux, catflux])
+
+    return tbl
 
 
 def weblog_names(list_of_weblogs, mapping):

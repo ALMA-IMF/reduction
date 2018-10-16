@@ -12,11 +12,13 @@ You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>
         If this parameter is set (to anything), the 7m data will not be
         included in the images if they are present.
+    FIELD_ID=<name>
+        If this parameter is set, filter out the imaging targets and only image
+        fields with this name (e.g., "W43-MM1", "W51-E", etc.)
 """
 
 import json
 import os
-import glob
 from tasks import tclean, uvcontsub
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 
@@ -26,6 +28,12 @@ ia = iatool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
+
+if os.getenv('FIELD_ID'):
+    field_id = os.getenv('FIELD_ID')
+    for band in to_image:
+        to_image[band] = {key:value for key,value in to_image[band]
+                          if key == field_id}
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):

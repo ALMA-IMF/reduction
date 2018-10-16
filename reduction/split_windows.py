@@ -88,6 +88,7 @@ fields = set(x for x in metadata['B3']) | set(x for x in metadata['B6'])
 to_image = {}
 
 for band in bands:
+    to_image[band] = {}
     for field in fields:
 
         if field not in metadata[band]:
@@ -104,7 +105,7 @@ for band in bands:
                              "band={1}".format(field, band))
         nspws = len(mymd['spws'][0])
 
-        to_image[band] = {field: {}}
+        to_image[band][field] = {}
 
         # do the individual window splits
         for newid in range(nspws):
