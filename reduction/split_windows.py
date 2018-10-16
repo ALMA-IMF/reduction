@@ -15,6 +15,11 @@ You can do this in two ways:
         export SCRIPT_DIR='/path/that/contains/file/'
         export PYTHONPATH=$SCRIPT_DIR:$PYTHONPATH
 
+You can set the following environmental variables for this script:
+    FIELD_ID=<name>
+        If this parameter is set, filter out the imaging targets and only split
+        fields with this name (e.g., "W43-MM1", "W51-E", etc.).
+        Metadata will still be collected for *all* available MSes.
 """
 import os
 import json
@@ -84,6 +89,9 @@ logprint("Completed metadata assembly")
 
 # extract the fields from the metadata
 fields = set(x for x in metadata['B3']) | set(x for x in metadata['B6'])
+
+if os.getenv('FIELD_ID'):
+    fields = fields & {os.getenv('FIELD_ID')}
 
 to_image = {}
 
