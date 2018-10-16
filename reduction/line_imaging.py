@@ -32,7 +32,7 @@ with open('to_image.json', 'r') as fh:
 if os.getenv('FIELD_ID'):
     field_id = os.getenv('FIELD_ID')
     for band in to_image:
-        to_image[band] = {key:value for key,value in to_image[band]
+        to_image[band] = {key:value for key,value in to_image[band].items()
                           if key == field_id}
 
 imaging_root = "imaging_results"
