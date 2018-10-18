@@ -20,5 +20,5 @@ with open('fluxes.json', 'w') as fh:
 
 fluxtbl = fluxes_to_table(fluxes)
 for colname in fluxtbl.colnames:
-    fluxtbl.rename(colname, colname.replace(" ","_"))
+    fluxtbl.rename_column(colname, colname.replace(" ","_"))
 fluxtbl.write('fluxes.ipac', format='ascii.ipac')
