@@ -79,6 +79,8 @@ for band in to_image:
             imsize = [3000, 3000]
             cellsize = ['0.05arcsec', '0.05arcsec']
 
+            dirty_tclean_made_residual = False
+
             # start with cube imaging
 
             if not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
@@ -104,6 +106,13 @@ for band in to_image:
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
                        chanchunks=chanchunks)
+                if os.path.exists(lineimagename+".image"):
+                    # tclean with niter=0 is not supposed to produce a .image file,
+                    # but if it does (and it appears to have done so on at
+                    # least one run), we still want to clean the cube
+                    dirty_tclean_made_residual = True
+            elif not os.path.exists(lineimagename+".residual"):
+                raise ValueError("The residual image is required for further imaging.")
 
             # the threshold needs to be computed if any imaging is to be done
             # no .image file is produced, only a residual
@@ -114,7 +123,7 @@ for band in to_image:
             ia.close()
 
 
-            if not os.path.exists(lineimagename+".image"):
+            if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 tclean(vis=vis,
                        imagename=lineimagename,
@@ -142,6 +151,9 @@ for band in to_image:
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
                        chanchunks=chanchunks)
+                impbcor(imagename=lineimagename+'.image',
+                        pbimage=lineimagename+'.pb',
+                        outfile=lineimagename+'.image.pbcor', overwrite=True)
 
 
             # TODO: Save the desired files, maybe as FITS or maybe not?
@@ -190,3 +202,6 @@ for band in to_image:
                        gridder='mosaic',
                        restoringbeam='',
                        chanchunks=chanchunks)
+                impbcor(imagename=lineimagename+'.image',
+                        pbimage=lineimagename+'.pb',
+                        outfile=lineimagename+'.image.pbcor', overwrite=True)
