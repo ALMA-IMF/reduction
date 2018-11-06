@@ -76,19 +76,23 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     field_matches = np.array([fld == field for fld in msmd.fieldnames()], dtype=bool)
     field_ids, = np.where(field_matches)
 
-    antsize = msmd.antennadiameter(0)['value'] # m
+    first_scan_for_field = [msmd.scansforfield(fid)[0] for fid in field_ids]
+    first_antid = [msmd.antennasforscan(scid)[0] for scid in first_scan_for_field]
+
+    antsize = np.array([msmd.antennadiameter(antid)['value'] for antid in first_antid]) # m
     # because we're working with line-split data, we assume the reffreq comes
     # from spw 0
     freq = msmd.reffreq(spw)['m0']['value'] # Hz
     # go a little past the first null in each direction
-    primary_beam = 1.25 * freq/299792458.0 / antsize
+    # 1.46 is empirically determined from eyeballing one case
+    primary_beam = 1.25 * freq/299792458.0 / antsize * 1.46
     pb_pix = primary_beam / pixscale
 
     ptgctrs = [msmd.phasecenter(ii) for ii in field_ids]
-    furthest_ra_pix_plus = np.max([pc['m0']['value']*180/np.pi+pb_pix-cen_ra for pc in ptgctrs])
-    furthest_ra_pix_minus = np.min([pc['m0']['value']*180/np.pi-pb_pix-cen_ra for pc in ptgctrs])
-    furthest_dec_pix_plus = np.max([pc['m1']['value']*180/np.pi+pb_pix-cen_dec for pc in ptgctrs])
-    furthest_dec_pix_minus = np.min([pc['m1']['value']*180/np.pi-pb_pix-cen_dec for pc in ptgctrs])
+    furthest_ra_pix_plus = np.max([pc['m0']['value']*180/np.pi+pb_pix[ii]-cen_ra for ii,pc in enumerate(ptgctrs)])
+    furthest_ra_pix_minus = np.min([pc['m0']['value']*180/np.pi-pb_pix[ii]-cen_ra for ii,pc in enumerate(ptgctrs)])
+    furthest_dec_pix_plus = np.max([pc['m1']['value']*180/np.pi+pb_pix[ii]-cen_dec for ii,pc in enumerate(ptgctrs)])
+    furthest_dec_pix_minus = np.min([pc['m1']['value']*180/np.pi-pb_pix[ii]-cen_dec for ii,pc in enumerate(ptgctrs)])
 
     msmd.close()
 
