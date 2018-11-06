@@ -80,11 +80,11 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
 def determine_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
 
     if isinstance(ms, list):
-        results = [determine_imsize(vis, field, phasecenter, spw, pixscale) for vis in ms]
+        results = [get_indiv_imsize(vis, field, phasecenter, spw, pixscale) for vis in ms]
 
         dra = np.max([ra for ra, dec in results])
         ddec = np.max([dec for ra, dec in results])
     else:
-        dra,ddec = [determine_imsize(vis, field, phasecenter, spw, pixscale) for vis in ms]
+        dra,ddec = [get_indiv_imsize(vis, field, phasecenter, spw, pixscale) for vis in ms]
 
     return dra, ddec
