@@ -53,6 +53,10 @@ def determine_phasecenter(ms, field):
     else:
         mean_ra, mean_dec, csys = get_indiv_phasecenter(ms, field)
 
+    logprint("Determined phasecenter is {0} {1} deg {2} deg".format(csys,
+                                                                    mean_ra*180/np.pi,
+                                                                    mean_dec*180/np.pi))
+
     return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
@@ -100,4 +104,6 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     else:
         dra,ddec = get_indiv_imsize(ms, field, phasecenter, spw, pixscale)
 
-    return dra, ddec
+    logprint("Determined imsize is {0},{1}".format(dra,ddec))
+
+    return int(dra), int(ddec)
