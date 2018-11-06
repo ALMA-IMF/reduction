@@ -39,6 +39,13 @@ for continuum_ms in continuum_mses:
         antennae = ""
         suffix = '7M12M'
 
+    coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
+    phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
+    pixscale = 0.05
+    imsize = list(determine_imsize(ms=continuum_ms, field=field,
+                                   phasecenter=(racen,deccen), spw=0,
+                                   pixscale=pixscale))
+    cellsize = ['{0}arcsec'.format(pixscale)] * 2
 
     contimagename = os.path.join(imaging_root, basename) + "_" + suffix
 
@@ -54,13 +61,6 @@ for continuum_ms in continuum_mses:
                antenna=antennae,
               )
 
-    coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
-    phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-    pixscale = 0.05
-    imsize = list(determine_imsize(ms=continuum_ms, field=field,
-                                   phasecenter=(racen,deccen), spw=0,
-                                   pixscale=pixscale))
-    cellsize = ['{0}arcsec'.format(pixscale)] * 2
 
     for robust in (-2, 0, 2):
         imname = contimagename+"_robust{0}".format(robust)
