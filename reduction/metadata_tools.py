@@ -1,6 +1,7 @@
 import numpy as np
-from taskinit import msmdtool, casalog
+from taskinit import msmdtool, casalog, qatool
 msmd = msmdtool()
+qa = qatool()
 
 def logprint(string, origin='almaimf_metadata',
              priority='INFO'):
@@ -37,7 +38,7 @@ def get_indiv_phasecenter(ms, field):
 
     return mean_ra, mean_dec, csys
 
-def determine_phasecenter(ms, field):
+def determine_phasecenter(ms, field, formatted=False):
     """
     Identify the correct phasecenter for the MS (apparently, if you don't do
     this, the phase center is set to some random pointing in the mosaic)
@@ -53,11 +54,16 @@ def determine_phasecenter(ms, field):
     else:
         mean_ra, mean_dec, csys = get_indiv_phasecenter(ms, field)
 
-    logprint("Determined phasecenter is {0} {1} deg {2} deg".format(csys,
-                                                                    mean_ra*180/np.pi,
-                                                                    mean_dec*180/np.pi))
+    logprint("Determined phasecenter is {0} {1}deg {2}deg".format(csys,
+                                                                  mean_ra*180/np.pi,
+                                                                  mean_dec*180/np.pi))
 
-    return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
+    if formatted:
+        return "{0} {1} {2}".format(csys,
+                                    qa.angle({'value': mean_ra, 'unit': 'rad'}, form='tim')[0],
+                                    qa.angle({'value': mean_dec, 'unit': 'rad'})[0])
+    else:
+        return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
 

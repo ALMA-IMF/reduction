@@ -68,7 +68,7 @@ for band in to_image:
 
             print(vis)
             coosys,racen,deccen = determine_phasecenter(ms=vis, field=field)
-            phasecenter = "{0} {1} deg {2} deg".format(coosys, racen, deccen)
+            phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
             pixscale = 0.05
             imsize = list(determine_imsize(ms=vis, field=field,
                                            phasecenter=(racen,deccen), spw=0,
