@@ -42,16 +42,17 @@ for continuum_ms in continuum_mses:
 
     contimagename = os.path.join(imaging_root, basename) + "_" + suffix
 
-    # make a diagnostic plot to show the UV distribution
-    plotms(vis=continuum_ms,
-           xaxis='uvwave',
-           yaxis='amp',
-           avgchannel='1000', # minimum possible # of channels
-           plotfile=contimagename+".uvwave_vs_amp.png",
-           showlegend=True,
-           showgui=False,
-           antenna=antennae,
-          )
+    if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
+        # make a diagnostic plot to show the UV distribution
+        plotms(vis=continuum_ms,
+               xaxis='uvwave',
+               yaxis='amp',
+               avgchannel='1000', # minimum possible # of channels
+               plotfile=contimagename+".uvwave_vs_amp.png",
+               showlegend=True,
+               showgui=False,
+               antenna=antennae,
+              )
 
     coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
