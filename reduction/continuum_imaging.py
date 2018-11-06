@@ -90,3 +90,5 @@ for continuum_ms in continuum_mses:
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
+        else:
+            print("Skipping completed file {0}".format(imname))
