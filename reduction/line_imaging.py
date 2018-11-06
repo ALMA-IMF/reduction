@@ -19,10 +19,9 @@ You can set the following environmental variables for this script:
 
 import json
 import os
-import numpy as np
-from tasks import tclean, uvcontsub
+from tasks import tclean, uvcontsub, impbcor
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
-from metadata_tools import determine_imsize, determine_phasecenter
+from metadata_tools import determine_imsize, determine_phasecenter, is_7m
 
 from taskinit import msmdtool, iatool
 msmd = msmdtool()

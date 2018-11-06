@@ -1,6 +1,12 @@
 import numpy as np
-from taskinit import msmdtool, iatool
+from taskinit import msmdtool, casalog
 msmd = msmdtool()
+
+def logprint(string, origin='almaimf_metadata',
+             priority='INFO'):
+    print(string)
+    casalog.post(string, origin=origin, priority=priority)
+
 
 def is_7m(ms):
     """
@@ -18,6 +24,8 @@ def get_indiv_phasecenter(ms, field):
     """
     Get the phase center of an individual field in radians
     """
+    logprint("Determining phasecenter of individual {0}".format(ms))
+
     msmd.open(ms)
     field_matches = np.array([fld == field for fld in msmd.fieldnames()], dtype=bool)
     field_ids, = np.where(field_matches)
@@ -34,6 +42,7 @@ def determine_phasecenter(ms, field):
     Identify the correct phasecenter for the MS (apparently, if you don't do
     this, the phase center is set to some random pointing in the mosaic)
     """
+    logprint("Determining phasecenter of {0}".format(ms))
 
     if isinstance(ms, list):
         results = [get_indiv_phasecenter(vis, field) for vis in ms]
@@ -47,6 +56,8 @@ def determine_phasecenter(ms, field):
     return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
+
+    logprint("Determining imsize of individual {0}".format(ms))
 
     cen_ra, cen_dec = phasecenter
 
@@ -74,10 +85,12 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     dra,ddec = furthest_ra_pix_plus-furthest_ra_pix_minus, furthest_dec_pix_plus-furthest_dec_pix_minus
 
     # go to the next multiple of 20, since it will come up with _something_ when you do 6/5 or 5/4 * n
-    return dra-(dra%20)+20, ddec-(ddec%20)+20
+    return dra-(dra % 20)+20, ddec-(ddec % 20)+20
 
 
 def determine_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
+
+    logprint("Determining imsize of {0}".format(ms))
 
     if isinstance(ms, list):
         results = [get_indiv_imsize(vis, field, phasecenter, spw, pixscale) for vis in ms]
