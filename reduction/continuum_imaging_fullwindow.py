@@ -37,14 +37,12 @@ for band in to_image:
         # strip off .split
         basename = os.path.split(vis[0][:-6])[1]
 
-        field = basename.split("_")[0]
-
         if os.getenv('EXCLUDE_7M'):
             for ms in list(vis):
                 msmd.open(ms)
                 if any(['CM' in x for x in msmd.antennanames()]):
                     # exclude MSes with 7m data
-                    vis.pop(ms)
+                    vis.remove(ms)
                 msmd.close()
             suffix = '12M'
         else:

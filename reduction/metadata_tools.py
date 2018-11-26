@@ -74,6 +74,10 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     msmd.open(ms)
 
     field_matches = np.array([fld == field for fld in msmd.fieldnames()], dtype=bool)
+    if not any(field_matches):
+        raise ValueError("Did not find any matched for field {0}.  "
+                         "The valid field names are {1}."
+                         .format(field, msmd.fieldnames()))
     field_ids, = np.where(field_matches)
 
     first_scan_for_field = [msmd.scansforfield(fid)[0] for fid in field_ids]
