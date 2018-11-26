@@ -82,6 +82,11 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     logprint("Found field IDs {0} matching field name {1}."
              .format(field_ids, field))
 
+    # only use the field IDs that have associated scans
+    field_id_has_scans = np.array([len(msmd.scansforfield(fid)) > 0
+                                   for fid in field_ids], dtype='bool')
+
+
     first_scan_for_field = [msmd.scansforfield(fid)[0]
                             for fid in field_ids
                             if len(msmd.scansforfield(fid)) > 0
@@ -101,8 +106,9 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     primary_beam = 1.25 * freq/299792458.0 / antsize * 1.46
     pb_pix = primary_beam / pixscale
 
-    ptgctrs = [msmd.phasecenter(ii) for ii in field_ids]
-    furthest_ra_pix_plus = np.max([pc['m0']['value']*180/np.pi+pb_pix[ii]-cen_ra for ii,pc in enumerate(ptgctrs)])
+    ptgctrs = [msmd.phasecenter(ii) for ii in field_ids[field_id_has_scans]]
+    furthest_ra_pix_plus = np.max([pc['m0']['value']*180/np.pi+pb_pix[ii]-cen_ra
+                                   for ii,pc in enumerate(ptgctrs)])
     furthest_ra_pix_minus = np.min([pc['m0']['value']*180/np.pi-pb_pix[ii]-cen_ra for ii,pc in enumerate(ptgctrs)])
     furthest_dec_pix_plus = np.max([pc['m1']['value']*180/np.pi+pb_pix[ii]-cen_dec for ii,pc in enumerate(ptgctrs)])
     furthest_dec_pix_minus = np.min([pc['m1']['value']*180/np.pi-pb_pix[ii]-cen_dec for ii,pc in enumerate(ptgctrs)])
