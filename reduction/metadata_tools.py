@@ -79,13 +79,20 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
                          "The valid field names are {1}."
                          .format(field, msmd.fieldnames()))
     field_ids, = np.where(field_matches)
-    logprint("Found field IDs {0} matching field name {1}"
+    logprint("Found field IDs {0} matching field name {1}."
              .format(field_ids, field))
 
-    first_scan_for_field = [msmd.scansforfield(fid)[0] for fid in field_ids]
-    first_antid = [msmd.antennasforscan(scid)[0] for scid in first_scan_for_field]
+    first_scan_for_field = [msmd.scansforfield(fid)[0]
+                            for fid in field_ids
+                            if len(msmd.scansforfield(fid)) > 0
+                           ]
+    first_antid = [msmd.antennasforscan(scid)[0]
+                   for scid in first_scan_for_field
+                   if len(msmd.antennasforscan(scid)) > 0
+                  ]
 
-    antsize = np.array([msmd.antennadiameter(antid)['value'] for antid in first_antid]) # m
+    antsize = np.array([msmd.antennadiameter(antid)['value']
+                        for antid in first_antid]) # m
     # because we're working with line-split data, we assume the reffreq comes
     # from spw 0
     freq = msmd.reffreq(spw)['m0']['value'] # Hz
