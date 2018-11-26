@@ -79,6 +79,8 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
                          "The valid field names are {1}."
                          .format(field, msmd.fieldnames()))
     field_ids, = np.where(field_matches)
+    logprint("Found field IDs {0} matching field name {1}"
+             .format(field_ids, field))
 
     first_scan_for_field = [msmd.scansforfield(fid)[0] for fid in field_ids]
     first_antid = [msmd.antennasforscan(scid)[0] for scid in first_scan_for_field]
