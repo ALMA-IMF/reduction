@@ -28,7 +28,8 @@ def get_indiv_phasecenter(ms, field):
     logprint("Determining phasecenter of individual {0}".format(ms))
 
     msmd.open(ms)
-    field_matches = np.array([fld == field for fld in msmd.fieldnames()], dtype=bool)
+    field_matches = np.array([fld == field for fld in msmd.fieldnames()],
+                             dtype=bool)
     field_ids, = np.where(field_matches)
     ptgctrs = [msmd.phasecenter(ii) for ii in field_ids]
     mean_ra = np.mean([pc['m0']['value'] for pc in ptgctrs])
@@ -115,7 +116,8 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
 
     msmd.close()
 
-    dra,ddec = furthest_ra_pix_plus-furthest_ra_pix_minus, furthest_dec_pix_plus-furthest_dec_pix_minus
+    dra,ddec = (furthest_ra_pix_plus-furthest_ra_pix_minus,
+                furthest_dec_pix_plus-furthest_dec_pix_minus)
 
     # go to the next multiple of 20, since it will come up with _something_ when you do 6/5 or 5/4 * n
     return dra-(dra % 20)+20, ddec-(ddec % 20)+20
