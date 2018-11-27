@@ -9,7 +9,7 @@ You can set the following environmental variables for this script:
 """
 
 import os
-from metadata_tools import determine_imsize, determine_phasecenter
+from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from tasks import tclean, exportfits, plotms
 from taskinit import msmdtool
 msmd = msmdtool()
@@ -91,4 +91,4 @@ for continuum_ms in continuum_mses:
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
         else:
-            print("Skipping completed file {0}".format(imname))
+            logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')

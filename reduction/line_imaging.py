@@ -21,7 +21,7 @@ import json
 import os
 from tasks import tclean, uvcontsub, impbcor
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
-from metadata_tools import determine_imsize, determine_phasecenter, is_7m
+from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
 
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
@@ -66,7 +66,7 @@ for band in to_image:
                                                                            suffix))
 
 
-            print(vis)
+            logprint(str(vis), origin='almaimf_line_imaging')
             coosys,racen,deccen = determine_phasecenter(ms=vis, field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
             pixscale = 0.05
@@ -113,10 +113,12 @@ for band in to_image:
 
             # the threshold needs to be computed if any imaging is to be done
             # no .image file is produced, only a residual
+            logprint("Computing residual image statistics for {0}".format(lineimagename), origin='almaimf_line_imaging')
             ia.open(lineimagename+".residual")
             stats = ia.statistics(robust=True)
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
             threshold = "{0:0.4f}Jy".format(5*rms)
+            logprint("Threshold used = {0} = 5x{1}".format(threshold, rms), origin='almaimf_line_imaging')
             ia.close()
 
 
@@ -165,6 +167,7 @@ for band in to_image:
             contfile = os.path.join(path, '../calibration/cont.dat')
 
             cont_freq_selection = parse_contdotdat(contfile)
+            logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
 
             for vv in vis:
                 if not os.path.exists(vv+".contsub"):
@@ -204,3 +207,5 @@ for band in to_image:
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
+
+            logprint("Completed {0}".format(vis), origin='almaimf_line_imaging')

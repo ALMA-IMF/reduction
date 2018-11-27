@@ -32,10 +32,23 @@ def get_indiv_phasecenter(ms, field):
                              dtype=bool)
     field_ids, = np.where(field_matches)
     ptgctrs = [msmd.phasecenter(ii) for ii in field_ids]
-    mean_ra = np.mean([pc['m0']['value'] for pc in ptgctrs])
+
+    # apparently the default location is negative radians, but tclean only
+    # accepts positive degrees
+    # we therefore force the value to be 0 < r < 2pi
+    def zero_to_2pi(x):
+        while x < 0:
+            x = x + 2*np.pi
+        while x > 2*np.pi:
+            x = x - 2*np.pi
+        return x
+
+    mean_ra = np.mean([zero_to_2pi(pc['m0']['value']) for pc in ptgctrs])
     mean_dec = np.mean([pc['m1']['value'] for pc in ptgctrs])
     csys = ptgctrs[0]['refer']
     msmd.close()
+
+    logprint("Phasecenter of {0} is {1} {2} {3}".format(ms, mean_ra, mean_dec, csys))
 
     return mean_ra, mean_dec, csys
 
@@ -110,9 +123,12 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     ptgctrs = [msmd.phasecenter(ii) for ii in field_ids[field_id_has_scans]]
     furthest_ra_pix_plus = np.max([pc['m0']['value']*180/np.pi+pb_pix[ii]-cen_ra
                                    for ii,pc in enumerate(ptgctrs)])
-    furthest_ra_pix_minus = np.min([pc['m0']['value']*180/np.pi-pb_pix[ii]-cen_ra for ii,pc in enumerate(ptgctrs)])
-    furthest_dec_pix_plus = np.max([pc['m1']['value']*180/np.pi+pb_pix[ii]-cen_dec for ii,pc in enumerate(ptgctrs)])
-    furthest_dec_pix_minus = np.min([pc['m1']['value']*180/np.pi-pb_pix[ii]-cen_dec for ii,pc in enumerate(ptgctrs)])
+    furthest_ra_pix_minus = np.min([pc['m0']['value']*180/np.pi-pb_pix[ii]-cen_ra
+                                    for ii,pc in enumerate(ptgctrs)])
+    furthest_dec_pix_plus = np.max([pc['m1']['value']*180/np.pi+pb_pix[ii]-cen_dec
+                                    for ii,pc in enumerate(ptgctrs)])
+    furthest_dec_pix_minus = np.min([pc['m1']['value']*180/np.pi-pb_pix[ii]-cen_dec
+                                     for ii,pc in enumerate(ptgctrs)])
 
     msmd.close()
 
