@@ -1,7 +1,9 @@
 import numpy as np
+from casac import casac
 from taskinit import msmdtool, casalog, qatool
 msmd = msmdtool()
 qa = qatool()
+st = casac.synthesisutils()
 
 def logprint(string, origin='almaimf_metadata',
              priority='INFO'):
@@ -161,12 +163,17 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
                 furthest_dec_pix_plus-furthest_dec_pix_minus)
 
     # go to the next multiple of 20, since it will come up with _something_ when you do 6/5 or 5/4 * n
-    imsize = dra-(dra % 20)+20, ddec-(ddec % 20)+20
+    # EDIT: instead, we'll use the st.getOptimumSize tool below
+    #imsize = dra-(dra % 20)+20, ddec-(ddec % 20)+20
+    imsize = int(dra), int(ddec)
 
     logprint("Determined imsize of individual ms {0} = {1} at center {2}"
              .format(ms, imsize, phasecenter))
 
-    return imsize
+    imsize_corrected = [st.getOptimumSize(x) for x in imsize]
+    logprint("Optimized imsize is {0}".format(imsize_corrected))
+
+    return imsize_corrected
 
 
 def determine_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
