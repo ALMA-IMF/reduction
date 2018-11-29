@@ -53,12 +53,12 @@ for band in to_image:
         # never breaks down, though.
         coosys,racen,deccen = determine_phasecenter(ms=vis[0], field=field)
         phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-        pixscale = 0.05
         # similarly, we should only need to determine the imsize for one MS
-        imsize = list(determine_imsize(ms=vis[0], field=field,
-                                       phasecenter=(racen,deccen), spw=0,
-                                       pixscale=pixscale))
-        cellsize = ['{0}arcsec'.format(pixscale)] * 2
+        (dra,ddec,pixscale) = list(determine_imsize(ms=vis[0], field=field,
+                                                    phasecenter=(racen,deccen),
+                                                    spw=0, pixfraction_of_fwhm=1/4.))
+        imsize = (dra, ddec)
+        cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
         contimagename = os.path.join(imaging_root, basename) + "_" + suffix
 

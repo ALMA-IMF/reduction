@@ -211,18 +211,21 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     return imsize_corrected[0], imsize_corrected[1], pixscale_as
 
 
-def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.):
+def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **kwargs):
 
     logprint("Determining imsize of {0}".format(ms))
 
     if isinstance(ms, list):
-        results = [get_indiv_imsize(vis, field, phasecenter, spw, pixfraction_of_fwhm) for vis in ms]
+        results = [get_indiv_imsize(vis, field, phasecenter, spw,
+                                    pixfraction_of_fwhm, **kwargs)
+                   for vis in ms]
 
         dra = np.max([ra for ra, dec, pixscale in results])
         ddec = np.max([dec for ra, dec, pixscale in results])
         pixscale = np.min([pixscale for ra, dec, pixscale in results])
     else:
-        dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw, pixfraction_of_fwhm)
+        dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
+                                             pixfraction_of_fwhm, **kwargs)
 
     logprint("Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
 

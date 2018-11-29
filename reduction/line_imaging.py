@@ -69,11 +69,13 @@ for band in to_image:
             logprint(str(vis), origin='almaimf_line_imaging')
             coosys,racen,deccen = determine_phasecenter(ms=vis, field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            pixscale = 0.05
-            imsize = list(determine_imsize(ms=vis, field=field,
-                                           phasecenter=(racen,deccen), spw=0,
-                                           pixscale=pixscale))
-            cellsize = ['{0}arcsec'.format(pixscale)] * 2
+            (dra,ddec,pixscale) = list(determine_imsize(ms=vis[0], field=field,
+                                                        phasecenter=(racen,deccen),
+                                                        spw=0, pixfraction_of_fwhm=1/3.,
+                                                        min_pixscale=0.1, # arcsec
+                                                       ))
+            imsize = (dra, ddec)
+            cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
             dirty_tclean_made_residual = False
 
