@@ -21,6 +21,17 @@ def is_7m(ms):
     else:
         return False
 
+# apparently the default location is negative radians, but tclean only
+# accepts positive degrees
+# we therefore force the value to be 0 < r < 2pi
+def zero_to_2pi(x):
+    while x < 0:
+        x = x + 2*np.pi
+    while x > 2*np.pi:
+        x = x - 2*np.pi
+    return x
+
+
 def get_indiv_phasecenter(ms, field):
     """
     Get the phase center of an individual field in radians
@@ -31,17 +42,12 @@ def get_indiv_phasecenter(ms, field):
     field_matches = np.array([fld == field for fld in msmd.fieldnames()],
                              dtype=bool)
     field_ids, = np.where(field_matches)
-    ptgctrs = [msmd.phasecenter(ii) for ii in field_ids]
 
-    # apparently the default location is negative radians, but tclean only
-    # accepts positive degrees
-    # we therefore force the value to be 0 < r < 2pi
-    def zero_to_2pi(x):
-        while x < 0:
-            x = x + 2*np.pi
-        while x > 2*np.pi:
-            x = x - 2*np.pi
-        return x
+    # only use the field IDs that have associated scans
+    field_id_has_scans = np.array([len(msmd.scansforfield(fid)) > 0
+                                   for fid in field_ids], dtype='bool')
+
+    ptgctrs = [msmd.phasecenter(ii) for ii in field_ids[field_id_has_scans]]
 
     mean_ra = np.mean([zero_to_2pi(pc['m0']['value']) for pc in ptgctrs])
     mean_dec = np.mean([pc['m1']['value'] for pc in ptgctrs])
@@ -51,6 +57,7 @@ def get_indiv_phasecenter(ms, field):
     logprint("Phasecenter of {0} is {1} {2} {3}".format(ms, mean_ra, mean_dec, csys))
 
     return mean_ra, mean_dec, csys
+
 
 def determine_phasecenter(ms, field, formatted=False):
     """
@@ -81,7 +88,7 @@ def determine_phasecenter(ms, field, formatted=False):
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
 
-    logprint("Determining imsize of individual {0}".format(ms))
+    logprint("Determining imsize of individual ms {0}".format(ms))
 
     cen_ra, cen_dec = phasecenter
 
@@ -100,10 +107,14 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     field_id_has_scans = np.array([len(msmd.scansforfield(fid)) > 0
                                    for fid in field_ids], dtype='bool')
 
+    noscans = field_ids[~field_id_has_scans]
+    if any(~field_id_has_scans):
+        logprint("Found *scanless* field IDs {0} matching field name {1}."
+                 .format(noscans, field))
 
     first_scan_for_field = [msmd.scansforfield(fid)[0]
-                            for fid in field_ids
-                            if len(msmd.scansforfield(fid)) > 0
+                            for fid,fid_ok in zip(field_ids, field_id_has_scans)
+                            if fid_ok
                            ]
     first_antid = [msmd.antennasforscan(scid)[0]
                    for scid in first_scan_for_field
@@ -120,15 +131,29 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     primary_beam = 1.25 * freq/299792458.0 / antsize * 1.46
     pb_pix = primary_beam / pixscale
 
+
+    def r2d(x):
+        return x * 180 / np.pi
+
     ptgctrs = [msmd.phasecenter(ii) for ii in field_ids[field_id_has_scans]]
-    furthest_ra_pix_plus = np.max([pc['m0']['value']*180/np.pi+pb_pix[ii]-cen_ra
-                                   for ii,pc in enumerate(ptgctrs)])
-    furthest_ra_pix_minus = np.min([pc['m0']['value']*180/np.pi-pb_pix[ii]-cen_ra
-                                    for ii,pc in enumerate(ptgctrs)])
-    furthest_dec_pix_plus = np.max([pc['m1']['value']*180/np.pi+pb_pix[ii]-cen_dec
-                                    for ii,pc in enumerate(ptgctrs)])
-    furthest_dec_pix_minus = np.min([pc['m1']['value']*180/np.pi-pb_pix[ii]-cen_dec
-                                     for ii,pc in enumerate(ptgctrs)])
+
+    ptgctrs_ra_deg, ptgctrs_dec_deg = (np.array([r2d(zero_to_2pi(pc['m0']['value'])) for pc in ptgctrs]),
+                                       np.array([r2d(pc['m1']['value']) for pc in ptgctrs]))
+    pix_centers_ra = (ptgctrs_ra_deg - cen_ra) / (pixscale / 3600)
+    pix_centers_dec = (ptgctrs_dec_deg - cen_dec) / (pixscale / 3600)
+
+    furthest_ra_pix_plus = (pix_centers_ra+pb_pix).max()
+    furthest_ra_pix_minus = (pix_centers_ra-pb_pix).min()
+    furthest_dec_pix_plus = (pix_centers_dec+pb_pix).max()
+    furthest_dec_pix_minus = (pix_centers_dec-pb_pix).min()
+
+    logprint("RA/Dec degree centers and pixel centers of pointings are \n{0}\nand\n{1}"
+             .format(list(zip(ptgctrs_ra_deg, ptgctrs_dec_deg)),
+                     list(zip(pix_centers_ra, pix_centers_dec))))
+    logprint("Furthest RA pixels from center are {0},{1}"
+             .format(furthest_ra_pix_minus, furthest_ra_pix_plus))
+    logprint("Furthest Dec pixels from center are {0},{1}"
+             .format(furthest_dec_pix_minus, furthest_dec_pix_plus))
 
     msmd.close()
 
@@ -136,7 +161,12 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
                 furthest_dec_pix_plus-furthest_dec_pix_minus)
 
     # go to the next multiple of 20, since it will come up with _something_ when you do 6/5 or 5/4 * n
-    return dra-(dra % 20)+20, ddec-(ddec % 20)+20
+    imsize = dra-(dra % 20)+20, ddec-(ddec % 20)+20
+
+    logprint("Determined imsize of individual ms {0} = {1} at center {2}"
+             .format(ms, imsize, phasecenter))
+
+    return imsize
 
 
 def determine_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
