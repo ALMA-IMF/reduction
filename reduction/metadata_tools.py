@@ -1,9 +1,10 @@
 import numpy as np
 from casac import casac
-from taskinit import msmdtool, casalog, qatool
+from taskinit import msmdtool, casalog, qatool, tbtool
 msmd = msmdtool()
 qa = qatool()
 st = casac.synthesisutils()
+tb = tbtool()
 
 def logprint(string, origin='almaimf_metadata',
              priority='INFO'):
@@ -88,7 +89,14 @@ def determine_phasecenter(ms, field, formatted=False):
     else:
         return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
-def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
+def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
+                     min_pixscale=0.05):
+    """
+    Parameters
+    ----------
+    min_pixscale : float
+        Minimum allowed pixel scale in arcsec
+    """
 
     logprint("Determining imsize of individual ms {0}".format(ms))
 
@@ -123,15 +131,42 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
                    if len(msmd.antennasforscan(scid)) > 0
                   ]
 
+    # compute baselines to determine synth beamsize
+    tb.open(ms+"/ANTENNA")
+    positions = tb.getcol('POSITION')
+    tb.close()
+
+    # note that for concatenated MSes, this includes baselines that don't exist
+    baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
+    max_baseline = baseline_lengths.max()
+
     antsize = np.array([msmd.antennadiameter(antid)['value']
                         for antid in first_antid]) # m
     # because we're working with line-split data, we assume the reffreq comes
     # from spw 0
     freq = msmd.reffreq(spw)['m0']['value'] # Hz
+    wavelength = 299792458.0/freq # m
     # go a little past the first null in each direction
-    # 1.46 is empirically determined from eyeballing one case
-    primary_beam = 1.25 * freq/299792458.0 / antsize * 1.46
-    pb_pix = primary_beam / pixscale
+    # (radians)
+    primary_beam_fwhm = 1.22 * wavelength / antsize
+
+    # synthesized beam minimum size (max_baseline in m)
+    synthbeam_minsize_fwhm = 1.22 * wavelength / max_baseline
+    # (radians)
+    pixscale = pixfraction_of_fwhm * synthbeam_minsize_fwhm
+
+    # round to nearest 0.01"
+    if pixscale > 0.01/206265.:
+        pixscale_as = np.floor((pixscale * 180/np.pi * 3600 * 100) % 100) / 100
+        if pixscale_as < min_pixscale:
+            pixscale_as = min_pixscale
+        else:
+            pixscale = pixscale_as * np.pi / 3600 / 180
+        logprint("Pixel scale = {0} rad = {1} \" ".format(pixscale, pixscale_as))
+    else:
+        raise ValueError("Pixel scale was {0}\", too small".format(pixscale*206265))
+
+    pb_pix = primary_beam_fwhm / pixscale
 
 
     def r2d(x):
@@ -141,8 +176,8 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
 
     ptgctrs_ra_deg, ptgctrs_dec_deg = (np.array([r2d(zero_to_2pi(pc['m0']['value'])) for pc in ptgctrs]),
                                        np.array([r2d(pc['m1']['value']) for pc in ptgctrs]))
-    pix_centers_ra = (ptgctrs_ra_deg - cen_ra) / (pixscale / 3600)
-    pix_centers_dec = (ptgctrs_dec_deg - cen_dec) / (pixscale / 3600)
+    pix_centers_ra = (ptgctrs_ra_deg - cen_ra) / r2d(pixscale)
+    pix_centers_dec = (ptgctrs_dec_deg - cen_dec) / r2d(pixscale)
 
     furthest_ra_pix_plus = (pix_centers_ra+pb_pix).max()
     furthest_ra_pix_minus = (pix_centers_ra-pb_pix).min()
@@ -173,21 +208,22 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
     imsize_corrected = [st.getOptimumSize(x) for x in imsize]
     logprint("Optimized imsize is {0}".format(imsize_corrected))
 
-    return imsize_corrected
+    return imsize_corrected[0], imsize_corrected[1], pixscale_as
 
 
-def determine_imsize(ms, field, phasecenter, spw=0, pixscale=0.05):
+def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.):
 
     logprint("Determining imsize of {0}".format(ms))
 
     if isinstance(ms, list):
-        results = [get_indiv_imsize(vis, field, phasecenter, spw, pixscale) for vis in ms]
+        results = [get_indiv_imsize(vis, field, phasecenter, spw, pixfraction_of_fwhm) for vis in ms]
 
-        dra = np.max([ra for ra, dec in results])
-        ddec = np.max([dec for ra, dec in results])
+        dra = np.max([ra for ra, dec, pixscale in results])
+        ddec = np.max([dec for ra, dec, pixscale in results])
+        pixscale = np.min([pixscale for ra, dec, pixscale in results])
     else:
-        dra,ddec = get_indiv_imsize(ms, field, phasecenter, spw, pixscale)
+        dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw, pixfraction_of_fwhm)
 
-    logprint("Determined imsize is {0},{1}".format(dra,ddec))
+    logprint("Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
 
-    return int(dra), int(ddec)
+    return int(dra), int(ddec), pixscale

@@ -41,11 +41,11 @@ for continuum_ms in continuum_mses:
 
     coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-    pixscale = 0.05
-    imsize = list(determine_imsize(ms=continuum_ms, field=field,
-                                   phasecenter=(racen,deccen), spw=0,
-                                   pixscale=pixscale))
-    cellsize = ['{0}arcsec'.format(pixscale)] * 2
+    (dra,ddec,pixscale) = list(determine_imsize(ms=continuum_ms, field=field,
+                                                phasecenter=(racen,deccen),
+                                                spw=0, pixfraction_of_fwhm=1/4.))
+    imsize = (dra, ddec)
+    cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
     contimagename = os.path.join(imaging_root, basename) + "_" + suffix
 
