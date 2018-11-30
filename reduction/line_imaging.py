@@ -74,7 +74,7 @@ for band in to_image:
                                                         spw=0, pixfraction_of_fwhm=1/3.,
                                                         min_pixscale=0.1, # arcsec
                                                        ))
-            imsize = (dra, ddec)
+            imsize = [dra, ddec]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
             dirty_tclean_made_residual = False
