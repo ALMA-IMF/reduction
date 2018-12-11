@@ -20,6 +20,9 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
+if 'exclude_7m' not in locals():
+    exclude_7m = bool(os.getenv('EXCLUDE_7M'))
+
 # load the list of line MSes from a file
 # these are all of the individually split windows,.....
 with open('to_image.json', 'r') as fh:
@@ -37,7 +40,7 @@ for band in to_image:
         # strip off .split
         basename = os.path.split(vis[0][:-6])[1]
 
-        if os.getenv('EXCLUDE_7M'):
+        if exclude_7m:
             for ms in list(vis):
                 msmd.open(ms)
                 if any(['CM' in x for x in msmd.antennanames()]):

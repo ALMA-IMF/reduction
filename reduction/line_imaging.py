@@ -40,6 +40,8 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
+if 'exclude_7m' not in locals():
+    exclude_7m = bool(os.getenv('EXCLUDE_7M'))
 
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in:
@@ -53,7 +55,7 @@ for band in to_image:
             vis = list(map(str, to_image[band][field][spw]))
 
 
-            if os.getenv('EXCLUDE_7M'):
+            if exclude_7m:
                 vis = [ms for ms in vis if not(is_7m(ms))]
                 suffix = '12M'
             else:

@@ -18,6 +18,9 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
+if 'exclude_7m' not in locals():
+    exclude_7m = bool(os.getenv('EXCLUDE_7M'))
+
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
 with open('continuum_mses.txt', 'r') as fh:
@@ -30,7 +33,7 @@ for continuum_ms in continuum_mses:
 
     field = basename.split("_")[0]
 
-    if os.getenv('EXCLUDE_7M'):
+    if exclude_7m:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
