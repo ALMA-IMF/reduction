@@ -25,7 +25,7 @@
 
 3.) In CASA:
 	import sys
-	sys.path.append(./)
+	sys.path.append('.')
 	execfile 'split_windows.py' 
 		=> by default, this will give you all the spws and 
 		   continuum ms files for imaging with the 7m dataset included
