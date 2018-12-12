@@ -40,7 +40,7 @@
 At the end: you should find 6 images in the ./imaging_results directory.
 
 
-Note: If you image first the 12m+7m dataset together (i.e. you do not set the exclude_7m variable), and then you want to image only the 12m dataset, you need to first step the exclude_7m variable and then execute the split_windows.py again!
+Note: If you image first the 12m+7m dataset together (i.e. you do not set the exclude_7m variable), and then you want to image only the 12m dataset, you need to first step the exclude_7m variable and then execute continuum_imaging_both.py again!  (you do not need to re-run split_windows.py)
 
 *: the total bandwidth in B6 is: 1875+2*468.75+3*234.38+2*117.19 MHz = 3750.02 MHz. What we currently use is: 1875+468.75 = 2343.75 MHz. Including all the spws would therefore only allow us to gain ~25% more in sensitivity, while it would include potentially strong lines.
 
