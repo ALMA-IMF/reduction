@@ -129,7 +129,6 @@ for continuum_ms in continuum_mses:
 
                 print continuum_ms_all
 
-                for robust in [0]:
         for robust in (-2, 0, 2):
                     imname = contimagename+"_robust{0}".format(robust)+"_bsens"
                     print ("Im",imname)
