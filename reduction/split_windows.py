@@ -200,7 +200,12 @@ for band in bands:
                 freqs = {}
                 for spw in spws:
                     chwid = np.abs(np.mean(msmd.chanwidths(spw)))
-                    widths.append(int(targetwidth/chwid))
+                    wid = int(targetwidth/chwid)
+                    if wid <= 0:
+                        raise ValueError("The channel width is greater than "
+                                         "the target line width for spw {0} "
+                                         "in ms {1}".format(spw, visfile))
+                    widths.append(wid)
                     freqs[spw] = msmd.chanfreqs(spw)
 
                 linechannels = contchannels_to_linechannels(cont_channel_selection,
