@@ -5,7 +5,7 @@ by ``split_windows.py``.
 
 You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>
-        If this parameter is set (to anything), the 7m data will not be
+        If this parameter is set to "true", the 7m data will not be
         included in the images if they are present.
 """
 
@@ -21,7 +21,10 @@ if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
 if 'exclude_7m' not in locals():
-    exclude_7m = bool(os.getenv('EXCLUDE_7M'))
+    if os.getenv('EXCLUDE_7M') is not None:
+        exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
+    else:
+        exclude_7m = False
 
 # load the list of line MSes from a file
 # these are all of the individually split windows,.....
@@ -29,6 +32,11 @@ with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
 
 for band in to_image:
+
+    logprint("Imaging fields {0} in band {1}".format(to_image[band].keys(),
+                                                     band),
+             origin='almaimf_fullcont_imaging')
+
     for field in to_image[band]:
         # get all spectral windows for a given band (B3 or B6) for a specified
         # field.  These were split to allow for individual line imaging.
@@ -37,10 +45,15 @@ for band in to_image:
                              for x in to_image[band][field][spw]
                             ]))
 
+        logprint("Will image MSes: \n{0}".format("\n".join(vis)),
+                 origin='almaimf_fullcont_imaging')
+
         # strip off .split
         basename = os.path.split(vis[0][:-6])[1]
 
         if exclude_7m:
+            logprint("Excluding 7M antennae",
+                     origin='almaimf_fullcont_imaging')
             for ms in list(vis):
                 msmd.open(ms)
                 if any(['CM' in x for x in msmd.antennanames()]):
@@ -49,6 +62,8 @@ for band in to_image:
                 msmd.close()
             suffix = '12M'
         else:
+            logprint("Including 7M antennae",
+                     origin='almaimf_fullcont_imaging')
             suffix = '7M12M'
 
         # only need to determine the phasecenter for 1 ms, under the assumption

@@ -41,7 +41,10 @@ if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
 if 'exclude_7m' not in locals():
-    exclude_7m = bool(os.getenv('EXCLUDE_7M'))
+    if os.getenv('EXCLUDE_7M') is not None:
+        exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
+    else:
+        exclude_7m = False
 
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in:
