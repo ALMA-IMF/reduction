@@ -21,6 +21,8 @@ if not os.path.exists(imaging_root):
 
 if 'exclude_7m' not in locals():
     exclude_7m=bool(os.getenv('exclude_7m'))
+
+print exclude_7m
     
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
@@ -34,7 +36,7 @@ for continuum_ms in continuum_mses:
 
     field = basename.split("_")[0]
 
-    if 'exclude_7m': 
+    if exclude_7m==True: 
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
@@ -92,7 +94,8 @@ for continuum_ms in continuum_mses:
                    # negativethreshold=0.0,
                    # noisethreshold=3.0,lownoisethreshold=0.5,
                    # usemask='auto-multithresh',
-                   interactive=True,
+                   usemask='pb',
+                   interactive=False,#True,
                    cell=cellsize,
                    imsize=imsize,
                    weighting='briggs',
@@ -118,22 +121,37 @@ for continuum_ms in continuum_mses:
     
         for band in to_image:
             for field in to_image[band]:
+                # Used for debugging
+                #print band, field
+                
                 if band == 'B3':
                     continuum_ms_all=list(map(str,to_image[band][field]['1']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['2'])))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['3'])))
 
+                    
                 if band == 'B6':
                     continuum_ms_all=list(map(str,to_image[band][field]['7']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['6'])))
 
                 print continuum_ms_all
 
-        for robust in (-2, 0, 2):
+                if exclude_7m==True:
+                    os.system("rm -rf tmp.ms")
+                    concat(vis=continuum_ms_all,concatvis='tmp.ms')
+                    msmd.open('tmp.ms')
+                    antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
+                    msmd.close()
+                else:
+                    antennae = ""
+                
+
+                print antennae
+                for robust in (-2, 0, 2):
                     imname = contimagename+"_robust{0}".format(robust)+"_bsens"
-                    print ("Im",imname)
+                    print ("Im",imname,continuum_ms_all)
                     if not os.path.exists(imname+".image.tt0"):
-                        tclean(vis=continuum_ms_all,
+                        tclean(vis="tmp.ms",#continuum_ms_all,
                           field=field.encode(),
                           imagename=imname,
                           gridder='mosaic',
@@ -159,7 +177,7 @@ for continuum_ms in continuum_mses:
                           weighting='briggs',
                           robust=robust,
                           pbcor=True,
-                          #antenna=antennae,
+                          antenna=antennae,
                           pblimit=0.1
                         )
 
