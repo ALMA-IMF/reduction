@@ -26,6 +26,13 @@ def contchannels_to_linechannels(contsel, freqslist):
     freqslist : dict
         A dictionary of frequency arrays, where the key is the spectral window
         number and the value is a numpy array of frequencies
+
+    Returns
+    -------
+    channel_selection : str
+        A comma-separated string listing the *channels* corresponding to lines.
+        Each section will be labeled by the appropriate SPW.  For example, you
+        might get: "0:1~15;30~40,1:5~10,15~20"
     """
 
     new_sel = []
