@@ -27,11 +27,13 @@ import numpy as np
 
 from taskinit import casalog
 from taskinit import msmdtool
+from taskinit import mstool
 from tasks import split, flagmanager, flagdata, rmtables, concat
 
 from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels
 
 msmd = msmdtool()
+ms = mstool()
 
 # band name : frequency range (GHz)
 bands = {'B3': (80, 110),
@@ -195,6 +197,7 @@ for band in bands:
 
                 # determine target widths
                 msmd.open(visfile)
+                ms.open(visfile)
                 targetwidth = 10e6 # 10 MHz
                 widths = []
                 freqs = {}
@@ -206,12 +209,14 @@ for band in bands:
                                          "the target line width for spw {0} "
                                          "in ms {1}".format(spw, visfile))
                     widths.append(wid)
-                    freqs[spw] = msmd.chanfreqs(spw)
+                    # these are TOPO freqs: freqs[spw] = msmd.chanfreqs(spw)
+                    freqs[spw] = ms.cvelfreqs(spwid=[spw], outframe='LSRK')
 
                 linechannels = contchannels_to_linechannels(cont_channel_selection,
                                                             freqs)
 
                 msmd.close()
+                ms.close()
 
                 flagmanager(vis=visfile, mode='save',
                             versionname='before_cont_flags')
