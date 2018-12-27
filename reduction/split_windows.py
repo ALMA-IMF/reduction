@@ -62,8 +62,12 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             frq0 = msmd.chanfreqs(0)
             for bb,(lo, hi) in bands.items():
-                if lo*1e9 < frq0 and hi*1e9 > frq0:
-                    band = bb
+                try:
+                    if lo*1e9 < frq0 and hi*1e9 > frq0:
+                        band = bb
+                except ValueError:
+                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
+                        band = bb
 
             spws = msmd.spwsforfield(field)
 
