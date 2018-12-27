@@ -214,7 +214,10 @@ for band in bands:
                                          "in ms {1}".format(spw, visfile))
                     widths.append(wid)
                     # these are TOPO freqs: freqs[spw] = msmd.chanfreqs(spw)
-                    freqs[spw] = ms.cvelfreqs(spwid=[spw], outframe='LSRK')
+                    try:
+                        freqs[spw] = ms.cvelfreqs(spwid=[spw], outframe='LSRK')
+                    except TypeError:
+                        freqs[spw] = ms.cvelfreqs(spwids=[spw], outframe='LSRK')
 
                 linechannels = contchannels_to_linechannels(cont_channel_selection,
                                                             freqs)
