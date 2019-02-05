@@ -1,3 +1,8 @@
+"""
+I don't remember what I originally made this for, but it is a nice proof that
+we _will_ see high multiplicity on smaller scales than the ALMA-IMF data
+provide.
+"""
 import numpy as np
 from astropy.table import Table
 from astropy import units as u
@@ -288,5 +293,6 @@ if __name__ == "__main__":
                                                        unit=(u.hour, u.deg),),
                            )
     figure.savefig('W51e2_zoomin.pdf', bbox_inches='tight', dpi=300)
+    figure.savefig('W51e2_zoomin.png', bbox_inches='tight', dpi=300)
 
 
