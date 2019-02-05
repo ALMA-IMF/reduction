@@ -62,8 +62,12 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             frq0 = msmd.chanfreqs(0)
             for bb,(lo, hi) in bands.items():
-                if lo*1e9 < frq0 and hi*1e9 > frq0:
-                    band = bb
+                try:
+                    if lo*1e9 < frq0 and hi*1e9 > frq0:
+                        band = bb
+                except ValueError:
+                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
+                        band = bb
 
             spws = msmd.spwsforfield(field)
 
@@ -210,7 +214,10 @@ for band in bands:
                                          "in ms {1}".format(spw, visfile))
                     widths.append(wid)
                     # these are TOPO freqs: freqs[spw] = msmd.chanfreqs(spw)
-                    freqs[spw] = ms.cvelfreqs(spwid=[spw], outframe='LSRK')
+                    try:
+                        freqs[spw] = ms.cvelfreqs(spwid=[spw], outframe='LSRK')
+                    except TypeError:
+                        freqs[spw] = ms.cvelfreqs(spwids=[spw], outframe='LSRK')
 
                 linechannels = contchannels_to_linechannels(cont_channel_selection,
                                                             freqs)
