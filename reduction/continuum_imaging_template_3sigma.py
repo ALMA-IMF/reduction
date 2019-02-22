@@ -24,10 +24,10 @@ if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
 if 'exclude_7m' not in locals():
-    exclude_7m=bool(os.getenv('exclude_7m'))
+    exclude_7m = bool(os.getenv('exclude_7m'))
 
-print exclude_7m
-    
+print("exclude_7m={0}".format(exclude_7m))
+
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
 with open('continuum_mses.txt', 'r') as fh:
@@ -40,7 +40,7 @@ for continuum_ms in continuum_mses:
 
     field = basename.split("_")[0]
 
-    if exclude_7m==True: 
+    if exclude_7m:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
@@ -72,7 +72,7 @@ for continuum_ms in continuum_mses:
               )
 
 # ----------------------------------------------
-# CLEAN FOR THE 'CLEANEST' CONTINUUM:        
+# CLEAN FOR THE 'CLEANEST' CONTINUUM:
 
     for robust in (-2, 0, 2):
         imname = contimagename+"_robust{0}".format(robust)+"_cleanest"
@@ -108,53 +108,53 @@ for continuum_ms in continuum_mses:
                    antenna=antennae,
                    pblimit=0.1
                   )
-            
+
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
-            
+
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
 
-    logprint ("Cleanest continuum images done.")    
+    logprint("Cleanest continuum images done.")
     # ----------------------------------------------
-    # CLEAN FOR THE BEST SENSITIVITY CONTINUUM:        
+    # CLEAN FOR THE BEST SENSITIVITY CONTINUUM:
 
     # Using here the splitted spw for line imaging:
     # For B3: only spw 1,2,3 is used (spw 0 is for N2H+ J=1-0)
-    # For B6: only spw 6,7 is used 
+    # For B6: only spw 6,7 is used
 
     with open('to_image.json', 'r') as fh:
         to_image = json.load(fh)
-    
+
     for band in to_image:
             for field in to_image[band]:
                 # Used for debugging
                 #print band, field
-                
+
                 if band == 'B3':
                     continuum_ms_all=list(map(str,to_image[band][field]['1']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['2'])))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['3'])))
 
-                    
+
                 if band == 'B6':
                     continuum_ms_all=list(map(str,to_image[band][field]['7']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['6'])))
 
-                print continuum_ms_all
+                print("continuum_ms_all={0}".format(continuum_ms_all))
                 os.system("rm -rf tmp.ms")
                 concat(vis=continuum_ms_all,concatvis='tmp.ms')
 
-                if exclude_7m==True:
+                if exclude_7m:
                     msmd.open('tmp.ms')
                     antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
                     msmd.close()
                 else:
                     antennae = ""
-                
 
-                print antennae
+
+                print("antennae: {0}".format(antennae))
                 for robust in (-2, 0, 2):
                     imname_base = contimagename+"_robust{0}".format(robust)+"_bsens"
-                    print ("Im",imname,continuum_ms_all)
+                    print("Im",imname,continuum_ms_all)
                     # First create dirty image to check rms
                     # And estimate cleaning threshold
                     imname = imname_base+"_dirty"
@@ -179,12 +179,12 @@ for continuum_ms in continuum_mses:
                           pbcor=False,
                           antenna=antennae,
                           pblimit=0.1)
-                       
+
                        exportfits(imname+".image.tt0", imname+".image.tt0.fits",overwrite=True)
-                       
+
                     else:
                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
-                        
+
                     # Get noise statistics:
                     threshold1 = 8*imstat(imname+".image.tt0")['rms']
                     box=",".join(map(str,[imsize[0]*0.7,imsize[1]*0.7,imsize[0]*0.8,imsize[1]*0.8]))
@@ -216,13 +216,13 @@ for continuum_ms in continuum_mses:
                           antenna=antennae,
                           pblimit=0.1
                         )
-                        
+
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
-                        
+
                     else:
                         logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
-                       
-                        
+
+
                     # Second iteration: clean down to 3*rms using the 3*rms mask
 
                     cleanimage = imname+".image.tt0"
@@ -261,11 +261,9 @@ for continuum_ms in continuum_mses:
                           antenna=antennae,
                           pblimit=0.1
                         )
-                        
+
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
-                        
+
                         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
                     else:
                         logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
-                       
-                   
