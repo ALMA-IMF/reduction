@@ -11,7 +11,7 @@ Instructions:
     including the .ms.split.cal files.
 
 REQUIREMENTS:
-    
+
     This is the tricky part.  You need astroquery installed.  In principle,
     this is straightforward, but there may be significant 'gotchas' along the
     way.
@@ -23,7 +23,7 @@ REQUIREMENTS:
     (2) now quit CASA, then reopen it
         >>> import pip
         >>> pip.main(['install', 'astroquery', '--user'])
-    (3) now quit CASA, reopen it again.  
+    (3) now quit CASA, reopen it again.
     (3)a If CASA loads, try:
         >>> import astroquery
         >>> import keyring
@@ -106,32 +106,32 @@ for dirpath, dirnames, filenames in os.walk('.'):
 #     for fn in dirnames:
 #         if fn[-10:] == ".split.cal":
 #             mspath = os.path.join(dirpath, fn)
-# 
+#
 #             msmd.open(mspath)
 #             fieldnames = np.array(msmd.fieldnames())
 #             field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
 #             assert len(np.unique(field)) == 1
 #             field = field[0]
 #             msmd.close()
-# 
+#
 #             if not os.path.exists(field):
 #                 os.mkdir(field)
-# 
+#
 #             os.symlink(mspath, field)
 #         elif fn in ("cont.dat", ):
-# 
+#
 #             with open(os.path.join(dirpath, "cont.dat"), 'r') as fh:
 #                 firstline = fh.readline()
-# 
+#
 #             field = firstline.strip().split()[-1]
-# 
+#
 #             if not os.path.exists(field):
 #                 os.mkdir(field)
-# 
+#
 #             for fn in ("cont.dat", "flux.csv", "antennapos.csv"):
 #                 fpath = os.path.join(dirpath, fn)
 #                 uid = dirpath.split(".")[-1].split("/")[0]
-# 
+#
 #                 os.symlink(fpath, os.path.join(field, uid+"_"+fn))
 
 

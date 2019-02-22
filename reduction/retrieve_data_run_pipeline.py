@@ -34,8 +34,8 @@ REQUIREMENTS:
         >>> from setuptools.command import easy_install
         >>> easy_install.main(['--user', 'pip'])
     (2) now quit CASA, then reopen it
-        >>> import pip
-        >>> pip.main(['install', 'astroquery', '--user'])
+        >>> import subprocess, sys
+        >>> subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'astroquery', 'keyring', '--user'])
     (3) now quit CASA, reopen it again.
     (3)a If CASA loads, try:
         >>> import astroquery
@@ -51,8 +51,8 @@ MORE NOTES:
 
     If you run the script and get an error about keyring, try:
 
-        >>> import pip
-        >>> pip.main(['install', 'keyrings.alt', '--user'])
+        >>> import subprocess, sys
+        >>> subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'keyrings.alt', '--user'])
 
     and try again.
 
