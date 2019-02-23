@@ -15,6 +15,8 @@ You can set the following environmental variables for this script:
     FIELD_ID=<name>
         If this parameter is set, filter out the imaging targets and only image
         fields with this name (e.g., "W43-MM1", "W51-E", etc.)
+    BAND=<band(s)>
+        Image this/these bands.  Can be "3", "6", or "3,6" (no quotes)
 """
 
 import json
@@ -36,6 +38,16 @@ if os.getenv('FIELD_ID'):
         to_image[band] = {key:value for key,value in to_image[band].items()
                           if key == field_id}
 
+
+if os.getenv('BAND_TO_IMAGE'):
+    band_list = list(map(lambda x: "B"+x, os.getenv('BAND_TO_IMAGE').split(',')))
+    for BB in band_list:
+        if BB not in to_image:
+            raise ValueError("Band {0} was specified but is not in to_image.json"
+                             .format(BB))
+else:
+    band_list = list(to_image.keys())
+
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
@@ -51,7 +63,7 @@ if 'exclude_7m' not in locals():
 # 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = os.getenv('CHANCHUNKS') or 16
 
-for band in to_image:
+for band in band_list:
     for field in to_image[band]:
         for spw in to_image[band][field]:
 
