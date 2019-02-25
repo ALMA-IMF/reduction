@@ -11,7 +11,7 @@ You can set the following environmental variables for this script:
 import os
 import json
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
-from tasks import tclean, exportfits, plotms, concat
+from tasks import tclean, exportfits, plotms
 from taskinit import msmdtool
 msmd = msmdtool()
 
@@ -36,7 +36,7 @@ for continuum_ms in continuum_mses:
 
     field = basename.split("_")[0]
 
-    if exclude_7m==True:
+    if exclude_7m:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
@@ -137,8 +137,6 @@ for continuum_ms in continuum_mses:
                 logprint("Continuum_ms_all={0}".format(continuum_ms_all))
 
                 if exclude_7m:
-                    os.system("rm -rf tmp.ms")
-                    #concat(vis=continuum_ms_all, concatvis='tmp.ms')
                     antenna_list = []
                     for cms in continuum_ms_all:
                         msmd.open(cms)
@@ -155,35 +153,35 @@ for continuum_ms in continuum_mses:
                     logprint("Im={0}".format(imname,continuum_ms_all))
                     if not os.path.exists(imname+".image.tt0"):
                         tclean(vis=continuum_ms_all,
-                          field=field.encode(),
-                          imagename=imname,
-                          gridder='mosaic',
-                          specmode='mfs',
-                          phasecenter=phasecenter,
-                          deconvolver='mtmfs',
-                          scales=[0,3,9,27,81],
-                          nterms=2,
-                          outframe='LSRK',
-                          veltype='radio',
-                          niter=10000,
-                          # If you want to use auto-multithreshold,
-                          # these parameters work more or less:
-                          # growiterations=75,
-                          # sidelobethreshold=0.2,
-                          # minbeamfrac=0.5, #3
-                          # negativethreshold=0.0,
-                          # noisethreshold=3.0,lownoisethreshold=0.5,
-                          # usemask='auto-multithresh',
-                          interactive=True,
-                          cell=cellsize,
-                          imsize=imsize,
-                          weighting='briggs',
-                          robust=robust,
-                          pbcor=True,
-                          antenna=antennae,
-                          pblimit=0.1
+                               field=field.encode(),
+                               imagename=imname,
+                               gridder='mosaic',
+                               specmode='mfs',
+                               phasecenter=phasecenter,
+                               deconvolver='mtmfs',
+                               scales=[0,3,9,27,81],
+                               nterms=2,
+                               outframe='LSRK',
+                               veltype='radio',
+                               niter=10000,
+                               # If you want to use auto-multithreshold,
+                               # these parameters work more or less:
+                               # growiterations=75,
+                               # sidelobethreshold=0.2,
+                               # minbeamfrac=0.5, #3
+                               # negativethreshold=0.0,
+                               # noisethreshold=3.0,lownoisethreshold=0.5,
+                               # usemask='auto-multithresh',
+                               interactive=True,
+                               cell=cellsize,
+                               imsize=imsize,
+                               weighting='briggs',
+                               robust=robust,
+                               pbcor=True,
+                               antenna=antennae,
+                               pblimit=0.1
                         )
-
+  
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
                         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
                     else:

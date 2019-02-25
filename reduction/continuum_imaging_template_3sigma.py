@@ -15,9 +15,11 @@ and a best sensitivity image based on all available continuum.
 import os
 import json
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
-from tasks import tclean, exportfits, plotms, concat
+from tasks import tclean, exportfits, plotms, imstat, makemask
 from taskinit import msmdtool
+from taskinit import iatool
 msmd = msmdtool()
+ia = iatool()
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
@@ -140,13 +142,14 @@ for continuum_ms in continuum_mses:
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['6'])))
 
                 logprint("continuum_ms_all={0}".format(continuum_ms_all))
-                os.system("rm -rf tmp.ms")
-                concat(vis=continuum_ms_all,concatvis='tmp.ms')
 
                 if exclude_7m:
-                    msmd.open('tmp.ms')
-                    antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
-                    msmd.close()
+                    antenna_list = []
+                    for cms in continuum_ms_all:
+                        msmd.open(cms)
+                        antenna_list.append(",".join([x for x in msmd.antennanames() if 'CM' not in x]))
+                        msmd.close()
+                    antennae = ",".join(antenna_list)
                 else:
                     antennae = ""
 
@@ -159,31 +162,31 @@ for continuum_ms in continuum_mses:
                     # And estimate cleaning threshold
                     imname = imname_base+"_dirty"
                     if not os.path.exists(imname+".image.tt0"):
-                       tclean(vis="tmp.ms",#continuum_ms_all,
-                          field=field.encode(),
-                          imagename=imname,
-                          gridder='mosaic',
-                          specmode='mfs',
-                          phasecenter=phasecenter,
-                          deconvolver='mtmfs',
-                          scales=[0,3,9,27,81],
-                          nterms=2,
-                          outframe='LSRK',
-                          veltype='radio',
-                          niter=0,
-                          interactive=False,
-                          cell=cellsize,
-                          imsize=imsize,
-                          weighting='briggs',
-                          robust=robust,
-                          pbcor=False,
-                          antenna=antennae,
-                          pblimit=0.1)
+                        tclean(vis=continuum_ms_all,
+                               field=field.encode(),
+                               imagename=imname,
+                               gridder='mosaic',
+                               specmode='mfs',
+                               phasecenter=phasecenter,
+                               deconvolver='mtmfs',
+                               scales=[0,3,9,27,81],
+                               nterms=2,
+                               outframe='LSRK',
+                               veltype='radio',
+                               niter=0,
+                               interactive=False,
+                               cell=cellsize,
+                               imsize=imsize,
+                               weighting='briggs',
+                               robust=robust,
+                               pbcor=False,
+                               antenna=antennae,
+                               pblimit=0.1)
 
-                       exportfits(imname+".image.tt0", imname+".image.tt0.fits",overwrite=True)
+                        exportfits(imname+".image.tt0", imname+".image.tt0.fits",overwrite=True)
 
                     else:
-                       logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
+                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
 
                     # Get noise statistics:
                     threshold1 = 8*imstat(imname+".image.tt0")['rms']
@@ -193,28 +196,28 @@ for continuum_ms in continuum_mses:
                     # First iteration: clean down to 8*rms with pblimit
                     imname = imname_base+"_shallow_pblimit"
                     if not os.path.exists(imname+".image.tt0"):
-                        tclean(vis="tmp.ms",#continuum_ms_all,
-                          field=field.encode(),
-                          imagename=imname,
-                          gridder='mosaic',
-                          specmode='mfs',
-                          phasecenter=phasecenter,
-                          deconvolver='mtmfs',
-                          scales=[0,3,9,27,81],
-                          nterms=2,
-                          outframe='LSRK',
-                          veltype='radio',
-                          niter=10000,
-                          interactive=False,
-                          usemask='pb',
-                          threshold=str(min(threshold1,threshold2))+"Jy",
-                          cell=cellsize,
-                          imsize=imsize,
-                          weighting='briggs',
-                          robust=robust,
-                          pbcor=False,
-                          antenna=antennae,
-                          pblimit=0.1
+                        tclean(vis=continuum_ms_all,
+                               field=field.encode(),
+                               imagename=imname,
+                               gridder='mosaic',
+                               specmode='mfs',
+                               phasecenter=phasecenter,
+                               deconvolver='mtmfs',
+                               scales=[0,3,9,27,81],
+                               nterms=2,
+                               outframe='LSRK',
+                               veltype='radio',
+                               niter=10000,
+                               interactive=False,
+                               usemask='pb',
+                               threshold=str(min(threshold1,threshold2))+"Jy",
+                               cell=cellsize,
+                               imsize=imsize,
+                               weighting='briggs',
+                               robust=robust,
+                               pbcor=False,
+                               antenna=antennae,
+                               pblimit=0.1
                         )
 
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
@@ -237,29 +240,29 @@ for continuum_ms in continuum_mses:
                     os.system("rm -rf tmp.image")
                     imname = imname_base+"_masked"
                     if not os.path.exists(imname+".image.tt0"):
-                        tclean(vis="tmp.ms",#continuum_ms_all,
-                          field=field.encode(),
-                          imagename=imname,
-                          gridder='mosaic',
-                          specmode='mfs',
-                          phasecenter=phasecenter,
-                          deconvolver='mtmfs',
-                          scales=[0,3,9,27,81],
-                          nterms=2,
-                          outframe='LSRK',
-                          veltype='radio',
-                          niter=10000,
-                          interactive=False,
-                          usemask='user',
-                          mask="allcont_mask_3sigma.mask",
-                          threshold=str(min(threshold1,threshold2)*3./8.)+"Jy",
-                          cell=cellsize,
-                          imsize=imsize,
-                          weighting='briggs',
-                          robust=robust,
-                          pbcor=True,
-                          antenna=antennae,
-                          pblimit=0.1
+                        tclean(vis=continuum_ms_all,
+                               field=field.encode(),
+                               imagename=imname,
+                               gridder='mosaic',
+                               specmode='mfs',
+                               phasecenter=phasecenter,
+                               deconvolver='mtmfs',
+                               scales=[0,3,9,27,81],
+                               nterms=2,
+                               outframe='LSRK',
+                               veltype='radio',
+                               niter=10000,
+                               interactive=False,
+                               usemask='user',
+                               mask="allcont_mask_3sigma.mask",
+                               threshold=str(min(threshold1,threshold2)*3./8.)+"Jy",
+                               cell=cellsize,
+                               imsize=imsize,
+                               weighting='briggs',
+                               robust=robust,
+                               pbcor=True,
+                               antenna=antennae,
+                               pblimit=0.1
                         )
 
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
