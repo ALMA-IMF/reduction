@@ -11,7 +11,7 @@ You can set the following environmental variables for this script:
 import os
 import json
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
-from tasks import tclean, exportfits, plotms
+from tasks import tclean, exportfits, plotms, concat
 from taskinit import msmdtool
 msmd = msmdtool()
 
@@ -22,8 +22,8 @@ if not os.path.exists(imaging_root):
 if 'exclude_7m' not in locals():
     exclude_7m=bool(os.getenv('exclude_7m'))
 
-print exclude_7m
-    
+logprint("exclude_7m={0}".format(exclude_7m))
+
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
 with open('continuum_mses.txt', 'r') as fh:
@@ -36,7 +36,7 @@ for continuum_ms in continuum_mses:
 
     field = basename.split("_")[0]
 
-    if exclude_7m==True: 
+    if exclude_7m==True:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
@@ -68,11 +68,11 @@ for continuum_ms in continuum_mses:
               )
 
 # ----------------------------------------------
-# CLEAN FOR THE 'CLEANEST' CONTINUUM:        
+# CLEAN FOR THE 'CLEANEST' CONTINUUM:
 
     for robust in (-2, 0, 2):
         imname = contimagename+"_robust{0}".format(robust)+"_cleanest"
-        print ("Im",imname)
+        logprint("Im={0}".format(imname))
         if not os.path.exists(imname+".image.tt0"):
             tclean(vis=continuum_ms,
                    field=field.encode(),
@@ -108,50 +108,53 @@ for continuum_ms in continuum_mses:
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
 
-        logprint ("Cleanest continuum images done.")    
+        logprint("Cleanest continuum images done.")
         # ----------------------------------------------
-        # CLEAN FOR THE BEST SENSITIVITY CONTINUUM:        
+        # CLEAN FOR THE BEST SENSITIVITY CONTINUUM:
 
         # Using here the splitted spw for line imaging:
         # For B3: only spw 1,2,3 is used (spw 0 is for N2H+ J=1-0)
-        # For B6: only spw 6,7 is used 
+        # For B6: only spw 6,7 is used
 
         with open('to_image.json', 'r') as fh:
             to_image = json.load(fh)
-    
+
         for band in to_image:
             for field in to_image[band]:
                 # Used for debugging
                 #print band, field
-                
+
                 if band == 'B3':
                     continuum_ms_all=list(map(str,to_image[band][field]['1']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['2'])))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['3'])))
 
-                    
+
                 if band == 'B6':
                     continuum_ms_all=list(map(str,to_image[band][field]['7']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['6'])))
 
-                print continuum_ms_all
+                logprint("Continuum_ms_all={0}".format(continuum_ms_all))
 
-                if exclude_7m==True:
+                if exclude_7m:
                     os.system("rm -rf tmp.ms")
-                    concat(vis=continuum_ms_all,concatvis='tmp.ms')
-                    msmd.open('tmp.ms')
-                    antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
-                    msmd.close()
+                    #concat(vis=continuum_ms_all, concatvis='tmp.ms')
+                    antenna_list = []
+                    for cms in continuum_ms_all:
+                        msmd.open(cms)
+                        antenna_list.append(",".join([x for x in msmd.antennanames() if 'CM' not in x]))
+                        msmd.close()
+                    antennae = ",".join(antenna_list)
                 else:
                     antennae = ""
-                
 
-                print antennae
+
+                logprint("Antennae={0}".format(antennae))
                 for robust in (-2, 0, 2):
                     imname = contimagename+"_robust{0}".format(robust)+"_bsens"
-                    print ("Im",imname,continuum_ms_all)
+                    logprint("Im={0}".format(imname,continuum_ms_all))
                     if not os.path.exists(imname+".image.tt0"):
-                        tclean(vis="tmp.ms",#continuum_ms_all,
+                        tclean(vis=continuum_ms_all,
                           field=field.encode(),
                           imagename=imname,
                           gridder='mosaic',

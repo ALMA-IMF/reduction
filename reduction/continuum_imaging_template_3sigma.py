@@ -15,7 +15,7 @@ and a best sensitivity image based on all available continuum.
 import os
 import json
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
-from tasks import tclean, exportfits, plotms
+from tasks import tclean, exportfits, plotms, concat
 from taskinit import msmdtool
 msmd = msmdtool()
 
@@ -26,7 +26,7 @@ if not os.path.exists(imaging_root):
 if 'exclude_7m' not in locals():
     exclude_7m = bool(os.getenv('exclude_7m'))
 
-print("exclude_7m={0}".format(exclude_7m))
+logprint("exclude_7m={0}".format(exclude_7m))
 
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
@@ -76,7 +76,7 @@ for continuum_ms in continuum_mses:
 
     for robust in (-2, 0, 2):
         imname = contimagename+"_robust{0}".format(robust)+"_cleanest"
-        print ("Im",imname)
+        logprint("Im={0}".format(imname))
         if not os.path.exists(imname+".image.tt0"):
             tclean(vis=continuum_ms,
                    field=field.encode(),
@@ -139,7 +139,7 @@ for continuum_ms in continuum_mses:
                     continuum_ms_all=list(map(str,to_image[band][field]['7']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['6'])))
 
-                print("continuum_ms_all={0}".format(continuum_ms_all))
+                logprint("continuum_ms_all={0}".format(continuum_ms_all))
                 os.system("rm -rf tmp.ms")
                 concat(vis=continuum_ms_all,concatvis='tmp.ms')
 
@@ -151,10 +151,10 @@ for continuum_ms in continuum_mses:
                     antennae = ""
 
 
-                print("antennae: {0}".format(antennae))
+                logprint("antennae: {0}".format(antennae))
                 for robust in (-2, 0, 2):
                     imname_base = contimagename+"_robust{0}".format(robust)+"_bsens"
-                    print("Im",imname,continuum_ms_all)
+                    logprint("Im={0}, continuum_ms_all={1}".format(imname,continuum_ms_all))
                     # First create dirty image to check rms
                     # And estimate cleaning threshold
                     imname = imname_base+"_dirty"
