@@ -227,6 +227,13 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
         dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
                                              pixfraction_of_fwhm, **kwargs)
 
+    # if the image is nearly square (to within 10%), make sure it is square.
+    if np.abs(dra - ddec) / dra < 0.1:
+        if dra < ddec:
+            dra = ddec
+        else:
+            ddec = dra
+
     logprint("Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
 
     return int(dra), int(ddec), pixscale
