@@ -191,5 +191,5 @@ for continuum_ms in continuum_mses:
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
                         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
                     else:
-                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging',
+                        logprint("Skipping completed file {0}".format(imname),
                                  origin='almaimf_contimg_both')
