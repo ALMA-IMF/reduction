@@ -28,7 +28,8 @@ if not os.path.exists(imaging_root):
 if 'exclude_7m' not in locals():
     exclude_7m = bool(os.getenv('exclude_7m'))
 
-logprint("exclude_7m={0}".format(exclude_7m))
+logprint("exclude_7m={0}".format(exclude_7m),
+         origin='almaimf_cont_3sigtemplate')
 
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
@@ -78,7 +79,8 @@ for continuum_ms in continuum_mses:
 
     for robust in (-2, 0, 2):
         imname = contimagename+"_robust{0}".format(robust)+"_cleanest"
-        logprint("Im={0}".format(imname))
+        logprint("Im={0}".format(imname),
+                 origin='almaimf_cont_3sigtemplate')
         if not os.path.exists(imname+".image.tt0"):
             tclean(vis=continuum_ms,
                    field=field.encode(),
@@ -115,7 +117,8 @@ for continuum_ms in continuum_mses:
 
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
 
-    logprint("Cleanest continuum images done.")
+    logprint("Cleanest continuum images done.",
+             origin='almaimf_cont_3sigtemplate')
     # ----------------------------------------------
     # CLEAN FOR THE BEST SENSITIVITY CONTINUUM:
 
@@ -141,7 +144,8 @@ for continuum_ms in continuum_mses:
                     continuum_ms_all=list(map(str,to_image[band][field]['7']))
                     continuum_ms_all.extend(list(map(str,to_image[band][field]['6'])))
 
-                logprint("continuum_ms_all={0}".format(continuum_ms_all))
+                logprint("continuum_ms_all={0}".format(continuum_ms_all),
+                         origin='almaimf_cont_3sigtemplate')
 
                 if exclude_7m:
                     antenna_list = []
@@ -154,10 +158,12 @@ for continuum_ms in continuum_mses:
                     antennae = ""
 
 
-                logprint("antennae: {0}".format(antennae))
+                logprint("antennae: {0}".format(antennae),
+                         origin='almaimf_cont_3sigtemplate')
                 for robust in (-2, 0, 2):
                     imname_base = contimagename+"_robust{0}".format(robust)+"_bsens"
-                    logprint("Im={0}, continuum_ms_all={1}".format(imname,continuum_ms_all))
+                    logprint("Im={0}, continuum_ms_all={1}".format(imname,continuum_ms_all),
+                             origin='almaimf_cont_3sigtemplate')
                     # First create dirty image to check rms
                     # And estimate cleaning threshold
                     imname = imname_base+"_dirty"
@@ -186,7 +192,7 @@ for continuum_ms in continuum_mses:
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits",overwrite=True)
 
                     else:
-                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
+                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_3sigtemplate')
 
                     # Get noise statistics:
                     threshold1 = 8*imstat(imname+".image.tt0")['rms']
@@ -223,7 +229,7 @@ for continuum_ms in continuum_mses:
                         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
 
                     else:
-                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
+                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_3sigtemplate')
 
 
                     # Second iteration: clean down to 3*rms using the 3*rms mask
@@ -269,4 +275,4 @@ for continuum_ms in continuum_mses:
 
                         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
                     else:
-                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
+                        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_3sigtemplate')
