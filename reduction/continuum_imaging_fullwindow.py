@@ -60,11 +60,11 @@ for band in to_image:
                     # exclude MSes with 7m data
                     vis.remove(ms)
                 msmd.close()
-            suffix = '12M'
+            suffix = 'fullwindow_12M'
         else:
             logprint("Including 7M antennae",
                      origin='almaimf_fullcont_imaging')
-            suffix = '7M12M'
+            suffix = 'fullwindow_7M12M'
 
         # only need to determine the phasecenter for 1 ms, under the assumption
         # that they will all overlap.  We have to check that this assumption
