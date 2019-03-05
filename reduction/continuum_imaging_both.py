@@ -20,7 +20,7 @@ if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
 if 'exclude_7m' not in locals():
-    exclude_7m=bool(os.getenv('exclude_7m'))
+    exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
 
 logprint("exclude_7m={0}".format(exclude_7m),
          origin='almaimf_contimg_both')
