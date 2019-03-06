@@ -38,7 +38,7 @@ def show(imgs, zoom=None, clear=True, norm=asinhn, **kwargs):
 
 
     for ii,imn in enumerate(imnames):
-        pl.subplot(1, len(imgs), ii+1)
+        ax = pl.subplot(1, len(imgs), ii+1)
 
         if np.isscalar(zoom):
             shp = imgs[imn].shape
@@ -50,10 +50,13 @@ def show(imgs, zoom=None, clear=True, norm=asinhn, **kwargs):
         else:
             view = zoom
 
-        pl.imshow(imgs[imn].value[view], origin='lower', interpolation='none',
+        ax.imshow(imgs[imn].value[view], origin='lower', interpolation='none',
                   norm=norm, **kwargs)
 
         if imn == 'model':
-            pl.contour(imgs['mask'].value[view], levels=[0.5], colors=['w'])
+            ax.contour(imgs['mask'].value[view], levels=[0.5], colors=['w'])
 
         pl.title(imn)
+
+        ax.set_xticklabels([])
+        ax.set_yticklabels([])
