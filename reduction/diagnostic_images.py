@@ -33,7 +33,7 @@ def show(imgs, zoom=None, clear=True, norm=asinhn, **kwargs):
         pl.clf()
 
 
-    for ii,imn in enumerate(imgs):
+    for ii,imn in enumerate(imnames):
         pl.subplot(1, len(imgs), ii+1)
 
         if np.isscalar(zoom):
