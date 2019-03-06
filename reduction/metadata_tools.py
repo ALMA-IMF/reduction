@@ -1,6 +1,7 @@
 import numpy as np
 try:
-    from casac.casac import synthesisutils
+    from casac import casac
+    synthesisutils = casac.synthesisutils
     from taskinit import msmdtool, casalog, qatool, tbtool
 except ImportError:
     from casatools import quanta as qatool, table as tbtool, msmetadata as msmdtool, synthesisutils

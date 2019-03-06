@@ -12,7 +12,7 @@ import os
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 import automasking_params
 
-from tasks import tclean, exportfits, plotms
+from tasks import tclean, exportfits, plotms, split
 
 from gaincal_cli import gaincal_cli as gaincal
 from rmtables_cli import rmtables_cli as rmtables
@@ -43,10 +43,19 @@ for continuum_ms in continuum_mses:
     # strip off .cal.ms
     basename = os.path.split(continuum_ms[:-7])[1]
 
+    # create a downsampled split MS
+    selfcal_ms = basename+"_selfcal.ms"
+    if not os.path.exists(selfcal_ms):
+        split(vis=continuum_ms,
+              outputvis=selfcal_ms,
+              width=8, # assumed input is 10 MHz wide, we can go to 80 MHz pretty safely (https://safe.nrao.edu/wiki/pub/Main/RadioTutorial/BandwidthSmearing.pdf)
+              datacolumn='data',
+             )
+
     field = basename.split("_")[0]
 
     if exclude_7m:
-        msmd.open(continuum_ms)
+        msmd.open(selfcal_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
         suffix = '12M'
@@ -56,9 +65,9 @@ for continuum_ms in continuum_mses:
         suffix = '7M12M'
         parkw = "7m12m"
 
-    coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
+    coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-    (dra,ddec,pixscale) = list(determine_imsize(ms=continuum_ms, field=field,
+    (dra,ddec,pixscale) = list(determine_imsize(ms=selfcal_ms, field=field,
                                                 phasecenter=(racen,deccen),
                                                 exclude_7m=exclude_7m,
                                                 spw=0, pixfraction_of_fwhm=1/4.))
@@ -69,7 +78,7 @@ for continuum_ms in continuum_mses:
 
     if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
         # make a diagnostic plot to show the UV distribution
-        plotms(vis=continuum_ms,
+        plotms(vis=selfcal_ms,
                xaxis='uvwave',
                yaxis='amp',
                avgchannel='1000', # minimum possible # of channels
@@ -87,7 +96,7 @@ for continuum_ms in continuum_mses:
     if not os.path.exists(imname+".image.tt0"):
         # do this even if the output file exists: we need to populate the
         # modelcolumn
-        tclean(vis=continuum_ms,
+        tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
                gridder='mosaic',
@@ -121,7 +130,7 @@ for continuum_ms in continuum_mses:
     # iteration #1 of phase-only self-calibration
     caltable = '{0}_phase{1}_int.cal'.format(basename, 1)
     if not os.path.exists(caltable):
-        gaincal(vis=continuum_ms,
+        gaincal(vis=selfcal_ms,
                 caltable=caltable,
                 solint='int',
                 gaintype='G',
@@ -131,7 +140,7 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_selfcal1".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
-        applycal(vis=continuum_ms,
+        applycal(vis=selfcal_ms,
                  gaintable=[caltable],
                  interp='linear',
                  applymode='calonly',
@@ -139,7 +148,7 @@ for continuum_ms in continuum_mses:
 
         # do this even if the output file exists: we need to populate the
         # modelcolumn
-        tclean(vis=continuum_ms,
+        tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
                gridder='mosaic',
@@ -176,7 +185,7 @@ for continuum_ms in continuum_mses:
     selfcaliter = 2
     caltable = '{0}_phase{1}_int.cal'.format(basename, selfcaliter)
     if not os.path.exists(caltable):
-        gaincal(vis=continuum_ms,
+        gaincal(vis=selfcal_ms,
                 caltable=caltable,
                 solint='int',
                 gaintype='G',
@@ -186,7 +195,7 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_selfcal{1}".format(robust, selfcaliter)
 
     if not os.path.exists(imname+".image.tt0"):
-        applycal(vis=continuum_ms,
+        applycal(vis=selfcal_ms,
                  gaintable=[caltable],
                  interp='linear',
                  applymode='calonly',
@@ -195,7 +204,7 @@ for continuum_ms in continuum_mses:
 
         # do this even if the output file exists: we need to populate the
         # modelcolumn
-        tclean(vis=continuum_ms,
+        tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
                gridder='mosaic',
