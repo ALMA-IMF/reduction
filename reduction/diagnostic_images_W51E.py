@@ -22,5 +22,5 @@ imgs_before_b3, cubes_before_b3 = load_images('W51-E_B3_uid___A001_X1296_X10b_co
 show(imgs_before_b3, vmin=-0.001, vmax=0.01)
 pl.savefig("W51-E_B3_before_selfcal.png", bbox_inches='tight')
 
-show(imgs_before_b3, vmin=-0.001, vmax=0.01, zoom=[slice(680,1200),slice(850,1200)])
+show(imgs_before_b3, vmin=-0.001, vmax=0.1, zoom=[slice(680,1200),slice(850,1200)])
 pl.savefig("W51-E_B3_before_selfcal_zoom.png", bbox_inches='tight')

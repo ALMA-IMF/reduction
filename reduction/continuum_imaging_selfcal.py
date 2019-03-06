@@ -111,7 +111,7 @@ for continuum_ms in continuum_mses:
                antenna=antennae,
                savemodel='modelcolumn',
                datacolumn='data', # need to use original (pipeline-calibrated) data here!
-               **automasking_params.continuum[parkw],
+               **automasking_params.continuum[parkw]
               )
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
@@ -161,7 +161,7 @@ for continuum_ms in continuum_mses:
                pblimit=-0.5, # be somewhat conservative with the second clean
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
-               **automasking_params.continuum[parkw],
+               **automasking_params.continuum[parkw]
               )
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
@@ -217,7 +217,7 @@ for continuum_ms in continuum_mses:
                pblimit=-0.5, # be somewhat conservative with the second clean
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
-               **automasking_params.continuum[parkw],
+               **automasking_params.continuum[parkw]
               )
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)

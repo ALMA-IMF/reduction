@@ -40,6 +40,7 @@ for continuum_ms in continuum_mses:
     if exclude_7m:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
+        assert ",," not in antennae
         msmd.close()
         suffix = '12M'
     else:
