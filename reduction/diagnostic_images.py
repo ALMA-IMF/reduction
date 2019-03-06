@@ -38,7 +38,7 @@ def show(imgs, zoom=None, clear=True, norm=asinhn, **kwargs):
 
 
     for ii,imn in enumerate(imnames):
-        ax = pl.subplot(1, len(imgs), ii+1)
+        ax = pl.subplot(1, len(imnames), ii+1)
 
         if np.isscalar(zoom):
             shp = imgs[imn].shape
