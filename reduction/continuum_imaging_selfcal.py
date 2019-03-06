@@ -10,6 +10,8 @@ You can set the following environmental variables for this script:
 
 import os
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
+import automasking_params
+
 from tasks import tclean, exportfits, plotms
 
 from gaincal_cli import gaincal_cli as gaincal
@@ -48,9 +50,11 @@ for continuum_ms in continuum_mses:
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
         suffix = '12M'
+        parkw = "12m_long" # keyword for automasking parameters
     else:
         antennae = ""
         suffix = '7M12M'
+        parkw = "7m12m"
 
     coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -79,83 +83,142 @@ for continuum_ms in continuum_mses:
     robust = 0
     imname = contimagename+"_robust{0}".format(robust)
 
-    # do this even if the output file exists: we need to populate the
-    # modelcolumn
-    tclean(vis=continuum_ms,
-           field=field.encode(),
-           imagename=imname,
-           gridder='mosaic',
-           specmode='mfs',
-           phasecenter=phasecenter,
-           deconvolver='mtmfs',
-           scales=[0,3,9,27,81],
-           nterms=2,
-           outframe='LSRK',
-           veltype='radio',
-           niter=10000,
-           usemask='auto-multithresh',
-           interactive=False,
-           cell=cellsize,
-           imsize=imsize,
-           weighting='briggs',
-           robust=robust,
-           # be _very_ conservative with the first clean (negative pb means
-           # only mask with this pb)
-           pblimit=-0.6,
-           pbcor=True,
-           antenna=antennae,
-           savemodel='modelcolumn',
-           datacolumn='data', # need to use original (pipeline-calibrated) data here!
-          )
-    # overwrite=True because these could already exist
-    exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
-    exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+    if not os.path.exists(imname+".image.tt0"):
+        # do this even if the output file exists: we need to populate the
+        # modelcolumn
+        tclean(vis=continuum_ms,
+               field=field.encode(),
+               imagename=imname,
+               gridder='mosaic',
+               specmode='mfs',
+               phasecenter=phasecenter,
+               deconvolver='mtmfs',
+               scales=[0,3,9,27,81],
+               nterms=2,
+               outframe='LSRK',
+               veltype='radio',
+               niter=10000,
+               usemask='auto-multithresh',
+               interactive=False,
+               cell=cellsize,
+               imsize=imsize,
+               weighting='briggs',
+               robust=robust,
+               # be _very_ conservative with the first clean (negative pb means
+               # only mask with this pb)
+               pblimit=-0.6,
+               pbcor=True,
+               antenna=antennae,
+               savemodel='modelcolumn',
+               datacolumn='data', # need to use original (pipeline-calibrated) data here!
+               **automasking_params.continuum[parkw],
+              )
+        # overwrite=True because these could already exist
+        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
 
     # iteration #1 of phase-only self-calibration
     caltable = '{0}_phase{1}_int.cal'.format(basename, 1)
-    rmtables([caltable])
-    gaincal(vis=continuum_ms,
-            caltable=caltable,
-            solint='int',
-            gaintype='G',
-            calmode='p',
-            solnorm=True)
-
-    applycal(vis=continuum_ms,
-             gaintable=[caltable],
-             interp='linear',
-             applymode='calonly',
-             calwt=True)
-
+    if not os.path.exists(caltable):
+        gaincal(vis=continuum_ms,
+                caltable=caltable,
+                solint='int',
+                gaintype='G',
+                calmode='p',
+                solnorm=True)
 
     imname = contimagename+"_robust{0}_selfcal1".format(robust)
 
-    # do this even if the output file exists: we need to populate the
-    # modelcolumn
-    tclean(vis=continuum_ms,
-           field=field.encode(),
-           imagename=imname,
-           gridder='mosaic',
-           specmode='mfs',
-           phasecenter=phasecenter,
-           deconvolver='mtmfs',
-           scales=[0,3,9,27,81],
-           nterms=2,
-           outframe='LSRK',
-           veltype='radio',
-           niter=10000,
-           usemask='auto-multithresh',
-           interactive=False,
-           cell=cellsize,
-           imsize=imsize,
-           weighting='briggs',
-           robust=robust,
-           pbcor=True,
-           antenna=antennae,
-           pblimit=-0.5, # be somewhat conservative with the second clean
-           savemodel='modelcolumn',
-           datacolumn='corrected', # now use corrected data
-          )
-    # overwrite=True because these could already exist
-    exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
-    exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+    if not os.path.exists(imname+".image.tt0"):
+        applycal(vis=continuum_ms,
+                 gaintable=[caltable],
+                 interp='linear',
+                 applymode='calonly',
+                 calwt=True)
+
+        # do this even if the output file exists: we need to populate the
+        # modelcolumn
+        tclean(vis=continuum_ms,
+               field=field.encode(),
+               imagename=imname,
+               gridder='mosaic',
+               specmode='mfs',
+               phasecenter=phasecenter,
+               deconvolver='mtmfs',
+               scales=[0,3,9,27,81],
+               nterms=2,
+               outframe='LSRK',
+               veltype='radio',
+               niter=10000,
+               usemask='auto-multithresh',
+               interactive=False,
+               cell=cellsize,
+               imsize=imsize,
+               weighting='briggs',
+               robust=robust,
+               pbcor=True,
+               antenna=antennae,
+               pblimit=-0.5, # be somewhat conservative with the second clean
+               savemodel='modelcolumn',
+               datacolumn='corrected', # now use corrected data
+               **automasking_params.continuum[parkw],
+              )
+        # overwrite=True because these could already exist
+        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+
+
+    # do a second iteration, because the first was pretty effective
+    # This second iteration should have very little effect
+
+    # iteration #2 of phase-only self-calibration
+    selfcaliter = 2
+    caltable = '{0}_phase{1}_int.cal'.format(basename, selfcaliter)
+    if not os.path.exists(caltable):
+        gaincal(vis=continuum_ms,
+                caltable=caltable,
+                solint='int',
+                gaintype='G',
+                calmode='p',
+                solnorm=True)
+
+    imname = contimagename+"_robust{0}_selfcal{1}".format(robust, selfcaliter)
+
+    if not os.path.exists(imname+".image.tt0"):
+        applycal(vis=continuum_ms,
+                 gaintable=[caltable],
+                 interp='linear',
+                 applymode='calonly',
+                 calwt=True)
+
+
+        # do this even if the output file exists: we need to populate the
+        # modelcolumn
+        tclean(vis=continuum_ms,
+               field=field.encode(),
+               imagename=imname,
+               gridder='mosaic',
+               specmode='mfs',
+               phasecenter=phasecenter,
+               deconvolver='mtmfs',
+               scales=[0,3,9,27,81],
+               nterms=2,
+               outframe='LSRK',
+               veltype='radio',
+               niter=10000,
+               usemask='auto-multithresh',
+               interactive=False,
+               cell=cellsize,
+               imsize=imsize,
+               weighting='briggs',
+               robust=robust,
+               pbcor=True,
+               antenna=antennae,
+               pblimit=-0.5, # be somewhat conservative with the second clean
+               savemodel='modelcolumn',
+               datacolumn='corrected', # now use corrected data
+               **automasking_params.continuum[parkw],
+              )
+        # overwrite=True because these could already exist
+        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
