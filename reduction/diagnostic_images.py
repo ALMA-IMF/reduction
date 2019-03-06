@@ -12,12 +12,16 @@ def load_images(basename):
              for imn in imnames}
 
     casamask = SpectralCube.read(f'{basename}.mask', format='casa_image')
+    pb = SpectralCube.read(f'{basename}.pb.tt0', format='casa_image')
 
-    masks = [cube != 0 * cube.unit for cube in cubes.values()]
-    include_mask = reduce(lambda x,y: x or y, masks)
-    include_mask = cubes['residual'] != 0*cubes['residual'].unit
+
+    #masks = [cube != 0 * cube.unit for cube in cubes.values()]
+    #include_mask = reduce(lambda x,y: x or y, masks)
+    #include_mask = cubes['residual'] != 0*cubes['residual'].unit
+    include_mask = pb > 0.05*pb.unit
 
     cubes['mask'] = casamask
+    cubes['pb'] = pb
 
     imgs = {imn: cubes[imn].with_mask(include_mask).minimal_subcube()[0]
             for imn in imnames}

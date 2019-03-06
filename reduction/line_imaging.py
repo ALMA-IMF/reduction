@@ -89,6 +89,7 @@ for band in band_list:
             (dra,ddec,pixscale) = list(determine_imsize(ms=vis[0], field=field,
                                                         phasecenter=(racen,deccen),
                                                         spw=0, pixfraction_of_fwhm=1/3.,
+                                                        exclude_7m=exclude_7m,
                                                         min_pixscale=0.1, # arcsec
                                                        ))
             imsize = [dra, ddec]

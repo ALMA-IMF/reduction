@@ -51,7 +51,7 @@ for continuum_ms in continuum_mses:
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
     (dra,ddec,pixscale) = list(determine_imsize(ms=continuum_ms, field=field,
                                                 phasecenter=(racen,deccen),
-                                                spw=0))#, pixfraction_of_fwhm=1/4.))
+                                                spw=0, exclude_7m=exclude_7m))#, pixfraction_of_fwhm=1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 

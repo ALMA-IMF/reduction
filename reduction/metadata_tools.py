@@ -1,9 +1,13 @@
 import numpy as np
-from casac import casac
-from taskinit import msmdtool, casalog, qatool, tbtool
+try:
+    from casac.casac import synthesisutils
+    from taskinit import msmdtool, casalog, qatool, tbtool
+except ImportError:
+    from casatools import quanta as qatool, table as tbtool, msmetadata as msmdtool, synthesisutils
+    from casatasks import casalog
 msmd = msmdtool()
 qa = qatool()
-st = casac.synthesisutils()
+st = synthesisutils()
 tb = tbtool()
 
 def logprint(string, origin='almaimf_metadata',
@@ -90,7 +94,7 @@ def determine_phasecenter(ms, field, formatted=False):
         return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
-                     min_pixscale=0.05):
+                     min_pixscale=0.05, exclude_7m=False, makeplot=False):
     """
     Parameters
     ----------
@@ -137,11 +141,21 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     tb.close()
 
     # note that for concatenated MSes, this includes baselines that don't exist
+    # (i.e., it includes baselines between TM1 and TM2 positions)
     baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
     max_baseline = baseline_lengths.max()
 
     antsize = np.array([msmd.antennadiameter(antid)['value']
                         for antid in first_antid]) # m
+
+    if exclude_7m:
+        first_antid = [x for x,y in zip(first_antid, antsize) if y > 7]
+        first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y > 7]
+        field_ids = np.array([x for x,y in zip(field_ids, antsize) if y > 7])
+        field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans, antsize) if y > 7])
+
+        antsize = np.array([x for x in antsize if x > 7])
+
     # because we're working with line-split data, we assume the reffreq comes
     # from spw 0
     freq = msmd.reffreq(spw)['m0']['value'] # Hz
@@ -183,6 +197,20 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     furthest_ra_pix_minus = (pix_centers_ra-pb_pix).min()
     furthest_dec_pix_plus = (pix_centers_dec+pb_pix).max()
     furthest_dec_pix_minus = (pix_centers_dec-pb_pix).min()
+
+    if makeplot:
+        import pylab as pl
+        pl.figure(figsize=(10,10)).clf()
+        pl.plot(pix_centers_ra, pix_centers_dec, 'o')
+        circles = [pl.matplotlib.patches.Circle((x,y), radius=rad, facecolor='none', edgecolor='b')
+                   for x,y,rad in zip(pix_centers_ra, pix_centers_dec, pb_pix)]
+        collection = pl.matplotlib.collections.PatchCollection(circles)
+        collection.set_facecolor('none')
+        collection.set_edgecolor('r')
+        pl.gca().add_collection(collection)
+        pl.gca().axis([furthest_ra_pix_minus, furthest_ra_pix_plus,
+                       furthest_dec_pix_minus, furthest_dec_pix_plus])
+
 
     logprint("RA/Dec degree centers and pixel centers of pointings are \n{0}\nand\n{1}"
              .format(list(zip(ptgctrs_ra_deg, ptgctrs_dec_deg)),
