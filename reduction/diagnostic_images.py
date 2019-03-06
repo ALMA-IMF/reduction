@@ -21,7 +21,7 @@ def load_images(basename):
 
     imgs = {imn: cubes[imn].with_mask(include_mask).minimal_subcube()[0]
             for imn in imnames}
-    imgs['mask'] = cubes['casamask'].with_mask(include_mask).minimal_subcube()[0]
+    imgs['mask'] = cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
 
     return imgs, cubes
 
