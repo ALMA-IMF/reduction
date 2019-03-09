@@ -28,6 +28,7 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id):
     for reg in regs:
 
         threshold = u.Quantity(reg.meta['label'])
+        assert threshold.unit.is_equivalent(u.Jy)
 
         preg = reg.to_pixel(image.wcs)
         msk = preg.to_mask()
@@ -45,5 +46,6 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id):
     assert ia.fromarray(outfile=maskname,
                         pixels=mask_array.astype('float')[:,:,None,None],
                         csys=cs.torecord(), overwrite=True)
+    ia.close()
 
     return maskname
