@@ -6,7 +6,7 @@ from astropy import visualization
 
 imnames = ['image', 'model', 'residual',]
 
-def load_images(basename):
+def load_images(basename, crop=True):
 
     cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0', format='casa_image')
              for imn in imnames}
@@ -23,9 +23,14 @@ def load_images(basename):
     cubes['mask'] = casamask
     cubes['pb'] = pb
 
-    imgs = {imn: cubes[imn].with_mask(include_mask).minimal_subcube()[0]
+    imgs = {imn:
+            cubes[imn].with_mask(include_mask).minimal_subcube()[0]
+            if crop else
+            cubes[imn].with_mask(include_mask)[0]
             for imn in imnames}
-    imgs['mask'] = cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
+    imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
+                    if crop else
+                    cubes['mask'].with_mask(include_mask)[0])
     imgs['includemask'] = include_mask # the mask applied to the cube
 
     return imgs, cubes

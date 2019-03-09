@@ -11,6 +11,7 @@ You can set the following environmental variables for this script:
 import os
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 import automasking_params
+from makemask import make_custom_mask
 
 from tasks import tclean, exportfits, plotms, split
 
@@ -32,6 +33,8 @@ if 'exclude_7m' not in locals():
     else:
         exclude_7m = False
 
+logprint("Beginning selfcal script", origin='contim_selfcal')
+
 
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
@@ -42,6 +45,8 @@ for continuum_ms in continuum_mses:
 
     # strip off .cal.ms
     basename = os.path.split(continuum_ms[:-7])[1]
+
+    band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
 
     # create a downsampled split MS
     selfcal_ms = basename+"_selfcal.ms"
@@ -127,6 +132,10 @@ for continuum_ms in continuum_mses:
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
 
+    # make a custom mask
+    maskname = make_custom_mask(field, imname, os.getenv('ALMAIMF_ROOTDIR'), band)
+
+    logprint("Gaincal iteration 1", origin='contim_selfcal')
     # iteration #1 of phase-only self-calibration
     caltable = '{0}_phase{1}_int.cal'.format(basename, 1)
     if not os.path.exists(caltable):
@@ -160,7 +169,9 @@ for continuum_ms in continuum_mses:
                outframe='LSRK',
                veltype='radio',
                niter=10000,
-               usemask='auto-multithresh',
+               threshold='1mJy', # may need to customize this per field?
+               usemask='user',
+               mask=maskname,
                interactive=False,
                cell=cellsize,
                imsize=imsize,
@@ -171,7 +182,6 @@ for continuum_ms in continuum_mses:
                pblimit=-0.5, # be somewhat conservative with the second clean
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
-               **automasking_params.continuum[parkw]
               )
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
@@ -181,6 +191,7 @@ for continuum_ms in continuum_mses:
     # do a second iteration, because the first was pretty effective
     # This second iteration should have very little effect
 
+    logprint("Gaincal iteration 2", origin='contim_selfcal')
     # iteration #2 of phase-only self-calibration
     selfcaliter = 2
     caltable = '{0}_phase{1}_int.cal'.format(basename, selfcaliter)
@@ -216,7 +227,9 @@ for continuum_ms in continuum_mses:
                outframe='LSRK',
                veltype='radio',
                niter=10000,
-               usemask='auto-multithresh',
+               threshold='1mJy', # may need to customize this per field?
+               usemask='user',
+               mask=maskname,
                interactive=False,
                cell=cellsize,
                imsize=imsize,
@@ -227,7 +240,6 @@ for continuum_ms in continuum_mses:
                pblimit=-0.5, # be somewhat conservative with the second clean
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
-               **automasking_params.continuum[parkw]
               )
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)

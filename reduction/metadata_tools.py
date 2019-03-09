@@ -150,10 +150,12 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
                         for antid in first_antid]) # m
 
     if exclude_7m:
+        assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
         first_antid = [x for x,y in zip(first_antid, antsize) if y > 7]
         first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y > 7]
-        field_ids = np.array([x for x,y in zip(field_ids, antsize) if y > 7])
-        field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans, antsize) if y > 7])
+        field_ids = np.array([x for x,y in zip(field_ids[field_id_has_scans], antsize) if y > 7])
+        # this one is trivial: should be all True
+        field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y > 7])
 
         antsize = np.array([x for x in antsize if x > 7])
 
@@ -181,7 +183,7 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     else:
         raise ValueError("Pixel scale was {0}\", too small".format(pixscale*206265))
 
-    pb_pix = primary_beam_fwhm / pixscale
+    pb_pix = (primary_beam_fwhm / pixscale)[field_id_has_scans]
 
 
     def r2d(x):
