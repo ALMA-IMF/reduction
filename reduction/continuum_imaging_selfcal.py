@@ -9,6 +9,8 @@ You can set the following environmental variables for this script:
 """
 
 import os
+import sys
+print(sys.path)
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 import automasking_params
 from makemask import make_custom_mask
