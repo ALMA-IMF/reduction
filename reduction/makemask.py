@@ -1,5 +1,11 @@
 """
 Make a custom mask for each field
+
+Requirements installation:
+
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--user',
+                           'cython', 'https://github.com/astropy/regions/archive/master.zip',
+                           'https://github.com/radio-astro-tools/spectral-cube/archive/master.zip'])
 """
 import os
 import numpy as np
