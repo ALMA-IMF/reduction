@@ -20,7 +20,9 @@ ia = iatool()
 
 def make_custom_mask(fieldname, imname, almaimf_code_path, band_id):
 
-    regs = regions.read_ds9(os.path.join(almaimf_code_path, 'clean_regions/{0}.reg'.format(fieldname)))
+    regs = regions.read_ds9(os.path.join(almaimf_code_path,
+                                         'clean_regions/{0}_{1}.reg'.format(fieldname,
+                                                                            band_id)))
 
     cube = SpectralCube.read(imname, format='casa_image')
     image = cube[0]
@@ -41,6 +43,9 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id):
 
         mask_array[msk.bbox.slices] = msk.multiply(image) > threshold
 
+
+    # CASA transposes arrays!!!!!
+    mask_array = mask_array.T
 
     ia.open(imname)
     assert np.all(ia.shape() == mask_array[:,:,None,None].shape)

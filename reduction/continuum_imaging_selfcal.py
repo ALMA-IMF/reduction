@@ -13,7 +13,7 @@ import sys
 print(sys.path)
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 import automasking_params
-from makemask import make_custom_mask
+from make_custom_mask import make_custom_mask
 
 from tasks import tclean, exportfits, plotms, split
 
@@ -32,8 +32,10 @@ if not os.path.exists(imaging_root):
 if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
         exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
+        array = '12M'
     else:
         exclude_7m = False
+        array = '7M12M'
 
 logprint("Beginning selfcal script", origin='contim_selfcal')
 
@@ -135,11 +137,13 @@ for continuum_ms in continuum_mses:
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
 
     # make a custom mask
-    maskname = make_custom_mask(field, imname, os.getenv('ALMAIMF_ROOTDIR'), band)
+    maskname = make_custom_mask(field, imname+".image.tt0",
+                                os.getenv('ALMAIMF_ROOTDIR'), band)
 
+    selfcaliter = 1
     logprint("Gaincal iteration 1", origin='contim_selfcal')
     # iteration #1 of phase-only self-calibration
-    caltable = '{0}_phase{1}_int.cal'.format(basename, 1)
+    caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
     if not os.path.exists(caltable):
         gaincal(vis=selfcal_ms,
                 caltable=caltable,
@@ -196,7 +200,7 @@ for continuum_ms in continuum_mses:
     logprint("Gaincal iteration 2", origin='contim_selfcal')
     # iteration #2 of phase-only self-calibration
     selfcaliter = 2
-    caltable = '{0}_phase{1}_int.cal'.format(basename, selfcaliter)
+    caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
     if not os.path.exists(caltable):
         gaincal(vis=selfcal_ms,
                 caltable=caltable,

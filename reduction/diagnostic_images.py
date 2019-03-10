@@ -4,7 +4,7 @@ from functools import reduce
 import pylab as pl
 from astropy import visualization
 
-imnames = ['image', 'model', 'residual',]
+imnames = ['image', 'model', 'residual']
 
 def load_images(basename, crop=True):
 
@@ -37,14 +37,16 @@ def load_images(basename, crop=True):
 
 asinhn = visualization.ImageNormalize(stretch=visualization.AsinhStretch())
 
-def show(imgs, zoom=None, clear=True, norm=asinhn, **kwargs):
+def show(imgs, zoom=None, clear=True, norm=asinhn,
+         imnames_toplot=['image', 'model', 'residual', 'mask'],
+         **kwargs):
 
     if clear:
         pl.clf()
 
 
-    for ii,imn in enumerate(imnames):
-        ax = pl.subplot(1, len(imnames), ii+1)
+    for ii,imn in enumerate(imnames_toplot):
+        ax = pl.subplot(1, len(imnames_toplot), ii+1)
 
         if np.isscalar(zoom):
             shp = imgs[imn].shape
