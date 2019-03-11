@@ -15,14 +15,21 @@ import regions
 from spectral_cube import SpectralCube
 from astropy import units as u
 
-from taskinit import iatool
-ia = iatool()
+try:
+    from casatools import image
+    ia = image()
+except ImportError:
+    from taskinit import iatool
+    ia = iatool()
 
-def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir=""):
+def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
+                     suffix=""):
 
     regs = regions.read_ds9(os.path.join(almaimf_code_path,
-                                         'clean_regions/{0}_{1}.reg'.format(fieldname,
-                                                                            band_id)))
+                                         'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
+                                                                               band_id,
+                                                                               suffix
+                                                                              )))
 
     cube = SpectralCube.read(imname, format='casa_image')
     image = cube[0]

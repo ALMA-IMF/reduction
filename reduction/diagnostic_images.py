@@ -3,6 +3,7 @@ import numpy as np
 from functools import reduce
 import pylab as pl
 from astropy import visualization
+from astropy import units as u
 
 imnames = ['image', 'model', 'residual']
 
@@ -10,6 +11,9 @@ def load_images(basename, crop=True):
 
     cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0', format='casa_image')
              for imn in imnames}
+
+    assert hasattr(cubes['image'], 'beam'), "No beam found in cube!"
+    assert hasattr(cubes['image'], 'pixels_per_beam'), "No beam found in cube!"
 
     casamask = SpectralCube.read(f'{basename}.mask', format='casa_image')
     pb = SpectralCube.read(f'{basename}.pb.tt0', format='casa_image')
@@ -32,6 +36,9 @@ def load_images(basename, crop=True):
                     if crop else
                     cubes['mask'].with_mask(include_mask)[0])
     imgs['includemask'] = include_mask # the mask applied to the cube
+
+    # give up on the 'Slice' nature so we can change units
+    imgs['model'] = imgs['model'].quantity * cubes['image'].pixels_per_beam * u.pix / u.beam
 
     return imgs, cubes
 

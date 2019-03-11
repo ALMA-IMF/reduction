@@ -6,13 +6,18 @@ You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>
         If this parameter is set (to anything), the 7m data will not be
         included in the images if they are present.
+
+The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
+containing this file.
 """
 
 import os
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
+from make_custom_mask import make_custom_mask
 from tasks import tclean, exportfits, plotms
-from taskinit import msmdtool
+from taskinit import msmdtool, iatool
 msmd = msmdtool()
+ia = iatool()
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
@@ -34,6 +39,8 @@ for continuum_ms in continuum_mses:
 
     # strip off .cal.ms
     basename = os.path.split(continuum_ms[:-7])[1]
+
+    band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
 
     field = basename.split("_")[0]
 
@@ -71,6 +78,44 @@ for continuum_ms in continuum_mses:
 
 
     for robust in (-2, 0, 2):
+        imname = contimagename+"_robust{0}_dirty".format(robust)
+
+        if not os.path.exists(imname+".image.tt0"):
+            tclean(vis=continuum_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   gridder='mosaic',
+                   specmode='mfs',
+                   phasecenter=phasecenter,
+                   deconvolver='mtmfs',
+                   scales=[0,3,9,27,81],
+                   nterms=2,
+                   outframe='LSRK',
+                   veltype='radio',
+                   niter=0,
+                   usemask='pb',
+                   interactive=False,
+                   cell=cellsize,
+                   imsize=imsize,
+                   weighting='briggs',
+                   robust=robust,
+                   pbcor=True,
+                   antenna=antennae,
+                   pblimit=0.1,
+                  )
+
+            ia.open(imname+".image.tt0")
+            ia.sethistory(["{0}: {1}".format(key, val)
+                           for key, val in tclean.parameters.items()])
+            ia.close()
+
+        maskname = make_custom_mask(field, imname+".image.tt0",
+                                    os.getenv('ALMAIMF_ROOTDIR'),
+                                    band,
+                                    rootdir=imaging_root,
+                                    suffix='_dirty_robust{0}_{1}'.format(robust,
+                                                                         suffix)
+                                   )
         imname = contimagename+"_robust{0}".format(robust)
 
         if not os.path.exists(imname+".image.tt0"):
@@ -86,7 +131,8 @@ for continuum_ms in continuum_mses:
                    outframe='LSRK',
                    veltype='radio',
                    niter=10000,
-                   usemask='auto-multithresh',
+                   usemask='user',
+                   mask=maskname,
                    interactive=False,
                    cell=cellsize,
                    imsize=imsize,
@@ -94,7 +140,12 @@ for continuum_ms in continuum_mses:
                    robust=robust,
                    pbcor=True,
                    antenna=antennae,
+                   pblimit=0.1,
                   )
+            ia.open(imname+".image.tt0")
+            ia.sethistory(["{0}: {1}".format(key, val)
+                           for key, val in tclean.parameters.items()])
+            ia.close()
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
