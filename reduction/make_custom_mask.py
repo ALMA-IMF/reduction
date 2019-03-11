@@ -18,7 +18,7 @@ from astropy import units as u
 from taskinit import iatool
 ia = iatool()
 
-def make_custom_mask(fieldname, imname, almaimf_code_path, band_id):
+def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir=""):
 
     regs = regions.read_ds9(os.path.join(almaimf_code_path,
                                          'clean_regions/{0}_{1}.reg'.format(fieldname,
@@ -54,7 +54,7 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id):
 
     maskname = ('{fieldname}_{band_id}_clean_mask.mask'
                 .format(fieldname=fieldname, band_id=band_id))
-    assert ia.fromarray(outfile=maskname,
+    assert ia.fromarray(outfile=os.path.join(rootdir, maskname),
                         pixels=mask_array.astype('float')[:,:,None,None],
                         csys=cs.torecord(), overwrite=True)
     ia.close()

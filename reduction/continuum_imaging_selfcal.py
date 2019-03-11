@@ -138,7 +138,9 @@ for continuum_ms in continuum_mses:
 
     # make a custom mask
     maskname = make_custom_mask(field, imname+".image.tt0",
-                                os.getenv('ALMAIMF_ROOTDIR'), band)
+                                os.getenv('ALMAIMF_ROOTDIR'), band,
+                                rootdir=imaging_root,
+                               )
 
     selfcaliter = 1
     logprint("Gaincal iteration 1", origin='contim_selfcal')
