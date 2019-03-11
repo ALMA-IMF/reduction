@@ -25,6 +25,9 @@ import os
 import json
 import numpy as np
 
+import sys
+sys.path.append('.')
+
 from taskinit import casalog
 from taskinit import msmdtool
 from taskinit import mstool
@@ -60,6 +63,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
             assert len(np.unique(field)) == 1
             field = field[0]
 
+            # noinspection PyInterpreter
             frq0 = msmd.chanfreqs(0)
             for bb,(lo, hi) in bands.items():
                 try:
@@ -202,7 +206,10 @@ for band in bands:
                 # determine target widths
                 msmd.open(visfile)
                 ms.open(visfile)
-                targetwidth = 10e6 # 10 MHz
+                Synth_HPBW = 0.3 #Smallest synth HPBW among target sample in arcsec
+                PB_HPBW = 21. * (300. / bands[band][0]) # PB HPBW at lowest band freq
+                #targetwidth = 10e6 # 10 MHz
+                targetwidth = 0.25 * (Synth_HPBW / PB_HPBW) * bands[band][0] * 1e9 # 98% BW smearing criterion
                 widths = []
                 freqs = {}
                 for spw in spws:
