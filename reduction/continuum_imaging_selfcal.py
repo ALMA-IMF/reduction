@@ -163,6 +163,9 @@ for continuum_ms in continuum_mses:
                  applymode='calonly',
                  calwt=True)
 
+        # do not run the clean if no mask exists
+        assert os.path.exists(maskname)
+
         # do this even if the output file exists: we need to populate the
         # modelcolumn
         tclean(vis=selfcal_ms,
@@ -220,6 +223,8 @@ for continuum_ms in continuum_mses:
                  applymode='calonly',
                  calwt=True)
 
+        # do not run the clean if no mask exists
+        assert os.path.exists(maskname)
 
         # do this even if the output file exists: we need to populate the
         # modelcolumn

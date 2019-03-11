@@ -54,7 +54,11 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir=""):
 
     maskname = ('{fieldname}_{band_id}_clean_mask.mask'
                 .format(fieldname=fieldname, band_id=band_id))
-    assert ia.fromarray(outfile=os.path.join(rootdir, maskname),
+    # add a root directory if there is one
+    # (if rootdir == "", this just returns maskname)
+    maskname = os.path.join(rootdir, maskname)
+
+    assert ia.fromarray(outfile=maskname,
                         pixels=mask_array.astype('float')[:,:,None,None],
                         csys=cs.torecord(), overwrite=True)
     ia.close()
