@@ -15,7 +15,6 @@ def load_images(basename, crop=True):
     assert hasattr(cubes['image'], 'beam'), "No beam found in cube!"
     assert hasattr(cubes['image'], 'pixels_per_beam'), "No beam found in cube!"
 
-    casamask = SpectralCube.read(f'{basename}.mask', format='casa_image')
     pb = SpectralCube.read(f'{basename}.pb.tt0', format='casa_image')
 
 
@@ -24,17 +23,26 @@ def load_images(basename, crop=True):
     #include_mask = cubes['residual'] != 0*cubes['residual'].unit
     include_mask = pb > 0.05*pb.unit
 
-    cubes['mask'] = casamask
     cubes['pb'] = pb
+
 
     imgs = {imn:
             cubes[imn].with_mask(include_mask).minimal_subcube()[0]
             if crop else
             cubes[imn].with_mask(include_mask)[0]
             for imn in imnames}
-    imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
-                    if crop else
-                    cubes['mask'].with_mask(include_mask)[0])
+
+
+    try:
+        casamask = SpectralCube.read(f'{basename}.mask', format='casa_image')
+        cubes['mask'] = casamask
+        imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
+                        if crop else
+                        cubes['mask'].with_mask(include_mask)[0])
+    except AssertionError:
+        # this implies there is no mask
+        pass
+
     imgs['includemask'] = include_mask # the mask applied to the cube
 
     # give up on the 'Slice' nature so we can change units
@@ -45,12 +53,15 @@ def load_images(basename, crop=True):
 asinhn = visualization.ImageNormalize(stretch=visualization.AsinhStretch())
 
 def show(imgs, zoom=None, clear=True, norm=asinhn,
-         imnames_toplot=['image', 'model', 'residual', 'mask'],
+         imnames_toplot=('image', 'model', 'residual', 'mask'),
          **kwargs):
 
     if clear:
         pl.clf()
 
+    if 'mask' not in imgs:
+        imnames_toplot = list(imnames_toplot)
+        imnames_toplot.remove('mask')
 
     for ii,imn in enumerate(imnames_toplot):
         ax = pl.subplot(1, len(imnames_toplot), ii+1)
@@ -68,7 +79,7 @@ def show(imgs, zoom=None, clear=True, norm=asinhn,
         ax.imshow(imgs[imn].value[view], origin='lower', interpolation='none',
                   norm=norm, **kwargs)
 
-        if imn == 'model':
+        if imn == 'model' and 'mask' in imgs:
             ax.contour(imgs['mask'].value[view], levels=[0.5], colors=['w'])
 
         pl.title(imn)
