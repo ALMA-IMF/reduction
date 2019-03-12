@@ -105,8 +105,9 @@ for continuum_ms in continuum_mses:
                   )
 
             ia.open(imname+".image.tt0")
-            ia.sethistory(["{0}: {1}".format(key, val)
-                           for key, val in tclean.parameters.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   tclean.parameters.items()])
             ia.close()
 
         maskname = make_custom_mask(field, imname+".image.tt0",
@@ -143,8 +144,9 @@ for continuum_ms in continuum_mses:
                    pblimit=0.1,
                   )
             ia.open(imname+".image.tt0")
-            ia.sethistory(["{0}: {1}".format(key, val)
-                           for key, val in tclean.parameters.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   tclean.parameters.items()])
             ia.close()
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")

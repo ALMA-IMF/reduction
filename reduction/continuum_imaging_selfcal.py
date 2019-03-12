@@ -130,8 +130,9 @@ for continuum_ms in continuum_mses:
               )
 
         ia.open(imname+".image.tt0")
-        ia.sethistory(["{0}: {1}".format(key, val)
-                       for key, val in tclean.parameters.items()])
+        ia.sethistory(origin='almaimf_cont_selfcal',
+                      history=["{0}: {1}".format(key, val) for key, val in
+                               tclean.parameters.items()])
         ia.close()
 
     maskname = make_custom_mask(field, imname+".image.tt0",
@@ -170,14 +171,15 @@ for continuum_ms in continuum_mses:
                datacolumn='data',
               )
         ia.open(imname+".image.tt0")
-        ia.sethistory(["{0}: {1}".format(key, val)
-                       for key, val in tclean.parameters.items()])
+        ia.sethistory(origin='almaimf_cont_selfcal',
+                      history=["{0}: {1}".format(key, val) for key, val in
+                               tclean.parameters.items()])
         ia.close()
 
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
     else:
-        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
+        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_selfcal')
 
     # make a custom mask
     maskname = make_custom_mask(field, imname+".image.tt0",
@@ -237,8 +239,9 @@ for continuum_ms in continuum_mses:
                datacolumn='corrected', # now use corrected data
               )
         ia.open(imname+".image.tt0")
-        ia.sethistory(["{0}: {1}".format(key, val)
-                       for key, val in tclean.parameters.items()])
+        ia.sethistory(origin='almaimf_cont_selfcal',
+                      history=["{0}: {1}".format(key, val) for key, val in
+                               tclean.parameters.items()])
         ia.close()
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
@@ -300,8 +303,9 @@ for continuum_ms in continuum_mses:
                datacolumn='corrected', # now use corrected data
               )
         ia.open(imname+".image.tt0")
-        ia.sethistory(["{0}: {1}".format(key, val)
-                       for key, val in tclean.parameters.items()])
+        ia.sethistory(origin='almaimf_cont_selfcal',
+                      history=["{0}: {1}".format(key, val) for key, val in
+                               tclean.parameters.items()])
         ia.close()
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
