@@ -12,6 +12,7 @@ containing this file.
 """
 
 import os
+import metadata_tools
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 from tasks import tclean, exportfits, plotms
@@ -28,6 +29,9 @@ if 'exclude_7m' not in locals():
         exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
     else:
         exclude_7m = False
+
+if os.getenv('ALMAIMF_ROOTDIR') is None:
+    os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
 
 
 # load the list of continuum MSes from a file

@@ -12,8 +12,7 @@ containing this file.
 """
 
 import os
-import sys
-print(sys.path)
+import metadata_tools
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 
@@ -39,6 +38,10 @@ if 'exclude_7m' not in locals():
     else:
         exclude_7m = False
         array = '7M12M'
+
+if os.getenv('ALMAIMF_ROOTDIR') is None:
+    os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+
 
 logprint("Beginning selfcal script", origin='contim_selfcal')
 
