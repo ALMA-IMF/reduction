@@ -179,7 +179,7 @@ for continuum_ms in continuum_mses:
                                # negativethreshold=0.0,
                                # noisethreshold=3.0,lownoisethreshold=0.5,
                                # usemask='auto-multithresh',
-                               interactive=True,
+                               interactive=False,
                                cell=cellsize,
                                imsize=imsize,
                                weighting='briggs',
