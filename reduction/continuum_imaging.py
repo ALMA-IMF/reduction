@@ -64,10 +64,10 @@ for continuum_ms in continuum_mses:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
-        suffix = '12M'
+        arrayname = '12M'
     else:
         antennae = ""
-        suffix = '7M12M'
+        arrayname = '7M12M'
 
     coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -78,7 +78,7 @@ for continuum_ms in continuum_mses:
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
-    contimagename = os.path.join(imaging_root, basename) + "_" + suffix
+    contimagename = os.path.join(imaging_root, basename) + "_" + arrayname
 
     if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
         # make a diagnostic plot to show the UV distribution
@@ -129,7 +129,7 @@ for continuum_ms in continuum_mses:
                                     band,
                                     rootdir=imaging_root,
                                     suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                         suffix)
+                                                                         arrayname)
                                    )
         imname = contimagename+"_robust{0}".format(robust)
 
