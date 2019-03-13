@@ -29,7 +29,7 @@ else:
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
-from tasks import tclean, exportfits, plotms
+from tasks import tclean, exportfits, plotms, split
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
 ia = iatool()
@@ -64,6 +64,13 @@ for continuum_ms in continuum_mses:
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
         arrayname = '12M'
+
+        # split out the 12M-only data to make further processing slightly
+        # faster
+        new_continuum_ms = continuum_ms.replace(".cal.ms", "_12M.cal.ms")
+        split(vis=continuum_ms, outputvis=new_continuum_ms, antenna=antennae,
+              field=field, datacolumn='data')
+        continuum_ms = new_continuum_ms
     else:
         antennae = ""
         arrayname = '7M12M'

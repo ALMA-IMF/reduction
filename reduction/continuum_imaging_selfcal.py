@@ -27,6 +27,8 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
 else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
+import numpy as np
+
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
@@ -71,25 +73,48 @@ for continuum_ms in continuum_mses:
 
     band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
 
-    # create a downsampled split MS
-    selfcal_ms = basename+"_selfcal.ms"
-    if not os.path.exists(selfcal_ms):
-        split(vis=continuum_ms,
-              outputvis=selfcal_ms,
-              width=8, # assumed input is 10 MHz wide, we can go to 80 MHz pretty safely (https://safe.nrao.edu/wiki/pub/Main/RadioTutorial/BandwidthSmearing.pdf)
-              datacolumn='data',
-             )
-
     field = basename.split("_")[0]
 
     if exclude_7m:
-        msmd.open(selfcal_ms)
+        msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
         arrayname = '12M'
     else:
         antennae = ""
         arrayname = '7M12M'
+
+    # create a downsampled split MS
+    # A different MS will be used for the 12M-only and 7M+12M data
+    selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
+    if not os.path.exists(selfcal_ms):
+
+        msmd.open(continuum_ms)
+        fdm_spws = msmd.fdmspws()
+        bws = msmd.bandwidths()[fdm_spws]
+        spwstr = ",".join(map(str, fdm_spws))
+        freqs = [msmd.reffreq(spw)['m0']['value'] for spw in fdm_spws]
+        chwids = [np.mean(msmd.chanwidths(spw)) for spw in fdm_spws]
+
+        # using Roberto's numbers
+        # https://science.nrao.edu/facilities/vla/docs/manuals/oss2016A/performance/fov/bw-smearing
+        Synth_HPBW = 0.3 # Smallest synth HPBW among target sample in arcsec
+        #PB_HPBW = 21. * (300. / minfrq) # PB HPBW at lowest band freq (arcsec)
+        #targetwidth = 0.25 * (Synth_HPBW / PB_HPBW) * minfrq # 98% BW smearing criterion
+
+        width = [int(np.abs(0.25 * (Synth_HPBW / (21. * (300e9 / frq))) * frq / chwid))
+                 for frq, chwid in zip(freqs, chwids)]
+
+        msmd.close()
+
+        split(vis=continuum_ms,
+              outputvis=selfcal_ms,
+              datacolumn='data',
+              antenna=antennae,
+              spw=spwstr,
+              width=width,
+             )
+
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
