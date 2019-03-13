@@ -106,6 +106,10 @@ for continuum_ms in continuum_mses:
 
         width = [int(np.abs(0.25 * (Synth_HPBW / (21. * (300e9 / frq))) * frq / chwid))
                  for frq, chwid in zip(freqs, chwids)]
+        # do not allow downsampling below 1/2 original width because that drops
+        # edge channels sometimes
+        width = [ww if float(ww)/msmd.nchan(spw) < 0.5 else int(msmd.nchan(spw)/2)
+                 for ww, spw in zip(width, fdm_spws)]
 
         msmd.close()
 
