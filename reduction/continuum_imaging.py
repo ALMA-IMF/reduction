@@ -29,6 +29,7 @@ else:
 import metadata_tools
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
+from imaging_parameters import imaging_parameters
 from tasks import tclean, exportfits, plotms
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
@@ -93,30 +94,28 @@ for continuum_ms in continuum_mses:
 
 
     for robust in (-2, 0, 2):
+
+        impars = imaging_parameters["{0}_{1}_{2}_robust{3}".format(field, band,
+                                                                   arrayname,
+                                                                   robust)]
+        dirty_impars = copy.copy(impars)
+        dirty_impars['niter'] = 0
+
         imname = contimagename+"_robust{0}_dirty".format(robust)
 
         if not os.path.exists(imname+".image.tt0"):
             tclean(vis=continuum_ms,
                    field=field.encode(),
                    imagename=imname,
-                   gridder='mosaic',
-                   specmode='mfs',
                    phasecenter=phasecenter,
-                   deconvolver='mtmfs',
-                   scales=[0,3,9,27,81],
-                   nterms=2,
                    outframe='LSRK',
                    veltype='radio',
-                   niter=0,
                    usemask='pb',
                    interactive=False,
                    cell=cellsize,
                    imsize=imsize,
-                   weighting='briggs',
-                   robust=robust,
-                   pbcor=True,
                    antenna=antennae,
-                   pblimit=0.1,
+                   **dirty_impars
                   )
 
             ia.open(imname+".image.tt0")
@@ -138,25 +137,16 @@ for continuum_ms in continuum_mses:
             tclean(vis=continuum_ms,
                    field=field.encode(),
                    imagename=imname,
-                   gridder='mosaic',
-                   specmode='mfs',
                    phasecenter=phasecenter,
-                   deconvolver='mtmfs',
-                   scales=[0,3,9,27,81],
-                   nterms=2,
                    outframe='LSRK',
                    veltype='radio',
-                   niter=10000,
                    usemask='user',
                    mask=maskname,
                    interactive=False,
                    cell=cellsize,
                    imsize=imsize,
-                   weighting='briggs',
-                   robust=robust,
-                   pbcor=True,
                    antenna=antennae,
-                   pblimit=0.1,
+                   **impars
                   )
             ia.open(imname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_imaging',

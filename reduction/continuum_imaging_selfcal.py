@@ -12,6 +12,7 @@ containing this file.
 """
 
 import os
+import copy
 
 if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
@@ -28,6 +29,7 @@ else:
 
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
+from imaging_parameters import imaging_parameters
 
 from tasks import tclean, plotms, split
 
@@ -83,10 +85,10 @@ for continuum_ms in continuum_mses:
         msmd.open(selfcal_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
-        suffix = '12M'
+        arrayname = '12M'
     else:
         antennae = ""
-        suffix = '7M12M'
+        arrayname = '7M12M'
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -97,7 +99,7 @@ for continuum_ms in continuum_mses:
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
-    contimagename = os.path.join(imaging_root, basename) + "_" + suffix
+    contimagename = os.path.join(imaging_root, basename) + "_" + arrayname
 
     if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
         # make a diagnostic plot to show the UV distribution
@@ -115,31 +117,29 @@ for continuum_ms in continuum_mses:
     # only do robust = 0
     robust = 0
 
+    impars = imaging_parameters["{0}_{1}_{2}_robust{3}".format(field, band,
+                                                               arrayname,
+                                                               robust)]
+    dirty_impars = copy.copy(impars)
+    dirty_impars['niter'] = 0
+
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
         tclean(vis=continuum_ms,
                field=field.encode(),
                imagename=imname,
-               gridder='mosaic',
-               specmode='mfs',
                phasecenter=phasecenter,
-               deconvolver='mtmfs',
-               scales=[0,3,9,27,81],
-               nterms=2,
                outframe='LSRK',
                veltype='radio',
-               niter=0,
                usemask='pb',
                interactive=False,
                cell=cellsize,
                imsize=imsize,
-               weighting='briggs',
-               robust=robust,
                pbcor=True,
                antenna=antennae,
-               pblimit=0.1,
                datacolumn='data',
+               **dirty_impars
               )
 
         ia.open(imname+".image.tt0")
@@ -153,7 +153,7 @@ for continuum_ms in continuum_mses:
                                 band,
                                 rootdir=imaging_root,
                                 suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                     suffix)
+                                                                     arrayname)
                                )
     imname = contimagename+"_robust{0}".format(robust)
 
@@ -161,27 +161,18 @@ for continuum_ms in continuum_mses:
         tclean(vis=continuum_ms,
                field=field.encode(),
                imagename=imname,
-               gridder='mosaic',
-               specmode='mfs',
                phasecenter=phasecenter,
-               deconvolver='mtmfs',
-               scales=[0,3,9,27,81],
-               nterms=2,
                outframe='LSRK',
                veltype='radio',
-               niter=10000,
                usemask='user',
                mask=maskname,
                interactive=False,
                cell=cellsize,
                imsize=imsize,
-               weighting='briggs',
-               robust=robust,
-               pbcor=True,
                antenna=antennae,
-               pblimit=0.1,
                savemodel='modelcolumn',
                datacolumn='data',
+               **impars
               )
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
@@ -229,27 +220,18 @@ for continuum_ms in continuum_mses:
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
-               gridder='mosaic',
-               specmode='mfs',
                phasecenter=phasecenter,
-               deconvolver='mtmfs',
-               scales=[0,3,9,27,81],
-               nterms=2,
                outframe='LSRK',
                veltype='radio',
-               niter=10000,
                usemask='user',
                mask=maskname,
                interactive=False,
                cell=cellsize,
                imsize=imsize,
-               weighting='briggs',
-               robust=robust,
-               pbcor=True,
                antenna=antennae,
-               pblimit=0.1,
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
+               **impars
               )
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
@@ -293,27 +275,18 @@ for continuum_ms in continuum_mses:
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
-               gridder='mosaic',
-               specmode='mfs',
                phasecenter=phasecenter,
-               deconvolver='mtmfs',
-               scales=[0,3,9,27,81],
-               nterms=2,
                outframe='LSRK',
                veltype='radio',
-               niter=10000,
                usemask='user',
                mask=maskname,
                interactive=False,
                cell=cellsize,
                imsize=imsize,
-               weighting='briggs',
-               robust=robust,
-               pbcor=True,
                antenna=antennae,
-               pblimit=0.1,
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
+               **impars
               )
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
