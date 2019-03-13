@@ -86,6 +86,8 @@ for continuum_ms in continuum_mses:
 
     # create a downsampled split MS
     # A different MS will be used for the 12M-only and 7M+12M data
+    # (much of the processing time is writing models to the MS, which takes a
+    # long time even if 7M antennae are selected out)
     selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
     if not os.path.exists(selfcal_ms):
 
@@ -113,6 +115,7 @@ for continuum_ms in continuum_mses:
               antenna=antennae,
               spw=spwstr,
               width=width,
+              field=field,
              )
 
 
