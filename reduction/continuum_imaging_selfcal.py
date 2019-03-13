@@ -145,7 +145,7 @@ for continuum_ms in continuum_mses:
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
-                               tclean.parameters.items()])
+                               impars.items()])
         ia.close()
 
     maskname = make_custom_mask(field, imname+".image.tt0",
@@ -177,7 +177,7 @@ for continuum_ms in continuum_mses:
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
-                               tclean.parameters.items()])
+                               impars.items()])
         ia.close()
 
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
@@ -236,7 +236,7 @@ for continuum_ms in continuum_mses:
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
-                               tclean.parameters.items()])
+                               impars.items()])
         ia.close()
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
@@ -291,7 +291,7 @@ for continuum_ms in continuum_mses:
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
-                               tclean.parameters.items()])
+                               impars.items()])
         ia.close()
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
