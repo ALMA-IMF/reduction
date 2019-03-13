@@ -7,6 +7,8 @@ You can set the following environmental variables for this script:
         If this parameter is set (to anything), the 7m data will not be
         included in the images if they are present.
 """
+import sys
+sys.path.append('.')
 
 import os
 import json
@@ -20,10 +22,11 @@ if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
 if 'exclude_7m' not in locals():
-    exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
+    exclude_7m=bool(os.getenv('exclude_7m'))
 
 logprint("exclude_7m={0}".format(exclude_7m),
          origin='almaimf_contimg_both')
+
 
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
@@ -40,7 +43,6 @@ for continuum_ms in continuum_mses:
     if exclude_7m:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
-        assert ",," not in antennae
         msmd.close()
         suffix = '12M'
     else:
@@ -51,7 +53,7 @@ for continuum_ms in continuum_mses:
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
     (dra,ddec,pixscale) = list(determine_imsize(ms=continuum_ms, field=field,
                                                 phasecenter=(racen,deccen),
-                                                spw=0, exclude_7m=exclude_7m))#, pixfraction_of_fwhm=1/4.))
+                                                spw=0))#, pixfraction_of_fwhm=1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
@@ -69,10 +71,12 @@ for continuum_ms in continuum_mses:
                antenna=antennae,
               )
 
+
 # ----------------------------------------------
 # CLEAN FOR THE 'CLEANEST' CONTINUUM:
 
-    for robust in (-2, 0, 2):
+    for robust in [-2, 0, 2]:
+    #for robust in [0]:
         imname = contimagename+"_robust{0}".format(robust)+"_cleanest"
         logprint("Im={0}".format(imname),
                  origin='almaimf_contimg_both')
@@ -147,14 +151,20 @@ for continuum_ms in continuum_mses:
                         msmd.open(cms)
                         antenna_list.append(",".join([x for x in msmd.antennanames() if 'CM' not in x]))
                         msmd.close()
-                    antennae = ",".join(antenna_list)
+                    antennae = antenna_list
                 else:
-                    antennae = ""
+                    antenna_list = []
+                    for cms in continuum_ms_all:
+                        msmd.open(cms)
+                        antenna_list = ""
+                        msmd.close()
+                    antennae = antenna_list
 
 
                 logprint("Antennae={0}".format(antennae),
                          origin='almaimf_contimg_both')
-                for robust in (-2, 0, 2):
+                for robust in [-2, 0, 2]:
+                #for robust in [0]:
                     imname = contimagename+"_robust{0}".format(robust)+"_bsens"
                     logprint("Im={0}".format(imname,continuum_ms_all),
                              origin='almaimf_contimg_both')
@@ -179,7 +189,7 @@ for continuum_ms in continuum_mses:
                                # negativethreshold=0.0,
                                # noisethreshold=3.0,lownoisethreshold=0.5,
                                # usemask='auto-multithresh',
-                               interactive=True,
+                               interactive=False, #True
                                cell=cellsize,
                                imsize=imsize,
                                weighting='briggs',
