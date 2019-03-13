@@ -1,5 +1,10 @@
 import numpy as np
-from casa import table as tb
+try:
+    from casatools import table
+    tb = table()
+except ImportError:
+    from taskinit import tbtool
+    tb = tbtool()
 
 def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.):
     """

@@ -13,6 +13,7 @@ containing this file.
 
 import os
 import copy
+import sys
 
 if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
@@ -24,7 +25,6 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    import sys
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
 from metadata_tools import determine_imsize, determine_phasecenter, logprint

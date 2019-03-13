@@ -1,4 +1,4 @@
-imaging_parameter = {
+imaging_parameters = {
     'W51-E_B6_12M_robust0': {'threshold': '2mJy', # RMS ~ 0.5-0.6 mJy
                              'pblimit': 0.1,
                              'niter': 10000,
