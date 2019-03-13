@@ -12,7 +12,20 @@ containing this file.
 """
 
 import os
-import metadata_tools
+
+if os.getenv('ALMAIMF_ROOTDIR') is None:
+    try:
+        import metadata_tools
+        os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+    except ImportError:
+        raise ValueError("metadata_tools not found on path; make sure to "
+                         "specify ALMAIMF_ROOTDIR environment variable "
+                         "or your PYTHONPATH variable to include the directory"
+                         " containing the ALMAIMF code.")
+else:
+    import sys
+    sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 
@@ -38,9 +51,6 @@ if 'exclude_7m' not in locals():
     else:
         exclude_7m = False
         array = '7M12M'
-
-if os.getenv('ALMAIMF_ROOTDIR') is None:
-    os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
 
 
 logprint("Beginning selfcal script", origin='contim_selfcal')
