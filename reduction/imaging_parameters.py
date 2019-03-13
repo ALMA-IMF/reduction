@@ -4,7 +4,7 @@ imaging_parameters = {
                              'niter': 10000,
                              'robust': 0,
                              'weighting': 'briggs',
-                             'scales': [0,3,9,27,81],
+                             'scales': [0,3,9],
                              'gridder': 'mosaic',
                              'specmode': 'mfs',
                              'deconvolver': 'mtmfs',
