@@ -30,6 +30,7 @@ else:
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
+from selfcal_heuristics import goodenough_field_solutions
 
 from tasks import tclean, plotms, split
 
@@ -206,11 +207,12 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_selfcal1".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
-        applycal(vis=selfcal_ms,
-                 gaintable=[caltable],
-                 interp='linear',
-                 applymode='calonly',
-                 calwt=True)
+        okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
+        okfields_str = ",".join(["{0}".format(x) for x in okfields])
+        logprint("Fields {0} had min snr 5, fields {1} did not"
+                 .format(okfields, notokfields), origin='contim_selfcal')
+        applycal(vis=selfcal_ms, field=okfields_str, gaintable=[caltable],
+                 interp="linear", applymode='calonly', calwt=False)
 
         # do not run the clean if no mask exists
         assert os.path.exists(maskname)
@@ -261,11 +263,12 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_selfcal{1}".format(robust, selfcaliter)
 
     if not os.path.exists(imname+".image.tt0"):
-        applycal(vis=selfcal_ms,
-                 gaintable=[caltable],
-                 interp='linear',
-                 applymode='calonly',
-                 calwt=True)
+        okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
+        okfields_str = ",".join(["{0}".format(x) for x in okfields])
+        logprint("Fields {0} had min snr 5, fields {1} did not"
+                 .format(okfields, notokfields), origin='contim_selfcal')
+        applycal(vis=selfcal_ms, field=okfields_str, gaintable=[caltable],
+                 interp="linear", applymode='calonly', calwt=False)
 
         # do not run the clean if no mask exists
         assert os.path.exists(maskname)

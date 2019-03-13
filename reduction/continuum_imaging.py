@@ -26,7 +26,6 @@ else:
     import sys
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
-import metadata_tools
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
