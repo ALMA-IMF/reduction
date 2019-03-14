@@ -121,6 +121,7 @@ for continuum_ms in continuum_mses:
                    cell=cellsize,
                    imsize=imsize,
                    antenna=antennae,
+                   pbcor=True,
                    **dirty_impars
                   )
 
@@ -152,6 +153,7 @@ for continuum_ms in continuum_mses:
                    cell=cellsize,
                    imsize=imsize,
                    antenna=antennae,
+                   pbcor=True,
                    **impars
                   )
             ia.open(imname+".image.tt0")

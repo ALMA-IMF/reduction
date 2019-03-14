@@ -205,6 +205,7 @@ for continuum_ms in continuum_mses:
                antenna=antennae,
                savemodel='modelcolumn',
                datacolumn='data',
+               pbcor=True,
                **impars
               )
         ia.open(imname+".image.tt0")
@@ -265,6 +266,7 @@ for continuum_ms in continuum_mses:
                antenna=antennae,
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
+               pbcor=True,
                **impars
               )
         ia.open(imname+".image.tt0")
@@ -329,6 +331,7 @@ for continuum_ms in continuum_mses:
                antenna=antennae,
                savemodel='modelcolumn',
                datacolumn='corrected', # now use corrected data
+               pbcor=True,
                **impars
               )
         ia.open(imname+".image.tt0")
