@@ -219,126 +219,79 @@ for continuum_ms in continuum_mses:
     else:
         logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_selfcal')
 
-    # make a custom mask
+    # make a custom mask using the first-pass clean
+    # (note: this will be replaced after each iteration if there is a file with
+    # the appropriate name)
     maskname = make_custom_mask(field, imname+".image.tt0",
                                 os.getenv('ALMAIMF_ROOTDIR'), band,
                                 rootdir=imaging_root,
                                )
 
-    selfcaliter = 1
-    logprint("Gaincal iteration 1", origin='contim_selfcal')
-    # iteration #1 of phase-only self-calibration
-    caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
-    if not os.path.exists(caltable):
-        gaincal(vis=selfcal_ms,
-                caltable=caltable,
-                solint='int',
-                gaintype='G',
-                calmode='p',
-                solnorm=True)
+    for selfcaliter in (1,2,3):
 
-    imname = contimagename+"_robust{0}_selfcal1".format(robust)
+        logprint("Gaincal iteration {0}".format(selfcaliter),
+                 origin='contim_selfcal')
+        # iteration #1 of phase-only self-calibration
+        caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
+        if not os.path.exists(caltable):
+            gaincal(vis=selfcal_ms,
+                    caltable=caltable,
+                    solint='int',
+                    gaintype='G',
+                    calmode='p',
+                    solnorm=True)
 
-    if not os.path.exists(imname+".image.tt0"):
-        okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
-        okfields_str = ",".join(["{0}".format(x) for x in okfields])
-        logprint("Fields {0} had min snr 5, fields {1} did not"
-                 .format(okfields, notokfields), origin='contim_selfcal')
-        applycal(vis=selfcal_ms, field=okfields_str, gaintable=[caltable],
-                 interp="linear", applymode='calonly', calwt=False)
+        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
+                                                              selfcaliter)
 
-        # do not run the clean if no mask exists
-        assert os.path.exists(maskname)
+        if not os.path.exists(imname+".image.tt0"):
+            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
+            okfields_str = ",".join(["{0}".format(x) for x in okfields])
+            logprint("Fields {0} had min snr 5, fields {1} did not"
+                     .format(okfields, notokfields), origin='contim_selfcal')
+            applycal(vis=selfcal_ms, field=okfields_str, gaintable=[caltable],
+                     interp="linear", applymode='calonly', calwt=False)
 
-        # do this even if the output file exists: we need to populate the
-        # modelcolumn
-        tclean(vis=selfcal_ms,
-               field=field.encode(),
-               imagename=imname,
-               phasecenter=phasecenter,
-               outframe='LSRK',
-               veltype='radio',
-               usemask='user',
-               mask=maskname,
-               interactive=False,
-               cell=cellsize,
-               imsize=imsize,
-               antenna=antennae,
-               savemodel='modelcolumn',
-               datacolumn='corrected', # now use corrected data
-               pbcor=True,
-               **impars
-              )
-        ia.open(imname+".image.tt0")
-        ia.sethistory(origin='almaimf_cont_selfcal',
-                      history=["{0}: {1}".format(key, val) for key, val in
-                               impars.items()])
-        ia.close()
-        # overwrite=True because these could already exist
-        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
-        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+            # do not run the clean if no mask exists
+            assert os.path.exists(maskname)
 
+            # do this even if the output file exists: we need to populate the
+            # modelcolumn
+            tclean(vis=selfcal_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   usemask='user',
+                   mask=maskname,
+                   interactive=False,
+                   cell=cellsize,
+                   imsize=imsize,
+                   antenna=antennae,
+                   savemodel='modelcolumn',
+                   datacolumn='corrected', # now use corrected data
+                   pbcor=True,
+                   **impars
+                  )
+            ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   impars.items()])
+            ia.close()
+            # overwrite=True because these could already exist
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
 
-    # do a second iteration, because the first was pretty effective
-    # This second iteration should have very little effect
-
-    logprint("Gaincal iteration 2", origin='contim_selfcal')
-    # iteration #2 of phase-only self-calibration
-    selfcaliter = 2
-    caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
-    if not os.path.exists(caltable):
-        gaincal(vis=selfcal_ms,
-                caltable=caltable,
-                solint='int',
-                gaintype='G',
-                calmode='p',
-                solnorm=True)
-
-    maskname = make_custom_mask(field, imname+".image.tt0",
-                                os.getenv('ALMAIMF_ROOTDIR'),
-                                band,
-                                rootdir=imaging_root,
-                                suffix='_selfcal1_robust{0}_{1}'.format(robust,
-                                                                        arrayname)
-                               )
-
-    imname = contimagename+"_robust{0}_selfcal{1}".format(robust, selfcaliter)
-
-    if not os.path.exists(imname+".image.tt0"):
-        okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
-        okfields_str = ",".join(["{0}".format(x) for x in okfields])
-        logprint("Fields {0} had min snr 5, fields {1} did not"
-                 .format(okfields, notokfields), origin='contim_selfcal')
-        applycal(vis=selfcal_ms, field=okfields_str, gaintable=[caltable],
-                 interp="linear", applymode='calonly', calwt=False)
-
-        # do not run the clean if no mask exists
-        assert os.path.exists(maskname)
-
-        # do this even if the output file exists: we need to populate the
-        # modelcolumn
-        tclean(vis=selfcal_ms,
-               field=field.encode(),
-               imagename=imname,
-               phasecenter=phasecenter,
-               outframe='LSRK',
-               veltype='radio',
-               usemask='user',
-               mask=maskname,
-               interactive=False,
-               cell=cellsize,
-               imsize=imsize,
-               antenna=antennae,
-               savemodel='modelcolumn',
-               datacolumn='corrected', # now use corrected data
-               pbcor=True,
-               **impars
-              )
-        ia.open(imname+".image.tt0")
-        ia.sethistory(origin='almaimf_cont_selfcal',
-                      history=["{0}: {1}".format(key, val) for key, val in
-                               impars.items()])
-        ia.close()
-        # overwrite=True because these could already exist
-        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
-        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+        regsuffix = '_selfcal1_robust{0}_{1}'.format(robust, arrayname)
+        regfn = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                             'clean_regions/{0}_{1}{2}.reg'.format(field,
+                                                                   band,
+                                                                   regsuffix))
+        if os.path.exists(regfn):
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        os.getenv('ALMAIMF_ROOTDIR'),
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix=regsuffix
+                                       )
