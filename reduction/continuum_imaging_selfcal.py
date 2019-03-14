@@ -292,6 +292,14 @@ for continuum_ms in continuum_mses:
                 calmode='p',
                 solnorm=True)
 
+    maskname = make_custom_mask(field, imname+".image.tt0",
+                                os.getenv('ALMAIMF_ROOTDIR'),
+                                band,
+                                rootdir=imaging_root,
+                                suffix='_selfcal1_robust{0}_{1}'.format(robust,
+                                                                        arrayname)
+                               )
+
     imname = contimagename+"_robust{0}_selfcal{1}".format(robust, selfcaliter)
 
     if not os.path.exists(imname+".image.tt0"):

@@ -59,8 +59,9 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
     cs = ia.coordsys()
     ia.close()
 
-    maskname = ('{fieldname}_{band_id}_clean_mask.mask'
-                .format(fieldname=fieldname, band_id=band_id))
+    maskname = ('{fieldname}_{band_id}{suffix}_mask.mask'
+                .format(fieldname=fieldname, band_id=band_id,
+                        suffix=suffix))
     # add a root directory if there is one
     # (if rootdir == "", this just returns maskname)
     maskname = os.path.join(rootdir, maskname)
