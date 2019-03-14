@@ -14,6 +14,7 @@ import numpy as np
 import regions
 from spectral_cube import SpectralCube
 from astropy import units as u
+from metadata_tools import logprint
 
 try:
     from casatools import image
@@ -25,11 +26,14 @@ except ImportError:
 def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
                      suffix=""):
 
-    regs = regions.read_ds9(os.path.join(almaimf_code_path,
-                                         'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
-                                                                               band_id,
-                                                                               suffix
-                                                                              )))
+    regfn = os.path.join(almaimf_code_path,
+                         'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
+                                                               band_id,
+                                                               suffix))
+    regs = regions.read_ds9(regfn)
+
+    logprint("Using region file {0} to create mask".format(regfn),
+             origin='make_custom_mask')
 
     cube = SpectralCube.read(imname, format='casa_image')
     image = cube[0]
@@ -59,8 +63,9 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
     cs = ia.coordsys()
     ia.close()
 
-    maskname = ('{fieldname}_{band_id}_clean_mask.mask'
-                .format(fieldname=fieldname, band_id=band_id))
+    maskname = ('{fieldname}_{band_id}{suffix}_mask.mask'
+                .format(fieldname=fieldname, band_id=band_id,
+                        suffix=suffix))
     # add a root directory if there is one
     # (if rootdir == "", this just returns maskname)
     maskname = os.path.join(rootdir, maskname)
