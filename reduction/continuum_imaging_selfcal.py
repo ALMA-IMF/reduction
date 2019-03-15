@@ -29,7 +29,8 @@ else:
 
 import numpy as np
 
-from metadata_tools import determine_imsize, determine_phasecenter, logprint
+from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
+                            check_model_is_populated)
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
 from selfcal_heuristics import goodenough_field_solutions
@@ -121,6 +122,16 @@ for continuum_ms in continuum_mses:
               width=width,
               field=field,
              )
+
+        msmd.open(selfcal_ms)
+        antenna_diameters = msmd.antennadiameter()
+        if exclude_7m:
+            for ant in antenna_diameters.values():
+                if ant['value'] < 12:
+                    raise ValueError("7m antennae were excluded but still "
+                                     "appear in antenna table.  Antenna "
+                                     "string was {0}".format(antennae))
+        msmd.close()
 
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
@@ -234,6 +245,7 @@ for continuum_ms in continuum_mses:
         # iteration #1 of phase-only self-calibration
         caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
         if not os.path.exists(caltable):
+            check_model_is_populated(selfcal_ms)
             gaincal(vis=selfcal_ms,
                     caltable=caltable,
                     solint='int',

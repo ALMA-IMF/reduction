@@ -268,3 +268,10 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
     logprint("Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
 
     return int(dra), int(ddec), pixscale
+
+def check_model_is_populated(msfile):
+    ms.open(msfile)
+    modelphase = ms.getdata(items=['modelphase'])
+    if modelphase['modelphase'].shape == (0,):
+        raise ValueError("Model phase column was not populated")
+
