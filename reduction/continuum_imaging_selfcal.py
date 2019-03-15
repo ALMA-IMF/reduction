@@ -126,8 +126,11 @@ for continuum_ms in continuum_mses:
         msmd.open(selfcal_ms)
         antenna_diameters = msmd.antennadiameter()
         if exclude_7m:
-            for ant in antenna_diameters.values():
-                if ant['value'] < 12:
+            ants7m = np.array([int(key) for key,val in
+                               antenna_diameters.items()
+                               if val['value'] == 7])
+            for scn in msmd.scannumbers():
+                if np.any(np.isin(ants7m, msmd.antennasforscan(scn))):
                     raise ValueError("7m antennae were excluded but still "
                                      "appear in antenna table.  Antenna "
                                      "string was {0}".format(antennae))
