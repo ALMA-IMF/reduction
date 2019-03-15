@@ -2,11 +2,12 @@ import numpy as np
 try:
     from casac import casac
     synthesisutils = casac.synthesisutils
-    from taskinit import msmdtool, casalog, qatool, tbtool
+    from taskinit import msmdtool, casalog, qatool, tbtool, mstool
 except ImportError:
-    from casatools import quanta as qatool, table as tbtool, msmetadata as msmdtool, synthesisutils
+    from casatools import quanta as qatool, table as tbtool, msmetadata as msmdtool, synthesisutils, ms as mstool
     from casatasks import casalog
 msmd = msmdtool()
+ms = mstool()
 qa = qatool()
 st = synthesisutils()
 tb = tbtool()
@@ -274,4 +275,3 @@ def check_model_is_populated(msfile):
     modelphase = ms.getdata(items=['modelphase'])
     if modelphase['modelphase'].shape == (0,):
         raise ValueError("Model phase column was not populated")
-

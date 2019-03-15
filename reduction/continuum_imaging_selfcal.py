@@ -37,6 +37,7 @@ from selfcal_heuristics import goodenough_field_solutions
 
 from tasks import tclean, plotms, split
 
+from clearcal_cli import clearcal_cli as clearcal
 from gaincal_cli import gaincal_cli as gaincal
 from rmtables_cli import rmtables_cli as rmtables
 from applycal_cli import applycal_cli as applycal
@@ -260,12 +261,17 @@ for continuum_ms in continuum_mses:
                                                               selfcaliter)
 
         if not os.path.exists(imname+".image.tt0"):
-            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
+            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5,
+                                                              # no maxphasenoise threshold
+                                                              maxphasenoise=100)
+            clearcal(vis=selfcal_ms, addmodel=True)
+            if len(okfields) == 0:
+                raise ValueError("All fields flagged out of gaincal solns!")
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
             applycal(vis=selfcal_ms, field=okfields_str, gaintable=[caltable],
-                     interp="linear", applymode='calonly', calwt=False)
+                     interp="linear", applymode='', calwt=False)
 
             # do not run the clean if no mask exists
             assert os.path.exists(maskname)
