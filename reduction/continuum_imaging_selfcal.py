@@ -232,6 +232,8 @@ for continuum_ms in continuum_mses:
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
     else:
+        # have to remove mask for tclean to work 
+        os.system('rm -r {0}.mask'.format(imname))
         # run tclean to repopulate the modelcolumn prior to gaincal
         tclean(vis=selfcal_ms,
                field=field.encode(),
@@ -328,6 +330,8 @@ for continuum_ms in continuum_mses:
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
         else:
+            # have to remove mask for tclean to work 
+            os.system('rm -r {0}.mask'.format(imname))
             # run tclean to repopulate the modelcolumn prior to gaincal
             tclean(vis=selfcal_ms,
                    field=field.encode(),
