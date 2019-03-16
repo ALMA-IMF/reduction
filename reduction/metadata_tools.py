@@ -272,6 +272,9 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
 
 def check_model_is_populated(msfile):
     ms.open(msfile)
-    modelphase = ms.getdata(items=['modelphase'])
-    if modelphase['modelphase'].shape == (0,):
+    modelphase = ms.getdata(items=['model_phase'])
+    if 'model_phase' not in modelphase:
+        raise ValueError("model_phase not acquired")
+    if modelphase['model_phase'].shape == (0,):
         raise ValueError("Model phase column was not populated")
+    ms.close()

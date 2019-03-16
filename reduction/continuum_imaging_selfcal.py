@@ -124,18 +124,18 @@ for continuum_ms in continuum_mses:
               field=field,
              )
 
-        msmd.open(selfcal_ms)
-        antenna_diameters = msmd.antennadiameter()
-        if exclude_7m:
-            ants7m = np.array([int(key) for key,val in
-                               antenna_diameters.items()
-                               if val['value'] == 7])
-            for scn in msmd.scannumbers():
-                if np.any(np.isin(ants7m, msmd.antennasforscan(scn))):
-                    raise ValueError("7m antennae were excluded but still "
-                                     "appear in antenna table.  Antenna "
-                                     "string was {0}".format(antennae))
-        msmd.close()
+        #msmd.open(selfcal_ms)
+        #antenna_diameters = msmd.antennadiameter()
+        #if exclude_7m:
+        #    ants7m = np.array([int(key) for key,val in
+        #                       antenna_diameters.items()
+        #                       if val['value'] == 7])
+        #    for scn in msmd.scannumbers():
+        #        if np.any(np.isin(ants7m, msmd.antennasforscan(scn))):
+        #            raise ValueError("7m antennae were excluded but still "
+        #                             "appear in antenna table.  Antenna "
+        #                             "string was {0}".format(antennae))
+        #msmd.close()
 
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
@@ -174,7 +174,7 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
-        tclean(vis=continuum_ms,
+        tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
                phasecenter=phasecenter,
@@ -206,7 +206,7 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
-        tclean(vis=continuum_ms,
+        tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
                phasecenter=phasecenter,
@@ -232,6 +232,26 @@ for continuum_ms in continuum_mses:
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
     else:
+        # run tclean to repopulate the modelcolumn prior to gaincal
+        tclean(vis=selfcal_ms,
+               field=field.encode(),
+               imagename=imname,
+               phasecenter=phasecenter,
+               outframe='LSRK',
+               veltype='radio',
+               usemask='user',
+               mask=maskname,
+               interactive=False,
+               cell=cellsize,
+               imsize=imsize,
+               antenna=antennae,
+               savemodel='modelcolumn',
+               datacolumn='data',
+               pbcor=True,
+               calcres=True,
+               calcpsf=False,
+               **dirty_impars
+              )
         logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_selfcal')
 
     # make a custom mask using the first-pass clean
@@ -242,14 +262,14 @@ for continuum_ms in continuum_mses:
                                 rootdir=imaging_root,
                                )
 
-    for selfcaliter in (1,2,3):
+    for selfcaliter in (1,2,3,4):
 
         logprint("Gaincal iteration {0}".format(selfcaliter),
                  origin='contim_selfcal')
         # iteration #1 of phase-only self-calibration
         caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
         if not os.path.exists(caltable):
-            check_model_is_populated(selfcal_ms)
+            #check_model_is_populated(selfcal_ms)
             gaincal(vis=selfcal_ms,
                     caltable=caltable,
                     solint='int',
@@ -261,17 +281,21 @@ for continuum_ms in continuum_mses:
                                                               selfcaliter)
 
         if not os.path.exists(imname+".image.tt0"):
-            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5,
-                                                              # no maxphasenoise threshold
-                                                              maxphasenoise=100)
+            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
             clearcal(vis=selfcal_ms, addmodel=True)
             if len(okfields) == 0:
                 raise ValueError("All fields flagged out of gaincal solns!")
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
-            applycal(vis=selfcal_ms, field=okfields_str, gaintable=[caltable],
-                     interp="linear", applymode='', calwt=False)
+            # use gainfield so we interpolate the good solutions to the other
+            # fields
+            applycal(vis=selfcal_ms,
+                     gainfield=okfields_str,
+                     gaintable=[caltable],
+                     interp="linear",
+                     applymode='calonly',
+                     calwt=False)
 
             # do not run the clean if no mask exists
             assert os.path.exists(maskname)
@@ -303,8 +327,30 @@ for continuum_ms in continuum_mses:
             # overwrite=True because these could already exist
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+        else:
+            # run tclean to repopulate the modelcolumn prior to gaincal
+            tclean(vis=selfcal_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   usemask='user',
+                   mask=maskname,
+                   interactive=False,
+                   cell=cellsize,
+                   imsize=imsize,
+                   antenna=antennae,
+                   savemodel='modelcolumn',
+                   datacolumn='corrected',
+                   pbcor=True,
+                   calcres=True,
+                   calcpsf=False,
+                   **dirty_impars
+                  )
 
-        regsuffix = '_selfcal1_robust{0}_{1}'.format(robust, arrayname)
+        regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
+                                                       selfcaliter)
         regfn = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
