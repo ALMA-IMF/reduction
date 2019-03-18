@@ -1,10 +1,10 @@
 imaging_parameters = {
-    'W51-E_B6_12M_robust0': {'threshold': '2mJy', # RMS ~0.5-0.6 mJy
+    'W51-E_B6_12M_robust0': {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
                              'pblimit': 0.1,
                              'niter': 10000,
                              'robust': 0,
                              'weighting': 'briggs',
-                             'scales': [0,3,9],
+                             'scales': [0,3,9,27],
                              'gridder': 'mosaic',
                              'specmode': 'mfs',
                              'deconvolver': 'mtmfs',
@@ -44,3 +44,17 @@ imaging_parameters = {
                                'nterms': 2,
                               },
 }
+
+default_selfcal_pars = {ii: {'solint': 'int',
+                             'gaintype': 'G',
+                             'solnorm': True,
+                             'calmode': 'p'}
+                        for ii in range(1,5)}
+
+selfcal_pars = {key: default_selfcal_pars
+                for key in imaging_parameters}
+
+selfcal_pars['W51-E_B6_12M_robust0'][5] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }

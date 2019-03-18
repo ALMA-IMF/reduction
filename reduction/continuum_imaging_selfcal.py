@@ -32,7 +32,7 @@ import numpy as np
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated)
 from make_custom_mask import make_custom_mask
-from imaging_parameters import imaging_parameters
+from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
 
 from tasks import tclean, plotms, split
@@ -165,11 +165,12 @@ for continuum_ms in continuum_mses:
     # only do robust = 0
     robust = 0
 
-    impars = imaging_parameters["{0}_{1}_{2}_robust{3}".format(field, band,
-                                                               arrayname,
-                                                               robust)]
+    pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
+    impars = imaging_parameters[pars_key]
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
+
+    selfcalpars = selfcal_pars[pars_key]
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -264,20 +265,24 @@ for continuum_ms in continuum_mses:
                                 rootdir=imaging_root,
                                )
 
-    for selfcaliter in (1,2,3,4):
+    cals = []
+
+    for selfcaliter in selfcalpars.keys():
 
         logprint("Gaincal iteration {0}".format(selfcaliter),
                  origin='contim_selfcal')
         # iteration #1 of phase-only self-calibration
-        caltable = '{0}_{1}_phase{2}_int.cal'.format(basename, array, selfcaliter)
+        caltype = 'amp' if 'a' in selfcalpars[selfcaliter] else 'phase'
+        caltable = '{0}_{1}_{2}{3}_{4}.cal'.format(basename, array, caltype, selfcaliter,
+                                                   selfcalpars['solint'])
         if not os.path.exists(caltable):
             #check_model_is_populated(selfcal_ms)
             gaincal(vis=selfcal_ms,
                     caltable=caltable,
-                    solint='int',
-                    gaintype='G',
-                    calmode='p',
-                    solnorm=True)
+                    gaintable=cals,
+                    **selfcalpars[selfcaliter])
+
+        cals.append(caltable)
 
         imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
@@ -294,7 +299,7 @@ for continuum_ms in continuum_mses:
             # fields
             applycal(vis=selfcal_ms,
                      gainfield=okfields_str,
-                     gaintable=[caltable],
+                     gaintable=cals,
                      interp="linear",
                      applymode='calonly',
                      calwt=False)
@@ -366,3 +371,4 @@ for continuum_ms in continuum_mses:
                                         rootdir=imaging_root,
                                         suffix=regsuffix
                                        )
+
