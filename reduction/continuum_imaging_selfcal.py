@@ -74,6 +74,8 @@ for continuum_ms in continuum_mses:
     basename = os.path.split(continuum_ms[:-7])[1]
 
     band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
+    if band != 'B3':
+        continue
 
     field = basename.split("_")[0]
 
@@ -357,6 +359,7 @@ for continuum_ms in continuum_mses:
                    calcpsf=False,
                    **dirty_impars
                   )
+            os.system('ln -s {0} {1}.mask'.format(maskname, imname))
 
         regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
                                                        selfcaliter)

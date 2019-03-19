@@ -58,3 +58,7 @@ selfcal_pars['W51-E_B6_12M_robust0'][5] = {'solint': 'inf',
                                            'gaintype': 'G',
                                            'calmode': 'ap',
                                           }
+selfcal_pars['W51-E_B6_12M_robust0'][6] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
