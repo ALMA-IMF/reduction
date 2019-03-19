@@ -31,6 +31,7 @@ from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
 from tasks import tclean, exportfits, plotms, split
 from taskinit import msmdtool, iatool
+import copy
 msmd = msmdtool()
 ia = iatool()
 
@@ -60,20 +61,30 @@ for continuum_ms in continuum_mses:
     field = basename.split("_")[0]
 
     if exclude_7m:
-        msmd.open(continuum_ms)
-        antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
-        msmd.close()
         arrayname = '12M'
+        if os.getenv("USE_SELFCAL_MS"):
+            antennae = ""
+        else:
+            msmd.open(continuum_ms)
+            antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
+            msmd.close()
 
-        # split out the 12M-only data to make further processing slightly
-        # faster
-        new_continuum_ms = continuum_ms.replace(".cal.ms", "_12M.cal.ms")
-        split(vis=continuum_ms, outputvis=new_continuum_ms, antenna=antennae,
-              field=field, datacolumn='data')
-        continuum_ms = new_continuum_ms
+            # split out the 12M-only data to make further processing slightly
+            # faster
+            new_continuum_ms = continuum_ms.replace(".cal.ms", "_12M.cal.ms")
+            split(vis=continuum_ms, outputvis=new_continuum_ms, antenna=antennae,
+                  field=field, datacolumn='data')
+            continuum_ms = new_continuum_ms
     else:
         antennae = ""
         arrayname = '7M12M'
+
+    if os.getenv("USE_SELFCAL_MS"):
+        selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
+        continuum_ms = selfcal_ms
+
+    logprint("Imaging MS {0} with array {1}".format(continuum_ms, arrayname),
+             origin='almaimf_cont_imaging')
 
     coosys,racen,deccen = determine_phasecenter(ms=continuum_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -104,6 +115,7 @@ for continuum_ms in continuum_mses:
         impars = imaging_parameters["{0}_{1}_{2}_robust{3}".format(field, band,
                                                                    arrayname,
                                                                    robust)]
+        impars = copy.copy(impars)
         dirty_impars = copy.copy(impars)
         dirty_impars['niter'] = 0
 
@@ -138,6 +150,9 @@ for continuum_ms in continuum_mses:
                                     suffix='_dirty_robust{0}_{1}'.format(robust,
                                                                          arrayname)
                                    )
+        if 'mask' not in impars:
+            impars['mask'] = maskname
+
         imname = contimagename+"_robust{0}".format(robust)
 
         if not os.path.exists(imname+".image.tt0"):
@@ -148,7 +163,6 @@ for continuum_ms in continuum_mses:
                    outframe='LSRK',
                    veltype='radio',
                    usemask='user',
-                   mask=maskname,
                    interactive=False,
                    cell=cellsize,
                    imsize=imsize,

@@ -54,11 +54,10 @@ if not os.path.exists(imaging_root):
 if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
         exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
-        array = '12M'
+        arrayname = '12M'
     else:
         exclude_7m = False
-        array = '7M12M'
-
+        arrayname = '7M12M'
 
 logprint("Beginning selfcal script", origin='contim_selfcal')
 
@@ -74,8 +73,13 @@ for continuum_ms in continuum_mses:
     basename = os.path.split(continuum_ms[:-7])[1]
 
     band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
-    if band != 'B3':
-        continue
+
+    # allow optional cmdline args to skip one or the other band
+    if os.getenv('BAND_TO_IMAGE'):
+        logprint("Imaging only band {0}".format(os.getenv('BAND_TO_IMAGE')),
+                 origin='contim_selfcal')
+        if band not in os.getenv('BAND_TO_IMAGE'):
+            continue
 
     field = basename.split("_")[0]
 
@@ -87,6 +91,10 @@ for continuum_ms in continuum_mses:
     else:
         antennae = ""
         arrayname = '7M12M'
+
+
+    logprint("Beginning band {0} array {1}".format(band, arrayname),
+             origin='contim_selfcal')
 
     # create a downsampled split MS
     # A different MS will be used for the 12M-only and 7M+12M data
@@ -173,6 +181,10 @@ for continuum_ms in continuum_mses:
     dirty_impars['niter'] = 0
 
     selfcalpars = selfcal_pars[pars_key]
+
+    logprint("Selfcal parameters are: {0}".format(selfcalpars),
+             origin='almaimf_cont_selfcal')
+
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -275,7 +287,7 @@ for continuum_ms in continuum_mses:
                  origin='contim_selfcal')
         # iteration #1 of phase-only self-calibration
         caltype = 'amp' if 'a' in selfcalpars[selfcaliter]['calmode'] else 'phase'
-        caltable = '{0}_{1}_{2}{3}_{4}.cal'.format(basename, array, caltype, selfcaliter,
+        caltable = '{0}_{1}_{2}{3}_{4}.cal'.format(basename, arrayname, caltype, selfcaliter,
                                                    selfcalpars[selfcaliter]['solint'])
         if not os.path.exists(caltable):
             #check_model_is_populated(selfcal_ms)
@@ -283,6 +295,9 @@ for continuum_ms in continuum_mses:
                     caltable=caltable,
                     gaintable=cals,
                     **selfcalpars[selfcaliter])
+        else:
+            logprint("Skipping existing caltable {0}".format(caltable),
+                     origin='contim_selfcal')
 
         cals.append(caltable)
 
@@ -375,3 +390,46 @@ for continuum_ms in continuum_mses:
                                         suffix=regsuffix
                                        )
 
+
+        logprint("Completed gaincal iteration {0}".format(selfcaliter),
+                 origin='contim_selfcal')
+
+
+    for robust in (-2, 2):
+        logprint("Imaging self-cal iter {0} with robust {1}"
+                 .format(selfcaliter, robust),
+                 origin='contim_selfcal')
+
+        pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
+        impars = imaging_parameters[pars_key]
+
+        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
+                                                              selfcaliter)
+        tclean(vis=selfcal_ms,
+               field=field.encode(),
+               imagename=imname,
+               phasecenter=phasecenter,
+               outframe='LSRK',
+               veltype='radio',
+               usemask='user',
+               mask=maskname,
+               interactive=False,
+               cell=cellsize,
+               imsize=imsize,
+               antenna=antennae,
+               savemodel='none',
+               datacolumn='corrected',
+               pbcor=True,
+               **impars
+              )
+        ia.open(imname+".image.tt0")
+        ia.sethistory(origin='almaimf_cont_selfcal',
+                      history=["{0}: {1}".format(key, val) for key, val in
+                               impars.items()])
+        ia.close()
+        # overwrite=True because these could already exist
+        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+
+    logprint("Completed band {0}".format(band),
+             origin='contim_selfcal')
