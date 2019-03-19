@@ -272,9 +272,9 @@ for continuum_ms in continuum_mses:
         logprint("Gaincal iteration {0}".format(selfcaliter),
                  origin='contim_selfcal')
         # iteration #1 of phase-only self-calibration
-        caltype = 'amp' if 'a' in selfcalpars[selfcaliter] else 'phase'
+        caltype = 'amp' if 'a' in selfcalpars[selfcaliter]['calmode'] else 'phase'
         caltable = '{0}_{1}_{2}{3}_{4}.cal'.format(basename, array, caltype, selfcaliter,
-                                                   selfcalpars['solint'])
+                                                   selfcalpars[selfcaliter]['solint'])
         if not os.path.exists(caltable):
             #check_model_is_populated(selfcal_ms)
             gaincal(vis=selfcal_ms,
