@@ -52,7 +52,7 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
         preg = reg.to_pixel(image.wcs)
         msk = preg.to_mask()
 
-        mask_array[msk.bbox.slices] = msk.multiply(image) > threshold
+        mask_array[msk.bbox.slices] = (msk.multiply(image) > threshold) | mask_array[msk.bbox.slices]
 
 
     # CASA transposes arrays!!!!!

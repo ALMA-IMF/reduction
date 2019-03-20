@@ -48,7 +48,8 @@ def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.):
     for field in ufields:
         sel = fields==field
         angles = np.angle(solns[:,:,sel])
-        field_ok = (angles.std() < maxphasenoise) & (snr[:,:,sel].mean() > minsnr)
+        field_ok = ((angles.std() < maxphasenoise) &
+                    (snr[:,:,sel].mean() > minsnr))
         if field_ok:
             okfields.append(field)
         else:

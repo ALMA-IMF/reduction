@@ -80,7 +80,8 @@ def show(imgs, zoom=None, clear=True, norm=asinhn,
                   norm=norm, **kwargs)
 
         if imn == 'model' and 'mask' in imgs:
-            ax.contour(imgs['mask'].value[view], levels=[0.5], colors=['w'])
+            ax.contour(imgs['mask'].value[view], levels=[0.5], colors=['w'],
+                       linewidths=[0.5])
 
         pl.title(imn)
 
