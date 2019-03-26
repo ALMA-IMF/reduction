@@ -159,6 +159,9 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y > 7])
 
         antsize = np.array([x for x in antsize if x > 7])
+    else:
+        # the shape matters if any are false...
+        field_id_has_scans = field_id_has_scans[field_id_has_scans]
 
     # because we're working with line-split data, we assume the reffreq comes
     # from spw 0

@@ -59,7 +59,8 @@ if 'exclude_7m' not in locals():
         exclude_7m = False
         arrayname = '7M12M'
 
-logprint("Beginning selfcal script", origin='contim_selfcal')
+logprint("Beginning selfcal script with exclude_7m={0}".format(exclude_7m),
+         origin='contim_selfcal')
 
 
 # load the list of continuum MSes from a file
