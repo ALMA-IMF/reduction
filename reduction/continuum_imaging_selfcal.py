@@ -105,7 +105,8 @@ for continuum_ms in continuum_mses:
     if not os.path.exists(selfcal_ms):
 
         msmd.open(continuum_ms)
-        fdm_spws = msmd.fdmspws()
+        fdm_spws = msmd.spwsforfield(field)
+        assert len(fdm_spws) > 0
         bws = msmd.bandwidths()[fdm_spws]
         spwstr = ",".join(map(str, fdm_spws))
         freqs = [msmd.reffreq(spw)['m0']['value'] for spw in fdm_spws]
@@ -186,6 +187,9 @@ for continuum_ms in continuum_mses:
     logprint("Selfcal parameters are: {0}".format(selfcalpars),
              origin='almaimf_cont_selfcal')
 
+    if 'maskname' in dirty_impars:
+        maskname = dirty_impars['maskname'][0]
+        dirty_impars.remove('maskname')
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -212,10 +216,7 @@ for continuum_ms in continuum_mses:
                                dirty_impars.items()])
         ia.close()
 
-    if 'maskname' in dirty_impars:
-        maskname = dirty_impars['maskname'][0]
-        dirty_impars.remove('maskname')
-    else:
+    if 'maskname' not in locals():
         maskname = make_custom_mask(field, imname+".image.tt0",
                                     os.getenv('ALMAIMF_ROOTDIR'),
                                     band,
@@ -224,6 +225,10 @@ for continuum_ms in continuum_mses:
                                                                          arrayname)
                                    )
     imname = contimagename+"_robust{0}".format(robust)
+
+    if 'maskname' in impars:
+        maskname = impars['maskname'][0]
+        impars.remove('maskname')
 
     if not os.path.exists(imname+".image.tt0"):
         tclean(vis=selfcal_ms,
@@ -279,10 +284,7 @@ for continuum_ms in continuum_mses:
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
     # the appropriate name)
-    if 'maskname' in impars:
-        maskname = impars['maskname'][0]
-        impars.remove('maskname')
-    else:
+    if 'maskname' not in locals():
         maskname = make_custom_mask(field, imname+".image.tt0",
                                     os.getenv('ALMAIMF_ROOTDIR'), band,
                                     rootdir=imaging_root,
