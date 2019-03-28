@@ -209,16 +209,20 @@ for continuum_ms in continuum_mses:
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
-                               impars.items()])
+                               dirty_impars.items()])
         ia.close()
 
-    maskname = make_custom_mask(field, imname+".image.tt0",
-                                os.getenv('ALMAIMF_ROOTDIR'),
-                                band,
-                                rootdir=imaging_root,
-                                suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                     arrayname)
-                               )
+    if 'maskname' in dirty_impars:
+        maskname = dirty_impars['maskname']
+        dirty_impars.remove('maskname')
+    else:
+        maskname = make_custom_mask(field, imname+".image.tt0",
+                                    os.getenv('ALMAIMF_ROOTDIR'),
+                                    band,
+                                    rootdir=imaging_root,
+                                    suffix='_dirty_robust{0}_{1}'.format(robust,
+                                                                         arrayname)
+                                   )
     imname = contimagename+"_robust{0}".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
@@ -275,10 +279,14 @@ for continuum_ms in continuum_mses:
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
     # the appropriate name)
-    maskname = make_custom_mask(field, imname+".image.tt0",
-                                os.getenv('ALMAIMF_ROOTDIR'), band,
-                                rootdir=imaging_root,
-                               )
+    if 'maskname' in impars:
+        maskname = impars['maskname']
+        impars.remove('maskname')
+    else:
+        maskname = make_custom_mask(field, imname+".image.tt0",
+                                    os.getenv('ALMAIMF_ROOTDIR'), band,
+                                    rootdir=imaging_root,
+                                   )
 
     cals = []
 
@@ -383,7 +391,10 @@ for continuum_ms in continuum_mses:
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
-        if os.path.exists(regfn):
+        if 'maskname' in impars:
+            maskname = impars['maskname']
+            impars.remove('maskname')
+        elif os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
                                         os.getenv('ALMAIMF_ROOTDIR'),
                                         band,

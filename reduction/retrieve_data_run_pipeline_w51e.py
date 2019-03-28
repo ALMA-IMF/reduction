@@ -44,7 +44,9 @@ MORE NOTES:
     and try again.
 
 """
+import numpy as np
 from astroquery.alma import Alma
+import os
 import six
 import runpy
 import tarfile
