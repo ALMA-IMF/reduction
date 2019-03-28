@@ -189,7 +189,7 @@ for continuum_ms in continuum_mses:
 
     if 'maskname' in dirty_impars:
         maskname = dirty_impars['maskname'][0]
-        dirty_impars.remove('maskname')
+        del dirty_impars['maskname']
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -228,7 +228,7 @@ for continuum_ms in continuum_mses:
 
     if 'maskname' in impars:
         maskname = impars['maskname'][0]
-        impars.remove('maskname')
+        del impars['maskname']
 
     if not os.path.exists(imname+".image.tt0"):
         tclean(vis=selfcal_ms,
@@ -395,7 +395,7 @@ for continuum_ms in continuum_mses:
                                                                    regsuffix))
         if 'maskname' in impars:
             maskname = impars['maskname'][selfcaliter]
-            impars.remove('maskname')
+            del impars['maskname']
         elif os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
                                         os.getenv('ALMAIMF_ROOTDIR'),
