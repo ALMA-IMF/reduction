@@ -213,7 +213,7 @@ for continuum_ms in continuum_mses:
         ia.close()
 
     if 'maskname' in dirty_impars:
-        maskname = dirty_impars['maskname']
+        maskname = dirty_impars['maskname'][0]
         dirty_impars.remove('maskname')
     else:
         maskname = make_custom_mask(field, imname+".image.tt0",
@@ -280,7 +280,7 @@ for continuum_ms in continuum_mses:
     # (note: this will be replaced after each iteration if there is a file with
     # the appropriate name)
     if 'maskname' in impars:
-        maskname = impars['maskname']
+        maskname = impars['maskname'][0]
         impars.remove('maskname')
     else:
         maskname = make_custom_mask(field, imname+".image.tt0",
@@ -392,7 +392,7 @@ for continuum_ms in continuum_mses:
                                                                    band,
                                                                    regsuffix))
         if 'maskname' in impars:
-            maskname = impars['maskname']
+            maskname = impars['maskname'][selfcaliter]
             impars.remove('maskname')
         elif os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
