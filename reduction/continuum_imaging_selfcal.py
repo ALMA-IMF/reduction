@@ -363,20 +363,23 @@ for continuum_ms in continuum_mses:
                    savemodel='modelcolumn',
                    datacolumn='corrected', # now use corrected data
                    pbcor=True,
-                   **impars
+                   **impars_thisiter
                   )
             ia.open(imname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
-                                   impars.items()])
+                                   impars_thisiter.items()])
             ia.close()
             # overwrite=True because these could already exist
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
         else:
+            # run tclean to repopulate the modelcolumn prior to gaincal
+            # (force niter = 0 so we don't clean any more)
+
             # have to remove mask for tclean to work 
             os.system('rm -r {0}.mask'.format(imname))
-            # run tclean to repopulate the modelcolumn prior to gaincal
+            impars_thisiter['niter'] = 0
             tclean(vis=selfcal_ms,
                    field=field.encode(),
                    imagename=imname,
@@ -394,7 +397,7 @@ for continuum_ms in continuum_mses:
                    pbcor=True,
                    calcres=True,
                    calcpsf=False,
-                   **dirty_impars
+                   **impars_thisiter
                   )
             os.system('ln -s {0} {1}.mask'.format(maskname, imname))
 
