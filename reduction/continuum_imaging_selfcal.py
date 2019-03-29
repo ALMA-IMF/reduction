@@ -296,6 +296,7 @@ for continuum_ms in continuum_mses:
 
         logprint("Gaincal iteration {0}".format(selfcaliter),
                  origin='contim_selfcal')
+
         # iteration #1 of phase-only self-calibration
         caltype = 'amp' if 'a' in selfcalpars[selfcaliter]['calmode'] else 'phase'
         caltable = '{0}_{1}_{2}{3}_{4}.cal'.format(basename, arrayname, caltype, selfcaliter,
@@ -311,6 +312,16 @@ for continuum_ms in continuum_mses:
                      origin='contim_selfcal')
 
         cals.append(caltable)
+
+        # set up the imaging parameters for this round, allowing for a flexible definition
+        # with either, e.g. {'niter': 1000} or {'niter': {1:1000, 2:100000, 3:999999}} etc
+        impars_thisiter = copy.copy(impars)
+        if 'maskname' in impars_thisiter:
+            maskname = impars_thisiter['maskname'][selfcaliter]
+            del impars_thisiter['maskname']
+        for key, val in impars_thisiter.items():
+            if isinstance(val, dict):
+                impars_thisiter[key] = val[selfcaliter]
 
         imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
@@ -393,10 +404,7 @@ for continuum_ms in continuum_mses:
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
-        if 'maskname' in impars:
-            maskname = impars['maskname'][selfcaliter]
-            del impars['maskname']
-        elif os.path.exists(regfn):
+        if os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
                                         os.getenv('ALMAIMF_ROOTDIR'),
                                         band,
