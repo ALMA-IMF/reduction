@@ -226,9 +226,13 @@ for continuum_ms in continuum_mses:
                                    )
     imname = contimagename+"_robust{0}".format(robust)
 
-    if 'maskname' in impars:
-        maskname = impars['maskname'][0]
-        del impars['maskname']
+    impars_thisiter = copy.copy(impars)
+    if 'maskname' in impars_thisiter:
+        maskname = impars_thisiter['maskname'][0]
+        del impars_thisiter['maskname']
+    for key, val in impars_thisiter.items():
+        if isinstance(val, dict):
+            impars_thisiter[key] = val[0]
 
     if not os.path.exists(imname+".image.tt0"):
         tclean(vis=selfcal_ms,
@@ -246,7 +250,7 @@ for continuum_ms in continuum_mses:
                savemodel='modelcolumn',
                datacolumn='data',
                pbcor=True,
-               **impars
+               **impars_thisiter
               )
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
