@@ -181,6 +181,8 @@ for continuum_ms in continuum_mses:
     impars = imaging_parameters[pars_key]
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
+    # NOTE: if anything besides `maskname` and `niter` ends up with a
+    # dictionary, we'll need to parse it here
 
     selfcalpars = selfcal_pars[pars_key]
 
@@ -226,6 +228,7 @@ for continuum_ms in continuum_mses:
                                    )
     imname = contimagename+"_robust{0}".format(robust)
 
+    # copy the imaging parameters and make the "iter-zero" version
     impars_thisiter = copy.copy(impars)
     if 'maskname' in impars_thisiter:
         maskname = impars_thisiter['maskname'][0]
