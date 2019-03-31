@@ -196,6 +196,8 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
+        logprint("Imaging parameters are: {0}".format(dirty_impars),
+                 origin='almaimf_cont_selfcal')
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
@@ -240,6 +242,8 @@ for continuum_ms in continuum_mses:
     if not os.path.exists(imname+".image.tt0"):
         if maskname:
             assert os.path.exists(maskname)
+        logprint("Imaging parameters are: {0}".format(impars_thisiter),
+                 origin='almaimf_cont_selfcal')
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
@@ -269,6 +273,8 @@ for continuum_ms in continuum_mses:
         # have to remove mask for tclean to work 
         os.system('rm -r {0}.mask'.format(imname))
         # run tclean to repopulate the modelcolumn prior to gaincal
+        logprint("(dirty) Imaging parameters are: {0}".format(dirty_impars),
+                 origin='almaimf_cont_selfcal')
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
@@ -359,6 +365,8 @@ for continuum_ms in continuum_mses:
 
             # do this even if the output file exists: we need to populate the
             # modelcolumn
+            logprint("Imaging parameters are: {0}".format(impars_thisiter),
+                     origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
                    field=field.encode(),
                    imagename=imname,
@@ -391,6 +399,8 @@ for continuum_ms in continuum_mses:
             # have to remove mask for tclean to work 
             os.system('rm -r {0}.mask'.format(imname))
             impars_thisiter['niter'] = 0
+            logprint("(dirty) Imaging parameters are: {0}".format(impars_thisiter),
+                     origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
                    field=field.encode(),
                    imagename=imname,
