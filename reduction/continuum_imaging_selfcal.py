@@ -238,6 +238,8 @@ for continuum_ms in continuum_mses:
             impars_thisiter[key] = val[0]
 
     if not os.path.exists(imname+".image.tt0"):
+        if maskname:
+            assert os.path.exists(maskname)
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
@@ -274,7 +276,8 @@ for continuum_ms in continuum_mses:
                outframe='LSRK',
                veltype='radio',
                usemask='user',
-               mask=maskname,
+               #do not specify mask since no cleaning is being done
+               # mask=maskname,
                interactive=False,
                cell=cellsize,
                imsize=imsize,
@@ -334,6 +337,7 @@ for continuum_ms in continuum_mses:
                                                               selfcaliter)
 
         if not os.path.exists(imname+".image.tt0"):
+
             okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
             clearcal(vis=selfcal_ms, addmodel=True)
             if len(okfields) == 0:
