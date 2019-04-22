@@ -139,7 +139,9 @@ def get_calibrator_fluxes(weblog):
             tbls = [xx for xx in soup.findAll('table')
                     if 'summary' in xx.attrs
                     and xx.attrs['summary'] == 'Flux density results']
-            assert len(tbls) == 1
+            if len(tbls) != 1:
+                raise ValueError("No flux density data found in pipeline run "
+                                 "{0}.".format(weblog))
             tbl = tbls[0]
             rows = tbl.findAll('tr')
 
