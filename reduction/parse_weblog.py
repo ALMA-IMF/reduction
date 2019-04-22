@@ -11,12 +11,12 @@ import re
 def get_mous_to_sb_mapping(project_code):
 
     tbl = Alma.query(payload={'project_code': project_code}, cache=False,
-                     public=False)['Member ous id','SB name']
-    mapping = {row['Member ous id']: row['SB name'] for row in tbl}
+                     public=False)['Member ous id','SB name', 'QA2 Status']
+    mapping = {row['Member ous id']: row['SB name'] for row in tbl if row['QA2 Status'] == 'Y'}
     return mapping
 
 def get_human_readable_name(weblog, mapping=None):
-
+    print(weblog)
     for directory, dirnames, filenames in os.walk(weblog):
         if 't2-1_details.html' in filenames:
             #print("Found {0}:{1}".format(directory, "t2-1_details.html"))
@@ -93,6 +93,11 @@ def get_human_readable_name(weblog, mapping=None):
                                 uid = td.text
 
                 sbname = mapping[uid]
+#                try:
+#                    sbname = mapping[uid]
+#                except:
+#                    sbname = 'fail'
+#                    print('fail = {0}'.format(directory))
 
     return sbname, max_baseline
 
@@ -213,6 +218,7 @@ def fluxes_to_table(flux_dict):
 
 
 def weblog_names(list_of_weblogs, mapping):
+
     data = [(get_human_readable_name(weblog, mapping), weblog)
             for weblog in list_of_weblogs]
     hrns = [x[0][0] for x in data]
