@@ -177,13 +177,13 @@ def get_calibrator_fluxes(weblog):
             return data
     raise ValueError("{0} is not a valid weblog (it may be missing stage15)".format(weblog))
 
-def get_all_fluxes(weblog_list):
+def get_all_fluxes(weblog_list, mapping=None):
 
     data_dict = {}
     for weblog in ProgressBar(weblog_list):
         try:
             data = get_calibrator_fluxes(weblog)
-            name,_ = get_human_readable_name(weblog)
+            name,_ = get_human_readable_name(weblog, mapping=mapping)
             data_dict[name] = data
         except ValueError:
             continue
