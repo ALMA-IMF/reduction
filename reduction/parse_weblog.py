@@ -16,7 +16,7 @@ def get_mous_to_sb_mapping(project_code):
     return mapping
 
 def get_human_readable_name(weblog, mapping=None):
-    print(weblog)
+    print("Reading weblog {0}".format(weblog))
     for directory, dirnames, filenames in os.walk(weblog):
         if 't2-1_details.html' in filenames:
             #print("Found {0}:{1}".format(directory, "t2-1_details.html"))
@@ -195,9 +195,9 @@ def get_all_fluxes(weblog_list, mapping=None):
                         'spw': key[2],
                         'freq': key[3],
                         'measurement': value}
-                       for ii,(key,value) in enumerate(data.items())
+                       for ii,(key,value) in enumerate(data_.items())
                       }
-                 for name,data_list in data_dict.items()
+                 for name,data_ in data_dict.items()
                 }
 
     return flux_data
