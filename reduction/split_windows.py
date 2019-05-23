@@ -47,13 +47,14 @@ else:
 
 from taskinit import casalog
 from taskinit import msmdtool
-from taskinit import mstool
+from taskinit import mstool, tbtool
 from tasks import split, flagmanager, flagdata, rmtables, concat
 
 from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels
 
 msmd = msmdtool()
 ms = mstool()
+tb = tbtool()
 
 # band name : frequency range (GHz)
 bands = {'B3': (80, 110),
@@ -73,6 +74,13 @@ for dirpath, dirnames, filenames in os.walk('.'):
             logprint("Collecting metadata for {0}".format(fn))
 
             msmd.open(os.path.join(dirpath, fn))
+
+            antnames = msmd.antennanames()
+            if any('PM' in nm for nm in antnames):
+                logprint("Skipping total power MS {0}".format(fn))
+                msmd.close()
+                continue
+
             summary = msmd.summary()
 
             fieldnames = np.array(msmd.fieldnames())
@@ -163,24 +171,20 @@ for band in bands:
                                                                      outvis,
                                                                      spws[newid]),)
 
-                    try:
-                        assert split(vis=invis,
-                                     spw=spws[newid],
-                                     field=field,
-                                     outputvis=outvis,
-                                     # there is no corrected_data column because we're
-                                     # splitting from split MSes
-                                     datacolumn='corrected',
-                                    )
-                    except AssertionError:
-                        split(vis=invis,
-                              spw=spws[newid],
-                              field=field,
-                              outputvis=outvis,
-                              # there is no corrected_data column because we're
-                              # splitting from split MSes
-                              datacolumn='data',
-                             )
+                    tb.open(invis)
+                    if 'CORRECTED_DATA' in tb.colnames():
+                        datacolumn='corrected'
+                    else:
+                        datacolumn='data'
+                    tb.close()
+                    assert split(vis=invis,
+                                 spw=spws[newid],
+                                 field=field,
+                                 outputvis=outvis,
+                                 # there is no corrected_data column because we're
+                                 # splitting from split MSes
+                                 datacolumn=datacolumn,
+                                )
 
                 if outvis in to_image[band][field][newid]:
                     raise ValueError()
@@ -279,20 +283,20 @@ for band in bands:
                 rmtables(contvis)
                 os.system('rm -rf ' + contvis + '.flagversions')
 
-                try:
-                    assert split(vis=visfile,
-                                 spw=",".join(map(str,spws)),
-                                 field=field,
-                                 outputvis=contvis,
-                                 width=widths,
-                                 datacolumn='corrected')
-                except AssertionError:
-                    split(vis=visfile,
-                          spw=",".join(map(str,spws)),
-                          field=field,
-                          outputvis=contvis,
-                          width=widths,
-                          datacolumn='data')
+
+                tb.open(invis)
+                if 'CORRECTED_DATA' in tb.colnames():
+                    datacolumn='corrected'
+                else:
+                    datacolumn='data'
+                tb.close()
+
+                assert split(vis=visfile,
+                             spw=",".join(map(str,spws)),
+                             field=field,
+                             outputvis=contvis,
+                             width=widths,
+                             datacolumn=datacolumn)
 
 
                 # If you flagged any line channels, restore the previous flags
