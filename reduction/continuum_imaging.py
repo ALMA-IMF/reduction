@@ -138,14 +138,14 @@ for continuum_ms in continuum_mses:
                    **dirty_impars
                   )
 
-            ia.open(imname+".image.tt0")
+            ia.open(imname+".residual.tt0")
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars.items()])
             ia.close()
 
         try:
-            maskname = make_custom_mask(field, imname+".image.tt0",
+            maskname = make_custom_mask(field, imname+".residual.tt0",
                                         os.getenv('ALMAIMF_ROOTDIR'),
                                         band,
                                         rootdir=imaging_root,
