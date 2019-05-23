@@ -97,17 +97,18 @@ for continuum_ms in continuum_mses:
 
     contimagename = os.path.join(imaging_root, basename) + "_" + arrayname
 
-    if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
-        # make a diagnostic plot to show the UV distribution
-        plotms(vis=continuum_ms,
-               xaxis='uvwave',
-               yaxis='amp',
-               avgchannel='1000', # minimum possible # of channels
-               plotfile=contimagename+".uvwave_vs_amp.png",
-               showlegend=True,
-               showgui=False,
-               antenna=antennae,
-              )
+    # SKIP the plot
+    #if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
+    #    # make a diagnostic plot to show the UV distribution
+    #    plotms(vis=continuum_ms,
+    #           xaxis='uvwave',
+    #           yaxis='amp',
+    #           avgchannel='1000', # minimum possible # of channels
+    #           plotfile=contimagename+".uvwave_vs_amp.png",
+    #           showlegend=True,
+    #           showgui=False,
+    #           antenna=antennae,
+    #          )
 
 
     for robust in (-2, 0, 2):
@@ -143,13 +144,17 @@ for continuum_ms in continuum_mses:
                                    impars.items()])
             ia.close()
 
-        maskname = make_custom_mask(field, imname+".image.tt0",
-                                    os.getenv('ALMAIMF_ROOTDIR'),
-                                    band,
-                                    rootdir=imaging_root,
-                                    suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                         arrayname)
-                                   )
+        try:
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        os.getenv('ALMAIMF_ROOTDIR'),
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix='_dirty_robust{0}_{1}'.format(robust,
+                                                                             arrayname)
+                                       )
+        except Exception as ex:
+            print(ex)
+            raise ValueError("Make the region file first!")
         if 'mask' not in impars:
             impars['mask'] = maskname
 

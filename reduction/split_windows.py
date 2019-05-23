@@ -6,11 +6,11 @@ cube.
 
 In order to run this code, you need to be able to import ``parse_contdotdat``,
 which means to need to add the directory that contains that file to your path.
-You can do this in two ways:
+You can do this in two ways
 
     (1) In python:
         import sys
-        sys.path.append('/path/that/contains/file/')
+        sys.path.append('/path/that/contains/this/file/')
     (2) From the command line (if you're using a BASH-like shell):
         export ALMAIMF_ROOTDIR='/path/that/contains/this/file/'
 
