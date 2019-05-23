@@ -164,14 +164,14 @@ for band in bands:
                                                                      spws[newid]),)
 
                     try:
-                        split(vis=invis,
-                              spw=spws[newid],
-                              field=field,
-                              outputvis=outvis,
-                              # there is no corrected_data column because we're
-                              # splitting from split MSes
-                              datacolumn='corrected',
-                             )
+                        assert split(vis=invis,
+                                     spw=spws[newid],
+                                     field=field,
+                                     outputvis=outvis,
+                                     # there is no corrected_data column because we're
+                                     # splitting from split MSes
+                                     datacolumn='corrected',
+                                    )
                     except:
                         split(vis=invis,
                               spw=spws[newid],
@@ -280,13 +280,13 @@ for band in bands:
                 os.system('rm -rf ' + contvis + '.flagversions')
 
                 try:
-                    split(vis=visfile,
-                          spw=",".join(map(str,spws)),
-                          field=field,
-                          outputvis=contvis,
-                          width=widths,
-                          datacolumn='corrected')
-                except:
+                    assert split(vis=visfile,
+                                 spw=",".join(map(str,spws)),
+                                 field=field,
+                                 outputvis=contvis,
+                                 width=widths,
+                                 datacolumn='corrected')
+                except AssertionError:
                     split(vis=visfile,
                           spw=",".join(map(str,spws)),
                           field=field,
