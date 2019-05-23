@@ -12,11 +12,12 @@ You can do this in two ways:
         import sys
         sys.path.append('/path/that/contains/file/')
     (2) From the command line (if you're using a BASH-like shell):
-        export SCRIPT_DIR='/path/that/contains/file/'
-        export PYTHONPATH=$SCRIPT_DIR:$PYTHONPATH
+        export ALMAIMF_ROOTDIR='/path/that/contains/this/file/'
 
    cd to the directory containing the untarred data (i.e., 2017.1.01355.L)
-   run this file with `%run -i ./path/to/reduction/split_windows.py
+
+   Start CASA, then run this file with (DO NOT copy and paste!):
+       >>> %run -i ./path/to/reduction/split_windows.py
 
 You can set the following environmental variables for this script:
     FIELD_ID=<name>
@@ -29,7 +30,20 @@ import json
 import numpy as np
 
 import sys
-sys.path.append('.')
+
+if os.getenv('ALMAIMF_ROOTDIR') is None:
+    try:
+        import metadata_tools
+        os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+    except ImportError:
+        raise ValueError("metadata_tools not found on path; make sure to "
+                         "specify ALMAIMF_ROOTDIR environment variable "
+                         "or your PYTHONPATH variable to include the directory"
+                         " containing the ALMAIMF code.")
+else:
+    sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+
+
 
 from taskinit import casalog
 from taskinit import msmdtool
@@ -78,7 +92,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             spws = msmd.spwsforfield(field)
             targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
-            spws = [int(ss) for ss in spws if ss in targetspws]
+            # this is how DOSPLIT in scriptForPI decides to split
+            spws = [int(ss) for ss in spws if (ss in targetspws) and (msmd.nchan(ss) > 4)]
 
             if field in metadata[band]:
                 metadata[band][field]['path'].append(os.path.abspath(dirpath)),
