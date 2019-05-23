@@ -163,14 +163,24 @@ for band in bands:
                                                                      outvis,
                                                                      spws[newid]),)
 
-                    split(vis=invis,
-                          spw=spws[newid],
-                          field=field,
-                          outputvis=outvis,
-                          # there is no corrected_data column because we're
-                          # splitting from split MSes
-                          datacolumn='data',
-                         )
+                    try:
+                        split(vis=invis,
+                              spw=spws[newid],
+                              field=field,
+                              outputvis=outvis,
+                              # there is no corrected_data column because we're
+                              # splitting from split MSes
+                              datacolumn='corrected',
+                             )
+                    except:
+                        split(vis=invis,
+                              spw=spws[newid],
+                              field=field,
+                              outputvis=outvis,
+                              # there is no corrected_data column because we're
+                              # splitting from split MSes
+                              datacolumn='data',
+                             )
 
                 if outvis in to_image[band][field][newid]:
                     raise ValueError()
@@ -269,12 +279,20 @@ for band in bands:
                 rmtables(contvis)
                 os.system('rm -rf ' + contvis + '.flagversions')
 
-                split(vis=visfile,
-                      spw=",".join(map(str,spws)),
-                      field=field,
-                      outputvis=contvis,
-                      width=widths,
-                      datacolumn='data')
+                try:
+                    split(vis=visfile,
+                          spw=",".join(map(str,spws)),
+                          field=field,
+                          outputvis=contvis,
+                          width=widths,
+                          datacolumn='corrected')
+                except:
+                    split(vis=visfile,
+                          spw=",".join(map(str,spws)),
+                          field=field,
+                          outputvis=contvis,
+                          width=widths,
+                          datacolumn='data')
 
 
                 # If you flagged any line channels, restore the previous flags
