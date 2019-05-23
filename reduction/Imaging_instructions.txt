@@ -4,7 +4,8 @@
 			Template scripts for continuum imaging
 
 	- scripts written by A. Ginsburg with minor modifications by T. Csengeri - 
-    - instructions written by T. Csengeri, additional notes are in the python scripts -
+    - instructions written by T. Csengeri, modified by A. Ginsburg,
+      additional notes are in the python scripts -
 
 12.12.2018: As of today, this has only been tested on B3 images.
 ---------------------------------------------------------------------------------------------
@@ -14,14 +15,18 @@
      with the folder that contains this file and `split_windows.py`:
      $ export ALMAIMF_ROOTDIR=/path/to/the/directory/containing/this/file
    - Start CASA
+   - Install astropy stuff:
+   >>> import subprocess
+   >>> subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--user',
+                              'cython', 'https://github.com/astropy/regions/archive/master.zip',
+                              'https://github.com/radio-astro-tools/spectral-cube/archive/master.zip'])
+   - Restart CASA
 
 1.) Run split_windows.py (see instructions in that file).
 
+2.) Run continuum_imaging.py
+    If and when it crashes, make a region file...?
 
-2.) Get all the scripts from the GitHub repository and add that repository to your python path.
-	- parse_contdotdat.py
-	- split_windows.py
-	- continuum_imaging_both.py
 
 3.) Copy a single cont.dat in a directory ../calibration/
 	=> This should contain all line-free channels to image for the cleanest possible images. At a first order you can use the one provided by the pipeline. However, if you think this needs adjustments, please select/modify this file on your own.
