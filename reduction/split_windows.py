@@ -15,6 +15,9 @@ You can do this in two ways:
         export SCRIPT_DIR='/path/that/contains/file/'
         export PYTHONPATH=$SCRIPT_DIR:$PYTHONPATH
 
+   cd to the directory containing the untarred data (i.e., 2017.1.01355.L)
+   run this file with `%run -i ./path/to/reduction/split_windows.py
+
 You can set the following environmental variables for this script:
     FIELD_ID=<name>
         If this parameter is set, filter out the imaging targets and only split
@@ -74,6 +77,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
                         band = bb
 
             spws = msmd.spwsforfield(field)
+            targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
+            spws = [ss for ss in spws if ss in targetspws]
 
             if field in metadata[band]:
                 metadata[band][field]['path'].append(os.path.abspath(dirpath)),
