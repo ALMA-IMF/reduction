@@ -83,11 +83,11 @@ for dirpath, dirnames, filenames in os.walk('.'):
             if field in metadata[band]:
                 metadata[band][field]['path'].append(os.path.abspath(dirpath)),
                 metadata[band][field]['vis'].append(fn)
-                metadata[band][field]['spws'].append(spws.tolist())
+                metadata[band][field]['spws'].append(spws)
             else:
                 metadata[band][field] = {'path': [dirpath],
                                          'vis': [fn],
-                                         'spws': [spws.tolist()],
+                                         'spws': [spws],
                                         }
 
             # touch the filename
