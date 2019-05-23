@@ -78,7 +78,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             spws = msmd.spwsforfield(field)
             targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
-            spws = [ss for ss in spws if ss in targetspws]
+            spws = [int(ss) for ss in spws if ss in targetspws]
 
             if field in metadata[band]:
                 metadata[band][field]['path'].append(os.path.abspath(dirpath)),

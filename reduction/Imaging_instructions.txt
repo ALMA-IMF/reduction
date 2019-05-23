@@ -10,12 +10,10 @@
 ---------------------------------------------------------------------------------------------
 
 
-0.) Get all the split.cal files in the same directory (one can do this also with a symbolic link). You only need to do this step once.
-	- if no split.cal: script to get it
-    - Run split_windows.py (see instructions in that file).
+0.) Run split_windows.py (see instructions in that file).
 
 
-1.) Get all the scripts from the GitHub repository and put them in the same folder with the split.cal files.
+1.) Get all the scripts from the GitHub repository and add that repository to your python path.
 	- parse_contdotdat.py
 	- split_windows.py
 	- continuum_imaging_both.py
