@@ -172,7 +172,7 @@ for band in bands:
                                      # splitting from split MSes
                                      datacolumn='corrected',
                                     )
-                    except:
+                    except AssertionError:
                         split(vis=invis,
                               spw=spws[newid],
                               field=field,
