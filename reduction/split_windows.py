@@ -259,7 +259,7 @@ for band in bands:
                         # CASA *cannot* handle wid > nchan
                         # This one also insists that there will be at least 2
                         # output channels in all cases
-                        wid = msmd.nchan(spw) / 2
+                        wid = int(msmd.nchan(spw) / 2)
                     widths.append(wid)
                     # these are TOPO freqs: freqs[spw] = msmd.chanfreqs(spw)
                     try:
