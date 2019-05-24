@@ -198,6 +198,7 @@ with open('to_image.json', 'w') as fh:
 logprint("Completed line ms splitting.  Moving on to continuum splitting")
 
 cont_mses = []
+cont_mses_unconcat = []
 
 # split the continuum data
 cont_to_merge = {}
@@ -279,7 +280,6 @@ for band in bands:
                          flagbackup=False)
 
 
-                # Average the channels within spws
                 rmtables(contvis)
                 os.system('rm -rf ' + contvis + '.flagversions')
 
@@ -291,6 +291,7 @@ for band in bands:
                     datacolumn='data'
                 tb.close()
 
+                # Average the channels within spws
                 assert split(vis=visfile,
                              spw=",".join(map(str,spws)),
                              field=field,
@@ -321,7 +322,15 @@ for band in bands:
             concat(vis=cont_to_merge[band][field],
                    concatvis=merged_continuum_fn,)
         cont_mses.append(merged_continuum_fn)
+        cont_mses_unconcat.append(cont_to_merge[band][field])
 
 with open('continuum_mses.txt', 'w') as fh:
     for line in cont_mses:
         fh.write(line+'\n')
+
+with open('continuum_mses_unconcat.txt', 'w') as fh:
+    for line in cont_mses:
+        fh.write(line+'\n')
+
+with open('cont_metadata.json', 'w') as fh:
+    fh.write(cont_to_merge)

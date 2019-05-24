@@ -48,7 +48,7 @@ if 'exclude_7m' not in locals():
 
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
-with open('continuum_mses.txt', 'r') as fh:
+with open('continuum_mses_unconcat.txt', 'r') as fh:
     continuum_mses = [x.strip() for x in fh.readlines()]
 
 for continuum_ms in continuum_mses:
