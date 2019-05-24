@@ -40,14 +40,14 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
     if image.unit.is_equivalent(u.Jy/u.beam):
         image = image * u.beam
     else:
-        assert image.unit.is_equivalent(u.Jy)
+        assert image.unit.is_equivalent(u.Jy), "Image must be in Jansky/beam."
 
     mask_array = np.zeros(image.shape, dtype='bool')
 
     for reg in regs:
 
         threshold = u.Quantity(reg.meta['label'])
-        assert threshold.unit.is_equivalent(u.Jy)
+        assert threshold.unit.is_equivalent(u.Jy), "Threshold must by in mJy or Jy"
 
         preg = reg.to_pixel(image.wcs)
         msk = preg.to_mask()
@@ -59,7 +59,7 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
     mask_array = mask_array.T
 
     ia.open(imname)
-    assert np.all(ia.shape() == mask_array[:,:,None,None].shape)
+    assert np.all(ia.shape() == mask_array[:,:,None,None].shape), "Failure: image shape doesn't match mask shape"
     cs = ia.coordsys()
     ia.close()
 
@@ -72,7 +72,7 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
 
     assert ia.fromarray(outfile=maskname,
                         pixels=mask_array.astype('float')[:,:,None,None],
-                        csys=cs.torecord(), overwrite=True)
+                        csys=cs.torecord(), overwrite=True), "FAILURE in final mask creation step"
     ia.close()
 
     return maskname
