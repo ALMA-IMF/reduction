@@ -126,7 +126,7 @@ with open('metadata.json', 'w') as fh:
 logprint("Completed metadata assembly")
 
 # extract the fields from the metadata
-fields = set(x for x in metadata['B3']) | set(x for x in metadata['B6'])
+fields = set(str(x) for x in metadata['B3']) | set(str(x) for x in metadata['B6'])
 
 if os.getenv('FIELD_ID'):
     fields = fields & {os.getenv('FIELD_ID')}
