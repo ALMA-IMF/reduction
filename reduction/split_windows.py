@@ -255,6 +255,11 @@ for band in bands:
                         raise ValueError("The channel width is greater than "
                                          "the target line width for spw {0} "
                                          "in ms {1}".format(spw, visfile))
+                    if wid > msmd.nchan(spw) / 2:
+                        # CASA *cannot* handle wid > nchan
+                        # This one also insists that there will be at least 2
+                        # output channels in all cases
+                        wid = msmd.nchan(spw) / 2
                     widths.append(wid)
                     # these are TOPO freqs: freqs[spw] = msmd.chanfreqs(spw)
                     try:
