@@ -111,7 +111,7 @@ for continuum_ms in continuum_mses:
     #          )
 
 
-    for robust in (-2, 0, 2):
+    for robust in (0, 2, -2):
 
         impars = imaging_parameters["{0}_{1}_{2}_robust{3}".format(field, band,
                                                                    arrayname,
