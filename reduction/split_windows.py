@@ -1,8 +1,15 @@
 """
-Find all .split.cal files in the current directory and subdirectory, and split
+Find all .split.cal files in the current directory and subdirectories, and split
 each out into one MS per spectral window.  Also, dump metadata files that will
 instruct the imaging script how to merge these single-window MSes into a final
 cube.
+
+.split.cal files are produced by running the CASA pipeline with ``DOSPLIT=True``.
+If you ran the pipeline _without_ that flag, you can still use this script, but
+you must first symbolically link the calibrated .ms files to the same filename
+with .split.cal appended, e.g.:
+
+    $ ln -s my_calibrated_measurement_set.ms my_calibrated_measurement_set.ms.split.cal
 
 In order to run this code, you need to be able to import ``parse_contdotdat``,
 which means to need to add the directory that contains that file to your path.

@@ -1,3 +1,20 @@
+"""
+Imaging parameters for all continuum imaging work.
+
+The first variable is used by ``continuum_imaging.py``.  It specifies the
+parameters to be used for the first-pass imaging before any self-calibration is
+done.  Please add your source name to the 'field' section.
+DO NOT modify the default imaging parameters; if there are any that are
+unsuitable for your target field, add them to the
+``imaging_parameters_nondefault`` keyword, following the naming scheme laid out
+there.
+
+The self-calibration parameters are specified in ``selfcal_pars``.  The default is to
+do 4 iterations of phase-only self calibration.  If you would like to add additional
+steps, you can add them by adding new entries to the self-calibration parameter
+dictionary for your source following the template laid out below.
+
+"""
 # set up global defaults
 imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust):
                       {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
@@ -40,6 +57,11 @@ imaging_parameters_nondefault = {
 for key in imaging_parameters_nondefault:
     assert key in imaging_parameters
     imaging_parameters[key].update(imaging_parameters_nondefault[key])
+
+
+"""
+Self-calibration parameters are defined here
+"""
 
 default_selfcal_pars = {ii: {'solint': 'int',
                              'gaintype': 'G',

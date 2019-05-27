@@ -13,6 +13,8 @@ containing this file.
 
 import os
 
+if 'almaimf_rootdir' in locals():
+    os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
 if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
         import metadata_tools

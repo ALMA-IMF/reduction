@@ -3,11 +3,12 @@
 					ALMA-IMF
 			Template scripts for continuum imaging
 
-	- scripts written by A. Ginsburg with minor modifications by T. Csengeri - 
+	- scripts written by A. Ginsburg with minor modifications by T. Csengeri -
     - instructions written by T. Csengeri, modified by A. Ginsburg,
       additional notes are in the python scripts -
 
 12.12.2018: As of today, this has only been tested on B3 images.
+27.05.2019: A. Ginsburg made substantial modifications during & after f2f meeting in Grenoble
 ---------------------------------------------------------------------------------------------
 
 0.) Set up your CASA environment:
@@ -26,37 +27,17 @@
 
 1.) Run split_windows.py (see instructions in that file).
 
-2.) Run continuum_imaging.py
-    If and when it crashes, make a region file...?
+2.) Modify ``imaging_parameters.py`` and submit the change as a pull request.
+    Most likely, you need to add the name of your target field (e.g., G008.67, W51-E, W43-MM2)
+    to the line saying "for field in ...".  DO NOT delete the other field names!
+
+3.) Run continuum_imaging.py:
+    - Set EXCLUDE_7M=True on the command line or ``exclude_7m=True`` within python if you do
+    not want to include the 7m data.
+    If and when it crashes, make a region file following the naming scheme
+    given in
+    https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb
+    (if you can't see that website on github, try loading it in http://nbviewer.jupyter.org)
 
 
-3.) Copy a single cont.dat in a directory ../calibration/
-	=> This should contain all line-free channels to image for the cleanest possible images. At a first order you can use the one provided by the pipeline. However, if you think this needs adjustments, please select/modify this file on your own.
-
-(Set or not the exclude_7m shell variable. It should be possible to do this later in the CASA session as well. See documentation on this within the scripts.)
-
-4.) In CASA:
-	import sys
-	sys.path.append('.')
-	execfile 'split_windows.py' 
-		=> by default, this will give you all the spws and 
-		   continuum ms files for imaging with the 7m dataset included
-
-	execfile 'continuum_imaging_both.py'
-		=> This will do the continuum imaging in two steps: 
-			- first it creates the 'cleanest' continuum image based on your cont.dat input excluding channels with line emission
-			- then it creates the 'best sensitivity' continuum image using the broad bandwidth (> 2000km/s) spws 1,2,3 for Band 3 (this excludes spw 0 with the N2H+ line), and spw 7 and 8 for Band 6 (using the continuum unit, and the second broadest band unit with 600 km/s width including the 13CS and N2D+ lines*.
-			- the imaging is done with a set of robust parameters -2, 0, 2
-			- the CLEAN is currently INTERACTIVE. This is because the auto-thresholding gives poor results. In the script you find some parameters that allowed for my field to get a better mask, but these parameters may not work so well for other regions.
-
-At the end: you should find 6 images in the ./imaging_results directory.
-
-
-Note: If you image first the 12m+7m dataset together (i.e. you do not set the exclude_7m variable), and then you want to image only the 12m dataset, you need to first step the exclude_7m variable and then execute continuum_imaging_both.py again!  (you do not need to re-run split_windows.py)
-
-*: the total bandwidth in B6 is: 1875+2*468.75+3*234.38+2*117.19 MHz = 3750.02 MHz. What we currently use is: 1875+468.75 = 2343.75 MHz. Including all the spws would therefore only allow us to gain ~25% more in sensitivity, while it would include potentially strong lines.
-
-
-
-
-
+4.) Run continuum_imaging_selfcal.py
