@@ -1,6 +1,6 @@
 """
-Continuum imaging scripts.  There must be a ``continuum_mses.txt`` file in the
-directory this is run in.  That file is produced by ``split_windows.py``.
+Continuum imaging self-calibration script.  This script expects that you have
+sucessfully run ``continuum_imaging.py`` first.
 
 You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>

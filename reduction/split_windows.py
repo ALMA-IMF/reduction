@@ -292,6 +292,9 @@ for band in bands:
                          flagbackup=False)
 
 
+                flagmanager(vis=visfile, mode='save',
+                            versionname='line_channel_flags')
+
                 rmtables(contvis)
                 os.system('rm -rf ' + contvis + '.flagversions')
 
