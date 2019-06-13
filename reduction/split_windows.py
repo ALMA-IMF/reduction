@@ -348,4 +348,4 @@ with open('continuum_mses_unconcat.txt', 'w') as fh:
         fh.write(line+'\n')
 
 with open('cont_metadata.json', 'w') as fh:
-    fh.write(cont_to_merge)
+    json.dump(cont_to_merge, fh)
