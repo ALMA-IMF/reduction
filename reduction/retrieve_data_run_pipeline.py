@@ -23,6 +23,9 @@ Instructions:
 
         USERNAME="me" SOURCENAME="W51-E" casa --pipeline -r 5.1.0-74 -c "execfile('retrieve_data_run_pipeline.py')"
 
+    If you have already downloaded the data, skip this script and instead run
+    `run_pipeline.py`
+
 REQUIREMENTS:
 
     This is the tricky part.  You need astroquery installed.  In principle,
@@ -62,7 +65,6 @@ from astroquery.alma import Alma
 import six
 import runpy
 import tarfile
-from taskinit import casalog
 
 import os
 
@@ -94,29 +96,6 @@ for filename in data:
         with tarfile.open(filename) as tf:
             tf.extractall('.')
 
-# to do diagnostic plotting, we need the MS, not just the science-only calibrated MS
-SPACESAVING = 1
-DOSPLIT = True
+os.chdir('2017.1.01355.L')
 
-for dirpath, dirnames, filenames in os.walk('.'):
-    for fn in filenames:
-        if "scriptForPI.py" == fn[-14:]:
-            curdir = os.getcwd()
-
-            if os.path.exists(os.path.join(dirpath,'../calibrated')):
-                casalog.post("Skipping script {0} in {1} because calibrated exists".format(fn, dirpath),
-                             origin='pipeline_runner')
-            elif os.path.exists(os.path.join(dirpath,'../calibration')):
-                os.chdir(dirpath)
-
-                casalog.post("Running script {0} in {1}".format(fn, dirpath),
-                             origin='pipeline_runner')
-
-                runpy.run_path(fn, init_globals=globals())
-
-                casalog.post("Done running script {0} in {1}".format(fn, dirpath),
-                             origin='pipeline_runner')
-
-                os.chdir(curdir)
-            else:
-                raise ValueError("Landed in the wrong directory.")
+runpy.run_path('run_pipeline.py')
