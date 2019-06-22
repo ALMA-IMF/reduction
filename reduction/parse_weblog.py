@@ -8,6 +8,11 @@ from astroquery.alma import Alma
 from bs4 import BeautifulSoup
 import re
 
+flux_scales = {'Jy': 1,
+               'mJy': 1e-3,
+               'µJy': 1e-6,
+              }
+
 def get_mous_to_sb_mapping(project_code):
 
     tbl = Alma.query(payload={'project_code': project_code}, cache=False,
@@ -158,11 +163,12 @@ def get_calibrator_fluxes(weblog):
 
                 assert spw is not None
 
-                fscale = 1e-3 if 'mJy' in flux_txt else 1e-6 if 'µJy' in flux_txt else 1
-                cscale = 1e-3 if 'mJy' in catflux_txt else 1e-6 if 'µJy' in flux_txt else 1
+                fscale = flux_scales[flux_txt.split()[1]]
+                efscale = flux_scales[flux_txt.split()[4]]
+                cscale = flux_scales[catflux_txt.split()[1]]
 
                 flux = float(flux_txt.split()[0]) * fscale
-                eflux = float(flux_txt.split()[3]) * fscale
+                eflux = float(flux_txt.split()[3]) * efscale
                 catflux = float(catflux_txt.strip().split()[0]) * cscale
 
                 date = date_map[uid]
