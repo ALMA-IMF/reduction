@@ -158,8 +158,8 @@ def get_calibrator_fluxes(weblog):
 
                 assert spw is not None
 
-                fscale = 1e-3 if 'mJy' in flux_txt else 1
-                cscale = 1e-3 if 'mJy' in catflux_txt else 1
+                fscale = 1e-3 if 'mJy' in flux_txt else 1e-6 if 'µJy' in flux_txt else 1
+                cscale = 1e-3 if 'mJy' in catflux_txt else 1e-6 if 'µJy' in flux_txt else 1
 
                 flux = float(flux_txt.split()[0]) * fscale
                 eflux = float(flux_txt.split()[3]) * fscale
