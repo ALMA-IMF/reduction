@@ -9,6 +9,27 @@ You can set the following environmental variables for this script:
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
+
+
+Restarting
+==========
+If you want to restart the selfcal iterations from scratch or from a particular
+self-calibration iteration (e.g., you want to change your mask and start over
+from iteration #3), remove all associated imaging files.  The script will reimage
+any filename for which it does not find <prefix>.image.tt0, so you must remove
+that file, but you should also remove the others.  For example, if you want
+to re-do iterations 3 and higher for W51-E_B3, run a command like this in the
+imaging_results directory:
+
+    rm -r W51-E_B3_*_robust0_selfcal[3456]*
+
+or if you want to totally start over:
+
+    # first, ls to make sure you know what you're deleting
+    ls -1d rm -r W51-E_B3_*_robust*_selfcal*
+    # then, delete it
+    rm -r W51-E_B3_*_robust*_selfcal*
+
 """
 
 import os
