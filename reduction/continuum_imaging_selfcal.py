@@ -22,6 +22,11 @@ to re-do iterations 3 and higher for W51-E_B3, run a command like this in the
 imaging_results directory:
 
     rm -r W51-E_B3_*_robust0_selfcal[3456]*
+    # then, cd .. (to the parent directory of imaging_results) and:
+    # (you need to match the selfcal iteration number with the chosen
+    # self-cal averaging time)
+    rm -r W51-E_B3_*[3456]_inf.cal
+    rm -r W51-E_B3_*[3456]_int.cal
 
 or if you want to totally start over:
 
@@ -29,6 +34,8 @@ or if you want to totally start over:
     ls -1d rm -r W51-E_B3_*_robust*_selfcal*
     # then, delete it
     rm -r W51-E_B3_*_robust*_selfcal*
+    # and remove the .cal files in the parent directory
+    rm -r W51-E_B3_*cal
 
 """
 
