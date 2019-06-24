@@ -76,6 +76,9 @@ def show(imgs, zoom=None, clear=True, norm=asinhn,
         else:
             view = zoom
 
+        # matplotlib futurewarning doesn't like lists of slices?
+        view = tuple(view)
+
         ax.imshow(imgs[imn].value[view], origin='lower', interpolation='none',
                   norm=norm, **kwargs)
 
