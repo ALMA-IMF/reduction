@@ -28,7 +28,7 @@ imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust)
                        'deconvolver': 'mtmfs',
                        'nterms': 2,
                       }
-                      for field in ('W51-E','G008.67')
+                      for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77')
                       for band in ('B3','B6')
                       for array in ('12M', '7M12M')
                       for robust in (-2, 0, 2)
