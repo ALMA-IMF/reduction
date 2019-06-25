@@ -65,3 +65,5 @@ The code tree can go anywhere.  The ALMAIMF_ROOTDIR environmental variable,
 described above, should point to the "reduction/" directory that contains all
 of the important scripts (i.e., this directory:
 https://github.com/ALMA-IMF/reduction/tree/master/reduction).
+
+When you create mask region files, they belong in $ALMAIMF_ROOTDIR/clean_regions/.
