@@ -156,7 +156,10 @@ for continuum_ms in continuum_mses:
                                        )
         except Exception as ex:
             print(ex)
-            raise ValueError("Make the region file first!")
+            print("Because no region file was found to create a mask, only "
+                  "the dirty image was made for {0}".format(imname))
+            continue
+            #raise ValueError("Make the region file first!")
         if 'mask' not in impars:
             impars['mask'] = maskname
 
