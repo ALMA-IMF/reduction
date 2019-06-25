@@ -88,7 +88,12 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 msmd.close()
                 continue
 
-            summary = msmd.summary()
+            try:
+                summary = msmd.summary()
+            except RuntimeError:
+                logprint("Skipping FAILED MS {0}".format(fn))
+                msmd.close()
+                continue
 
             fieldnames = np.array(msmd.fieldnames())
             field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]

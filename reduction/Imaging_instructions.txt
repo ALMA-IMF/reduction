@@ -46,3 +46,22 @@
     This file runs based off of the parameters set in the file https://github.com/ALMA-IMF/reduction/blob/master/reduction/imaging_parameters.py.
     It requires that either ds9 or CASA CRTF region files specifying the masks are created as described in
     https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb
+
+
+
+Additional Details of the Directory Structure
+=============================================
+There are two directory structures to pay attention to: the code tree and the
+data tree.
+
+The data tree will be wherever you download the ALMA data and extract the tar
+files; it must be on a file system with a lot of free space.  When you extract
+the tar files, a directory called "2017.1.01355.L" will be created: that is
+where you should run the various scripts described here.  When you run the
+imaging scripts, a subdirectory called "imaging_results/" will be created, and
+that will contain all of the resulting image files.
+
+The code tree can go anywhere.  The ALMAIMF_ROOTDIR environmental variable,
+described above, should point to the "reduction/" directory that contains all
+of the important scripts (i.e., this directory:
+https://github.com/ALMA-IMF/reduction/tree/master/reduction).
