@@ -323,7 +323,7 @@ for continuum_ms in continuum_mses:
                calcpsf=False,
                **dirty_impars
               )
-        logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_selfcal')
+        logprint("Skipping completed file {0} (dirty)".format(imname), origin='almaimf_cont_selfcal')
 
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
