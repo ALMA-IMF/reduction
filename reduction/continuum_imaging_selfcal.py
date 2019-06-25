@@ -367,6 +367,16 @@ for continuum_ms in continuum_mses:
             if isinstance(val, dict):
                 impars_thisiter[key] = val[selfcaliter]
 
+
+        # start from previous model to save time
+        # (in principle, should converge anyway)
+        if selfcaliter == 1:
+            modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
+                         contimagename+"_robust{0}.model.tt1".format(robust)]
+        else:
+            modelname = [contimagename+"_robust{0}_selfcal{1}.model.tt0".format(robust, selfcaliter-1),
+                         contimagename+"_robust{0}_selfcal{1}.model.tt1".format(robust, selfcaliter-1)]
+
         imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
 
@@ -399,6 +409,7 @@ for continuum_ms in continuum_mses:
                    field=field.encode(),
                    imagename=imname,
                    phasecenter=phasecenter,
+                   startmodel=modelname,
                    outframe='LSRK',
                    veltype='radio',
                    usemask='user',
@@ -424,7 +435,7 @@ for continuum_ms in continuum_mses:
             # run tclean to repopulate the modelcolumn prior to gaincal
             # (force niter = 0 so we don't clean any more)
 
-            # have to remove mask for tclean to work 
+            # have to remove mask for tclean to work
             os.system('rm -r {0}.mask'.format(imname))
             impars_thisiter['niter'] = 0
             logprint("(dirty) Imaging parameters are: {0}".format(impars_thisiter),
@@ -477,12 +488,15 @@ for continuum_ms in continuum_mses:
         pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
         impars = imaging_parameters[pars_key]
 
+        modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
+                     contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
         imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=imname,
                phasecenter=phasecenter,
+               startmodel=modelname,
                outframe='LSRK',
                veltype='radio',
                usemask='user',

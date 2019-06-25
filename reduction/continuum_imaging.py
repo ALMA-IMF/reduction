@@ -154,8 +154,13 @@ for continuum_ms in continuum_mses:
                                         suffix='_dirty_robust{0}_{1}'.format(robust,
                                                                              arrayname)
                                        )
+        except KeyError as ex:
+            if 'label' in str(ex):
+                raise KeyError("No text label was found in one of the regions."
+                               "  Regions must have text={xxJy} or {xxmJy} to "
+                               "indicate the threshold level")
         except Exception as ex:
-            print(ex)
+            print("Exception: {0}".format(str(ex)))
             print("Because no region file was found to create a mask, only "
                   "the dirty image was made for {0}".format(imname))
             continue
