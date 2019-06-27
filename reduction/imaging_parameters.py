@@ -28,13 +28,17 @@ imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust)
                        'deconvolver': 'mtmfs',
                        'nterms': 2,
                       }
-                      for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77')
+                      for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60')
                       for band in ('B3','B6')
                       for array in ('12M', '7M12M')
                       for robust in (-2, 0, 2)
                      }
 
 imaging_parameters_nondefault = {
+    'G333.60_B3_12M_robust0': {'threshold': {0: '1.0mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy'}, 
+			     'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000},
+                             'maskname': {0: 'clean_mask1.crtf', 1: 'clean_mask2.crtf', 2: 'clean_mask3.crtf', 3: 'clean_mask4.crtf'},
+                              },
     'W51-E_B6_12M_robust0': {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
                              'scales': [0,3,9,27],
                             },
@@ -89,3 +93,9 @@ selfcal_pars['W51-E_B3_12M_robust0'][7] = {'solint': 'inf',
                                            'gaintype': 'G',
                                            'calmode': 'ap',
                                           }
+
+selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+
