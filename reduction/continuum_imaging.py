@@ -6,9 +6,21 @@ You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>
         If this parameter is set (to anything), the 7m data will not be
         included in the images if they are present.
+    DO_BSENS=False
+        By default, the "best sensitivity" continuum images will also be made
+        if the _bsens.ms measurement sets exist.  If you set DO_BSENS=False,
+        they will be skipped instead.  "Best sensitivity" means that no spectral
+        lines are flagged out.
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
+
+
+Additional Notes
+================
+USE_SELFCAL_MS is an environmental variable you can set if you want the imaging
+to be done using the selfcal.ms file instead of the default continuum MS file.
+It is primarily for debug purposes and you shouldn't need it.
 """
 
 import os
@@ -53,6 +65,14 @@ if 'exclude_7m' not in locals():
 with open('continuum_mses.txt', 'r') as fh:
     continuum_mses = [x.strip() for x in fh.readlines()]
 
+
+if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
+    do_bsens = True
+    continuum_mses += [x.replace('_continuum_merged.cal.ms',
+                                 'continuum_merged_bsens.cal.ms')
+                       for x in continuum_mses]
+
+
 for continuum_ms in continuum_mses:
 
     # strip off .cal.ms
@@ -61,6 +81,8 @@ for continuum_ms in continuum_mses:
     band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
 
     field = basename.split("_")[0]
+
+    suffix = "_bsens" if "bsens" in continuum_ms else ""
 
     if exclude_7m:
         arrayname = '12M'
@@ -97,20 +119,8 @@ for continuum_ms in continuum_mses:
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
-    contimagename = os.path.join(imaging_root, basename) + "_" + arrayname
+    contimagename = os.path.join(imaging_root, basename) + "_" + arrayname + suffix
 
-    # SKIP the plot
-    #if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
-    #    # make a diagnostic plot to show the UV distribution
-    #    plotms(vis=continuum_ms,
-    #           xaxis='uvwave',
-    #           yaxis='amp',
-    #           avgchannel='1000', # minimum possible # of channels
-    #           plotfile=contimagename+".uvwave_vs_amp.png",
-    #           showlegend=True,
-    #           showgui=False,
-    #           antenna=antennae,
-    #          )
 
 
     for robust in (0, 2, -2):
