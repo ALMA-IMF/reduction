@@ -1,3 +1,4 @@
+import os
 from spectral_cube import SpectralCube
 import numpy as np
 from functools import reduce
@@ -8,6 +9,10 @@ from astropy import units as u
 imnames = ['image', 'model', 'residual']
 
 def load_images(basename, crop=True):
+
+    for imn in imnames:
+        if not os.path.exists(f'{basename}.{imn}.tt0'):
+            raise IOError(f"File {basename}.{imn}.tt0 does not exist")
 
     cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0', format='casa_image')
              for imn in imnames}

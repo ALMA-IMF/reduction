@@ -125,6 +125,8 @@ for continuum_ms in continuum_mses:
         imname = contimagename+"_robust{0}_dirty".format(robust)
 
         if not os.path.exists(imname+".image.tt0"):
+            logprint("Dirty imaging file {0}".format(imname),
+                     origin='almaimf_cont_imaging')
             tclean(vis=continuum_ms,
                    field=field.encode(),
                    imagename=imname,
@@ -171,6 +173,8 @@ for continuum_ms in continuum_mses:
         imname = contimagename+"_robust{0}".format(robust)
 
         if not os.path.exists(imname+".image.tt0"):
+            logprint("Cleaning file {0}".format(imname),
+                     origin='almaimf_cont_imaging')
             tclean(vis=continuum_ms,
                    field=field.encode(),
                    imagename=imname,
