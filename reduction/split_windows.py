@@ -243,15 +243,15 @@ for band in bands:
 
             visfile = os.path.join(path, vis)
             contvis = os.path.join(path, "continuum_"+vis+".cont")
+            contvis_bestsens = os.path.join(path, "continuum_"+vis+"_bsens.cont")
 
             cont_to_merge[band][field].append(contvis)
 
-            if os.path.exists(contvis):
-                logprint("Skipping {0} because it's done".format(contvis),)
+            if os.path.exists(contvis) and os.path.exists(contvis_bestsens):
+                logprint("Skipping width determination for {0} because it's done (both for bsens & cont".format(contvis),)
             else:
-                logprint("Flagging and splitting {0} to {1} for continuum"
+                logprint("Determining widths for {0} to {1}"
                          .format(visfile, contvis),)
-
 
                 # determine target widths
                 msmd.open(visfile)
@@ -285,11 +285,21 @@ for band in bands:
                     except TypeError:
                         freqs[spw] = ms.cvelfreqs(spwids=[spw], outframe='LSRK')
 
+                msmd.close()
+                ms.close()
+
+
+                        
+            if os.path.exists(contvis):
+                logprint("Skipping {0} because it's done".format(contvis),)
+            else:
+                logprint("Flagging and splitting {0} to {1} for continuum"
+                         .format(visfile, contvis),)
+
+
                 linechannels = contchannels_to_linechannels(cont_channel_selection,
                                                             freqs)
 
-                msmd.close()
-                ms.close()
 
                 flagmanager(vis=visfile, mode='save',
                             versionname='before_cont_flags')
@@ -332,7 +342,6 @@ for band in bands:
                             versionname='before_cont_flags')
 
 
-            contvis_bestsens = os.path.join(path, "continuum_"+vis+"_bsens.cont")
 
             if os.path.exists(contvis_bestsens):
                 logprint("Skipping {0} because it's done".format(contvis_bestsens),)
