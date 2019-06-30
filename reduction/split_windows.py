@@ -289,6 +289,14 @@ for band in bands:
                 ms.close()
 
 
+            if not os.path.exists(contvis) or not os.path.exists(contvis_bestsens):
+                tb.open(invis)
+                if 'CORRECTED_DATA' in tb.colnames():
+                    datacolumn='corrected'
+                else:
+                    datacolumn='data'
+                tb.close()
+
                         
             if os.path.exists(contvis):
                 logprint("Skipping {0} because it's done".format(contvis),)
@@ -319,13 +327,6 @@ for band in bands:
                 rmtables(contvis)
                 os.system('rm -rf ' + contvis + '.flagversions')
 
-
-                tb.open(invis)
-                if 'CORRECTED_DATA' in tb.colnames():
-                    datacolumn='corrected'
-                else:
-                    datacolumn='data'
-                tb.close()
 
                 # Average the channels within spws
                 # (assert here checks that this completes successfully)
