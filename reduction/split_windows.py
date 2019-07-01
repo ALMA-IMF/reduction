@@ -260,10 +260,13 @@ for band in bands:
                 targetwidth = 0.25 * (Synth_HPBW / PB_HPBW) * bands[band][0] * 1e9 # 98% BW smearing criterion
                 widths = []
                 freqs = {}
+                logprint("Determining smoothing widths for continuum data.  "
+                         "PB_HPBW = {0}, targetwidth = {1}".format(PB_HPBW, targetwidth))
                 for spw in spws:
                     chwid = np.abs(np.mean(msmd.chanwidths(spw)))
                     wid = int(targetwidth/chwid)
                     if wid <= 0:
+                        logprint("Failure at chwid = {0}, wid = {1}.  ".format(chwid, wid))
                         raise ValueError("The channel width is greater than "
                                          "the target line width for spw {0} "
                                          "in ms {1}".format(spw, visfile))
