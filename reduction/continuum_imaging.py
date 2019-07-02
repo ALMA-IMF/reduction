@@ -15,6 +15,8 @@ You can set the following environmental variables for this script:
         If this parameter is set, filter out the imaging targets and only split
         fields with this name (e.g., "W43-MM1", "W51-E", etc.).
         Metadata will still be collected for *all* available MSes.
+    BAND_TO_IMAGE=B3 or B6
+        If this parameter is set, only image the selected band.
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
@@ -84,6 +86,14 @@ for continuum_ms in continuum_mses:
 
     band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
 
+    # allow optional cmdline args to skip one or the other band
+    if os.getenv('BAND_TO_IMAGE'):
+        logprint("Imaging only band {0}".format(os.getenv('BAND_TO_IMAGE')),
+                 origin='contim_selfcal')
+        if band not in os.getenv('BAND_TO_IMAGE'):
+            continue
+
+
     field = basename.split("_")[0]
 
     if os.getenv('FIELD_ID'):
@@ -100,6 +110,8 @@ for continuum_ms in continuum_mses:
         if os.getenv("USE_SELFCAL_MS"):
             antennae = ""
         else:
+            logprint("Splitting MS {0} to select 12m antennae".format(continuum_ms),
+                     origin='almaimf_cont_imaging')
             msmd.open(continuum_ms)
             antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
             msmd.close()

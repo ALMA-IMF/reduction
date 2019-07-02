@@ -123,6 +123,9 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     field_id_has_scans = np.array([len(msmd.scansforfield(fid)) > 0
                                    for fid in field_ids], dtype='bool')
 
+    logprint("Field IDs {0} matching field name {1} have scans."
+             .format(field_ids[field_id_has_scans], field))
+
     noscans = field_ids[~field_id_has_scans]
     if any(~field_id_has_scans):
         logprint("Found *scanless* field IDs {0} matching field name {1}."
