@@ -11,6 +11,10 @@ You can set the following environmental variables for this script:
         if the _bsens.ms measurement sets exist.  If you set DO_BSENS=False,
         they will be skipped instead.  "Best sensitivity" means that no spectral
         lines are flagged out.
+    FIELD_ID=<name>
+        If this parameter is set, filter out the imaging targets and only split
+        fields with this name (e.g., "W43-MM1", "W51-E", etc.).
+        Metadata will still be collected for *all* available MSes.
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
@@ -81,6 +85,13 @@ for continuum_ms in continuum_mses:
     band = 'B3' if 'B3' in basename else 'B6' if 'B6' in basename else 'ERROR'
 
     field = basename.split("_")[0]
+
+    if os.getenv('FIELD_ID'):
+        if field not in os.getenv('FIELD_ID'):
+            logprint("Skipping {0} because it is not in FIELD_ID={1}"
+                     .format(field, os.getenv('FIELD_ID')))
+            continue
+
 
     suffix = "_bsens" if "bsens" in continuum_ms else ""
 
