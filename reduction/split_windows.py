@@ -84,9 +84,12 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             antnames = msmd.antennanames()
             if any('PM' in nm for nm in antnames):
-                logprint("Skipping total power MS {0}".format(fn))
-                msmd.close()
-                continue
+                if len(antnames) <= 4:
+                    logprint("Skipping total power MS {0}".format(fn))
+                    msmd.close()
+                    continue
+                else:
+                    logprint("WARNING: MS {0} contains PM antennae but is apparently not a TP data set".format(fn))
 
             try:
                 summary = msmd.summary()
