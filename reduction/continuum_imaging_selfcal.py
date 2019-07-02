@@ -10,6 +10,8 @@ You can set the following environmental variables for this script:
         If this parameter is set, filter out the imaging targets and only split
         fields with this name (e.g., "W43-MM1", "W51-E", etc.).
         Metadata will still be collected for *all* available MSes.
+    BAND_TO_IMAGE=B3 or B6
+        If this parameter is set, only image the selected band.
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
