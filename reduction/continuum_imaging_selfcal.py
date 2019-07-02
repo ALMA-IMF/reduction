@@ -6,6 +6,10 @@ You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>
         If this parameter is set (to anything), the 7m data will not be
         included in the images if they are present.
+    FIELD_ID=<name>
+        If this parameter is set, filter out the imaging targets and only split
+        fields with this name (e.g., "W43-MM1", "W51-E", etc.).
+        Metadata will still be collected for *all* available MSes.
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
@@ -113,6 +117,12 @@ for continuum_ms in continuum_mses:
 
     field = basename.split("_")[0]
 
+    if os.getenv('FIELD_ID'):
+        if field not in os.getenv('FIELD_ID'):
+            logprint("Skipping {0} because it is not in FIELD_ID={1}"
+                     .format(field, os.getenv('FIELD_ID')))
+            continue
+
     if exclude_7m:
         msmd.open(continuum_ms)
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
@@ -123,7 +133,7 @@ for continuum_ms in continuum_mses:
         arrayname = '7M12M'
 
 
-    logprint("Beginning band {0} array {1}".format(band, arrayname),
+    logprint("Beginning {2} band {0} array {1}".format(band, arrayname, field),
              origin='contim_selfcal')
 
     # create a downsampled split MS
