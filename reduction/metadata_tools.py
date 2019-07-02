@@ -154,6 +154,7 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
                         for antid in first_antid]) # m
 
     if exclude_7m:
+        assert 12 in antsize, "No 12m antennae found in ms {0}".format(ms)
         assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
         first_antid = [x for x,y in zip(first_antid, antsize) if y > 7]
         first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y > 7]

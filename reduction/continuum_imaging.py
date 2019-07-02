@@ -116,6 +116,10 @@ for continuum_ms in continuum_mses:
             antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
             msmd.close()
 
+            if antennae == "":
+                raise ValueError("No 12M antennae found; likely the 'split_windows'"
+                                 " merging stage failed.")
+
             # split out the 12M-only data to make further processing slightly
             # faster
             new_continuum_ms = continuum_ms.replace(".cal.ms", "_12M.cal.ms")
