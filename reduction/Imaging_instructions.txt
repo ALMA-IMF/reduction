@@ -25,6 +25,8 @@
                               'https://github.com/radio-astro-tools/spectral-cube/archive/master.zip'])
    - Restart CASA
 
+1.) Run the pipeline with DOSPLIT=True to restore the measurement sets
+
 1.) Run split_windows.py (see instructions in that file).
 
 2.) Read https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb
