@@ -72,3 +72,32 @@ of the important scripts (i.e., this directory:
 https://github.com/ALMA-IMF/reduction/tree/master/reduction).
 
 When you create mask region files, they belong in $ALMAIMF_ROOTDIR/clean_regions/.
+
+
+Additional tricks of cleaning in selfcal
+=============================================
+Be conservative in making the first image before the first iteration of the selfcal.
+That is, clean relatively relatively shallow probably by setting the threshold to be
+4 times rms or a bit greater. Otherwise, some artefacts may be introduced into the final
+image. In the later iterations (e.g., from iter2, 3, ...,) of selfcal, the threshold can be
+constrained down to 2 times rms.
+
+Scales in band3 could be set larger than those in the band 6, which is demonstrated for the 
+source G353.41, for example, scales = [0, 3, 9, 27] in band3 but scales = [0, 3, 9] in band6. 
+Note that the scales are ought to be in a reasonable range, i.e., smaller than
+or comparable to the size the largest mask, otherwise, the final image could be distorted.
+
+In each selfcal, the threshold and the region mask could be changeable due to the rms varying
+with each selfcal. So, it is recommend to change them following your previous criteria 
+on the threshold and region mask. 
+
+After each selfcal, it is recommended to count the immediate maximum flux density , and rms, 
+to calculate the dynamical rage, and finally to decide if further selfcals are needed by check
+how the maximum flux density runs (up for more selfcals, and down for no previous one, and further
+selfcals).
+
+As a rule of thumb, the phase selfcal is better to be done before the amplitude selfcal.
+For the latter, be careful that the flux of the amp-selfcalibrated image would suffer from
+a flux decrease.
+
+
