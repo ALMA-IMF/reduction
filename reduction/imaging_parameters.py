@@ -57,76 +57,6 @@ imaging_parameters_nondefault = {
     'W51-E_B3_7M12M_robust0': {'threshold': '2mJy', # RMS ~ ??
                                'scales': [0,3,9,27],
                               },
-}
-
-
-# for the first image, and first selfcal
-# to make the first image that is to be used for the first iteration of selfcal
-# the cleaning is better to be relatively shallow (e.g., 4 rms)
-# remove the affix "_firstim" before you make the first image, followed by the first iteration of selfcal
-imaging_parameters_nondefault_firstim = {
-    #12M of band 3
-    'G353.41_B3_12M_robust-2': {'threshold': '1.8mJy', # 4*RMS
-                             'scales': [0,3,9,27],
-                            },
-    'G353.41_B3_12M_robust0': {'threshold': '1.8mJy', # 4*RMS 
-                             'scales': [0,3,9,27],
-                            },
-    'G353.41_B3_12M_robust0.5': {'threshold': '2.1mJy', # 4*RMS
-                             'scales': [0,3,9,27],
-                            },
-    'G353.41_B3_12M_robust2': {'threshold': '3.3mJy', # 4*RMS
-                             'scales': [0,3,9,27],
-                            },
-    #7M12M of band 3
-    'G353.41_B3_7M12M_robust-2': {'threshold': '4.4mJy', # 4*RMS
-                             'scales': [0,3,9,27],
-                            },
-    'G353.41_B3_7M12M_robust0': {'threshold': '4.0mJy', # 4*RMS 
-                             'scales': [0,3,9,27],
-                            },
-    'G353.41_B3_7M12M_robust0.5': {'threshold': '4.0mJy', # 4*RMS
-                             'scales': [0,3,9,27],
-                            },
-    'G353.41_B3_7M12M_robust2': {'threshold': '4.8mJy', # 4*RMS
-                             'scales': [0,3,9,27],
-                            },
-    #12M of band 6
-    'G353.41_B6_12M_robust-2': {'threshold': '2.9mJy', # 4*RMS
-                             'scales': [0,3,9],
-                            },
-    'G353.41_B6_12M_robust0': {'threshold': '2.2mJy', # 4*RMS 
-                             'scales': [0,3,9],
-                            },
-    'G353.41_B6_12M_robust0.5': {'threshold': '1.5mJy', # 4*RMS
-                             'scales': [0,3,9],
-                            },
-    'G353.41_B6_12M_robust2': {'threshold': '1.6mJy', # 4*RMS
-                             'scales': [0,3,9],
-                            },
-    #7M12M of band 6
-    'G353.41_B6_7M12M_robust-2': {'threshold': '3.1mJy', # 4*RMS
-                             'scales': [0,3,9],
-                            },
-    'G353.41_B6_7M12M_robust0': {'threshold': '2.5mJy', # 4*RMS 
-                             'scales': [0,3,9],
-                            },
-    'G353.41_B6_7M12M_robust0.5': {'threshold': '2.3mJy', # 4*RMS
-                             'scales': [0,3,9],
-                            },
-    'G353.41_B6_7M12M_robust2': {'threshold': '3.4mJy', # 4*RMS
-                             'scales': [0,3,9],
-                            }
-
-}
-
-
-# for selfcal2,selfcal3, ....
-# after the first selfcal, we can clean deeper (e.g., 2rms as the threshold)
-# remove the affix "_selfcalX" before starting selfcal2, selfcal3, ...
-# the threshold can be changeable due to the variation of rms with after each selfcal
-
-imaging_parameters_nondefault_selfcalX = {
     #12M of band 3
     'G353.41_B3_12M_robust-2': {'threshold': '0.5mJy', # 2*RMS
                              'scales': [0,3,9,27],
@@ -178,12 +108,8 @@ imaging_parameters_nondefault_selfcalX = {
                             },
     'G353.41_B6_7M12M_robust2': {'threshold': '0.82mJy', # 2*RMS
                              'scales': [0,3,9],
-                            },
-
+                            },	
 }
-
-
-
 
 
 for key in imaging_parameters_nondefault:
