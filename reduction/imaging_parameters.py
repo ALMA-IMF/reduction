@@ -61,7 +61,7 @@ imaging_parameters_nondefault = {
 
 
 # for the first image, and first selfcal
-# to make the first image to be used for the first iteration of selfcal
+# to make the first image that is to be used for the first iteration of selfcal
 # the cleaning is better to be relatively shallow (e.g., 4 rms)
 # remove the affix "_firstim" before you make the first image, followed by the first iteration of selfcal
 imaging_parameters_nondefault_firstim = {
@@ -124,6 +124,7 @@ imaging_parameters_nondefault_firstim = {
 # for selfcal2,selfcal3, ....
 # after the first selfcal, we can clean deeper (e.g., 2rms as the threshold)
 # remove the affix "_selfcalX" before starting selfcal2, selfcal3, ...
+# the threshold can be changeable due to the variation of rms with after each selfcal
 
 imaging_parameters_nondefault_selfcalX = {
     #12M of band 3
