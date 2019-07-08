@@ -91,6 +91,12 @@ In each selfcal, the threshold and the region mask could be changeable due to th
 with each selfcal. So, it is recommend to change them following your previous criteria 
 on the threshold and region mask. 
 
+The mask can be made with different criteria for dense and
+diffuse regions. For example, the dense regions can be masked out with a contour of 4*rms, but
+the diffuse regions can be done with 3*rms. Checking the residual image from the right previous selfcal
+is always useful to make a good mask for a good cleaning that could result in a more flatter
+residual image in the next iteration of selfcal.
+
 After each selfcal, it is recommended to count the immediate maximum flux density , and rms, 
 to calculate the dynamical rage, and finally to decide if further selfcals are needed by check
 how the maximum flux density runs (up for more selfcals, and down for no previous one, and further
@@ -99,5 +105,7 @@ selfcals).
 As a rule of thumb, the phase selfcal is better to be done before the amplitude selfcal.
 For the latter, be careful that the flux of the amp-selfcalibrated image would suffer from
 a flux decrease.
+
+
 
 
