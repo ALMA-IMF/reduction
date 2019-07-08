@@ -183,38 +183,6 @@ imaging_parameters_nondefault_selfcalX = {
 }
 
 
-selfcal_pars['G353.41_B6_12M_robust0'][5] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-selfcal_pars['G353.41_B6_12M_robust0'][6] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-selfcal_pars['G353.41_B3_12M_robust0'][5] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-selfcal_pars['G353.41_B3_12M_robust0'][6] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-selfcal_pars['G353.41_B6_7M12M_robust0'][5] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-selfcal_pars['G353.41_B6_7M12M_robust0'][6] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-selfcal_pars['G353.41_B3_7M12M_robust0'][5] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-selfcal_pars['G353.41_B3_7M12M_robust0'][6] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
 
 
 
@@ -256,6 +224,39 @@ selfcal_pars['W51-E_B3_12M_robust0'][7] = {'solint': 'inf',
                                           }
 
 selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+
+selfcal_pars['G353.41_B6_12M_robust0'][5] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+selfcal_pars['G353.41_B6_12M_robust0'][6] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+selfcal_pars['G353.41_B3_12M_robust0'][5] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+selfcal_pars['G353.41_B3_12M_robust0'][6] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+selfcal_pars['G353.41_B6_7M12M_robust0'][5] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+selfcal_pars['G353.41_B6_7M12M_robust0'][6] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+selfcal_pars['G353.41_B3_7M12M_robust0'][5] = {'solint': 'inf',
+                                           'gaintype': 'G',
+                                           'calmode': 'ap',
+                                          }
+selfcal_pars['G353.41_B3_7M12M_robust0'][6] = {'solint': 'inf',
                                            'gaintype': 'G',
                                            'calmode': 'ap',
                                           }
