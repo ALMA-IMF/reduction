@@ -248,7 +248,7 @@ for band in bands:
             cont_to_merge[band][field].append(contvis)
 
             if os.path.exists(contvis) and os.path.exists(contvis_bestsens):
-                logprint("Skipping width determination for {0} because it's done (both for bsens & cont".format(contvis),)
+                logprint("Skipping width determination for {0} because it's done (both for bsens & cont)".format(contvis),)
             else:
                 logprint("Determining widths for {0} to {1}"
                          .format(visfile, contvis),)
