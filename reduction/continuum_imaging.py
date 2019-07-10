@@ -204,8 +204,21 @@ for continuum_ms in continuum_mses:
                   "the dirty image was made for {0}".format(imname))
             continue
             #raise ValueError("Make the region file first!")
-        if 'mask' not in impars:
-            impars['mask'] = maskname
+
+        # for compatibility w/self-calibration: if a list of parameters is used,
+        # just use the 0'th iteration's parameters
+        impars_thisiter = copy.copy(impars)
+        if 'maskname' in impars_thisiter:
+            maskname = impars_thisiter['maskname'][0]
+            del impars_thisiter['maskname']
+        for key, val in impars_thisiter.items():
+            if isinstance(val, dict):
+                impars_thisiter[key] = val[0]
+
+
+
+        if 'mask' not in impars_thisiter:
+            impars_thisiter['mask'] = maskname
 
         imname = contimagename+"_robust{0}".format(robust)
 
@@ -224,7 +237,7 @@ for continuum_ms in continuum_mses:
                    imsize=imsize,
                    antenna=antennae,
                    pbcor=True,
-                   **impars
+                   **impars_thisiter
                   )
             ia.open(imname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_imaging',

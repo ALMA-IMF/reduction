@@ -9,6 +9,16 @@ unsuitable for your target field, add them to the
 ``imaging_parameters_nondefault`` keyword, following the naming scheme laid out
 there.
 
+If you want to specify a different set of imaging parameters, you can do so by
+passing a dictionary instead of a single number.  For example, instead of
+    threshold: '1mJy'
+you can use
+    threshold: {0: '2mJy', 1:'1mJy', 2:'0.75mJy'}
+The requirements are:
+    (1) you must have a zero entry (which is used by continuum_imaging.py)
+    (2) you must have the same number of entries in each dictionary as there
+    are in the calibration parameters list below
+
 The self-calibration parameters are specified in ``selfcal_pars``.  The default is to
 do 4 iterations of phase-only self calibration.  If you would like to add additional
 steps, you can add them by adding new entries to the self-calibration parameter
