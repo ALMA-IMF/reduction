@@ -149,6 +149,7 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     # (i.e., it includes baselines between TM1 and TM2 positions)
     baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
     max_baseline = baseline_lengths.max()
+    logprint("Maximum baseline length = {0}".format(max_baseline))
 
     antsize = np.array([msmd.antennadiameter(antid)['value']
                         for antid in first_antid]) # m
