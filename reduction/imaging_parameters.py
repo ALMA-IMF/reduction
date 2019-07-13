@@ -40,9 +40,15 @@ imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust)
                       }
                       for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60')
                       for band in ('B3','B6')
-                      for array in ('12M', '7M12M')
+                      for array in ('12M', '7M12M', '7M')
                       for robust in (-2, 0, 2)
                      }
+
+# added for 7M only data: higher threshold
+for key in imaging_parameters:
+    if '_7M_' in key:
+        imaging_parameters[key]['threshold'] = '5mJy'
+
 
 imaging_parameters_nondefault = {
     'G333.60_B3_12M_robust0': {'threshold': {0: '1.0mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy'},
@@ -94,6 +100,17 @@ selfcal_pars['W51-E_B6_12M_robust0'][6] = {'solint': 'inf',
                                            'gaintype': 'G',
                                            'calmode': 'ap',
                                           }
+
+selfcal_pars['W51-E_B6_7M12M_robust0'][5] = selfcal_pars['W51-E_B6_7M12M_robust0'][4] # one extra phase iteration
+selfcal_pars['W51-E_B6_7M12M_robust0'][6] = {'solint': 'inf',
+                                             'gaintype': 'G',
+                                             'calmode': 'ap',
+                                            }
+selfcal_pars['W51-E_B6_7M12M_robust0'][7] = {'solint': 'inf',
+                                             'gaintype': 'G',
+                                             'calmode': 'ap',
+                                            }
+
 selfcal_pars['W51-E_B3_12M_robust0'][5] = selfcal_pars['W51-E_B3_12M_robust0'][4]
 selfcal_pars['W51-E_B3_12M_robust0'][6] = {'solint': 'inf',
                                            'gaintype': 'G',
@@ -105,7 +122,6 @@ selfcal_pars['W51-E_B3_12M_robust0'][7] = {'solint': 'inf',
                                           }
 
 selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
-                                          }
-
+                                             'gaintype': 'G',
+                                             'calmode': 'ap',
+                                            }

@@ -89,12 +89,16 @@ if not os.path.exists(imaging_root):
 if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
         exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
-        arrayname = '12M'
     else:
         exclude_7m = False
-        arrayname = '7M12M'
 
-logprint("Beginning selfcal script with exclude_7m={0}".format(exclude_7m),
+if 'only_7m' not in locals():
+    if os.getenv('ONLY_7M') is not None:
+        only_7m = bool(os.getenv('ONLY_7M').lower() == 'true')
+    else:
+        only_7m = False
+
+logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
          origin='contim_selfcal')
 
 
@@ -130,6 +134,11 @@ for continuum_ms in continuum_mses:
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
         arrayname = '12M'
+    elif only_7m:
+        msmd.open(continuum_ms)
+        antennae = ",".join([x for x in msmd.antennanames() if 'CM' in x])
+        msmd.close()
+        arrayname = '7M'
     else:
         antennae = ""
         arrayname = '7M12M'
@@ -177,25 +186,13 @@ for continuum_ms in continuum_mses:
               field=field,
              )
 
-        #msmd.open(selfcal_ms)
-        #antenna_diameters = msmd.antennadiameter()
-        #if exclude_7m:
-        #    ants7m = np.array([int(key) for key,val in
-        #                       antenna_diameters.items()
-        #                       if val['value'] == 7])
-        #    for scn in msmd.scannumbers():
-        #        if np.any(np.isin(ants7m, msmd.antennasforscan(scn))):
-        #            raise ValueError("7m antennae were excluded but still "
-        #                             "appear in antenna table.  Antenna "
-        #                             "string was {0}".format(antennae))
-        #msmd.close()
-
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
     (dra,ddec,pixscale) = list(determine_imsize(ms=selfcal_ms, field=field,
                                                 phasecenter=(racen,deccen),
                                                 exclude_7m=exclude_7m,
+                                                only_7m=only_7m,
                                                 spw=0, pixfraction_of_fwhm=1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2

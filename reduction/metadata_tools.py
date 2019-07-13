@@ -96,7 +96,8 @@ def determine_phasecenter(ms, field, formatted=False):
         return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
-                     min_pixscale=0.05, exclude_7m=False, makeplot=False):
+                     min_pixscale=0.05, only_7m=False, exclude_7m=False,
+                     makeplot=False):
     """
     Parameters
     ----------
@@ -164,6 +165,16 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y > 7])
 
         antsize = np.array([x for x in antsize if x > 7])
+    elif only_7m:
+        assert 7 in antsize, "No 7m antennae found in ms {0}".format(ms)
+        assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
+        first_antid = [x for x,y in zip(first_antid, antsize) if y == 7]
+        first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y == 7]
+        field_ids = np.array([x for x,y in zip(field_ids[field_id_has_scans], antsize) if y == 7])
+        # this one is trivial: should be all True
+        field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y == 7])
+
+        antsize = np.array([x for x in antsize if x == 7])
     else:
         # the shape matters if any are false...
         field_id_has_scans = field_id_has_scans[field_id_has_scans]

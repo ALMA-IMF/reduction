@@ -65,6 +65,12 @@ if 'exclude_7m' not in locals():
     else:
         exclude_7m = False
 
+if 'only_7m' not in locals():
+    if os.getenv('ONLY_7M') is not None:
+        only_7m = bool(os.getenv('ONLY_7M').lower() == 'true')
+    else:
+        only_7m = False
+
 
 # load the list of continuum MSes from a file
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
@@ -88,10 +94,13 @@ for continuum_ms in continuum_mses:
 
     # allow optional cmdline args to skip one or the other band
     if os.getenv('BAND_TO_IMAGE'):
-        logprint("Imaging only band {0}".format(os.getenv('BAND_TO_IMAGE')),
-                 origin='contim_selfcal')
         if band not in os.getenv('BAND_TO_IMAGE'):
+            logprint("Skipping band {0} because it is not in {1}"
+                     .format(band, os.getenv('BAND_TO_IMAGE')),
+                     origin='almaimf_cont_imaging')
             continue
+        logprint("Imaging only band {0}".format(os.getenv('BAND_TO_IMAGE')),
+                 origin='almaimf_cont_imaging')
 
 
     field = basename.split("_")[0]
@@ -126,6 +135,24 @@ for continuum_ms in continuum_mses:
             split(vis=continuum_ms, outputvis=new_continuum_ms, antenna=antennae,
                   field=field, datacolumn='data')
             continuum_ms = new_continuum_ms
+    elif only_7m:
+        arrayname = '7M'
+        logprint("Splitting MS {0} to select 7m antennae".format(continuum_ms),
+                 origin='almaimf_cont_imaging')
+        msmd.open(continuum_ms)
+        antennae = ",".join([x for x in msmd.antennanames() if 'CM' in x])
+        msmd.close()
+
+        if antennae == "":
+            raise ValueError("No 7M antennae found; likely the 'split_windows'"
+                             " merging stage failed.")
+
+        # split out the 12M-only data to make further processing slightly
+        # faster
+        new_continuum_ms = continuum_ms.replace(".cal.ms", "_7M.cal.ms")
+        split(vis=continuum_ms, outputvis=new_continuum_ms, antenna=antennae,
+              field=field, datacolumn='data')
+        continuum_ms = new_continuum_ms
     else:
         antennae = ""
         arrayname = '7M12M'
@@ -142,6 +169,7 @@ for continuum_ms in continuum_mses:
     (dra,ddec,pixscale) = list(determine_imsize(ms=continuum_ms, field=field,
                                                 phasecenter=(racen,deccen),
                                                 exclude_7m=exclude_7m,
+                                                only_7m=only_7m,
                                                 spw=0, pixfraction_of_fwhm=1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
@@ -195,13 +223,14 @@ for continuum_ms in continuum_mses:
                                        )
         except KeyError as ex:
             if 'label' in str(ex):
+                logprint("Bad Region Exception: {0}".format(str(ex)))
                 raise KeyError("No text label was found in one of the regions."
                                "  Regions must have text={xxJy} or {xxmJy} to "
                                "indicate the threshold level")
         except Exception as ex:
-            print("Exception: {0}".format(str(ex)))
-            print("Because no region file was found to create a mask, only "
-                  "the dirty image was made for {0}".format(imname))
+            logprint("Exception: {0}".format(str(ex)))
+            logprint("Because no region file was found to create a mask, only "
+                     "the dirty image was made for {0}".format(imname))
             continue
             #raise ValueError("Make the region file first!")
 
