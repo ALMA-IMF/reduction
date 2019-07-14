@@ -48,6 +48,8 @@ imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust)
 for key in imaging_parameters:
     if '_7M_' in key:
         imaging_parameters[key]['threshold'] = '5mJy'
+    if '7M' in key:
+        imaging_parameters[key]['scales'] = [0,3,9,27]
 
 
 imaging_parameters_nondefault = {

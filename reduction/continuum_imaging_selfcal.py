@@ -77,6 +77,7 @@ from gaincal_cli import gaincal_cli as gaincal
 from rmtables_cli import rmtables_cli as rmtables
 from applycal_cli import applycal_cli as applycal
 from exportfits_cli import exportfits_cli as exportfits
+from ft_cli import ft_cli as ft
 
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
@@ -308,40 +309,22 @@ for continuum_ms in continuum_mses:
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
     else:
-        # have to remove mask for tclean to work 
-        os.system('rm -r {0}.mask'.format(imname))
+        # populate the model column
+        modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
+                     contimagename+"_robust{0}.model.tt1".format(robust)]
 
-        # bugfix: for no reason at all, the reference frequency can change.
-        # tclean chokes if it gets the wrong reffreq.
-        ia.open(imname+".image.tt0")
-        reffreq = "{0}Hz".format(ia.coordsys().referencevalue()['numeric'][3])
-        ia.close()
-
-        # run tclean to repopulate the modelcolumn prior to gaincal
-        logprint("(dirty) Imaging parameters are: {0}".format(dirty_impars),
+        logprint("Using ``ft`` to populate the model column",
                  origin='almaimf_cont_selfcal')
-        tclean(vis=selfcal_ms,
-               field=field.encode(),
-               imagename=imname,
-               phasecenter=phasecenter,
-               outframe='LSRK',
-               veltype='radio',
-               usemask='user',
-               #do not specify mask since no cleaning is being done
-               # mask=maskname,
-               interactive=False,
-               cell=cellsize,
-               imsize=imsize,
-               antenna=antennae,
-               savemodel='modelcolumn',
-               datacolumn='data',
-               reffreq=reffreq,
-               pbcor=True,
-               calcres=True,
-               calcpsf=False,
-               **dirty_impars
-              )
-        logprint("Skipping completed file {0} (dirty)".format(imname), origin='almaimf_cont_selfcal')
+        ft(vis=selfcal_ms,
+           field=field.encode(),
+           model=modelname,
+           nterms=2,
+           usescratch=True
+          )
+
+        logprint("Skipped completed file {0} (dirty),"
+                 " populated model column".format(imname),
+                 origin='almaimf_cont_selfcal')
 
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
@@ -401,7 +384,6 @@ for continuum_ms in continuum_mses:
         if not os.path.exists(imname+".image.tt0"):
 
             okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
-            clearcal(vis=selfcal_ms, addmodel=True)
             if len(okfields) == 0:
                 logprint("All fields flagged out of gaincal solns!",
                          origin='contim_selfcal')
@@ -409,6 +391,7 @@ for continuum_ms in continuum_mses:
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
+            clearcal(vis=selfcal_ms, addmodel=True)
             # use gainfield so we interpolate the good solutions to the other
             # fields
             applycal(vis=selfcal_ms,
