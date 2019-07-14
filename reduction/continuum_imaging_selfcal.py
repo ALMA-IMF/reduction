@@ -310,6 +310,13 @@ for continuum_ms in continuum_mses:
     else:
         # have to remove mask for tclean to work 
         os.system('rm -r {0}.mask'.format(imname))
+
+        # bugfix: for no reason at all, the reference frequency can change.
+        # tclean chokes if it gets the wrong reffreq.
+        ia.open(imname+".image.tt0")
+        reffreq = "{0}Hz".format(ia.coordsys().referencevalue()['numeric'][3])
+        ia.close()
+
         # run tclean to repopulate the modelcolumn prior to gaincal
         logprint("(dirty) Imaging parameters are: {0}".format(dirty_impars),
                  origin='almaimf_cont_selfcal')
@@ -328,6 +335,7 @@ for continuum_ms in continuum_mses:
                antenna=antennae,
                savemodel='modelcolumn',
                datacolumn='data',
+               reffreq=reffreq,
                pbcor=True,
                calcres=True,
                calcpsf=False,
@@ -395,6 +403,8 @@ for continuum_ms in continuum_mses:
             okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
             clearcal(vis=selfcal_ms, addmodel=True)
             if len(okfields) == 0:
+                logprint("All fields flagged out of gaincal solns!",
+                         origin='contim_selfcal')
                 raise ValueError("All fields flagged out of gaincal solns!")
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
             logprint("Fields {0} had min snr 5, fields {1} did not"
@@ -445,6 +455,13 @@ for continuum_ms in continuum_mses:
             # run tclean to repopulate the modelcolumn prior to gaincal
             # (force niter = 0 so we don't clean any more)
 
+
+            # bugfix: for no reason at all, the reference frequency can change.
+            # tclean chokes if it gets the wrong reffreq.
+            ia.open(imname+".image.tt0")
+            reffreq = "{0}Hz".format(ia.coordsys().referencevalue()['numeric'][3])
+            ia.close()
+
             # have to remove mask for tclean to work
             os.system('rm -r {0}.mask'.format(imname))
             impars_thisiter['niter'] = 0
@@ -462,6 +479,7 @@ for continuum_ms in continuum_mses:
                    cell=cellsize,
                    imsize=imsize,
                    antenna=antennae,
+                   reffreq=reffreq,
                    savemodel='modelcolumn',
                    datacolumn='corrected',
                    pbcor=True,

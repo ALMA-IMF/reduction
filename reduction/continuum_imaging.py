@@ -147,7 +147,7 @@ for continuum_ms in continuum_mses:
             raise ValueError("No 7M antennae found; likely the 'split_windows'"
                              " merging stage failed.")
 
-        # split out the 12M-only data to make further processing slightly
+        # split out the 7M-only data to make further processing slightly
         # faster
         new_continuum_ms = continuum_ms.replace(".cal.ms", "_7M.cal.ms")
         split(vis=continuum_ms, outputvis=new_continuum_ms, antenna=antennae,
