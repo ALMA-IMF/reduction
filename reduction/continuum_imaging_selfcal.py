@@ -229,8 +229,16 @@ for continuum_ms in continuum_mses:
              origin='almaimf_cont_selfcal')
 
     if 'maskname' in dirty_impars:
-        maskname = dirty_impars['maskname'][0]
-        del dirty_impars['maskname']
+        if isinstance(dirty_impars['maskname'], str):
+            maskname = dirty_impars['maskname']
+            logprint("Warning: only one mask found!  "
+                     "Mask should be set to a dictionary of format "
+                     "{iternumber: maskname}.  Self calibration iterations "
+                     "will not work until this is changed.",
+                     origin='almaimf_cont_selfcal')
+        else:
+            maskname = dirty_impars['maskname'][0]
+            del dirty_impars['maskname']
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -272,15 +280,23 @@ for continuum_ms in continuum_mses:
     # copy the imaging parameters and make the "iter-zero" version
     impars_thisiter = copy.copy(impars)
     if 'maskname' in impars_thisiter:
-        maskname = impars_thisiter['maskname'][0]
-        del impars_thisiter['maskname']
+        if isinstance(dirty_impars['maskname'], str):
+            maskname = dirty_impars['maskname']
+            logprint("Warning: only one mask found!  "
+                     "Mask should be set to a dictionary of format "
+                     "{iternumber: maskname}.  Self calibration iterations "
+                     "will not work until this is changed.",
+                     origin='almaimf_cont_selfcal')
+        else:
+            maskname = impars_thisiter['maskname'][0]
+            del impars_thisiter['maskname']
     for key, val in impars_thisiter.items():
         if isinstance(val, dict):
             impars_thisiter[key] = val[0]
 
     if not os.path.exists(imname+".image.tt0"):
         if maskname:
-            assert os.path.exists(maskname)
+            assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
         logprint("Imaging parameters are: {0}".format(impars_thisiter),
                  origin='almaimf_cont_selfcal')
         tclean(vis=selfcal_ms,
@@ -402,7 +418,7 @@ for continuum_ms in continuum_mses:
                      calwt=False)
 
             # do not run the clean if no mask exists
-            assert os.path.exists(maskname)
+            assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
 
             # do this even if the output file exists: we need to populate the
             # modelcolumn
