@@ -13,11 +13,14 @@ flux_scales = {'Jy': 1,
                'µJy': 1e-6,
               }
 
-def get_mous_to_sb_mapping(project_code):
+def get_mous_to_sb_mapping(project_code, QA2_required=True):
 
     tbl = Alma.query(payload={'project_code': project_code}, cache=False,
                      public=False)['Member ous id','SB name', 'QA2 Status']
-    mapping = {row['Member ous id']: row['SB name'] for row in tbl if row['QA2 Status'] == 'Y'}
+    if QA2_required:
+        mapping = {row['Member ous id']: row['SB name'] for row in tbl if row['QA2 Status'] == 'Y'}
+    else:
+        mapping = {row['Member ous id']: row['SB name'] for row in tbl}
     return mapping
 
 def get_human_readable_name(weblog, mapping=None):

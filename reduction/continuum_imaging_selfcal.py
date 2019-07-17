@@ -10,6 +10,8 @@ You can set the following environmental variables for this script:
         If this parameter is set, filter out the imaging targets and only split
         fields with this name (e.g., "W43-MM1", "W51-E", etc.).
         Metadata will still be collected for *all* available MSes.
+    BAND_TO_IMAGE=B3 or B6
+        If this parameter is set, only image the selected band.
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
@@ -75,6 +77,7 @@ from gaincal_cli import gaincal_cli as gaincal
 from rmtables_cli import rmtables_cli as rmtables
 from applycal_cli import applycal_cli as applycal
 from exportfits_cli import exportfits_cli as exportfits
+from ft_cli import ft_cli as ft
 
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
@@ -87,12 +90,16 @@ if not os.path.exists(imaging_root):
 if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
         exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
-        arrayname = '12M'
     else:
         exclude_7m = False
-        arrayname = '7M12M'
 
-logprint("Beginning selfcal script with exclude_7m={0}".format(exclude_7m),
+if 'only_7m' not in locals():
+    if os.getenv('ONLY_7M') is not None:
+        only_7m = bool(os.getenv('ONLY_7M').lower() == 'true')
+    else:
+        only_7m = False
+
+logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
          origin='contim_selfcal')
 
 
@@ -128,6 +135,11 @@ for continuum_ms in continuum_mses:
         antennae = ",".join([x for x in msmd.antennanames() if 'CM' not in x])
         msmd.close()
         arrayname = '12M'
+    elif only_7m:
+        msmd.open(continuum_ms)
+        antennae = ",".join([x for x in msmd.antennanames() if 'CM' in x])
+        msmd.close()
+        arrayname = '7M'
     else:
         antennae = ""
         arrayname = '7M12M'
@@ -175,25 +187,13 @@ for continuum_ms in continuum_mses:
               field=field,
              )
 
-        #msmd.open(selfcal_ms)
-        #antenna_diameters = msmd.antennadiameter()
-        #if exclude_7m:
-        #    ants7m = np.array([int(key) for key,val in
-        #                       antenna_diameters.items()
-        #                       if val['value'] == 7])
-        #    for scn in msmd.scannumbers():
-        #        if np.any(np.isin(ants7m, msmd.antennasforscan(scn))):
-        #            raise ValueError("7m antennae were excluded but still "
-        #                             "appear in antenna table.  Antenna "
-        #                             "string was {0}".format(antennae))
-        #msmd.close()
-
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
     (dra,ddec,pixscale) = list(determine_imsize(ms=selfcal_ms, field=field,
                                                 phasecenter=(racen,deccen),
                                                 exclude_7m=exclude_7m,
+                                                only_7m=only_7m,
                                                 spw=0, pixfraction_of_fwhm=1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
@@ -229,8 +229,16 @@ for continuum_ms in continuum_mses:
              origin='almaimf_cont_selfcal')
 
     if 'maskname' in dirty_impars:
-        maskname = dirty_impars['maskname'][0]
-        del dirty_impars['maskname']
+        if isinstance(dirty_impars['maskname'], str):
+            maskname = dirty_impars['maskname']
+            logprint("Warning: only one mask found!  "
+                     "Mask should be set to a dictionary of format "
+                     "{iternumber: maskname}.  Self calibration iterations "
+                     "will not work until this is changed.",
+                     origin='almaimf_cont_selfcal')
+        else:
+            maskname = dirty_impars['maskname'][0]
+            del dirty_impars['maskname']
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -272,15 +280,23 @@ for continuum_ms in continuum_mses:
     # copy the imaging parameters and make the "iter-zero" version
     impars_thisiter = copy.copy(impars)
     if 'maskname' in impars_thisiter:
-        maskname = impars_thisiter['maskname'][0]
-        del impars_thisiter['maskname']
+        if isinstance(dirty_impars['maskname'], str):
+            maskname = dirty_impars['maskname']
+            logprint("Warning: only one mask found!  "
+                     "Mask should be set to a dictionary of format "
+                     "{iternumber: maskname}.  Self calibration iterations "
+                     "will not work until this is changed.",
+                     origin='almaimf_cont_selfcal')
+        else:
+            maskname = impars_thisiter['maskname'][0]
+            del impars_thisiter['maskname']
     for key, val in impars_thisiter.items():
         if isinstance(val, dict):
             impars_thisiter[key] = val[0]
 
     if not os.path.exists(imname+".image.tt0"):
         if maskname:
-            assert os.path.exists(maskname)
+            assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
         logprint("Imaging parameters are: {0}".format(impars_thisiter),
                  origin='almaimf_cont_selfcal')
         tclean(vis=selfcal_ms,
@@ -309,32 +325,22 @@ for continuum_ms in continuum_mses:
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
     else:
-        # have to remove mask for tclean to work 
-        os.system('rm -r {0}.mask'.format(imname))
-        # run tclean to repopulate the modelcolumn prior to gaincal
-        logprint("(dirty) Imaging parameters are: {0}".format(dirty_impars),
+        # populate the model column
+        modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
+                     contimagename+"_robust{0}.model.tt1".format(robust)]
+
+        logprint("Using ``ft`` to populate the model column",
                  origin='almaimf_cont_selfcal')
-        tclean(vis=selfcal_ms,
-               field=field.encode(),
-               imagename=imname,
-               phasecenter=phasecenter,
-               outframe='LSRK',
-               veltype='radio',
-               usemask='user',
-               #do not specify mask since no cleaning is being done
-               # mask=maskname,
-               interactive=False,
-               cell=cellsize,
-               imsize=imsize,
-               antenna=antennae,
-               savemodel='modelcolumn',
-               datacolumn='data',
-               pbcor=True,
-               calcres=True,
-               calcpsf=False,
-               **dirty_impars
-              )
-        logprint("Skipping completed file {0} (dirty)".format(imname), origin='almaimf_cont_selfcal')
+        ft(vis=selfcal_ms,
+           field=field.encode(),
+           model=modelname,
+           nterms=2,
+           usescratch=True
+          )
+
+        logprint("Skipped completed file {0} (dirty),"
+                 " populated model column".format(imname),
+                 origin='almaimf_cont_selfcal')
 
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
@@ -394,12 +400,14 @@ for continuum_ms in continuum_mses:
         if not os.path.exists(imname+".image.tt0"):
 
             okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
-            clearcal(vis=selfcal_ms, addmodel=True)
             if len(okfields) == 0:
+                logprint("All fields flagged out of gaincal solns!",
+                         origin='contim_selfcal')
                 raise ValueError("All fields flagged out of gaincal solns!")
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
+            clearcal(vis=selfcal_ms, addmodel=True)
             # use gainfield so we interpolate the good solutions to the other
             # fields
             applycal(vis=selfcal_ms,
@@ -410,7 +418,7 @@ for continuum_ms in continuum_mses:
                      calwt=False)
 
             # do not run the clean if no mask exists
-            assert os.path.exists(maskname)
+            assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
 
             # do this even if the output file exists: we need to populate the
             # modelcolumn
@@ -446,6 +454,13 @@ for continuum_ms in continuum_mses:
             # run tclean to repopulate the modelcolumn prior to gaincal
             # (force niter = 0 so we don't clean any more)
 
+
+            # bugfix: for no reason at all, the reference frequency can change.
+            # tclean chokes if it gets the wrong reffreq.
+            ia.open(imname+".image.tt0")
+            reffreq = "{0}Hz".format(ia.coordsys().referencevalue()['numeric'][3])
+            ia.close()
+
             # have to remove mask for tclean to work
             os.system('rm -r {0}.mask'.format(imname))
             impars_thisiter['niter'] = 0
@@ -463,6 +478,7 @@ for continuum_ms in continuum_mses:
                    cell=cellsize,
                    imsize=imsize,
                    antenna=antennae,
+                   reffreq=reffreq,
                    savemodel='modelcolumn',
                    datacolumn='corrected',
                    pbcor=True,
