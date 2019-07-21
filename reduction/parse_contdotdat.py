@@ -1,6 +1,9 @@
 import numpy as np
 import string
-from __casac__.quanta import quanta
+try:
+    from __casac__.quanta import quanta
+except ImportError:
+    from casatools import quanta
 from taskinit import msmdtool
 qq = quanta()
 

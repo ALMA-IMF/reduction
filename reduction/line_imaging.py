@@ -21,9 +21,14 @@ You can set the following environmental variables for this script:
 
 import json
 import os
-from tasks import tclean, uvcontsub, impbcor
+try:
+    from tasks import tclean, uvcontsub, impbcor
+except ImportError:
+    # futureproofing: CASA 6 imports this way
+    from casatasks import tclean, uvcontsub, impbcor
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
+from imaging_parameters import line_imaging_parameters, selfcal_pars
 
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
@@ -63,6 +68,9 @@ if 'exclude_7m' not in locals():
 # 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = os.getenv('CHANCHUNKS') or 16
 
+# global default: only do robust 0 for lines
+robust = 0
+
 for band in band_list:
     for field in to_image[band]:
         for spw in to_image[band][field]:
@@ -72,15 +80,15 @@ for band in band_list:
 
             if exclude_7m:
                 vis = [ms for ms in vis if not(is_7m(ms))]
-                suffix = '12M'
+                arrayname = '12M'
             else:
-                suffix = '7M12M'
+                arrayname = '7M12M'
 
             lineimagename = os.path.join(imaging_root,
                                          "{0}_{1}_spw{2}_{3}_lines".format(field,
                                                                            band,
                                                                            spw,
-                                                                           suffix))
+                                                                           arrayname))
 
 
             logprint(str(vis), origin='almaimf_line_imaging')
@@ -118,7 +126,7 @@ for band in band_list:
                        cell=cellsize,
                        imsize=imsize,
                        weighting='briggs',
-                       robust=0.0,
+                       robust=robust,
                        gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
@@ -141,36 +149,27 @@ for band in band_list:
             logprint("Threshold used = {0} = 5x{1}".format(threshold, rms), origin='almaimf_line_imaging')
             ia.close()
 
+            pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
+            impars = line_imaging_parameters[pars_key]
+
 
             if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 tclean(vis=vis,
                        imagename=lineimagename,
                        field=[field.encode()]*len(vis),
-                       specmode='cube',
-                       outframe='LSRK',
-                       veltype='radio',
-                       niter=2000,
                        threshold=threshold,
                        phasecenter=phasecenter,
                        usemask='auto-multithresh',
-                       # the sidelobethreshold is very awkward/wrong with 7m+12m
-                       # combined data.  Instead, favor the more direct
-                       # noisethreshold
-                       sidelobethreshold=1.0,
-                       # start with the default of 5-sigma?
-                       noisethreshold=5.0,
-                       deconvolver='multiscale',
-                       scales=[0,3,9,27,81],
                        interactive=False,
                        cell=cellsize,
                        imsize=imsize,
-                       weighting='briggs',
-                       robust=0.0,
                        gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
-                       chanchunks=chanchunks)
+                       chanchunks=chanchunks,
+                       **impars
+                      )
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
@@ -205,25 +204,15 @@ for band in band_list:
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
                        field=[field.encode()]*len(vis),
-                       specmode='cube',
-                       outframe='LSRK',
-                       veltype='radio',
-                       niter=2000,
                        threshold=threshold,
-                       usemask='auto-multithresh',
-                       sidelobethreshold=1.0,
                        phasecenter=phasecenter,
-                       noisethreshold=5.0,
-                       deconvolver='multiscale',
-                       scales=[0,3,9,27,81],
                        interactive=False,
                        cell=cellsize,
                        imsize=imsize,
-                       weighting='briggs',
-                       robust=0.0,
-                       gridder='mosaic',
                        restoringbeam='',
-                       chanchunks=chanchunks)
+                       chanchunks=chanchunks,
+                       **impars
+                      )
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)

@@ -280,8 +280,8 @@ for continuum_ms in continuum_mses:
     # copy the imaging parameters and make the "iter-zero" version
     impars_thisiter = copy.copy(impars)
     if 'maskname' in impars_thisiter:
-        if isinstance(dirty_impars['maskname'], str):
-            maskname = dirty_impars['maskname']
+        if isinstance(impars_thisiter['maskname'], str):
+            maskname = impars_thisiter['maskname']
             logprint("Warning: only one mask found!  "
                      "Mask should be set to a dictionary of format "
                      "{iternumber: maskname}.  Self calibration iterations "

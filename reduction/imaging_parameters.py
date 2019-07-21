@@ -127,3 +127,28 @@ selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
                                              'gaintype': 'G',
                                              'calmode': 'ap',
                                             }
+
+
+
+line_imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust):
+                           {
+                            'niter': 20000,
+                            'robust': robust,
+                            'weighting': 'briggs',
+                            'scales': [0,3,9,27,81],
+                            'gridder': 'mosaic',
+                            'specmode': 'cube',
+                            'deconvolver': 'multiscale',
+                            'outframe':'LSRK',
+                            'veltype':'radio',
+                            'sidelobethreshold': 1.0,
+                            'noisethreshold': 5.0,
+                           'usemask':'auto-multithresh',
+                           }
+                           for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60')
+                           for band in ('B3','B6')
+                           for array in ('12M', '7M12M', '7M')
+                           for robust in (-2, 0, 2)
+                          }
+
+line_imaging_parameters['W51-E_B6_12M_robust0']['startmodel'] = 'W51-E_B6_uid___A001_X1296_X215_continuum_merged_12M_robust0_selfcal7.model.tt0'
