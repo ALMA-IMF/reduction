@@ -100,7 +100,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             fieldnames = np.array(msmd.fieldnames())
             field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
-            assert len(np.unique(field)) == 1
+            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
             field = field[0]
 
             # noinspection PyInterpreter
@@ -130,7 +130,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:
-                fh.write("")
+                fh.write("{0}".format(antnames))
 
 
             msmd.close()
