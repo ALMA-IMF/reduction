@@ -289,6 +289,16 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
 
     return int(dra), int(ddec), pixscale
 
+def determine_imsizes(mses, field, phasecenter, **kwargs):
+    assert isinstance(mses, list)
+    results = [determine_imsize(ms, field, phasecenter, **kwargs) for ms in mses]
+    dra, ddec, _ = np.max(results, axis=0)
+    _, _, pixscale = np.min(results, axis=0)
+
+    logprint("ALL MSES: Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
+
+    return dra, ddec, pixscale
+
 def check_model_is_populated(msfile):
     ms.open(msfile)
     modelphase = ms.getdata(items=['model_phase'])

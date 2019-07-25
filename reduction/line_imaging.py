@@ -27,7 +27,7 @@ except ImportError:
     # futureproofing: CASA 6 imports this way
     from casatasks import tclean, uvcontsub, impbcor
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
-from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
+from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars
 
 from taskinit import msmdtool, iatool
@@ -94,12 +94,12 @@ for band in band_list:
             logprint(str(vis), origin='almaimf_line_imaging')
             coosys,racen,deccen = determine_phasecenter(ms=vis, field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            (dra,ddec,pixscale) = list(determine_imsize(ms=vis[0], field=field,
-                                                        phasecenter=(racen,deccen),
-                                                        spw=0, pixfraction_of_fwhm=1/3.,
-                                                        exclude_7m=exclude_7m,
-                                                        min_pixscale=0.1, # arcsec
-                                                       ))
+            (dra,ddec,pixscale) = list(determine_imsizes(mses=vis, field=field,
+                                                         phasecenter=(racen,deccen),
+                                                         spw=0, pixfraction_of_fwhm=1/3.,
+                                                         exclude_7m=exclude_7m,
+                                                         min_pixscale=0.1, # arcsec
+                                                        ))
             imsize = [dra, ddec]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 

@@ -335,7 +335,7 @@ for band in bands:
                              field=field,
                              outputvis=contvis,
                              width=widths,
-                             datacolumn=datacolumn)
+                             datacolumn=datacolumn), "Split failed!"
 
 
                 # If you flagged any line channels, restore the previous flags
