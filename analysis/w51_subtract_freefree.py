@@ -1,9 +1,11 @@
 import numpy as np
 from astropy import constants, units as u, table, stats, coordinates, wcs, log, coordinates as coord, convolution, modeling; from astropy.io import fits, ascii
 import reproject
-fh3mm_r0 = fits.open('W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7.image.tt0.fits')
-fh3mm_r2 = fits.open('W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust2_selfcal7_reclean_deeper.image.tt0.pbcor.fits')
-fh2cm = fits.open('../../paper_w51_evla/data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits')
+#fh3mm_r0 = fits.open('W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7.image.tt0.fits')
+#fh3mm_r2 = fits.open('W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust2_selfcal7_reclean_deeper.image.tt0.pbcor.fits')
+fh3mm_r0 = fits.open('/Users/adam/work/w51/alma/FITS/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7.image.tt0.fits')
+fh3mm_r2 = fits.open('/Users/adam/work/w51/alma/FITS/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust2_selfcal7_reclean_deeper.image.tt0.pbcor.fits')
+fh2cm = fits.open('/Users/adam/work/w51/paper_w51_evla/data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits')
 
 rep3mm_r2,_ = reproject.reproject_interp((fh3mm_r2[0].data.squeeze(),
                                           wcs.WCS(fh3mm_r2[0].header).celestial),
@@ -23,6 +25,13 @@ diffr2 = rep3mm_r2 - fh2cm[0].data.squeeze() * scalefactor_r2
 ok = (rep3mm_r0 > 0.001) & (fh2cm[0].data > 0.001).squeeze()
 scalefactor_r0 = np.median(rep3mm_r0[ok] / fh2cm[0].data.squeeze()[ok])
 #scalefactor_r0 = 1
+
+
+print(f"Scalefactor r0 = {scalefactor_r0}, scalefactor r2 = {scalefactor_r2}")
+
+#scalefactor_r0 =  # for whatever reason, R0 really is missing too much...
+scalefactor_r2 = (90/15)**-0.12
+print(f"90 GHz / 15 GHz ^ -0.12 = {(90/15)**-0.12}")
 
 diffr0 = rep3mm_r0 - fh2cm[0].data.squeeze() * scalefactor_r0
 

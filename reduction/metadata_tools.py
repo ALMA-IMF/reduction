@@ -297,7 +297,7 @@ def determine_imsizes(mses, field, phasecenter, **kwargs):
 
     logprint("ALL MSES: Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
 
-    return dra, ddec, pixscale
+    return int(dra), int(ddec), pixscale
 
 def check_model_is_populated(msfile):
     ms.open(msfile)

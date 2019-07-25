@@ -100,7 +100,7 @@ for band in band_list:
                                                          exclude_7m=exclude_7m,
                                                          min_pixscale=0.1, # arcsec
                                                         ))
-            imsize = [dra, ddec]
+            imsize = [int(dra), int(ddec)]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
             dirty_tclean_made_residual = False
@@ -164,7 +164,6 @@ for band in band_list:
                        interactive=False,
                        cell=cellsize,
                        imsize=imsize,
-                       gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
                        chanchunks=chanchunks,
