@@ -6,6 +6,7 @@ import reproject
 fh3mm_r0 = fits.open('/Users/adam/work/w51/alma/FITS/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7.image.tt0.fits')
 fh3mm_r2 = fits.open('/Users/adam/work/w51/alma/FITS/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust2_selfcal7_reclean_deeper.image.tt0.pbcor.fits')
 fh2cm = fits.open('/Users/adam/work/w51/paper_w51_evla/data/W51Ku_BDarray_continuum_2048_both_uniform.hires.clean.image.fits')
+fh6cm = fits.open('/Users/adam/work/w51/paper_w51_evla/data/W51C_ACarray_continuum_selfcal_4096_both_uniform_contsplit.clean.image.fits')
 
 rep3mm_r2,_ = reproject.reproject_interp((fh3mm_r2[0].data.squeeze(),
                                           wcs.WCS(fh3mm_r2[0].header).celestial),
@@ -15,6 +16,11 @@ rep3mm_r0,_ = reproject.reproject_interp((fh3mm_r0[0].data.squeeze(),
                                           wcs.WCS(fh3mm_r0[0].header).celestial),
                                          wcs.WCS(fh2cm[0].header).celestial,
                                          shape_out=fh2cm[0].data.squeeze().shape)
+rep6cm,_ = reproject.reproject_interp((fh6cm[0].data.squeeze(),
+                                       wcs.WCS(fh6cm[0].header).celestial),
+                                      wcs.WCS(fh2cm[0].header).celestial,
+                                      shape_out=fh2cm[0].data.squeeze().shape)
+
 
 ok = (rep3mm_r2 > 0.001) & (fh2cm[0].data > 0.001).squeeze()
 scalefactor_r2 = np.median(rep3mm_r2[ok] / fh2cm[0].data.squeeze()[ok])

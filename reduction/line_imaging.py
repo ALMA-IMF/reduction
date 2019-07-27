@@ -146,21 +146,28 @@ for band in band_list:
             stats = ia.statistics(robust=True)
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
             threshold = "{0:0.4f}Jy".format(5*rms)
-            logprint("Threshold used = {0} = 5x{1}".format(threshold, rms), origin='almaimf_line_imaging')
+            logprint("Threshold used = {0} = 5x{1}".format(threshold, rms),
+                     origin='almaimf_line_imaging')
             ia.close()
 
             pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
             impars = line_imaging_parameters[pars_key]
 
 
-            if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
+            if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
+                logprint("WARNING: The PSF for {0} exists, but no image exists."
+                         "  This likely implies that an ongoing or incomplete "
+                         "imaging run for this file exists.  It will not be "
+                         "imaged this time; please check what is happening."
+                         .fromat(lineimagename),
+                         origin='almaimf_line_imaging')
+            elif dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 tclean(vis=vis,
                        imagename=lineimagename,
                        field=[field.encode()]*len(vis),
                        threshold=threshold,
                        phasecenter=phasecenter,
-                       usemask='auto-multithresh',
                        interactive=False,
                        cell=cellsize,
                        imsize=imsize,
@@ -199,7 +206,19 @@ for band in band_list:
                               fitorder=1,
                               want_cont=False)
 
-            if not os.path.exists(lineimagename+".contsub.image"):
+            if os.path.exists(lineimagename+".contsub.psf") and not os.path.exists(lineimagename+".contsub.image"):
+                logprint("WARNING: The PSF for {0} contsub exists, "
+                         "but no image exists."
+                         "  This likely implies that an ongoing or incomplete "
+                         "imaging run for this file exists.  It will not be "
+                         "imaged this time; please check what is happening.  "
+                         .format(lineimagename),
+                         origin='almaimf_line_imaging')
+            elif not os.path.exists(lineimagename+".contsub.image"):
+
+                pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
+                impars = line_imaging_parameters[pars_key]
+
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
                        field=[field.encode()]*len(vis),

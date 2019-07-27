@@ -130,7 +130,7 @@ selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
 
 
 
-line_imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust):
+line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub):
                            {
                             'niter': 20000,
                             'robust': robust,
@@ -149,7 +149,9 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, ro
                            for band in ('B3','B6')
                            for array in ('12M', '7M12M', '7M')
                            for robust in (-2, 0, 2)
+                           for contsub in ("","_contsub")
                           }
 
+# use the continuum image as the startmodel for the non-contsub'd data
 line_imaging_parameters['W51-E_B6_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B6_uid___A001_X1296_X215_continuum_merged_12M_robust0_selfcal7.model.tt0'
 line_imaging_parameters['W51-E_B3_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7.model.tt0'
