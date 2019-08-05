@@ -40,9 +40,11 @@ or if you want to totally start over:
 
 """
 
-import os
-import copy
-import sys
+import os, copy, sys, argparse
+
+sys.path.append('./')
+ALMAIMF_ROOTDIR = os.path.dirname(os.path.realpath(sys.argv[2]))
+sys.path.append(ALMAIMF_ROOTDIR)
 
 if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
@@ -60,7 +62,7 @@ import numpy as np
 
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated)
-from make_custom_mask import make_custom_mask
+from make_custom_mask import make_custom_mask, make_rms_mask
 from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
 
@@ -80,14 +82,29 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
-if 'exclude_7m' not in locals():
+# Command line options
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', nargs=1, 
+        help='Casa parameter.')
+parser.add_argument('--exclude7M', action='store_true',
+        help='Include 7M data')
+parser.add_argument('--rms_region', 
+        help='CASA region file')
+parser.add_argument('--nrms', default=5., type=float,
+        help='Number of rms level')
+args = parser.parse_args()
+
+# Command line takes precedence
+if args.exclude7M:
+    exclude_7m = args.exclude7M
+    arrayname = '12M'
+elif 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
         exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
         arrayname = '12M'
     else:
         exclude_7m = False
         arrayname = '7M12M'
-
 logprint("Beginning selfcal script with exclude_7m={0}".format(exclude_7m),
          origin='contim_selfcal')
 
@@ -245,11 +262,14 @@ for continuum_ms in continuum_mses:
 
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
-                      history=["{0}: {1}".format(key, val) for key, val in
-                               dirty_impars.items()])
+                        history=["{0}: {1}".format(key, val) for key, val in
+                                dirty_impars.items()])
         ia.close()
+    imname = contimagename+"_robust{0}".format(robust)
 
-    if 'maskname' not in locals():
+    # copy the imaging parameters and make the "iter-zero" version
+    impars_thisiter = copy.copy(impars)
+    if 'maskname' not in locals() and not args.rms_region:
         maskname = make_custom_mask(field, imname+".image.tt0",
                                     os.getenv('ALMAIMF_ROOTDIR'),
                                     band,
@@ -257,16 +277,24 @@ for continuum_ms in continuum_mses:
                                     suffix='_dirty_robust{0}_{1}'.format(robust,
                                                                          arrayname)
                                    )
-    imname = contimagename+"_robust{0}".format(robust)
-
-    # copy the imaging parameters and make the "iter-zero" version
-    impars_thisiter = copy.copy(impars)
-    if 'maskname' in impars_thisiter:
-        maskname = impars_thisiter['maskname'][0]
+    elif 'maskname' not in locals() and args.rms_region:
+        maskname = make_rms_mask(imname+".image.tt0", args.rms_region, 
+                10.)
+        #rms = imstat(imagename=imname+".image.tt0", region=args.rms_region)['rms'][0]
+        #rmslevel = rms * args.nrms
+        #print 'rms level: ', rmslevel
+        #maskname = '"%s" > rmslevel' % (imname+".image.tt0",)
+    elif 'maskname' in impars_thisiter:
+        maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
+                impars_thisiter['maskname'][0])
         del impars_thisiter['maskname']
+    else:
+        raise Exception
+
     for key, val in impars_thisiter.items():
         if isinstance(val, dict):
             impars_thisiter[key] = val[0]
+    print maskname
 
     if not os.path.exists(imname+".image.tt0"):
         if maskname:
@@ -329,11 +357,14 @@ for continuum_ms in continuum_mses:
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
     # the appropriate name)
-    if 'maskname' not in locals():
+    if 'maskname' not in locals() and not args.rms_region:
         maskname = make_custom_mask(field, imname+".image.tt0",
                                     os.getenv('ALMAIMF_ROOTDIR'), band,
                                     rootdir=imaging_root,
                                    )
+    elif args.rms_region:
+        maskname = make_rms_mask(imname+".image.tt0", args.rms_region, 
+                args.nrms)
 
     cals = []
 
@@ -362,7 +393,8 @@ for continuum_ms in continuum_mses:
         # with either, e.g. {'niter': 1000} or {'niter': {1:1000, 2:100000, 3:999999}} etc
         impars_thisiter = copy.copy(impars)
         if 'maskname' in impars_thisiter:
-            maskname = impars_thisiter['maskname'][selfcaliter]
+            maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
+                    impars_thisiter['maskname'][selfcaliter])
             del impars_thisiter['maskname']
         for key, val in impars_thisiter.items():
             if isinstance(val, dict):
@@ -464,7 +496,7 @@ for continuum_ms in continuum_mses:
 
         regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
                                                        selfcaliter)
-        regfn = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+        regfn = os.path.join(os.getenv('ALMAIMF_ROOTDIR','./'),
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
@@ -475,6 +507,9 @@ for continuum_ms in continuum_mses:
                                         rootdir=imaging_root,
                                         suffix=regsuffix
                                        )
+        elif args.rms_region and os.path.exists(args.rms_region):
+            maskname = make_rms_mask(imname+".image.tt0", args.rms_region, 
+                    args.nrms)
 
 
         logprint("Completed gaincal iteration {0}".format(selfcaliter),
