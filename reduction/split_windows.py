@@ -84,9 +84,12 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             antnames = msmd.antennanames()
             if any('PM' in nm for nm in antnames):
-                logprint("Skipping total power MS {0}".format(fn))
-                msmd.close()
-                continue
+                if len(antnames) <= 4:
+                    logprint("Skipping total power MS {0}".format(fn))
+                    msmd.close()
+                    continue
+                else:
+                    logprint("WARNING: MS {0} contains PM antennae but is apparently not a TP data set".format(fn))
 
             try:
                 summary = msmd.summary()
@@ -97,7 +100,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             fieldnames = np.array(msmd.fieldnames())
             field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
-            assert len(np.unique(field)) == 1
+            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
             field = field[0]
 
             # noinspection PyInterpreter
@@ -127,7 +130,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:
-                fh.write("")
+                fh.write("{0}".format(antnames))
 
 
             msmd.close()
@@ -240,15 +243,15 @@ for band in bands:
 
             visfile = os.path.join(path, vis)
             contvis = os.path.join(path, "continuum_"+vis+".cont")
+            contvis_bestsens = os.path.join(path, "continuum_"+vis+"_bsens.cont")
 
             cont_to_merge[band][field].append(contvis)
 
-            if os.path.exists(contvis):
-                logprint("Skipping {0} because it's done".format(contvis),)
+            if os.path.exists(contvis) and os.path.exists(contvis_bestsens):
+                logprint("Skipping width determination for {0} because it's done (both for bsens & cont)".format(contvis),)
             else:
-                logprint("Flagging and splitting {0} to {1} for continuum"
+                logprint("Determining widths for {0} to {1}"
                          .format(visfile, contvis),)
-
 
                 # determine target widths
                 msmd.open(visfile)
@@ -260,10 +263,13 @@ for band in bands:
                 targetwidth = 0.25 * (Synth_HPBW / PB_HPBW) * bands[band][0] * 1e9 # 98% BW smearing criterion
                 widths = []
                 freqs = {}
+                logprint("Determining smoothing widths for continuum data.  "
+                         "PB_HPBW = {0}, targetwidth = {1}".format(PB_HPBW, targetwidth))
                 for spw in spws:
                     chwid = np.abs(np.mean(msmd.chanwidths(spw)))
                     wid = int(targetwidth/chwid)
                     if wid <= 0:
+                        logprint("Failure at chwid = {0}, wid = {1}.  ".format(chwid, wid))
                         raise ValueError("The channel width is greater than "
                                          "the target line width for spw {0} "
                                          "in ms {1}".format(spw, visfile))
@@ -279,11 +285,29 @@ for band in bands:
                     except TypeError:
                         freqs[spw] = ms.cvelfreqs(spwids=[spw], outframe='LSRK')
 
+                msmd.close()
+                ms.close()
+
+
+            if not os.path.exists(contvis) or not os.path.exists(contvis_bestsens):
+                tb.open(invis)
+                if 'CORRECTED_DATA' in tb.colnames():
+                    datacolumn='corrected'
+                else:
+                    datacolumn='data'
+                tb.close()
+
+                        
+            if os.path.exists(contvis):
+                logprint("Skipping {0} because it's done".format(contvis),)
+            else:
+                logprint("Flagging and splitting {0} to {1} for continuum"
+                         .format(visfile, contvis),)
+
+
                 linechannels = contchannels_to_linechannels(cont_channel_selection,
                                                             freqs)
 
-                msmd.close()
-                ms.close()
 
                 flagmanager(vis=visfile, mode='save',
                             versionname='before_cont_flags')
@@ -304,25 +328,37 @@ for band in bands:
                 os.system('rm -rf ' + contvis + '.flagversions')
 
 
-                tb.open(invis)
-                if 'CORRECTED_DATA' in tb.colnames():
-                    datacolumn='corrected'
-                else:
-                    datacolumn='data'
-                tb.close()
-
                 # Average the channels within spws
+                # (assert here checks that this completes successfully)
                 assert split(vis=visfile,
                              spw=",".join(map(str,spws)),
                              field=field,
                              outputvis=contvis,
                              width=widths,
-                             datacolumn=datacolumn)
+                             datacolumn=datacolumn), "Split failed!"
 
 
                 # If you flagged any line channels, restore the previous flags
                 flagmanager(vis=visfile, mode='restore',
                             versionname='before_cont_flags')
+
+
+
+            if os.path.exists(contvis_bestsens):
+                logprint("Skipping {0} because it's done".format(contvis_bestsens),)
+            else:
+                logprint("Splitting 'best-sensitivity' {0} to {1} for continuum"
+                         .format(visfile, contvis_bestsens),)
+
+                # Average the channels within spws for the "best sensitivity"
+                # continuum, in which nothing is flagged out
+                assert split(vis=visfile,
+                             spw=",".join(map(str,spws)),
+                             field=field,
+                             outputvis=contvis_bestsens,
+                             width=widths,
+                             datacolumn=datacolumn)
+
 
         member_uid = path.split("member.")[-1].split("/")[0]
         merged_continuum_fn = os.path.join(path,
@@ -332,6 +368,7 @@ for band in bands:
                                                    muid=member_uid)
                                           )
 
+        # merge the continuum measurement sets to ease bookkeeping
         if os.path.exists(merged_continuum_fn):
             logprint("Skipping merged continuum {0} because it's done"
                      .format(merged_continuum_fn),)
@@ -342,6 +379,29 @@ for band in bands:
             concat(vis=cont_to_merge[band][field],
                    concatvis=merged_continuum_fn,)
         cont_mses.append(merged_continuum_fn)
+
+
+        # merge the best sensitivity continuum too
+        merged_continuum_bsens_fn = os.path.join(
+            path,
+            "{field}_{band}_{muid}_continuum_merged_bsens.cal.ms"
+            .format(field=field, band=band, muid=member_uid)
+        )
+
+        if os.path.exists(merged_continuum_bsens_fn):
+            logprint("Skipping merged continuum bsens {0} because it's done"
+                     .format(merged_continuum_bsens_fn),)
+        else:
+            logprint("Merging bsens continuum for {0} {1} into {2}"
+                     .format(merged_continuum_bsens_fn, field, band),)
+
+            # Note this search-and-replace pattern: we use this instead
+            # of separately storing the continuum bsens MS names
+            concat(vis=[x.replace(".cont", "_bsens.cont")
+                        for x in cont_to_merge[band][field]],
+                   concatvis=merged_continuum_bsens_fn,)
+
+        # for debug purposes, we also track the split, unmerged MSes
         cont_mses_unconcat.append(cont_to_merge[band][field])
 
 with open('continuum_mses.txt', 'w') as fh:

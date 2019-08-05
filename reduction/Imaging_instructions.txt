@@ -25,15 +25,20 @@
                               'https://github.com/radio-astro-tools/spectral-cube/archive/master.zip'])
    - Restart CASA
 
-1.) Run split_windows.py (see instructions in that file).
+1.) Run the pipeline with DOSPLIT=True to restore the measurement sets.  You can use this script:
+https://github.com/ALMA-IMF/reduction/blob/master/reduction/run_pipeline.py
+to automatically run all scriptForPI.py files in subdirectories.
 
-2.) Read https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb
+2.) Run split_windows.py (see instructions in that file) to create the continuum measurement sets.
 
-3.) Modify ``imaging_parameters.py`` and submit the change as a pull request.
+3.) Read https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb,
+which goes into detail on how to image and create masks.
+
+4.) Modify ``imaging_parameters.py`` and submit the change as a pull request.
     Most likely, you need to add the name of your target field (e.g., G008.67, W51-E, W43-MM2)
     to the line saying "for field in ...".  DO NOT delete the other field names!
 
-4.) Run continuum_imaging.py:
+5.) Run continuum_imaging.py:
     - Set EXCLUDE_7M=True on the command line or ``exclude_7m=True`` within python if you do
     not want to include the 7m data.
     If and when it crashes because you do not have an appropriately named
@@ -42,7 +47,7 @@
     (if you can't see that website on github, try loading it in http://nbviewer.jupyter.org)
 
 
-5.) Run continuum_imaging_selfcal.py
+6.) Run continuum_imaging_selfcal.py
     This file runs based off of the parameters set in the file https://github.com/ALMA-IMF/reduction/blob/master/reduction/imaging_parameters.py.
     It requires that either ds9 or CASA CRTF region files specifying the masks are created as described in
     https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb

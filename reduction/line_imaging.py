@@ -21,9 +21,14 @@ You can set the following environmental variables for this script:
 
 import json
 import os
-from tasks import tclean, uvcontsub, impbcor
+try:
+    from tasks import tclean, uvcontsub, impbcor
+except ImportError:
+    # futureproofing: CASA 6 imports this way
+    from casatasks import tclean, uvcontsub, impbcor
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
-from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
+from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
+from imaging_parameters import line_imaging_parameters, selfcal_pars
 
 from taskinit import msmdtool, iatool
 msmd = msmdtool()
@@ -63,6 +68,9 @@ if 'exclude_7m' not in locals():
 # 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = os.getenv('CHANCHUNKS') or 16
 
+# global default: only do robust 0 for lines
+robust = 0
+
 for band in band_list:
     for field in to_image[band]:
         for spw in to_image[band][field]:
@@ -72,27 +80,27 @@ for band in band_list:
 
             if exclude_7m:
                 vis = [ms for ms in vis if not(is_7m(ms))]
-                suffix = '12M'
+                arrayname = '12M'
             else:
-                suffix = '7M12M'
+                arrayname = '7M12M'
 
             lineimagename = os.path.join(imaging_root,
                                          "{0}_{1}_spw{2}_{3}_lines".format(field,
                                                                            band,
                                                                            spw,
-                                                                           suffix))
+                                                                           arrayname))
 
 
             logprint(str(vis), origin='almaimf_line_imaging')
             coosys,racen,deccen = determine_phasecenter(ms=vis, field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            (dra,ddec,pixscale) = list(determine_imsize(ms=vis[0], field=field,
-                                                        phasecenter=(racen,deccen),
-                                                        spw=0, pixfraction_of_fwhm=1/3.,
-                                                        exclude_7m=exclude_7m,
-                                                        min_pixscale=0.1, # arcsec
-                                                       ))
-            imsize = [dra, ddec]
+            (dra,ddec,pixscale) = list(determine_imsizes(mses=vis, field=field,
+                                                         phasecenter=(racen,deccen),
+                                                         spw=0, pixfraction_of_fwhm=1/3.,
+                                                         exclude_7m=exclude_7m,
+                                                         min_pixscale=0.1, # arcsec
+                                                        ))
+            imsize = [int(dra), int(ddec)]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
             dirty_tclean_made_residual = False
@@ -118,7 +126,7 @@ for band in band_list:
                        cell=cellsize,
                        imsize=imsize,
                        weighting='briggs',
-                       robust=0.0,
+                       robust=robust,
                        gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
@@ -138,39 +146,36 @@ for band in band_list:
             stats = ia.statistics(robust=True)
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
             threshold = "{0:0.4f}Jy".format(5*rms)
-            logprint("Threshold used = {0} = 5x{1}".format(threshold, rms), origin='almaimf_line_imaging')
+            logprint("Threshold used = {0} = 5x{1}".format(threshold, rms),
+                     origin='almaimf_line_imaging')
             ia.close()
 
+            pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
+            impars = line_imaging_parameters[pars_key]
 
-            if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
+
+            if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
+                logprint("WARNING: The PSF for {0} exists, but no image exists."
+                         "  This likely implies that an ongoing or incomplete "
+                         "imaging run for this file exists.  It will not be "
+                         "imaged this time; please check what is happening."
+                         .fromat(lineimagename),
+                         origin='almaimf_line_imaging')
+            elif dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 tclean(vis=vis,
                        imagename=lineimagename,
                        field=[field.encode()]*len(vis),
-                       specmode='cube',
-                       outframe='LSRK',
-                       veltype='radio',
-                       niter=2000,
                        threshold=threshold,
                        phasecenter=phasecenter,
-                       usemask='auto-multithresh',
-                       # the sidelobethreshold is very awkward/wrong with 7m+12m
-                       # combined data.  Instead, favor the more direct
-                       # noisethreshold
-                       sidelobethreshold=1.0,
-                       # start with the default of 5-sigma?
-                       noisethreshold=5.0,
-                       deconvolver='multiscale',
-                       scales=[0,3,9,27,81],
                        interactive=False,
                        cell=cellsize,
                        imsize=imsize,
-                       weighting='briggs',
-                       robust=0.0,
-                       gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
-                       chanchunks=chanchunks)
+                       chanchunks=chanchunks,
+                       **impars
+                      )
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
@@ -201,29 +206,31 @@ for band in band_list:
                               fitorder=1,
                               want_cont=False)
 
-            if not os.path.exists(lineimagename+".contsub.image"):
+            if os.path.exists(lineimagename+".contsub.psf") and not os.path.exists(lineimagename+".contsub.image"):
+                logprint("WARNING: The PSF for {0} contsub exists, "
+                         "but no image exists."
+                         "  This likely implies that an ongoing or incomplete "
+                         "imaging run for this file exists.  It will not be "
+                         "imaged this time; please check what is happening.  "
+                         .format(lineimagename),
+                         origin='almaimf_line_imaging')
+            elif not os.path.exists(lineimagename+".contsub.image"):
+
+                pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
+                impars = line_imaging_parameters[pars_key]
+
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
                        field=[field.encode()]*len(vis),
-                       specmode='cube',
-                       outframe='LSRK',
-                       veltype='radio',
-                       niter=2000,
                        threshold=threshold,
-                       usemask='auto-multithresh',
-                       sidelobethreshold=1.0,
                        phasecenter=phasecenter,
-                       noisethreshold=5.0,
-                       deconvolver='multiscale',
-                       scales=[0,3,9,27,81],
                        interactive=False,
                        cell=cellsize,
                        imsize=imsize,
-                       weighting='briggs',
-                       robust=0.0,
-                       gridder='mosaic',
                        restoringbeam='',
-                       chanchunks=chanchunks)
+                       chanchunks=chanchunks,
+                       **impars
+                      )
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)

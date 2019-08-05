@@ -96,7 +96,8 @@ def determine_phasecenter(ms, field, formatted=False):
         return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
-                     min_pixscale=0.05, exclude_7m=False, makeplot=False):
+                     min_pixscale=0.05, only_7m=False, exclude_7m=False,
+                     makeplot=False):
     """
     Parameters
     ----------
@@ -123,6 +124,9 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     field_id_has_scans = np.array([len(msmd.scansforfield(fid)) > 0
                                    for fid in field_ids], dtype='bool')
 
+    logprint("Field IDs {0} matching field name {1} have scans."
+             .format(field_ids[field_id_has_scans], field))
+
     noscans = field_ids[~field_id_has_scans]
     if any(~field_id_has_scans):
         logprint("Found *scanless* field IDs {0} matching field name {1}."
@@ -146,11 +150,13 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     # (i.e., it includes baselines between TM1 and TM2 positions)
     baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
     max_baseline = baseline_lengths.max()
+    logprint("Maximum baseline length = {0}".format(max_baseline))
 
     antsize = np.array([msmd.antennadiameter(antid)['value']
                         for antid in first_antid]) # m
 
     if exclude_7m:
+        assert 12 in antsize, "No 12m antennae found in ms {0}".format(ms)
         assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
         first_antid = [x for x,y in zip(first_antid, antsize) if y > 7]
         first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y > 7]
@@ -159,6 +165,16 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y > 7])
 
         antsize = np.array([x for x in antsize if x > 7])
+    elif only_7m:
+        assert 7 in antsize, "No 7m antennae found in ms {0}".format(ms)
+        assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
+        first_antid = [x for x,y in zip(first_antid, antsize) if y == 7]
+        first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y == 7]
+        field_ids = np.array([x for x,y in zip(field_ids[field_id_has_scans], antsize) if y == 7])
+        # this one is trivial: should be all True
+        field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y == 7])
+
+        antsize = np.array([x for x in antsize if x == 7])
     else:
         # the shape matters if any are false...
         field_id_has_scans = field_id_has_scans[field_id_has_scans]
@@ -270,6 +286,16 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
             ddec = dra
 
     logprint("Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
+
+    return int(dra), int(ddec), pixscale
+
+def determine_imsizes(mses, field, phasecenter, **kwargs):
+    assert isinstance(mses, list)
+    results = [determine_imsize(ms, field, phasecenter, **kwargs) for ms in mses]
+    dra, ddec, _ = np.max(results, axis=0)
+    _, _, pixscale = np.min(results, axis=0)
+
+    logprint("ALL MSES: Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
 
     return int(dra), int(ddec), pixscale
 
