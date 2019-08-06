@@ -378,7 +378,13 @@ for continuum_ms in continuum_mses:
         # with either, e.g. {'niter': 1000} or {'niter': {1:1000, 2:100000, 3:999999}} etc
         impars_thisiter = copy.copy(impars)
         if 'maskname' in impars_thisiter:
-            maskname = impars_thisiter['maskname'][selfcaliter]
+            if selfcaliter in maskname = impars_thisiter['maskname']:
+                maskname = impars_thisiter['maskname'][selfcaliter]
+            else:
+                logprint("Self cal iteration {0} has no associated mask. "
+                         "Using mask {1} instead.".format(selfcaliter, maskname),
+                         origin="contim_selfcal"
+                        )
             del impars_thisiter['maskname']
         for key, val in impars_thisiter.items():
             if isinstance(val, dict):
