@@ -276,7 +276,7 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
         pixscale = np.min([pixscale for ra, dec, pixscale in results])
     else:
 
-        if spw='all':
+        if spw=='all':
             msmd.open(ms)
             spws = msmd.spwsforfield(field)
             msmd.close()
