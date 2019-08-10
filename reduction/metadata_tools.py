@@ -275,8 +275,23 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
         ddec = np.max([dec for ra, dec, pixscale in results])
         pixscale = np.min([pixscale for ra, dec, pixscale in results])
     else:
-        dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
-                                             pixfraction_of_fwhm, **kwargs)
+
+        if spw='all':
+            msmd.open(ms)
+            spws = msmd.spwsforfield(field)
+            msmd.close()
+
+            results = [get_indiv_imsize(ms, field, phasecenter, spw,
+                                        pixfraction_of_fwhm, **kwargs)
+                       for spw in spws]
+
+            dra = np.max([ra for ra, dec, pixscale in results])
+            ddec = np.max([dec for ra, dec, pixscale in results])
+            pixscale = np.min([pixscale for ra, dec, pixscale in results])
+
+        else:
+            dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
+                                                 pixfraction_of_fwhm, **kwargs)
 
     # if the image is nearly square (to within 10%), make sure it is square.
     if np.abs(dra - ddec) / dra < 0.1:
