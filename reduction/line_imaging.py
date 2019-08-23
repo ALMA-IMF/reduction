@@ -74,9 +74,7 @@ else:
     raise ValueError("line_name was not defined")
 
 # set the 'chanchunks' parameter globally.
-# CASAguides recommend chanchunks=-1, but this resulted in:
-# 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean :
-#Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
+# CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = os.getenv('CHANCHUNKS') or 16
 
 # global default: only do robust 0 for lines
@@ -121,15 +119,19 @@ for band in band_list:
             pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
             impars = line_imaging_parameters[pars_key]
             # load in the line parameter info
-            linpars = line_parameters[line_name]
+            linpars = line_parameters[field][line_name]
 
             # calculate the channel width
-            count_spws = len(auIMF.spwsforfield(field+'_all_split.ms.contsub', field=field))
-            width = np.max([np.abs(auIMF.effectiveResolutionAtFreq(field+'_all_split.ms.contsub',
+            # todo: replace the file name with each ms set, recalculate the channel width for each
+            # in a 'for' loop, and finally take the maximum
+            msmd.open(field+'_all_split.ms.contsub')
+            count_spws = len(msmd.spwsforfield(field))
+            msmd.close()
+            chanwidth = np.max([np.abs(auIMF.effectiveResolutionAtFreq(field+'_all_split.ms.contsub',
                                                                    spw='{0}'.format(i),
                                                                    freq=u.Quantity(linpars['restfreq']).to(u.GHz),
                                                                    kms=True)) for i in range(count_spws)])
-            impars['width'] = '{0:.2f}km/s'.format(width)
+            impars['width'] = '{0:.2f}km/s'.format(chanwidth)
             impars['restfreq'] = linpars['restfreq']
             # calculate vstart
             vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
@@ -171,10 +173,8 @@ for band in band_list:
             logprint("Computing residual image statistics for {0}".format(lineimagename), origin='almaimf_line_imaging')
             ia.open(lineimagename+".residual")
             stats = ia.statistics(robust=True)
-            # to figure out why the coefficient is needed here. Generally, this method applying to the entire image plane
-            # over all channels results in a higher rms than the actual value.
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
-            threshold = "{0:0.4f}Jy".format(5*rms) # 3 rms could be OK given the above consideration
+            threshold = "{0:0.4f}Jy".format(5*rms) # 3 rms might be OK in practice
             logprint("Threshold used = {0} = 5x{1}".format(threshold, rms),
                      origin='almaimf_line_imaging')
             ia.close()
@@ -195,6 +195,9 @@ for band in band_list:
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
+                       # I tried this parameter with empty but it resulted in the image not fitting the TP one (in fits file)
+                       # given by the pipeline so that I couldn't combine the two images by feathering. However, if 'common'
+                       # is used, the resulting image can be combined with the TP one in feathering.
                        **impars
                       )
                 impbcor(imagename=lineimagename+'.image',
@@ -208,6 +211,7 @@ for band in band_list:
             # the cont_channel_selection is purely in frequency, so it should
             # "just work"
             # (there may be several cont.dats - we're just grabbing the first)
+            # Different data sets are actually found to have different channel selections.
             path = os.path.split(vis[0])[0]
 
             contfile = os.path.join(path, '../calibration/cont.dat')
@@ -239,7 +243,7 @@ for band in band_list:
 
                 pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
                 impars = line_imaging_parameters[pars_key]
-
+                # Todo: should we re-calculate the threshold after the continuum subtraction?
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
                        restoringbeam='',
