@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import astropy.units as u
+from astropy import constants
 try:
     from casac import casac
     synthesisutils = casac.synthesisutils
@@ -327,19 +328,6 @@ def check_model_is_populated(msfile):
 
 
 
-def createCasaTool(mytool):
-    """
-    A wrapper to handle the changing ways in which casa tools are invoked.
-    Relies on "from taskinit import *" in the preamble above.
-    Todd Hunter
-    """
-    if (type(casac.Quantity) != type):  # casa 4.x
-        myt = mytool()
-    else:  # casa 3.x
-        myt = mytool.create()
-    return(myt)
-
-
 def effectiveResolutionAtFreq(vis, spw,freq, kms=False):
     """
     Returns the effective resolution of a channel (in Hz or km/s)
@@ -351,11 +339,9 @@ def effectiveResolutionAtFreq(vis, spw,freq, kms=False):
        printLOsFromASDM(showEffective=True)
     -Todd Hunter
     """
-    c_mks=2.99792458e8
     if (not os.path.exists(vis+'/SPECTRAL_WINDOW')):
-        print "Could not find ms (or its SPECTRAL_WINDOW table)."
-        return
-    mytb = createCasaTool(tbtool)  # todo: figure out how to define tbtool? refer to analysisUtils.py
+        raise ValueError("Could not find ms (or its SPECTRAL_WINDOW table).")
+    mytb = tbtool()
     mytb.open(vis+'/SPECTRAL_WINDOW')
     if (type(spw) != list and type(spw) != np.ndarray):
         spws = [int(spw)]
@@ -369,7 +355,7 @@ def effectiveResolutionAtFreq(vis, spw,freq, kms=False):
         bwarr = mytb.getcell('RESOLUTION',spw)
         bw = bwarr[ind]
         if kms:
-            bw = c_mks*0.001*bw/freq.to(u.Hz).value
+            bw = constants.c.to(u.km/u.s).value*0.001*bw/freq.to(u.Hz).value
         bws.append(bw)
     mytb.close()
     if (len(bws) == 1):

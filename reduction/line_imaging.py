@@ -34,7 +34,7 @@ from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from taskinit import msmdtool, iatool
-import analysisUtils_ALMAIMF as auIMF # built-in the ALMA-IMF reduction package, modified based on analysisUtils
+from metadata_tools import effectiveResolutionAtFreq
 msmd = msmdtool()
 ia = iatool()
 
@@ -127,10 +127,12 @@ for band in band_list:
             msmd.open(field+'_all_split.ms.contsub')
             count_spws = len(msmd.spwsforfield(field))
             msmd.close()
-            chanwidth = np.max([np.abs(auIMF.effectiveResolutionAtFreq(field+'_all_split.ms.contsub',
-                                                                   spw='{0}'.format(i),
-                                                                   freq=u.Quantity(linpars['restfreq']).to(u.GHz),
-                                                                   kms=True)) for i in range(count_spws)])
+            chanwidth = np.max([np.abs(
+                effectiveResolutionAtFreq(field+'_all_split.ms.contsub',
+                                          spw='{0}'.format(i),
+                                          freq=u.Quantity(linpars['restfreq']).to(u.GHz),
+                                          kms=True)) for i in
+                range(count_spws)])
             impars['width'] = '{0:.2f}km/s'.format(chanwidth)
             impars['restfreq'] = linpars['restfreq']
             # calculate vstart
@@ -210,9 +212,6 @@ for band in band_list:
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
-                       # I tried this parameter with empty but it resulted in the image not fitting the TP one (in fits file)
-                       # given by the pipeline so that I couldn't combine the two images by feathering. However, if 'common'
-                       # is used, the resulting image can be combined with the TP one in feathering.
                        **impars
                       )
                 impbcor(imagename=lineimagename+'.image',
