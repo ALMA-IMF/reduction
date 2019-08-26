@@ -355,7 +355,7 @@ def effectiveResolutionAtFreq(vis, spw,freq, kms=False):
         bwarr = mytb.getcell('RESOLUTION',spw)
         bw = bwarr[ind]
         if kms:
-            bw = constants.c.to(u.km/u.s).value*0.001*bw/freq.to(u.Hz).value
+            bw = constants.c.to(u.cm/u.s).value*0.001*bw/freq.to(u.Hz).value
         bws.append(bw)
     mytb.close()
     if (len(bws) == 1):
