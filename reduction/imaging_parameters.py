@@ -132,7 +132,7 @@ selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
 
 line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub):
                            {
-                            'niter': 20000,
+                            'niter': 200000,
                             'robust': robust,
                             'weighting': 'briggs',
                             'scales': [0,3,9,27,81],
@@ -143,7 +143,11 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             'veltype':'radio',
                             'sidelobethreshold': 1.0,
                             'noisethreshold': 5.0,
-                           'usemask':'auto-multithresh',
+                            'usemask':'auto-multithresh',
+                            'threshold':'0.0mJy/beam',
+                            'interactive':False,
+                            'pblimit':0.2,
+                            'nterms':1
                            }
                            for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60')
                            for band in ('B3','B6')
@@ -151,6 +155,18 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                            for robust in (-2, 0, 2)
                            for contsub in ("","_contsub")
                           }
+
+
+line_parameters = {'G353.41': {'n2hp'：{'restfreq':'93.173700GHz',
+                                        'vlsr':'-18km/s', # the systematic lsr velocity
+                                        'cubewidth':'32km/s', # the velocity width you want for the final line cube
+                                        },
+                               'temp'：{'restfreq':'93.173700GHz',
+                                        'vlsr':'-18km/s', # the systematic lsr velocity
+                                        'cubewidth':'32km/s', # the velocity width you want for the final line cube
+                                        },
+                              }
+                  }
 
 # use the continuum image as the startmodel for the non-contsub'd data
 line_imaging_parameters['W51-E_B6_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B6_uid___A001_X1296_X215_continuum_merged_12M_robust0_selfcal7.model.tt0'

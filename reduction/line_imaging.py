@@ -17,10 +17,14 @@ You can set the following environmental variables for this script:
         fields with this name (e.g., "W43-MM1", "W51-E", etc.)
     BAND=<band(s)>
         Image this/these bands.  Can be "3", "6", or "3,6" (no quotes)
+    LINE_NAME=<name>
+        Image only one line at each run.  Can be 'n2hp', 'CO' (Case insensitive)
 """
 
 import json
 import os
+import numpy as np
+import astropy.units as u
 try:
     from tasks import tclean, uvcontsub, impbcor
 except ImportError:
@@ -28,19 +32,20 @@ except ImportError:
     from casatasks import tclean, uvcontsub, impbcor
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
-from imaging_parameters import line_imaging_parameters, selfcal_pars
-
+from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from taskinit import msmdtool, iatool
+import analysisUtils_ALMAIMF as auIMF # built-in the ALMA-IMF reduction package, modified based on analysisUtils
 msmd = msmdtool()
 ia = iatool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
 
+
 if os.getenv('FIELD_ID'):
     field_id = os.getenv('FIELD_ID')
     for band in to_image:
-        to_image[band] = {key:value for key,value in to_image[band].items()
+        to_image[band] = {key:value for key, value in to_image[band].items()
                           if key == field_id}
 
 
@@ -63,9 +68,15 @@ if 'exclude_7m' not in locals():
     else:
         exclude_7m = False
 
+if os.getenv('LINE_NAME'):
+    line_name = os.getenv('LINE_NAME').lower()
+else:
+    raise ValueError("line_name was not defined")
+
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in:
-# 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
+# 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean :
+#Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = os.getenv('CHANCHUNKS') or 16
 
 # global default: only do robust 0 for lines
@@ -77,25 +88,25 @@ for band in band_list:
 
             vis = list(map(str, to_image[band][field][spw]))
 
-
             if exclude_7m:
-                vis = [ms for ms in vis if not(is_7m(ms))]
+                vis = [ms for ms in vis if not is_7m(ms)]
                 arrayname = '12M'
             else:
                 arrayname = '7M12M'
 
             lineimagename = os.path.join(imaging_root,
-                                         "{0}_{1}_spw{2}_{3}_lines".format(field,
-                                                                           band,
-                                                                           spw,
-                                                                           arrayname))
+                                         "{0}_{1}_spw{2}_{3}_{4}".format(field,
+                                                                         band,
+                                                                         spw,
+                                                                         arrayname,
+                                                                         line_name))
 
 
             logprint(str(vis), origin='almaimf_line_imaging')
-            coosys,racen,deccen = determine_phasecenter(ms=vis, field=field)
+            coosys, racen, deccen = determine_phasecenter(ms=vis, field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            (dra,ddec,pixscale) = list(determine_imsizes(mses=vis, field=field,
-                                                         phasecenter=(racen,deccen),
+            (dra, ddec, pixscale) = list(determine_imsizes(mses=vis, field=field,
+                                                         phasecenter=(racen, deccen),
                                                          spw=0, pixfraction_of_fwhm=1/3.,
                                                          exclude_7m=exclude_7m,
                                                          min_pixscale=0.1, # arcsec
@@ -104,6 +115,31 @@ for band in band_list:
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
             dirty_tclean_made_residual = False
+
+
+            # prepare for the imaging parameters
+            pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
+            impars = line_imaging_parameters[pars_key]
+            # load in the line parameter info
+            linpars = line_parameters[line_name]
+
+            # calculate the channel width
+            count_spws = len(auIMF.spwsforfield(field+'_all_split.ms.contsub', field=field))
+            width = np.max([np.abs(auIMF.effectiveResolutionAtFreq(field+'_all_split.ms.contsub',
+                                                                   spw='{0}'.format(i),
+                                                                   freq=u.Quantity(linpars['restfreq']).to(u.GHz),
+                                                                   kms=True)) for i in range(count_spws)])
+            impars['width'] = '{0:.2f}km/s'.format(width)
+            impars['restfreq'] = linpars['restfreq']
+            # calculate vstart
+            vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
+            impars['start'] = '{0:.1f}km/s'.format(vstart.value)
+            impars['imsize'] = imsize
+            impars['cell'] = cellsize
+            impars['phasecenter'] = phasecenter
+            impars['field'] = [field.encode()]*len(vis)
+            impars['chanchunks'] = chanchunks
+
 
             # start with cube imaging
 
@@ -119,27 +155,18 @@ for band in band_list:
                     continue
                 # json is in unicode by default, but CASA rejects unicode
                 # first iteration makes a dirty image to estimate the RMS
+                impars_dirty = impars.copy()
+                impars_dirty['niter'] = 0
+                # only use the first five channels to quickly create a dirty image
+                # at which no significant signals are expected
+                impars_dirty['nchan'] = 5
+
                 tclean(vis=vis,
                        imagename=lineimagename,
-                       field=[field.encode()]*len(vis),
-                       specmode='cube',
-                       outframe='LSRK',
-                       veltype='radio',
-                       niter=0,
-                       phasecenter=phasecenter,
-                       # don't use these for dirty:
-                       #usemask='auto-multithresh',
-                       #scales=[0,3,9,27,81],
-                       deconvolver='multiscale',
-                       interactive=False,
-                       cell=cellsize,
-                       imsize=imsize,
-                       weighting='briggs',
-                       robust=robust,
-                       gridder='mosaic',
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
-                       chanchunks=chanchunks)
+                       **impars_dirty
+                      )
                 if os.path.exists(lineimagename+".image"):
                     # tclean with niter=0 is not supposed to produce a .image file,
                     # but if it does (and it appears to have done so on at
@@ -166,29 +193,23 @@ for band in band_list:
             logprint("Computing residual image statistics for {0}".format(lineimagename), origin='almaimf_line_imaging')
             ia.open(lineimagename+".residual")
             stats = ia.statistics(robust=True)
+            # to figure out why the coefficient is needed here. Generally, this method applying to the entire image plane
+            # over all channels results in a higher rms than the actual value.
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
-            threshold = "{0:0.4f}Jy".format(5*rms)
+            threshold = "{0:0.4f}Jy".format(5*rms) # 3 rms could be OK given the above consideration
             logprint("Threshold used = {0} = 5x{1}".format(threshold, rms),
                      origin='almaimf_line_imaging')
             ia.close()
 
-            pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-            impars = line_imaging_parameters[pars_key]
-
 
             if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
+                impars['threshold'] = threshold
+                impars['nchan'] = int((u.Quantity(molepars[molepar]['cubewidth'])/u.Quantity(impars['width'])).value) 
                 tclean(vis=vis,
                        imagename=lineimagename,
-                       field=[field.encode()]*len(vis),
-                       threshold=threshold,
-                       phasecenter=phasecenter,
-                       interactive=False,
-                       cell=cellsize,
-                       imsize=imsize,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
-                       chanchunks=chanchunks,
                        **impars
                       )
                 impbcor(imagename=lineimagename+'.image',
@@ -237,14 +258,7 @@ for band in band_list:
 
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
-                       field=[field.encode()]*len(vis),
-                       threshold=threshold,
-                       phasecenter=phasecenter,
-                       interactive=False,
-                       cell=cellsize,
-                       imsize=imsize,
                        restoringbeam='',
-                       chanchunks=chanchunks,
                        **impars
                       )
                 impbcor(imagename=lineimagename+'.image',
