@@ -108,6 +108,15 @@ for band in band_list:
             # start with cube imaging
 
             if not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
+                if os.path.exists(lineimagename+".psf"):
+                    logprint("WARNING: The PSF for {0} exists, but no image exists."
+                             "  This likely implies that an ongoing or incomplete "
+                             "imaging run for this file exists.  It will not be "
+                             "imaged this time; please check what is happening.  "
+                             "(this warning issued /before/ dirty imaging)"
+                             .format(lineimagename),
+                             origin='almaimf_line_imaging')
+                    continue
                 # json is in unicode by default, but CASA rejects unicode
                 # first iteration makes a dirty image to estimate the RMS
                 tclean(vis=vis,
@@ -139,7 +148,20 @@ for band in band_list:
             elif not os.path.exists(lineimagename+".residual"):
                 raise ValueError("The residual image is required for further imaging.")
 
-            # the threshold needs to be computed if any imaging is to be done
+
+
+            if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
+                logprint("WARNING: The PSF for {0} exists, but no image exists."
+                         "  This likely implies that an ongoing or incomplete "
+                         "imaging run for this file exists.  It will not be "
+                         "imaged this time; please check what is happening."
+                         "(warning issued /after/ dirty imaging)"
+                         .format(lineimagename),
+                         origin='almaimf_line_imaging')
+                # just skip the rest here - that means no contsub imaging
+                continue
+
+            # the threshold needs to be computed if any imaging is to be done (either contsub or not)
             # no .image file is produced, only a residual
             logprint("Computing residual image statistics for {0}".format(lineimagename), origin='almaimf_line_imaging')
             ia.open(lineimagename+".residual")
@@ -154,14 +176,7 @@ for band in band_list:
             impars = line_imaging_parameters[pars_key]
 
 
-            if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
-                logprint("WARNING: The PSF for {0} exists, but no image exists."
-                         "  This likely implies that an ongoing or incomplete "
-                         "imaging run for this file exists.  It will not be "
-                         "imaged this time; please check what is happening."
-                         .fromat(lineimagename),
-                         origin='almaimf_line_imaging')
-            elif dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
+            if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 tclean(vis=vis,
                        imagename=lineimagename,
@@ -212,6 +227,7 @@ for band in band_list:
                          "  This likely implies that an ongoing or incomplete "
                          "imaging run for this file exists.  It will not be "
                          "imaged this time; please check what is happening.  "
+                         "(warning issued after imaging, before contsub imaging)"
                          .format(lineimagename),
                          origin='almaimf_line_imaging')
             elif not os.path.exists(lineimagename+".contsub.image"):
