@@ -157,12 +157,12 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                           }
 
 
-line_parameters = {'G353.41': {'n2hp'：{'restfreq':'93.173700GHz',
+line_parameters = {'G353.41': {'n2hp': {'restfreq':'93.173700GHz',
                                         'vlsr':'-18km/s', # the systematic lsr velocity
                                         'cubewidth':'32km/s', # the velocity width you want for the final line cube
                                         },
                               },
-                   'W51-E': {'n2hp'：{'restfreq':'93.173700GHz',
+                   'W51-E': {'n2hp': {'restfreq':'93.173700GHz',
                                       'vlsr':'55km/s', # the systematic lsr velocity
                                       'cubewidth':'60km/s', # the velocity width you want for the final line cube
                                       },
