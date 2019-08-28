@@ -43,6 +43,8 @@ REQUIREMENTS:
     (3)a If CASA loads, try:
         >>> import astroquery
         >>> import keyring
+        >>> from astroquery.alma import Alma
+        >>> Alma.login('<your username here>', store_password=True)
         If that works, continue and you're set!
     (3)b If CASA fails to load with a message about shutil_get_terminal_size,
         see https://github.com/astropy/astroquery/issues/1219.  You will need
@@ -83,7 +85,10 @@ alma.login(username)
 results = alma.query(payload=dict(project_code='2017.1.01355.L'),
                      public=False, cache=False)
 
-mask = results['Source name'] == sourcename
+if sourcename == 'all':
+    mask = np.ones(len(results), dtype='bool')
+else:
+    mask = results['Source name'] == sourcename
 
 staged = alma.stage_data(results['Member ous id'][mask])
 

@@ -21,7 +21,7 @@
    >>> import subprocess
    >>> subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--user',
                               'cython',
-                              'https://github.com/astropy/regions/archive/master.zip',
+                              'https://github.com/astropy/regions/archive/v0.4.tar.gz',
                               'https://github.com/radio-astro-tools/spectral-cube/archive/master.zip'])
    - Restart CASA
 

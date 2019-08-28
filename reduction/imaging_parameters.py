@@ -161,11 +161,13 @@ line_parameters = {'G353.41': {'n2hp'：{'restfreq':'93.173700GHz',
                                         'vlsr':'-18km/s', # the systematic lsr velocity
                                         'cubewidth':'32km/s', # the velocity width you want for the final line cube
                                         },
-                               'temp'：{'restfreq':'93.173700GHz',
-                                        'vlsr':'-18km/s', # the systematic lsr velocity
-                                        'cubewidth':'32km/s', # the velocity width you want for the final line cube
-                                        },
+                              },
+                   'W51-E': {'n2hp'：{'restfreq':'93.173700GHz',
+                                      'vlsr':'55km/s', # the systematic lsr velocity
+                                      'cubewidth':'60km/s', # the velocity width you want for the final line cube
+                                      },
                               }
+
                   }
 
 # use the continuum image as the startmodel for the non-contsub'd data
