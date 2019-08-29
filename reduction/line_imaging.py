@@ -146,7 +146,7 @@ for band in band_list:
             logprint("Channel widths were {0}, mean = {1}".format(chanwidths,
                                                                   chanwidth),
                      origin="almaimf_line_imaging")
-            if np.any(chanwidth != np.array(chanwidths)):
+            if np.any(np.array(chanwidths) - chanwidth > 1e-4):
                 raise ValueError("Varying channel widths.")
             impars['width'] = '{0:.2f}km/s'.format(chanwidth)
             impars['restfreq'] = linpars['restfreq']
@@ -174,13 +174,13 @@ for band in band_list:
                              .format(lineimagename),
                              origin='almaimf_line_imaging')
                     continue
-                # json is in unicode by default, but CASA rejects unicode
                 # first iteration makes a dirty image to estimate the RMS
                 impars_dirty = impars.copy()
                 impars_dirty['niter'] = 0
                 # only use the first five channels to quickly create a dirty image
                 # at which no significant signals are expected
                 impars_dirty['nchan'] = 5
+                impars_dirty['chanchunks'] = 5 # can't have nchan < chanchunks
 
                 tclean(vis=vis,
                        imagename=lineimagename,
@@ -224,7 +224,10 @@ for band in band_list:
             if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 impars['threshold'] = threshold
-                impars['nchan'] = int((u.Quantity(molepars[molepar]['cubewidth'])/u.Quantity(impars['width'])).value) 
+                impars['nchan'] = int((u.Quantity(molepars[molepar]['cubewidth'])
+                                       / u.Quantity(impars['width'])).value)
+                if impars['nchan'] < impars['chanchunks']:
+                    impars['chanchunks'] = impars['nchan']
                 tclean(vis=vis,
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
