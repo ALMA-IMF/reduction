@@ -89,7 +89,7 @@ for band in band_list:
             # can't accept unicode strings)
             field = str(field)
             spw = str(spw)
-            band = str(band_list)
+            band = str(band)
 
             vis = list(map(str, to_image[band][field][spw]))
 
