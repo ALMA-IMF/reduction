@@ -84,6 +84,13 @@ for band in band_list:
     for field in to_image[band]:
         for spw in to_image[band][field]:
 
+            # python 2.7 specific hack: force 'field' to be a bytestring
+            # instead of a unicode string (CASA's lower-level functions
+            # can't accept unicode strings)
+            field = str(field)
+            spw = str(spw)
+            band = str(band_list)
+
             vis = list(map(str, to_image[band][field][spw]))
 
             if exclude_7m:
