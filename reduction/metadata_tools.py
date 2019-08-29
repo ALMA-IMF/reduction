@@ -297,7 +297,7 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
                                                  pixfraction_of_fwhm, **kwargs)
 
     # if the image is nearly square (to within 10%), make sure it is square.
-    if np.abs(dra - ddec) / dra < 0.1:
+    if float(np.abs(dra - ddec)) / dra < 0.1:
         if dra < ddec:
             dra = ddec
         else:
@@ -328,14 +328,14 @@ def check_model_is_populated(msfile):
 
 
 
-def effectiveResolutionAtFreq(vis, spw,freq, kms=False):
+def effectiveResolutionAtFreq(vis, spw, freq, kms=True):
     """
     Returns the effective resolution of a channel (in Hz or km/s)
     of the specified measurement set and spw ID.
     Note: For ALMA, this will only be correct for cycle 3 data onward.
     freq: frequency in quanity
     kms: if True, then return the value in km/s (otherwise Hz)
-    To see this information for an ASDM, use 
+    To see this information for an ASDM, use
        printLOsFromASDM(showEffective=True)
     -Todd Hunter
     """
@@ -349,13 +349,13 @@ def effectiveResolutionAtFreq(vis, spw,freq, kms=False):
         spws = [int(s) for s in spw]
     bws = []
     for spw in spws:
-        chfreq = mytb.getcell('CHAN_FREQ',spw)
+        chfreq = mytb.getcell('CHAN_FREQ',spw) # Hz
         sepfreq = np.abs(chfreq-freq.to(u.Hz).value)
         ind = np.where(sepfreq==sepfreq.min())
-        bwarr = mytb.getcell('RESOLUTION',spw)
+        bwarr = mytb.getcell('RESOLUTION',spw) # Hz
         bw = bwarr[ind]
         if kms:
-            bw = constants.c.to(u.cm/u.s).value*0.001*bw/freq.to(u.Hz).value
+            bw = constants.c.to(u.km/u.s).value*bw/freq.to(u.Hz).value
         bws.append(bw)
     mytb.close()
     if (len(bws) == 1):

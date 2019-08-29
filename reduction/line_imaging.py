@@ -129,17 +129,25 @@ for band in band_list:
             linpars = line_parameters[field][line_name]
 
             # calculate the channel width
-            # todo: replace the file name with each ms set, recalculate the channel width for each
-            # in a 'for' loop, and finally take the maximum
-            msmd.open(field+'_all_split.ms.contsub')
-            count_spws = len(msmd.spwsforfield(field))
-            msmd.close()
-            chanwidth = np.max([np.abs(
-                effectiveResolutionAtFreq(field+'_all_split.ms.contsub',
-                                          spw='{0}'.format(i),
-                                          freq=u.Quantity(linpars['restfreq']).to(u.GHz),
-                                          kms=True)) for i in
-                range(count_spws)])
+            chanwidths = []
+            for vv in vis:
+                msmd.open(vv)
+                count_spws = len(msmd.spwsforfield(field))
+                msmd.close()
+                chanwidth = np.max([np.abs(
+                    effectiveResolutionAtFreq(vv,
+                                              spw='{0}'.format(i),
+                                              freq=u.Quantity(linpars['restfreq']).to(u.GHz),
+                                              kms=True)) for i in
+                    range(count_spws)])
+                chanwidths.append(chanwidth)
+            # chanwidth: mean? max?
+            chanwidth = np.mean(chanwidths)
+            logprint("Channel widths were {0}, mean = {1}".format(chanwidths,
+                                                                  chanwidth),
+                     origin="almaimf_line_imaging")
+            if np.any(chanwidth != np.array(chanwidths)):
+                raise ValueError("Varying channel widths.")
             impars['width'] = '{0:.2f}km/s'.format(chanwidth)
             impars['restfreq'] = linpars['restfreq']
             # calculate vstart
@@ -150,6 +158,8 @@ for band in band_list:
             impars['phasecenter'] = phasecenter
             impars['field'] = [field.encode()]*len(vis)
             impars['chanchunks'] = chanchunks
+            logprint("Imaging parameters are {0}".format(impars),
+                     origin='almaimf_line_imaging')
 
 
             # start with cube imaging
