@@ -226,7 +226,7 @@ for band in band_list:
             if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 impars['threshold'] = threshold
-                impars['nchan'] = int((u.Quantity(molepars[molepar]['cubewidth'])
+                impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
                                        / u.Quantity(impars['width'])).value)
                 if impars['nchan'] < impars['chanchunks']:
                     impars['chanchunks'] = impars['nchan']
