@@ -197,11 +197,12 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
 
     # round to nearest 0.01"
     if pixscale > 0.01/206265.:
-        pixscale_as = np.floor((pixscale * 180/np.pi * 3600 * 100) % 100) / 100
+        pixscale_as = 180/np.pi * 3600 * pixscale
+        pixscale_as = np.round(pixscale_as, 2)
         if pixscale_as < min_pixscale:
             pixscale_as = min_pixscale
-        else:
-            pixscale = pixscale_as * np.pi / 3600 / 180
+        # re-set pixscale to be radians
+        pixscale = pixscale_as * np.pi / 3600 / 180
         logprint("Pixel scale = {0} rad = {1} \" ".format(pixscale, pixscale_as))
     else:
         raise ValueError("Pixel scale was {0}\", too small".format(pixscale*206265))

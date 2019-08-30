@@ -179,8 +179,10 @@ for band in band_list:
                 impars_dirty['niter'] = 0
                 # only use the first five channels to quickly create a dirty image
                 # at which no significant signals are expected
-                impars_dirty['nchan'] = 5
-                impars_dirty['chanchunks'] = 5 # can't have nchan < chanchunks
+                if chanchunks > 5:
+                    impars_dirty['nchan'] = chanchunks
+                else:
+                    impars_dirty['nchan'] = 5
 
                 tclean(vis=vis,
                        imagename=lineimagename,
