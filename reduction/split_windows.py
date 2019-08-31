@@ -297,7 +297,7 @@ for band in bands:
                     datacolumn='data'
                 tb.close()
 
-                        
+
             if os.path.exists(contvis):
                 logprint("Skipping {0} because it's done".format(contvis),)
             else:

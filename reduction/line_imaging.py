@@ -93,6 +93,28 @@ for band in band_list:
 
             vis = list(map(str, to_image[band][field][spw]))
 
+            # load in the line parameter info
+            linpars = line_parameters[field][line_name]
+            restfreq = u.Quantity(linpars['restfreq'])
+            vlsr = u.Quantity(linpars['vlsr'])
+
+            # check that the line is in range
+            ms.open(vis[0])
+            # assume spw is 0 because we're working on split data
+            freqs = ms.cvelfreqs(spwids=0, outframe='LSRK') * u.Hz
+            targetfreq = restfreq * (1 - vlsr/constants.c)
+            if freqs.min() > targetfreq or freqs.max() < targetfreq:
+                # Skip this spw: it is not in range
+                logprint("Skipped spectral window {0} for line {1} because it's out of range"
+                         .format(spw, line_name),
+                         origin='almaimf_line_imaging')
+                continue
+            else:
+                logprint("Matched spectral window {0} to line {1}"
+                         .format(spw, line_name),
+                         origin='almaimf_line_imaging')
+
+
             if exclude_7m:
                 vis = [ms for ms in vis if not is_7m(ms)]
                 arrayname = '12M'
@@ -107,15 +129,16 @@ for band in band_list:
                                                                          line_name))
 
 
-            logprint(str(vis), origin='almaimf_line_imaging')
+            logprint("Measurement sets are: " + str(vis),
+                     origin='almaimf_line_imaging')
             coosys, racen, deccen = determine_phasecenter(ms=vis, field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
             (dra, ddec, pixscale) = list(determine_imsizes(mses=vis, field=field,
-                                                         phasecenter=(racen, deccen),
-                                                         spw=0, pixfraction_of_fwhm=1/3.,
-                                                         exclude_7m=exclude_7m,
-                                                         min_pixscale=0.1, # arcsec
-                                                        ))
+                                                           phasecenter=(racen, deccen),
+                                                           spw=0, pixfraction_of_fwhm=1/3.,
+                                                           exclude_7m=exclude_7m,
+                                                           min_pixscale=0.1, # arcsec
+                                                          ))
             imsize = [int(dra), int(ddec)]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
@@ -125,8 +148,6 @@ for band in band_list:
             # prepare for the imaging parameters
             pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
             impars = line_imaging_parameters[pars_key]
-            # load in the line parameter info
-            linpars = line_parameters[field][line_name]
 
             # calculate the channel width
             chanwidths = []
@@ -148,18 +169,18 @@ for band in band_list:
                      origin="almaimf_line_imaging")
             if np.any(np.array(chanwidths) - chanwidth > 1e-4):
                 raise ValueError("Varying channel widths.")
-            impars['width'] = '{0:.2f}km/s'.format(chanwidth)
-            impars['restfreq'] = linpars['restfreq']
+            local_impars = {}
+            local_impars['width'] = '{0:.2f}km/s'.format(chanwidth)
+            local_impars['restfreq'] = linpars['restfreq']
             # calculate vstart
             vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
-            impars['start'] = '{0:.1f}km/s'.format(vstart.value)
-            impars['imsize'] = imsize
-            impars['cell'] = cellsize
-            impars['phasecenter'] = phasecenter
-            impars['field'] = [field.encode()]*len(vis)
-            impars['chanchunks'] = chanchunks
-            logprint("Imaging parameters are {0}".format(impars),
-                     origin='almaimf_line_imaging')
+            local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
+            local_impars['imsize'] = imsize
+            local_impars['cell'] = cellsize
+            local_impars['phasecenter'] = phasecenter
+            local_impars['field'] = [field.encode()]*len(vis)
+            local_impars['chanchunks'] = chanchunks
+            impars.update(local_impars)
 
 
             # start with cube imaging
@@ -177,13 +198,9 @@ for band in band_list:
                 # first iteration makes a dirty image to estimate the RMS
                 impars_dirty = impars.copy()
                 impars_dirty['niter'] = 0
-                # only use the first five channels to quickly create a dirty image
-                # at which no significant signals are expected
-                if chanchunks > 5:
-                    impars_dirty['nchan'] = chanchunks
-                else:
-                    impars_dirty['nchan'] = 5
 
+                logprint("Dirty imaging parameters are {0}".format(dirty_impars),
+                         origin='almaimf_line_imaging')
                 tclean(vis=vis,
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
@@ -197,8 +214,6 @@ for band in band_list:
                     dirty_tclean_made_residual = True
             elif not os.path.exists(lineimagename+".residual"):
                 raise ValueError("The residual image is required for further imaging.")
-
-
 
             if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
                 logprint("WARNING: The PSF for {0} exists, but no image exists."
@@ -225,11 +240,16 @@ for band in band_list:
 
             if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
-                impars['threshold'] = threshold
-                impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
+                local_impars['threshold'] = threshold
+                local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
                                        / u.Quantity(impars['width'])).value)
-                if impars['nchan'] < impars['chanchunks']:
-                    impars['chanchunks'] = impars['nchan']
+                if local_impars['nchan'] < impars['chanchunks']:
+                    local_impars['chanchunks'] = impars['nchan']
+
+                impars.update(local_impars)
+
+                logprint("Imaging parameters are {0}".format(impars),
+                         origin='almaimf_line_imaging')
                 tclean(vis=vis,
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
@@ -280,6 +300,7 @@ for band in band_list:
 
                 pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
                 impars = line_imaging_parameters[pars_key]
+                impars.update(local_impars)
                 # Todo: should we re-calculate the threshold after the continuum subtraction?
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
