@@ -25,6 +25,7 @@ import json
 import os
 import numpy as np
 import astropy.units as u
+from astropy import constants
 try:
     from tasks import tclean, uvcontsub, impbcor
 except ImportError:
@@ -180,6 +181,11 @@ for band in band_list:
             local_impars['phasecenter'] = phasecenter
             local_impars['field'] = [field.encode()]*len(vis)
             local_impars['chanchunks'] = chanchunks
+
+            local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
+                                   / u.Quantity(local_impars['width'])).value)
+            if local_impars['nchan'] < local_impars['chanchunks']:
+                local_impars['chanchunks'] = local_impars['nchan']
             impars.update(local_impars)
 
 
@@ -199,7 +205,7 @@ for band in band_list:
                 impars_dirty = impars.copy()
                 impars_dirty['niter'] = 0
 
-                logprint("Dirty imaging parameters are {0}".format(dirty_impars),
+                logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
                 tclean(vis=vis,
                        imagename=lineimagename,
@@ -241,10 +247,6 @@ for band in band_list:
             if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 local_impars['threshold'] = threshold
-                local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
-                                       / u.Quantity(impars['width'])).value)
-                if local_impars['nchan'] < impars['chanchunks']:
-                    local_impars['chanchunks'] = impars['nchan']
 
                 impars.update(local_impars)
 
