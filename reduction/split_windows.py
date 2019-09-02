@@ -409,7 +409,7 @@ with open('continuum_mses.txt', 'w') as fh:
         fh.write(line+'\n')
 
 with open('continuum_mses_unconcat.txt', 'w') as fh:
-    for line in cont_mses:
+    for line in cont_mses_unconcat:
         fh.write(line+'\n')
 
 with open('cont_metadata.json', 'w') as fh:
