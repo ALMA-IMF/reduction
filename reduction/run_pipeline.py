@@ -12,8 +12,11 @@ calibrated directory exists, the pipeline run will be skipped.
 
 """
 import os
+import sys
 import runpy
 from taskinit import casalog
+
+runonce = bool(os.environ.get('RUNONCE'))
 
 # to do diagnostic plotting, we need the MS, not just the science-only calibrated MS
 SPACESAVING = 1
@@ -39,5 +42,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
                              origin='pipeline_runner')
 
                 os.chdir(curdir)
+
+                if runonce:
+                    sys.exit(0)
             else:
                 raise ValueError("Landed in the wrong directory.")

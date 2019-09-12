@@ -186,6 +186,9 @@ for continuum_ms in continuum_mses:
         impars = copy.copy(impars)
         dirty_impars = copy.copy(impars)
         dirty_impars['niter'] = 0
+        if 'maskname' in dirty_impars:
+            maskname = dirty_impars['maskname'][0]
+            del dirty_impars['maskname']
 
         imname = contimagename+"_robust{0}_dirty".format(robust)
 

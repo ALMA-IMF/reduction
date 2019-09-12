@@ -33,7 +33,8 @@ if sourcename == 'all':
         staged = alma2.stage_data([uid])
         for row in staged['URL']:
             print(row)
-            data = alma2.download_files([row], savedir='.')
+            data = alma2.download_files([row], savedir='.', cache=True,
+                                        continuation=True)
     log.setLevel('INFO')
 
 else:
