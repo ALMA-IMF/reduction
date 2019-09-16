@@ -22,6 +22,8 @@ alma.login(username)
 results = alma.query(payload=dict(project_code='2017.1.01355.L'),
                      public=False, cache=False)
 
+log.info("Downloading data for source {sourcename}".format(sourcename=sourcename))
+
 if sourcename == 'all':
     log.setLevel('DEBUG')
     for uid in results['Member ous id']:
@@ -45,3 +47,10 @@ else:
     rawmask = np.array(['tar' == x[-3:] for x in staged['URL']], dtype='bool')
 
     data = alma.download_files(staged['URL'][rawmask], savedir='.')
+
+    # do a check at the end
+    for fn in data:
+        if os.path.exists(os.path.basename(fn)):
+            print("{fn} is OK".format(fn=fn))
+        else:
+            print("{fn} is missing".format(fn))

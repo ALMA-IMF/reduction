@@ -108,7 +108,9 @@ for continuum_ms in continuum_mses:
     if os.getenv('FIELD_ID'):
         if field not in os.getenv('FIELD_ID'):
             logprint("Skipping {0} because it is not in FIELD_ID={1}"
-                     .format(field, os.getenv('FIELD_ID')))
+                     .format(field, os.getenv('FIELD_ID')),
+                     origin='almaimf_cont_imaging'
+                    )
             continue
 
 
