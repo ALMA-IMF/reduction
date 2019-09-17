@@ -30,6 +30,9 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
                          'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
                                                                band_id,
                                                                suffix))
+    if not os.path.exists(regfn):
+        raise IOError("Region file {0} does not exist".format(regfn))
+
     regs = regions.read_ds9(regfn)
 
     logprint("Using region file {0} to create mask".format(regfn),

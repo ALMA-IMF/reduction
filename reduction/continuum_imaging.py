@@ -283,3 +283,74 @@ for continuum_ms in continuum_mses:
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
         else:
             logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
+
+
+
+
+        # reclean step (optional)
+        try:
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        os.getenv('ALMAIMF_ROOTDIR'),
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix='_clean_robust{0}_{1}'.format(robust,
+                                                                             arrayname)
+                                       )
+        except IOError as ex:
+            logprint("No cleaned-once mask found; skipping reclean")
+        except KeyError as ex:
+            if 'label' in str(ex):
+                logprint("Bad Region Exception: {0}".format(str(ex)))
+                raise KeyError("No text label was found in one of the regions."
+                               "  Regions must have text={xxJy} or {xxmJy} to "
+                               "indicate the threshold level")
+        except Exception as ex:
+            logprint("Exception: {0}".format(str(ex)))
+            continue
+
+
+        # for compatibility w/self-calibration: if a list of parameters is used,
+        # just use the 0'th iteration's parameters
+        impars_thisiter = copy.copy(impars)
+        if 'maskname' in impars_thisiter:
+            maskname = impars_thisiter['maskname'][0]
+            del impars_thisiter['maskname']
+        for key, val in impars_thisiter.items():
+            if isinstance(val, dict):
+                impars_thisiter[key] = val[0]
+
+
+
+        if 'mask' not in impars_thisiter:
+            impars_thisiter['mask'] = maskname
+
+        imname = contimagename+"_reclean_robust{0}".format(robust)
+
+        if not os.path.exists(imname+".image.tt0"):
+            logprint("re-Cleaning file {0}".format(imname),
+                     origin='almaimf_cont_imaging')
+            tclean(vis=continuum_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   usemask='user',
+                   interactive=False,
+                   cell=cellsize,
+                   imsize=imsize,
+                   antenna=antennae,
+                   pbcor=True,
+                   **impars_thisiter
+                  )
+            ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   impars.items()])
+            ia.close()
+
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits")
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
+        else:
+            logprint("Skipping completed file {0}".format(imname),
+                     origin='almaimf_cont_imaging')
