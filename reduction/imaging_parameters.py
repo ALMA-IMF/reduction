@@ -79,6 +79,59 @@ imaging_parameters_nondefault = {
     'W51-E_B3_7M12M_robust0': {'threshold': '2mJy', # RMS ~ ??
                                'scales': [0,3,9,27],
                               },
+       #12M of band 3
+    'G353.41_B3_12M_robust-2': {'threshold': '0.5mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    'G353.41_B3_12M_robust0': {'threshold': '0.36mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    'G353.41_B3_12M_robust0.5': {'threshold': '0.26mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    'G353.41_B3_12M_robust2': {'threshold': '0.28mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    #7M12M of band 3
+    'G353.41_B3_7M12M_robust-2': {'threshold': '0.52mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    'G353.41_B3_7M12M_robust0': {'threshold': '0.4mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    'G353.41_B3_7M12M_robust0.5': {'threshold': '0.36mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    'G353.41_B3_7M12M_robust2': {'threshold': '0.42mJy', # 2*RMS
+                             'scales': [0,3,9,27],
+                            },
+    #12M of band 6
+    'G353.41_B6_12M_robust-2': {'threshold': '1.4mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+    'G353.41_B6_12M_robust0': {'threshold': '1.04mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+    'G353.41_B6_12M_robust0.5': {'threshold': '0.74mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+    'G353.41_B6_12M_robust2': {'threshold': '0.74mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+    #7M12M of band 6
+    'G353.41_B6_7M12M_robust-2': {'threshold': '1.4mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+    'G353.41_B6_7M12M_robust0': {'threshold': '1.06mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+    'G353.41_B6_7M12M_robust0.5': {'threshold': '0.8mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+    'G353.41_B6_7M12M_robust2': {'threshold': '0.82mJy', # 2*RMS
+                             'scales': [0,3,9],
+                            },
+
 }
 for key in imaging_parameters_nondefault:
     assert key in imaging_parameters
