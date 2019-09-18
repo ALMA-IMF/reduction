@@ -34,10 +34,11 @@ except ImportError:
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
-from taskinit import msmdtool, iatool
+from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
 msmd = msmdtool()
 ia = iatool()
+ms = mstool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
@@ -117,7 +118,8 @@ for band in band_list:
 
 
             if exclude_7m:
-                vis = [ms for ms in vis if not is_7m(ms)]
+                # don't use variable name 'ms' in python2.7!
+                vis = [ms_ for ms_ in vis if not is_7m(ms_)]
                 arrayname = '12M'
             else:
                 arrayname = '7M12M'

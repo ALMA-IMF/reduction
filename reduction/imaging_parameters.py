@@ -272,11 +272,11 @@ line_parameters = {field: {line: {'restfreq': freq,
                                   'vlsr': field_vlsr[field],
                                   'cubewidth':'50km/s'}
                            for line, freq in default_lines.items()}
-                   for field in all_fields}
+                   for field in allfields}
 
 line_parameters['G353.41']['n2hp']['cubewidth'] = '32km/s'
 line_parameters['W51-E']['n2hp']['cubewidth'] = '60km/s'
-line_parameters['G10.62']['n2hp']['cubewidth'] = '60km/s'
+line_parameters['G010.62']['n2hp']['cubewidth'] = '60km/s'
 
 # use the continuum image as the startmodel for the non-contsub'd data
 line_imaging_parameters['W51-E_B6_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B6_uid___A001_X1296_X215_continuum_merged_12M_robust0_selfcal7.model.tt0'
