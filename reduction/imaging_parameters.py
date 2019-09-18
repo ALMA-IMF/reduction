@@ -241,7 +241,7 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             'pblimit':0.2,
                             'nterms':1
                            }
-                           for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60', 'G010.62')
+                           for field in allfields
                            for band in ('B3','B6')
                            for array in ('12M', '7M12M', '7M')
                            for robust in (-2, 0, 2)
