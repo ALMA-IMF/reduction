@@ -25,6 +25,8 @@ steps, you can add them by adding new entries to the self-calibration parameter
 dictionary for your source following the template laid out below.
 
 """
+allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
+
 # set up global defaults
 imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust):
                       {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
@@ -38,7 +40,7 @@ imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust)
                        'deconvolver': 'mtmfs',
                        'nterms': 2,
                       }
-                      for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
+                      for field in allfields
                       for band in ('B3','B6')
                       for array in ('12M', '7M12M', '7M')
                       for robust in (-2, 0, 2)
@@ -239,26 +241,42 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             'pblimit':0.2,
                             'nterms':1
                            }
-                           for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60')
+                           for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60', 'G010.62')
                            for band in ('B3','B6')
                            for array in ('12M', '7M12M', '7M')
                            for robust in (-2, 0, 2)
                            for contsub in ("","_contsub")
                           }
 
+default_lines = {'n2hp': '93.173700GHz',
+                 'sio': '217.104984GHz',
+                 'h2co303': '218.222195GHz',
+                }
+field_vlsr = {'W51-E': '55km/s',
+              'W51-IRS2': '55km/s',
+              'G010.62': '-2km/s',
+              'G353.41': '-18km/s',
+              'W43-MM1': '97km/s',
+              'W43-MM2': '97km/s',
+              'W43-MM3': '97km/s',
+              'G337.92': '-40km/s',
+              'G338.93': '-62km/s',
+              'G328.25': '-43km/s',
+              'G327.29': '-45km/s',
+              'G333.60': '-47km/s',
+              'G008.67': '37.60km/s',
+              'G012.80': '37.00km/s',
+              'G351.77': '-3.00km/s',
+             }
+line_parameters = {field: {line: {'restfreq': freq,
+                                  'vlsr': field_vlsr[field],
+                                  'cubewidth':'50km/s'}
+                           for line, freq in default_lines.items()}
+                   for field in all_fields}
 
-line_parameters = {'G353.41': {'n2hp': {'restfreq':'93.173700GHz',
-                                        'vlsr':'-18km/s', # the systematic lsr velocity
-                                        'cubewidth':'32km/s', # the velocity width you want for the final line cube
-                                        },
-                              },
-                   'W51-E': {'n2hp': {'restfreq':'93.173700GHz',
-                                      'vlsr':'55km/s', # the systematic lsr velocity
-                                      'cubewidth':'60km/s', # the velocity width you want for the final line cube
-                                      },
-                              }
-
-                  }
+line_parameters['G353.41']['n2hp']['cubewidth'] = '32km/s'
+line_parameters['W51-E']['n2hp']['cubewidth'] = '60km/s'
+line_parameters['G10.62']['n2hp']['cubewidth'] = '60km/s'
 
 # use the continuum image as the startmodel for the non-contsub'd data
 line_imaging_parameters['W51-E_B6_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B6_uid___A001_X1296_X215_continuum_merged_12M_robust0_selfcal7.model.tt0'
