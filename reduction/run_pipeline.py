@@ -14,7 +14,7 @@ calibrated directory exists, the pipeline run will be skipped.
 import os
 import sys
 import runpy
-from taskinit import casalog
+from metadata_tools import logprint
 
 runonce = bool(os.environ.get('RUNONCE'))
 
@@ -28,18 +28,20 @@ for dirpath, dirnames, filenames in os.walk('.'):
             curdir = os.getcwd()
 
             if os.path.exists(os.path.join(dirpath,'../calibrated')):
-                casalog.post("Skipping script {0} in {1} because calibrated exists".format(fn, dirpath),
-                             origin='pipeline_runner')
+                logprint("Skipping script {0} in {1} because calibrated "
+                         "exists".format(fn, dirpath), origin='pipeline_runner')
             elif os.path.exists(os.path.join(dirpath,'../calibration')):
                 os.chdir(dirpath)
 
-                casalog.post("Running script {0} in {1}".format(fn, dirpath),
-                             origin='pipeline_runner')
+                logprint("Running script {0} in {1}".format(fn, dirpath),
+                         origin='pipeline_runner')
 
-                runpy.run_path(fn, init_globals=globals())
+                result = runpy.run_path(fn, init_globals=globals())
+                #logprint("result = {0}".format(result),
+                #         origin='pipeline_runner')
 
-                casalog.post("Done running script {0} in {1}".format(fn, dirpath),
-                             origin='pipeline_runner')
+                logprint("Done running script {0} in {1}".format(fn, dirpath),
+                         origin='pipeline_runner')
 
                 os.chdir(curdir)
 

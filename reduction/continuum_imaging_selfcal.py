@@ -117,6 +117,8 @@ for continuum_ms in continuum_mses:
 
     # allow optional cmdline args to skip one or the other band
     if os.getenv('BAND_TO_IMAGE'):
+        if 'B' not in os.getenv('BAND_TO_IMAGE'):
+            os.environ['BAND_TO_IMAGE'] = 'B'+os.getenv('BAND_TO_IMAGE')
         logprint("Imaging only band {0}".format(os.getenv('BAND_TO_IMAGE')),
                  origin='contim_selfcal')
         if band not in os.getenv('BAND_TO_IMAGE'):

@@ -15,7 +15,7 @@ You can set the following environmental variables for this script:
     FIELD_ID=<name>
         If this parameter is set, filter out the imaging targets and only image
         fields with this name (e.g., "W43-MM1", "W51-E", etc.)
-    BAND=<band(s)>
+    BAND_NUMBERS=<band(s)>
         Image this/these bands.  Can be "3", "6", or "3,6" (no quotes)
     LINE_NAME=<name>
         Image only one line at each run.  Can be 'n2hp', 'CO' (Case insensitive)
@@ -51,8 +51,8 @@ if os.getenv('FIELD_ID'):
                           if key == field_id}
 
 
-if os.getenv('BAND_TO_IMAGE'):
-    band_list = list(map(lambda x: "B"+x, os.getenv('BAND_TO_IMAGE').split(',')))
+if os.getenv('BAND_NUMBERS'):
+    band_list = list(map(lambda x: "B"+x, os.getenv('BAND_NUMBERS').split(',')))
     for BB in band_list:
         if BB not in to_image:
             raise ValueError("Band {0} was specified but is not in to_image.json"

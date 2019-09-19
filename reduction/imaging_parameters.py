@@ -251,6 +251,7 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
                  'h2co303': '218.222195GHz',
+                 '12co': '230.538GHz',
                 }
 field_vlsr = {'W51-E': '55km/s',
               'W51-IRS2': '55km/s',
@@ -277,6 +278,9 @@ line_parameters = {field: {line: {'restfreq': freq,
 line_parameters['G353.41']['n2hp']['cubewidth'] = '32km/s'
 line_parameters['W51-E']['n2hp']['cubewidth'] = '60km/s'
 line_parameters['G010.62']['n2hp']['cubewidth'] = '60km/s'
+
+for field in allfields:
+    line_parameters[field]['12co']['cubewidth'] = '150km/s'
 
 # use the continuum image as the startmodel for the non-contsub'd data
 line_imaging_parameters['W51-E_B6_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B6_uid___A001_X1296_X215_continuum_merged_12M_robust0_selfcal7.model.tt0'
