@@ -50,17 +50,18 @@ import os
 import copy
 import sys
 
-if os.getenv('ALMAIMF_ROOTDIR') is None:
+almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
+if almaimf_rootdir is None:
     try:
         import metadata_tools
-        os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+        almaimf_rootdir = os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
     except ImportError:
         raise ValueError("metadata_tools not found on path; make sure to "
                          "specify ALMAIMF_ROOTDIR environment variable "
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+    sys.path.append(almaimf_rootdir)
 
 import numpy as np
 
@@ -241,6 +242,13 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = dirty_impars['maskname'][0]
+            if '/' not in masknamea and not os.path.exists(maskname):
+                maskname = os.path.join(almaimf_rootdir,
+                                        'clean_regions',
+                                        maskname)
+            if not.os.path.exists(maskname):
+                raise IOError("Mask {0} not found".format(maskname))
+
             del dirty_impars['maskname']
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
@@ -272,7 +280,7 @@ for continuum_ms in continuum_mses:
 
     if 'maskname' not in locals():
         maskname = make_custom_mask(field, imname+".image.tt0",
-                                    os.getenv('ALMAIMF_ROOTDIR'),
+                                    almaimf_rootdir,
                                     band,
                                     rootdir=imaging_root,
                                     suffix='_dirty_robust{0}_{1}'.format(robust,
@@ -292,6 +300,13 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = impars_thisiter['maskname'][0]
+            if '/' not in masknamea and not os.path.exists(maskname):
+                maskname = os.path.join(almaimf_rootdir,
+                                        'clean_regions',
+                                        maskname)
+            if not.os.path.exists(maskname):
+                raise IOError("Mask {0} not found".format(maskname))
+
             del impars_thisiter['maskname']
     for key, val in impars_thisiter.items():
         if isinstance(val, dict):
@@ -350,7 +365,7 @@ for continuum_ms in continuum_mses:
     # the appropriate name)
     if 'maskname' not in locals():
         maskname = make_custom_mask(field, imname+".image.tt0",
-                                    os.getenv('ALMAIMF_ROOTDIR'), band,
+                                    almaimf_rootdir, band,
                                     rootdir=imaging_root,
                                    )
 
@@ -499,13 +514,13 @@ for continuum_ms in continuum_mses:
 
         regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
                                                        selfcaliter)
-        regfn = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+        regfn = os.path.join(almaimf_rootdir,
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
         if os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
-                                        os.getenv('ALMAIMF_ROOTDIR'),
+                                        almaimf_rootdir,
                                         band,
                                         rootdir=imaging_root,
                                         suffix=regsuffix
