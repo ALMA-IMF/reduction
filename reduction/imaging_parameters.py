@@ -57,7 +57,7 @@ for key in imaging_parameters:
 imaging_parameters_nondefault = {
     'G333.60_B3_12M_robust0': {'threshold': {0: '1.0mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy'},
                                'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000},
-                               'maskname': {0: 'clean_mask1.crtf', 1: 'clean_mask2.crtf', 2: 'clean_mask3.crtf', 3: 'clean_mask4.crtf'},
+                               'maskname': {0: 'clean_mask1_G333_B3.crtf', 1: 'clean_mask2_G333_B3.crtf', 2: 'clean_mask3_G333_B3.crtf', 3: 'clean_mask4_G333_B3.crtf'},
                               },
     'G333.60_B6_12M_robust0': {'threshold': {0: '1.0mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy'},
                                'niter': {0: 2000, 1: 6000, 2: 18000, 3: 36000},

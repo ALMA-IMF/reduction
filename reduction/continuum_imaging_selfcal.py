@@ -251,14 +251,14 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = dirty_impars['maskname'][0]
-            if '/' not in maskname and not os.path.exists(maskname):
-                maskname = os.path.join(almaimf_rootdir,
-                                        'clean_regions',
-                                        maskname)
-            if not os.path.exists(maskname):
-                raise IOError("Mask {0} not found".format(maskname))
-
             del dirty_impars['maskname']
+        if '/' not in maskname and not os.path.exists(maskname):
+            maskname = os.path.join(almaimf_rootdir,
+                                    'clean_regions',
+                                    maskname)
+        if not os.path.exists(maskname):
+            raise IOError("Mask {0} not found".format(maskname))
+
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -309,14 +309,14 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = impars_thisiter['maskname'][0]
-            if '/' not in maskname and not os.path.exists(maskname):
-                maskname = os.path.join(almaimf_rootdir,
-                                        'clean_regions',
-                                        maskname)
-            if not os.path.exists(maskname):
-                raise IOError("Mask {0} not found".format(maskname))
-
             del impars_thisiter['maskname']
+        if '/' not in maskname and not os.path.exists(maskname):
+            maskname = os.path.join(almaimf_rootdir,
+                                    'clean_regions',
+                                    maskname)
+        if not os.path.exists(maskname):
+            raise IOError("Mask {0} not found".format(maskname))
+
     for key, val in impars_thisiter.items():
         if isinstance(val, dict):
             impars_thisiter[key] = val[0]
