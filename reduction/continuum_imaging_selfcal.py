@@ -45,6 +45,15 @@ or if you want to totally start over:
     rm -r W51-E_B3_*cal
 
 """
+"""
+MASKING
+=======
+There are two ways to specify masks:
+    (1) the ds9 region based mask where you draw regions and name
+    them with a flux level, as described in https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb
+    (2) specify 'maskname' in the imaging parameters, e.g.:
+   'maskname': {0: 'clean_mask1.crtf', 1: 'clean_mask2.crtf', 2: 'clean_mask3.crtf', 3: 'clean_mask4.crtf'},
+"""
 
 import os
 import copy
@@ -242,11 +251,11 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = dirty_impars['maskname'][0]
-            if '/' not in masknamea and not os.path.exists(maskname):
+            if '/' not in maskname and not os.path.exists(maskname):
                 maskname = os.path.join(almaimf_rootdir,
                                         'clean_regions',
                                         maskname)
-            if not.os.path.exists(maskname):
+            if not os.path.exists(maskname):
                 raise IOError("Mask {0} not found".format(maskname))
 
             del dirty_impars['maskname']
@@ -300,11 +309,11 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = impars_thisiter['maskname'][0]
-            if '/' not in masknamea and not os.path.exists(maskname):
+            if '/' not in maskname and not os.path.exists(maskname):
                 maskname = os.path.join(almaimf_rootdir,
                                         'clean_regions',
                                         maskname)
-            if not.os.path.exists(maskname):
+            if not os.path.exists(maskname):
                 raise IOError("Mask {0} not found".format(maskname))
 
             del impars_thisiter['maskname']
