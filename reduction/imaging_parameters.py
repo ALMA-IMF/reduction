@@ -252,6 +252,8 @@ default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
                  'h2co303': '218.222195GHz',
                  '12co': '230.538GHz',
+                 'h30a': '231.900928GHz',
+                 'h41a': '92.034434GHz',
                 }
 field_vlsr = {'W51-E': '55km/s',
               'W51-IRS2': '55km/s',
