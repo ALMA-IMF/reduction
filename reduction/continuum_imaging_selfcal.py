@@ -413,6 +413,13 @@ for continuum_ms in continuum_mses:
                          origin="contim_selfcal"
                         )
             del impars_thisiter['maskname']
+        if '/' not in maskname and not os.path.exists(maskname):
+            maskname = os.path.join(almaimf_rootdir,
+                                    'clean_regions',
+                                    maskname)
+        if not os.path.exists(maskname):
+            raise IOError("Mask {0} not found".format(maskname))
+
         for key, val in impars_thisiter.items():
             if isinstance(val, dict):
                 impars_thisiter[key] = val[selfcaliter]
