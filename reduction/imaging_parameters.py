@@ -25,6 +25,7 @@ steps, you can add them by adding new entries to the self-calibration parameter
 dictionary for your source following the template laid out below.
 
 """
+import copy
 allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
 
 # set up global defaults
@@ -152,7 +153,7 @@ default_selfcal_pars = {ii: {'solint': 'int',
                              'calmode': 'p'}
                         for ii in range(1,5)}
 
-selfcal_pars = {key: default_selfcal_pars
+selfcal_pars = {key: copy.copy(default_selfcal_pars)
                 for key in imaging_parameters}
 
 selfcal_pars['W51-E_B6_12M_robust0'][5] = {'solint': 'inf',
@@ -164,7 +165,7 @@ selfcal_pars['W51-E_B6_12M_robust0'][6] = {'solint': 'inf',
                                            'calmode': 'ap',
                                           }
 
-selfcal_pars['W51-E_B6_7M12M_robust0'][5] = selfcal_pars['W51-E_B6_7M12M_robust0'][4] # one extra phase iteration
+selfcal_pars['W51-E_B6_7M12M_robust0'][5] = copy.copy(selfcal_pars['W51-E_B6_7M12M_robust0'][4]) # one extra phase iteration
 selfcal_pars['W51-E_B6_7M12M_robust0'][6] = {'solint': 'inf',
                                              'gaintype': 'G',
                                              'calmode': 'ap',
@@ -174,7 +175,7 @@ selfcal_pars['W51-E_B6_7M12M_robust0'][7] = {'solint': 'inf',
                                              'calmode': 'ap',
                                             }
 
-selfcal_pars['W51-E_B3_12M_robust0'][5] = selfcal_pars['W51-E_B3_12M_robust0'][4]
+selfcal_pars['W51-E_B3_12M_robust0'][5] = copy.copy(selfcal_pars['W51-E_B3_12M_robust0'][4])
 selfcal_pars['W51-E_B3_12M_robust0'][6] = {'solint': 'inf',
                                            'gaintype': 'G',
                                            'calmode': 'ap',
