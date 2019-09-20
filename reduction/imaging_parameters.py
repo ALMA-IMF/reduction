@@ -63,6 +63,8 @@ imaging_parameters_nondefault = {
                                'niter': {0: 2000, 1: 6000, 2: 18000, 3: 36000},
                                'maskname': {0: 'cleanmask_G333_B6_1.crtf', 1: 'cleanmask_G333_B6_2.crtf', 2: 'cleanmask_G333_B6_3.crtf', 3: 'cleanmask_G333_B6_4.crtf'},
                               },
+    'G008.67_B6_12M_robust0': {'maskname': {0: 'G008.67_B6_12M_robust0.crtf',
+                                            1: 'G008.67_B6_12M_robust0.crtf',}},
     'W51-E_B6_12M_robust0': {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
                              'scales': [0,3,9,27],
                             },

@@ -173,7 +173,7 @@ for band in band_list:
             if np.any(np.array(chanwidths) - chanwidth > 1e-4):
                 raise ValueError("Varying channel widths.")
             local_impars = {}
-            local_impars['width'] = '{0:.2f}km/s'.format(chanwidth)
+            local_impars['width'] = '{0:.2f}km/s'.format(np.round(chanwidth, 2))
             local_impars['restfreq'] = linpars['restfreq']
             # calculate vstart
             vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
