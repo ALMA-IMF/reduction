@@ -265,9 +265,10 @@ for band in band_list:
 
             if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
-                local_impars['threshold'] = threshold
+                if 'local_impars' in locals():
+                    local_impars['threshold'] = threshold
 
-                impars.update(local_impars)
+                impars['threshold'] = threshold
 
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
@@ -321,7 +322,8 @@ for band in band_list:
 
                 pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
                 impars = line_imaging_parameters[pars_key]
-                impars.update(local_impars)
+                if local_impars in locals():
+                    impars.update(local_impars)
                 # Todo: should we re-calculate the threshold after the continuum subtraction?
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
