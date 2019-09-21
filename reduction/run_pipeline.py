@@ -14,6 +14,7 @@ calibrated directory exists, the pipeline run will be skipped.
 import os
 import sys
 import runpy
+import glob
 
 if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
@@ -29,6 +30,17 @@ else:
 
 from metadata_tools import logprint
 
+import os
+
+try:
+    from taskinit import casalog
+except ImportError:
+    from casatasks import casalog
+
+if os.getenv('LOGFILENAME'):
+    casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
+print("CASA log file name is {0}".format(casalog.logfile()))
+
 
 runonce = bool(os.environ.get('RUNONCE'))
 
@@ -36,25 +48,41 @@ runonce = bool(os.environ.get('RUNONCE'))
 SPACESAVING = 1
 DOSPLIT = True
 
-for dirpath, dirnames, filenames in os.walk('.'):
-    for fn in filenames:
-        if "scriptForPI.py" == fn[-14:]:
+# only walk the science goal directories
+science_goal_dirs = glob.glob("science_goal*")
+
+for scigoal in science_goal_dirs:
+    for group in glob.glob(scigoal+"/*"):
+        for member in glob.glob(os.path.join(group, "*")):
+            dirpath = member
+            scriptsforpi = glob.glob(os.path.join(dirpath, "script/*scriptForPI.py"))
+            if len(scriptsforpi) == 1:
+                scriptforpi = scriptsforpi[0]
+            elif len(scriptsforpi) > 1:
+                raise ValueError("Too many scripts for PI in {0}".format(dirpath))
+            elif len(scriptsforpi) == 0:
+                logprint("Skipping directory {0} because it has no scriptForPI"
+                         .format(dirpath))
+                continue
+
             curdir = os.getcwd()
 
-            if os.path.exists(os.path.join(dirpath,'../calibrated')):
+            if os.path.exists(os.path.join(dirpath,'calibrated')):
                 logprint("Skipping script {0} in {1} because calibrated "
-                         "exists".format(fn, dirpath), origin='pipeline_runner')
-            elif os.path.exists(os.path.join(dirpath,'../calibration')):
-                os.chdir(dirpath)
+                         "exists".format(scriptforpi, dirpath), origin='pipeline_runner')
+            elif os.path.exists(os.path.join(dirpath, 'calibration')):
+                os.chdir(os.path.join(dirpath, 'script'))
 
-                logprint("Running script {0} in {1}".format(fn, dirpath),
+                local_scriptforPI = os.path.basename(scriptforpi)
+
+                logprint("Running script {0} in {1}".format(local_scriptforPI, dirpath),
                          origin='pipeline_runner')
 
-                result = runpy.run_path(fn, init_globals=globals())
+                result = runpy.run_path(local_scriptforPI, init_globals=globals())
                 #logprint("result = {0}".format(result),
                 #         origin='pipeline_runner')
 
-                logprint("Done running script {0} in {1}".format(fn, dirpath),
+                logprint("Done running script {0} in {1}".format(local_scriptforPI, dirpath),
                          origin='pipeline_runner')
 
                 os.chdir(curdir)
