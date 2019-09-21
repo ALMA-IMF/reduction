@@ -56,6 +56,7 @@ for scigoal in science_goal_dirs:
         for member in glob.glob(os.path.join(group, "*")):
             dirpath = member
             scriptsforpi = glob.glob(os.path.join(dirpath, "script/*scriptForPI.py"))
+
             if len(scriptsforpi) == 1:
                 scriptforpi = scriptsforpi[0]
             elif len(scriptsforpi) > 1:
