@@ -234,15 +234,15 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             'gridder': 'mosaic',
                             'specmode': 'cube',
                             'deconvolver': 'multiscale',
-                            'outframe':'LSRK',
-                            'veltype':'radio',
+                            'outframe': 'LSRK',
+                            'veltype': 'radio',
                             #'sidelobethreshold': 1.0,
                             #'noisethreshold': 5.0,
-                            #'usemask':'auto-multithresh',
-                            'threshold':'0.0mJy/beam',
-                            'interactive':False,
-                            'pblimit':0.2,
-                            'nterms':1
+                            #'usemask': 'auto-multithresh',
+                            'threshold': '0.0mJy/beam',
+                            'interactive': False,
+                            'pblimit': 0.2,
+                            'nterms': 1
                            }
                            for field in allfields
                            for band in ('B3','B6')
@@ -283,6 +283,7 @@ line_parameters = {field: {line: {'restfreq': freq,
 line_parameters['G353.41']['n2hp']['cubewidth'] = '32km/s'
 line_parameters['W51-E']['n2hp']['cubewidth'] = '60km/s'
 line_parameters['G010.62']['n2hp']['cubewidth'] = '60km/s'
+line_parameters['G338.93']['sio']['cubewidth'] = '120km/s'
 
 for field in allfields:
     line_parameters[field]['12co']['cubewidth'] = '150km/s'

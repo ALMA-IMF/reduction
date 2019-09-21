@@ -19,6 +19,8 @@ You can set the following environmental variables for this script:
         Image this/these bands.  Can be "3", "6", or "3,6" (no quotes)
     LINE_NAME=<name>
         Image only one line at each run.  Can be 'n2hp', 'CO' (Case insensitive)
+    LOGFILENAME=<name>
+        Optional.  If specified, the logger will use this filenmae
 """
 
 import json
@@ -28,9 +30,11 @@ import astropy.units as u
 from astropy import constants
 try:
     from tasks import tclean, uvcontsub, impbcor
+    from taskinit import casalog
 except ImportError:
     # futureproofing: CASA 6 imports this way
     from casatasks import tclean, uvcontsub, impbcor
+    from casatasks import casalog
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
@@ -42,6 +46,9 @@ ms = mstool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
+
+if os.getenv('LOGFILENAME'):
+    casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
 
 
 if os.getenv('FIELD_ID'):
@@ -84,6 +91,7 @@ robust = 0
 
 for band in band_list:
     for field in to_image[band]:
+        spwnames = tuple('spw{0}'.format(x) for x in to_image[band][field])
         for spw in to_image[band][field]:
 
             # python 2.7 specific hack: force 'field' to be a bytestring
@@ -96,25 +104,31 @@ for band in band_list:
             vis = list(map(str, to_image[band][field][spw]))
 
             # load in the line parameter info
-            linpars = line_parameters[field][line_name]
-            restfreq = u.Quantity(linpars['restfreq'])
-            vlsr = u.Quantity(linpars['vlsr'])
+            if line_name not in ('full', ) + spwnames:
+                linpars = line_parameters[field][line_name]
+                restfreq = u.Quantity(linpars['restfreq'])
+                vlsr = u.Quantity(linpars['vlsr'])
 
-            # check that the line is in range
-            ms.open(vis[0])
-            # assume spw is 0 because we're working on split data
-            freqs = ms.cvelfreqs(spwids=0, outframe='LSRK') * u.Hz
-            targetfreq = restfreq * (1 - vlsr/constants.c)
-            if freqs.min() > targetfreq or freqs.max() < targetfreq:
-                # Skip this spw: it is not in range
-                logprint("Skipped spectral window {0} for line {1} because it's out of range"
+                # check that the line is in range
+                ms.open(vis[0])
+                # assume spw is 0 because we're working on split data
+                freqs = ms.cvelfreqs(spwids=0, outframe='LSRK') * u.Hz
+                targetfreq = restfreq * (1 - vlsr/constants.c)
+                if freqs.min() > targetfreq or freqs.max() < targetfreq:
+                    # Skip this spw: it is not in range
+                    logprint("Skipped spectral window {0} for line {1} because it's out of range"
+                             .format(spw, line_name),
+                             origin='almaimf_line_imaging')
+                    continue
+                else:
+                    logprint("Matched spectral window {0} to line {1}"
+                             .format(spw, line_name),
+                             origin='almaimf_line_imaging')
+            elif line_name in spwnames and line_name.lstrip("spw") != spw:
+                logprint("Skipped spectral window {0} because it's not {1}"
                          .format(spw, line_name),
                          origin='almaimf_line_imaging')
                 continue
-            else:
-                logprint("Matched spectral window {0} to line {1}"
-                         .format(spw, line_name),
-                         origin='almaimf_line_imaging')
 
 
             if exclude_7m:
@@ -152,43 +166,46 @@ for band in band_list:
             pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
             impars = line_imaging_parameters[pars_key]
 
-            # calculate the channel width
-            chanwidths = []
-            for vv in vis:
-                msmd.open(vv)
-                count_spws = len(msmd.spwsforfield(field))
-                msmd.close()
-                chanwidth = np.max([np.abs(
-                    effectiveResolutionAtFreq(vv,
-                                              spw='{0}'.format(i),
-                                              freq=u.Quantity(linpars['restfreq']).to(u.GHz),
-                                              kms=True)) for i in
-                    range(count_spws)])
-                chanwidths.append(chanwidth)
-            # chanwidth: mean? max?
-            chanwidth = np.mean(chanwidths)
-            logprint("Channel widths were {0}, mean = {1}".format(chanwidths,
-                                                                  chanwidth),
-                     origin="almaimf_line_imaging")
-            if np.any(np.array(chanwidths) - chanwidth > 1e-4):
-                raise ValueError("Varying channel widths.")
-            local_impars = {}
-            local_impars['width'] = '{0:.2f}km/s'.format(np.round(chanwidth, 2))
-            local_impars['restfreq'] = linpars['restfreq']
-            # calculate vstart
-            vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
-            local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
-            local_impars['imsize'] = imsize
-            local_impars['cell'] = cellsize
-            local_impars['phasecenter'] = phasecenter
-            local_impars['field'] = [field.encode()]*len(vis)
-            local_impars['chanchunks'] = chanchunks
+            if line_name not in ('full', ) + spwnames:
+                # calculate the channel width
+                chanwidths = []
+                for vv in vis:
+                    msmd.open(vv)
+                    count_spws = len(msmd.spwsforfield(field))
+                    msmd.close()
+                    chanwidth = np.max([np.abs(
+                        effectiveResolutionAtFreq(vv,
+                                                  spw='{0}'.format(i),
+                                                  freq=u.Quantity(linpars['restfreq']).to(u.GHz),
+                                                  kms=True)) for i in
+                        range(count_spws)])
+                    chanwidths.append(chanwidth)
+                # chanwidth: mean? max?
+                chanwidth = np.mean(chanwidths)
+                logprint("Channel widths were {0}, mean = {1}".format(chanwidths,
+                                                                      chanwidth),
+                         origin="almaimf_line_imaging")
+                if np.any(np.array(chanwidths) - chanwidth > 1e-4):
+                    raise ValueError("Varying channel widths.")
+                local_impars = {}
+                local_impars['width'] = '{0:.2f}km/s'.format(np.round(chanwidth, 2))
+                local_impars['restfreq'] = linpars['restfreq']
+                # calculate vstart
+                vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
+                local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
+                local_impars['imsize'] = imsize
+                local_impars['cell'] = cellsize
+                local_impars['phasecenter'] = phasecenter
+                local_impars['field'] = [field.encode()]*len(vis)
+                local_impars['chanchunks'] = chanchunks
 
-            local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
-                                   / u.Quantity(local_impars['width'])).value)
-            if local_impars['nchan'] < local_impars['chanchunks']:
-                local_impars['chanchunks'] = local_impars['nchan']
-            impars.update(local_impars)
+                local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
+                                       / u.Quantity(local_impars['width'])).value)
+                if local_impars['nchan'] < local_impars['chanchunks']:
+                    local_impars['chanchunks'] = local_impars['nchan']
+                impars.update(local_impars)
+            else:
+                impars['chanchunks'] = chanchunks
 
 
             # start with cube imaging
