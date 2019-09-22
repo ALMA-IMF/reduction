@@ -322,7 +322,7 @@ for band in band_list:
 
                 pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
                 impars = line_imaging_parameters[pars_key]
-                if local_impars in locals():
+                if 'local_impars' in locals():
                     impars.update(local_impars)
                 # Todo: should we re-calculate the threshold after the continuum subtraction?
                 tclean(vis=[vv+".contsub" for vv in vis],
