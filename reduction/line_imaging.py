@@ -193,10 +193,6 @@ for band in band_list:
                 # calculate vstart
                 vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
                 local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
-                local_impars['imsize'] = imsize
-                local_impars['cell'] = cellsize
-                local_impars['phasecenter'] = phasecenter
-                local_impars['field'] = [field.encode()]*len(vis)
                 local_impars['chanchunks'] = chanchunks
 
                 local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
@@ -206,6 +202,11 @@ for band in band_list:
                 impars.update(local_impars)
             else:
                 impars['chanchunks'] = chanchunks
+
+            impars['imsize'] = imsize
+            impars['cell'] = cellsize
+            impars['phasecenter'] = phasecenter
+            impars['field'] = [field.encode()]*len(vis)
 
 
             # start with cube imaging
