@@ -81,7 +81,7 @@ with open('continuum_mses.txt', 'r') as fh:
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
-                                 'continuum_merged_bsens.cal.ms')
+                                 '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
 
 
