@@ -227,7 +227,7 @@ selfcal_pars['G353.41_B3_7M12M_robust0'][6] = {'solint': 'inf',
 
 line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub):
                            {
-                            'niter': 200000,
+                            'niter': 1000, # start with a light cleaning...
                             'robust': robust,
                             'weighting': 'briggs',
                             'scales': [0,3,9,27,81],
@@ -239,7 +239,7 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             #'sidelobethreshold': 1.0,
                             #'noisethreshold': 5.0,
                             #'usemask': 'auto-multithresh',
-                            'threshold': '0.0mJy/beam',
+                            'threshold': '3.0mJy/beam',
                             'interactive': False,
                             'pblimit': 0.2,
                             'nterms': 1
