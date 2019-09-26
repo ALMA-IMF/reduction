@@ -63,11 +63,15 @@ imaging_parameters_nondefault = {
     'G333.60_B6_12M_robust0': {'threshold': {0: '1.0mJy', 1: '1.0mJy', 2: '0.75mJy', 3: '0.50mJy', 4: '0.25mJy'},
                                'niter': {0: 2000, 1: 2000, 2: 6000, 3: 18000, 4: 36000},
                                'maskname': {0: 'cleanmask_G333_B6_0.crtf', 1: 'cleanmask_G333_B6_1.crtf', 2: 'cleanmask_G333_B6_2.crtf', 3: 'cleanmask_G333_B6_3.crtf', 4: 'cleanmask_G333_B6_4.crtf'},
+                              },
     'G008.67_B6_12M_robust0': {'maskname': {0: 'G008.67_B6_12M_robust0.crtf',
                                             1: 'G008.67_B6_12M_robust0.crtf',}},
     # PLACEHOLDER
     'G008.67_B3_12M_robust0': {'maskname': {0: 'G008.67_B6_12M_robust0.crtf',
                                             1: 'G008.67_B6_12M_robust0.crtf',}},
+    'G337.92_B3_12M_robust0': {'threshold': '0.25mJy', # RMS ~0.5-0.6 mJy
+                               'scales': [0,3,9,27],
+                              },
     'W51-E_B6_12M_robust0': {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
                              'scales': [0,3,9,27],
                             },
