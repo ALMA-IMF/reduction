@@ -74,6 +74,7 @@ else:
 
 import numpy as np
 
+from getversion import git_date, git_version
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated)
 from make_custom_mask import make_custom_mask
@@ -285,6 +286,9 @@ for continuum_ms in continuum_mses:
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
                                dirty_impars.items()])
+        ia.sethistory(origin='almaimf_cont_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
         ia.close()
 
     if 'maskname' not in locals():
@@ -347,6 +351,9 @@ for continuum_ms in continuum_mses:
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
                                impars.items()])
+        ia.sethistory(origin='almaimf_cont_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
         ia.close()
 
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
@@ -486,6 +493,9 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars_thisiter.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
             ia.close()
             # overwrite=True because these could already exist
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
@@ -581,6 +591,9 @@ for continuum_ms in continuum_mses:
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
                                impars.items()])
+        ia.sethistory(origin='almaimf_cont_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
         ia.close()
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)

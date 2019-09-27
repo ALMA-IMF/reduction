@@ -40,6 +40,7 @@ from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logp
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
+from getversion import git_date, git_version
 msmd = msmdtool()
 ia = iatool()
 ms = mstool()
@@ -233,6 +234,13 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars_dirty
                       )
+                ia.sethistory(origin='almaimf_line_imaging',
+                              history=["{0}: {1}".format(key, val) for key, val in
+                                       impars_dirty.items()])
+                ia.sethistory(origin='almaimf_line_imaging',
+                              history=["git_version: {0}".format(git_version),
+                                       "git_date: {0}".format(git_date)])
+
                 if os.path.exists(lineimagename+".image"):
                     # tclean with niter=0 is not supposed to produce a .image file,
                     # but if it does (and it appears to have done so on at
@@ -279,6 +287,13 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars
                       )
+                ia.sethistory(origin='almaimf_line_imaging',
+                              history=["{0}: {1}".format(key, val) for key, val in
+                                       impars.items()])
+                ia.sethistory(origin='almaimf_line_imaging',
+                              history=["git_version: {0}".format(git_version),
+                                       "git_date: {0}".format(git_date)])
+
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
@@ -331,6 +346,13 @@ for band in band_list:
                        restoringbeam='',
                        **impars
                       )
+                ia.sethistory(origin='almaimf_line_imaging',
+                              history=["{0}: {1}".format(key, val) for key, val in
+                                       impars.items()])
+                ia.sethistory(origin='almaimf_line_imaging',
+                              history=["git_version: {0}".format(git_version),
+                                       "git_date: {0}".format(git_date)])
+
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
