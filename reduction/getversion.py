@@ -15,3 +15,13 @@ gitcmd = "git log -1 --date=short --format=%ad"
 git_date = subprocess.check_output(gitcmd.split()).decode().strip()
 
 os.chdir(cwd)
+
+
+if __name__ == "__main__":
+
+    print(git_version)
+    print(git_date)
+
+    gitcmd = "git --version"
+    git_tool_version = subprocess.check_output(gitcmd.split()).decode().strip()
+    print(git_tool_version)
