@@ -4,7 +4,13 @@ Get the current git version
 import os
 import subprocess
 
-path = os.path.split(__file__)[0]
+path = os.path.dirname(os.path.abspath(__file__))
+almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
+
+# almaimf_rootdir must be set to this file's path!
+assert os.path.dirname(almaimf_rootdir) == os.path.dirname(path)
+
+
 cwd = os.getcwd()
 
 os.chdir(path)
