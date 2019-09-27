@@ -46,6 +46,7 @@ else:
     import sys
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
+from getversion import git_date, git_version
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
@@ -80,6 +81,7 @@ with open('continuum_mses.txt', 'r') as fh:
 
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
+    logprint("Using BSENS measurement set")
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
                                  '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
@@ -216,6 +218,9 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
             ia.close()
 
         try:
@@ -277,6 +282,9 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
             ia.close()
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
@@ -347,6 +355,9 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
             ia.close()
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
