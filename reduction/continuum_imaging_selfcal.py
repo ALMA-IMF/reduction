@@ -104,6 +104,7 @@ args = parser.parse_args()
 # Command line takes precedence
 if args.exclude7M:
     exclude_7m = args.exclude7M
+    only_7m = False
     arrayname = '12M'
 elif 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
