@@ -1,4 +1,7 @@
 import numpy as np
+import os
+import astropy.units as u
+from astropy import constants
 try:
     from casac import casac
     synthesisutils = casac.synthesisutils
@@ -194,11 +197,12 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
 
     # round to nearest 0.01"
     if pixscale > 0.01/206265.:
-        pixscale_as = np.floor((pixscale * 180/np.pi * 3600 * 100) % 100) / 100
+        pixscale_as = 180/np.pi * 3600 * pixscale
+        pixscale_as = np.round(pixscale_as, 2)
         if pixscale_as < min_pixscale:
             pixscale_as = min_pixscale
-        else:
-            pixscale = pixscale_as * np.pi / 3600 / 180
+        # re-set pixscale to be radians
+        pixscale = pixscale_as * np.pi / 3600 / 180
         logprint("Pixel scale = {0} rad = {1} \" ".format(pixscale, pixscale_as))
     else:
         raise ValueError("Pixel scale was {0}\", too small".format(pixscale*206265))
@@ -275,11 +279,26 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
         ddec = np.max([dec for ra, dec, pixscale in results])
         pixscale = np.min([pixscale for ra, dec, pixscale in results])
     else:
-        dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
-                                             pixfraction_of_fwhm, **kwargs)
+
+        if spw=='all':
+            msmd.open(ms)
+            spws = msmd.spwsforfield(field)
+            msmd.close()
+
+            results = [get_indiv_imsize(ms, field, phasecenter, spw,
+                                        pixfraction_of_fwhm, **kwargs)
+                       for spw in spws]
+
+            dra = np.max([ra for ra, dec, pixscale in results])
+            ddec = np.max([dec for ra, dec, pixscale in results])
+            pixscale = np.min([pixscale for ra, dec, pixscale in results])
+
+        else:
+            dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
+                                                 pixfraction_of_fwhm, **kwargs)
 
     # if the image is nearly square (to within 10%), make sure it is square.
-    if np.abs(dra - ddec) / dra < 0.1:
+    if float(np.abs(dra - ddec)) / dra < 0.1:
         if dra < ddec:
             dra = ddec
         else:
@@ -307,3 +326,39 @@ def check_model_is_populated(msfile):
     if modelphase['model_phase'].shape == (0,):
         raise ValueError("Model phase column was not populated")
     ms.close()
+
+
+
+def effectiveResolutionAtFreq(vis, spw, freq, kms=True):
+    """
+    Returns the effective resolution of a channel (in Hz or km/s)
+    of the specified measurement set and spw ID.
+    Note: For ALMA, this will only be correct for cycle 3 data onward.
+    freq: frequency in quanity
+    kms: if True, then return the value in km/s (otherwise Hz)
+    To see this information for an ASDM, use
+       printLOsFromASDM(showEffective=True)
+    -Todd Hunter
+    """
+    if (not os.path.exists(vis+'/SPECTRAL_WINDOW')):
+        raise ValueError("Could not find ms (or its SPECTRAL_WINDOW table).")
+    mytb = tbtool()
+    mytb.open(vis+'/SPECTRAL_WINDOW')
+    if (type(spw) != list and type(spw) != np.ndarray):
+        spws = [int(spw)]
+    else:
+        spws = [int(s) for s in spw]
+    bws = []
+    for spw in spws:
+        chfreq = mytb.getcell('CHAN_FREQ',spw) # Hz
+        sepfreq = np.abs(chfreq-freq.to(u.Hz).value)
+        ind = np.where(sepfreq==sepfreq.min())
+        bwarr = mytb.getcell('RESOLUTION',spw) # Hz
+        bw = bwarr[ind]
+        if kms:
+            bw = constants.c.to(u.km/u.s).value*bw/freq.to(u.Hz).value
+        bws.append(bw)
+    mytb.close()
+    if (len(bws) == 1):
+        bws = bws[0]
+    return bws

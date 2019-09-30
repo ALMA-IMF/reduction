@@ -2,9 +2,10 @@ import numpy as np
 import string
 try:
     from __casac__.quanta import quanta
+    from taskinit import msmdtool
 except ImportError:
     from casatools import quanta
-from taskinit import msmdtool
+    from casatools import msmetadata as msmdtool
 qq = quanta()
 
 def parse_contdotdat(filepath):

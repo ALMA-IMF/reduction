@@ -85,6 +85,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
             antnames = msmd.antennanames()
             if any('PM' in nm for nm in antnames):
                 if len(antnames) <= 4:
+                    with open(os.path.join(dirpath, "{0}_{1}_TP".format(field, band)), 'w') as fh:
+                        fh.write("{0}".format(antnames))
                     logprint("Skipping total power MS {0}".format(fn))
                     msmd.close()
                     continue
@@ -141,16 +143,18 @@ with open('metadata.json', 'w') as fh:
 logprint("Completed metadata assembly")
 
 # extract the fields from the metadata
-fields = set(str(x) for x in metadata['B3']) | set(str(x) for x in metadata['B6'])
+all_fields = set(str(x) for x in metadata['B3']) | set(str(x) for x in metadata['B6'])
 
 if os.getenv('FIELD_ID'):
-    fields = fields & {os.getenv('FIELD_ID')}
+    fields = all_fields & {os.getenv('FIELD_ID')}
+else:
+    fields = all_fields
 
 to_image = {}
 
 for band in bands:
     to_image[band] = {}
-    for field in fields:
+    for field in all_fields:
 
         if field not in metadata[band]:
             logprint("Skipping {0}:{1} because it has no metadata"
@@ -181,6 +185,10 @@ for band in bands:
 
                 if os.path.exists(outvis):
                     logprint("Skipping {0} because it's done".format(outvis))
+                elif field not in fields:
+                    logprint("Skipping {0} because it is not one of the "
+                             "selected fields (but its metadata is being "
+                             "collected in to_image.json)".format(outvis))
                 else:
                     logprint("Splitting {0}'s spw {2} to {1}".format(vis,
                                                                      outvis,
@@ -218,7 +226,7 @@ cont_mses_unconcat = []
 # split the continuum data
 cont_to_merge = {}
 for band in bands:
-    for field in fields:
+    for field in all_fields:
 
         cont_to_merge[band] = {field: []}
 
@@ -248,7 +256,8 @@ for band in bands:
             cont_to_merge[band][field].append(contvis)
 
             if os.path.exists(contvis) and os.path.exists(contvis_bestsens):
-                logprint("Skipping width determination for {0} because it's done (both for bsens & cont)".format(contvis),)
+                logprint("Skipping width determination for {0} because "
+                         "it's done (both for bsens & cont)".format(contvis),)
             else:
                 logprint("Determining widths for {0} to {1}"
                          .format(visfile, contvis),)
@@ -297,9 +306,13 @@ for band in bands:
                     datacolumn='data'
                 tb.close()
 
-                        
+
             if os.path.exists(contvis):
                 logprint("Skipping {0} because it's done".format(contvis),)
+            elif field not in fields:
+                logprint("Skipping {0} because it is not one of the "
+                         "selected fields (but its metadata is being "
+                         "collected in continuum_mses.txt)".format(contvis))
             else:
                 logprint("Flagging and splitting {0} to {1} for continuum"
                          .format(visfile, contvis),)
@@ -346,6 +359,10 @@ for band in bands:
 
             if os.path.exists(contvis_bestsens):
                 logprint("Skipping {0} because it's done".format(contvis_bestsens),)
+            elif field not in fields:
+                logprint("Skipping {0} because it is not one of the "
+                         "selected fields (but its metadata is being "
+                         "collected in continuum_mses.txt)".format(contvis_bestsens))
             else:
                 logprint("Splitting 'best-sensitivity' {0} to {1} for continuum"
                          .format(visfile, contvis_bestsens),)
@@ -372,6 +389,10 @@ for band in bands:
         if os.path.exists(merged_continuum_fn):
             logprint("Skipping merged continuum {0} because it's done"
                      .format(merged_continuum_fn),)
+        elif field not in fields:
+            logprint("Skipping {0} because it is not one of the "
+                     "selected fields (but its metadata is being "
+                     "collected in continuum_mses.txt)".format(merged_continuum_fn))
         else:
             logprint("Merging continuum for {0} {1} into {2}"
                      .format(merged_continuum_fn, field, band),)

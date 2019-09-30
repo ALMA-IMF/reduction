@@ -45,6 +45,15 @@ or if you want to totally start over:
     rm -r W51-E_B3_*cal
 
 """
+"""
+MASKING
+=======
+There are two ways to specify masks:
+    (1) the ds9 region based mask where you draw regions and name
+    them with a flux level, as described in https://github.com/ALMA-IMF/notebooks/blob/master/SelfCal_Instructions_Examination.ipynb
+    (2) specify 'maskname' in the imaging parameters, e.g.:
+   'maskname': {0: 'clean_mask1.crtf', 1: 'clean_mask2.crtf', 2: 'clean_mask3.crtf', 3: 'clean_mask4.crtf'},
+"""
 
 import os, copy, sys, argparse
 
@@ -52,20 +61,22 @@ sys.path.append('./')
 ALMAIMF_ROOTDIR = os.path.dirname(os.path.realpath(sys.argv[2]))
 sys.path.append(ALMAIMF_ROOTDIR)
 
-if os.getenv('ALMAIMF_ROOTDIR') is None:
+almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
+if almaimf_rootdir is None:
     try:
         import metadata_tools
-        os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+        almaimf_rootdir = os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
     except ImportError:
         raise ValueError("metadata_tools not found on path; make sure to "
                          "specify ALMAIMF_ROOTDIR environment variable "
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+    sys.path.append(almaimf_rootdir)
 
 import numpy as np
 
+from getversion import git_date, git_version
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated)
 from make_custom_mask import make_custom_mask, make_rms_mask
@@ -130,6 +141,8 @@ for continuum_ms in continuum_mses:
 
     # allow optional cmdline args to skip one or the other band
     if os.getenv('BAND_TO_IMAGE'):
+        if 'B' not in os.getenv('BAND_TO_IMAGE'):
+            os.environ['BAND_TO_IMAGE'] = 'B'+os.getenv('BAND_TO_IMAGE')
         logprint("Imaging only band {0}".format(os.getenv('BAND_TO_IMAGE')),
                  origin='contim_selfcal')
         if band not in os.getenv('BAND_TO_IMAGE'):
@@ -207,7 +220,8 @@ for continuum_ms in continuum_mses:
                                                 phasecenter=(racen,deccen),
                                                 exclude_7m=exclude_7m,
                                                 only_7m=only_7m,
-                                                spw=0, pixfraction_of_fwhm=1/4.))
+                                                spw='all',
+                                                pixfraction_of_fwhm=1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
@@ -252,6 +266,13 @@ for continuum_ms in continuum_mses:
         else:
             maskname = dirty_impars['maskname'][0]
             del dirty_impars['maskname']
+        if '/' not in maskname and not os.path.exists(maskname):
+            maskname = os.path.join(almaimf_rootdir,
+                                    'clean_regions',
+                                    maskname)
+        if not os.path.exists(maskname):
+            raise IOError("Mask {0} not found".format(maskname))
+
 
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -276,34 +297,34 @@ for continuum_ms in continuum_mses:
 
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
-                        history=["{0}: {1}".format(key, val) for key, val in
-                                dirty_impars.items()])
+                      history=["{0}: {1}".format(key, val) for key, val in
+                               dirty_impars.items()])
+        ia.sethistory(origin='almaimf_cont_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
         ia.close()
     imname = contimagename+"_robust{0}".format(robust)
 
     # copy the imaging parameters and make the "iter-zero" version
     impars_thisiter = copy.copy(impars)
-    if 'maskname' not in locals() and not args.rms_region:
-        maskname = make_custom_mask(field, imname+".image.tt0",
-                                    os.getenv('ALMAIMF_ROOTDIR'),
-                                    band,
-                                    rootdir=imaging_root,
-                                    suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                         arrayname)
-                                   )
-    elif 'maskname' not in locals() and args.rms_region:
-        maskname = make_rms_mask(imname+".image.tt0", args.rms_region, 
-                10.)
-        #rms = imstat(imagename=imname+".image.tt0", region=args.rms_region)['rms'][0]
-        #rmslevel = rms * args.nrms
-        #print 'rms level: ', rmslevel
-        #maskname = '"%s" > rmslevel' % (imname+".image.tt0",)
-    elif 'maskname' in impars_thisiter:
-        maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
-                impars_thisiter['maskname'][0])
-        del impars_thisiter['maskname']
-    else:
-        raise Exception
+    if 'maskname' in impars_thisiter:
+        if isinstance(impars_thisiter['maskname'], str):
+            maskname = impars_thisiter['maskname']
+            logprint("Warning: only one mask found!  "
+                     "Mask should be set to a dictionary of format "
+                     "{iternumber: maskname}.  Self calibration iterations "
+                     "will not work until this is changed.",
+                     origin='almaimf_cont_selfcal')
+        else:
+            maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
+                    impars_thisiter['maskname'][0])
+            del impars_thisiter['maskname']
+        if '/' not in maskname and not os.path.exists(maskname):
+            maskname = os.path.join(almaimf_rootdir,
+                                    'clean_regions',
+                                    maskname)
+        if not os.path.exists(maskname):
+            raise IOError("Mask {0} not found".format(maskname))
 
     for key, val in impars_thisiter.items():
         if isinstance(val, dict):
@@ -336,6 +357,9 @@ for continuum_ms in continuum_mses:
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
                                impars.items()])
+        ia.sethistory(origin='almaimf_cont_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
         ia.close()
 
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
@@ -363,7 +387,7 @@ for continuum_ms in continuum_mses:
     # the appropriate name)
     if 'maskname' not in locals() and not args.rms_region:
         maskname = make_custom_mask(field, imname+".image.tt0",
-                                    os.getenv('ALMAIMF_ROOTDIR'), band,
+                                    almaimf_rootdir, band,
                                     rootdir=imaging_root,
                                    )
     elif args.rms_region:
@@ -397,9 +421,22 @@ for continuum_ms in continuum_mses:
         # with either, e.g. {'niter': 1000} or {'niter': {1:1000, 2:100000, 3:999999}} etc
         impars_thisiter = copy.copy(impars)
         if 'maskname' in impars_thisiter:
-            maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
-                    impars_thisiter['maskname'][selfcaliter])
+            if selfcaliter in impars_thisiter['maskname']:
+                maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
+                        impars_thisiter['maskname'][selfcaliter])
+            else:
+                logprint("Self cal iteration {0} has no associated mask. "
+                         "Using mask {1} instead.".format(selfcaliter, maskname),
+                         origin="contim_selfcal"
+                        )
             del impars_thisiter['maskname']
+        if '/' not in maskname and not os.path.exists(maskname):
+            maskname = os.path.join(almaimf_rootdir,
+                                    'clean_regions',
+                                    maskname)
+        if not os.path.exists(maskname):
+            raise IOError("Mask {0} not found".format(maskname))
+
         for key, val in impars_thisiter.items():
             if isinstance(val, dict):
                 impars_thisiter[key] = val[selfcaliter]
@@ -466,6 +503,9 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars_thisiter.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
             ia.close()
             # overwrite=True because these could already exist
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
@@ -510,13 +550,13 @@ for continuum_ms in continuum_mses:
 
         regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
                                                        selfcaliter)
-        regfn = os.path.join(os.getenv('ALMAIMF_ROOTDIR','./'),
+        regfn = os.path.join(almaimf_rootdir,
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
         if os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
-                                        os.getenv('ALMAIMF_ROOTDIR'),
+                                        almaimf_rootdir,
                                         band,
                                         rootdir=imaging_root,
                                         suffix=regsuffix
@@ -564,6 +604,9 @@ for continuum_ms in continuum_mses:
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
                                impars.items()])
+        ia.sethistory(origin='almaimf_cont_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
         ia.close()
         # overwrite=True because these could already exist
         exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)

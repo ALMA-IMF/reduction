@@ -46,6 +46,7 @@ else:
     import sys
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
+from getversion import git_date, git_version
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters
@@ -80,8 +81,9 @@ with open('continuum_mses.txt', 'r') as fh:
 
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
+    logprint("Using BSENS measurement set")
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
-                                 'continuum_merged_bsens.cal.ms')
+                                 '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
 
 
@@ -108,7 +110,9 @@ for continuum_ms in continuum_mses:
     if os.getenv('FIELD_ID'):
         if field not in os.getenv('FIELD_ID'):
             logprint("Skipping {0} because it is not in FIELD_ID={1}"
-                     .format(field, os.getenv('FIELD_ID')))
+                     .format(field, os.getenv('FIELD_ID')),
+                     origin='almaimf_cont_imaging'
+                    )
             continue
 
 
@@ -186,6 +190,9 @@ for continuum_ms in continuum_mses:
         impars = copy.copy(impars)
         dirty_impars = copy.copy(impars)
         dirty_impars['niter'] = 0
+        if 'maskname' in dirty_impars:
+            maskname = dirty_impars['maskname'][0]
+            del dirty_impars['maskname']
 
         imname = contimagename+"_robust{0}_dirty".format(robust)
 
@@ -211,6 +218,9 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
             ia.close()
 
         try:
@@ -272,9 +282,86 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
             ia.close()
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
         else:
             logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
+
+
+
+
+        # reclean step (optional)
+        try:
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        os.getenv('ALMAIMF_ROOTDIR'),
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix='_clean_robust{0}_{1}'.format(robust,
+                                                                             arrayname)
+                                       )
+        except IOError as ex:
+            logprint("No cleaned-once mask found; skipping reclean")
+        except KeyError as ex:
+            if 'label' in str(ex):
+                logprint("Bad Region Exception: {0}".format(str(ex)))
+                raise KeyError("No text label was found in one of the regions."
+                               "  Regions must have text={xxJy} or {xxmJy} to "
+                               "indicate the threshold level")
+        except Exception as ex:
+            logprint("Exception: {0}".format(str(ex)))
+            continue
+
+
+        # for compatibility w/self-calibration: if a list of parameters is used,
+        # just use the 0'th iteration's parameters
+        impars_thisiter = copy.copy(impars)
+        if 'maskname' in impars_thisiter:
+            maskname = impars_thisiter['maskname'][0]
+            del impars_thisiter['maskname']
+        for key, val in impars_thisiter.items():
+            if isinstance(val, dict):
+                impars_thisiter[key] = val[0]
+
+
+
+        if 'mask' not in impars_thisiter:
+            impars_thisiter['mask'] = maskname
+
+        imname = contimagename+"_reclean_robust{0}".format(robust)
+
+        if not os.path.exists(imname+".image.tt0"):
+            logprint("re-Cleaning file {0}".format(imname),
+                     origin='almaimf_cont_imaging')
+            tclean(vis=continuum_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   usemask='user',
+                   interactive=False,
+                   cell=cellsize,
+                   imsize=imsize,
+                   antenna=antennae,
+                   pbcor=True,
+                   **impars_thisiter
+                  )
+            ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
+            ia.close()
+
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits")
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
+        else:
+            logprint("Skipping completed file {0}".format(imname),
+                     origin='almaimf_cont_imaging')
