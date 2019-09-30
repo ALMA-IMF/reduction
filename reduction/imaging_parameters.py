@@ -58,13 +58,13 @@ imaging_parameters_nondefault = {
 			     'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000},
                              'maskname': {0: 'clean_mask1.crtf', 1: 'clean_mask2.crtf', 2: 'clean_mask3.crtf', 3: 'clean_mask4.crtf'},
                             },
-    'G338.93_B3_12M_robust0': {'threshold': {0: '1mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy'},
-                'niter': {0: 1000, 1: 5000, 2: 10000, 3: 20000},
-                'maskname':{0:'G338.93_B3_dirty_12M.crtf',
-                    1:'G338.93_B3_selfcal1_12M.crtf',
-                    2:'G338.93_B3_selfcal2_12M.crtf', 
-                    3:'G338.93_B3_selfcal3_12M.crtf',
-                    4:'G338.93_B3_selfcal4_12M.crtf'}
+    'G338.93_B3_12M_robust0': {'threshold': {0: '0.5mJy', 1: '0.25mJy', 2:
+        '0.1mJy', 3: '0.1mJy'},
+        'niter': {0: 2000, 1: 5000, 2: 10000, 3: 20000},
+                'maskname':{0:'G338.93_B3_clean_9.mask',
+                    1:'G338.93_B3_clean_11.mask',
+                    2:'G338.93_B3_clean_15.mask', 
+                    3:'G338.93_B3_clean_15.mask'}
                             },
     'W51-E_B6_12M_robust0': {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
                              'scales': [0,3,9,27],
@@ -136,10 +136,22 @@ selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
                                            'gaintype': 'G',
                                            'calmode': 'ap',
                                           }
-selfcal_pars['G338.93_B3_12M_robust0'][4] = {'solint': 'inf',
-                                           'gaintype': 'G',
-                                           'calmode': 'ap',
+selfcal_pars['G338.93_B3_12M_robust0'][1] = {'solint': 'inf',
+                                            'gaintype': 'T',
+                                            'calmode': 'p',
+                                            'solnorm': True
                                           }
+selfcal_pars['G338.93_B3_12M_robust0'][2] = {'solint': 'inf',
+                                            'gaintype': 'T',
+                                            'calmode': 'p',
+                                            'solnorm': True
+                                          }
+selfcal_pars['G338.93_B3_12M_robust0'][3] = {'solint': 'inf',
+                                           'gaintype': 'T',
+                                           'calmode': 'ap',
+                                           'solnorm': True
+                                          }
+del selfcal_pars['G338.93_B3_12M_robust0'][4]
 
 
 line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub):
