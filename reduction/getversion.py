@@ -19,6 +19,10 @@ cwd = os.getcwd()
 
 os.chdir(path)
 
+gitcmd = "git --version"
+git_tool_version = subprocess.check_output(gitcmd.split()).decode().strip()
+print("Git command line version = {0}".format(git_tool_version))
+
 gitcmd = "git log -1 --date=short --format=%h"
 git_version = subprocess.check_output(gitcmd.split()).decode().strip()
 gitcmd = "git log -1 --date=short --format=%ad"
@@ -31,9 +35,7 @@ print("Loaded ALMA-IMF pipeline version {0} {1}".format(git_version, git_date))
 
 if __name__ == "__main__":
 
-    print(git_version)
-    print(git_date)
+    print("Git tool version: ", git_tool_version)
+    print("Git repository version: ", git_version)
+    print("Git date: ",git_date)
 
-    gitcmd = "git --version"
-    git_tool_version = subprocess.check_output(gitcmd.split()).decode().strip()
-    print(git_tool_version)
