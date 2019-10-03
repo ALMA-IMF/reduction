@@ -160,6 +160,7 @@ for continuum_ms in continuum_mses:
 
     logprint("Beginning {2} band {0} array {1}".format(band, arrayname, field),
              origin='contim_selfcal')
+    logprint("Continuum MS is: {0}".format(continuum_ms), origin='contim_selfcal')
 
     # create a downsampled split MS
     # A different MS will be used for the 12M-only and 7M+12M data
@@ -167,6 +168,9 @@ for continuum_ms in continuum_mses:
     # long time even if 7M antennae are selected out)
     selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
     if not os.path.exists(selfcal_ms):
+
+        logprint("Did not find selfcal ms.  Creating new one: "
+                 "{0}".format(selfcal_ms), origin='contim_selfcal')
 
         msmd.open(continuum_ms)
         fdm_spws = msmd.spwsforfield(field)
@@ -200,6 +204,8 @@ for continuum_ms in continuum_mses:
               field=field,
              )
 
+    logprint("Selfcal MS is: "
+             "{0}".format(selfcal_ms), origin='contim_selfcal')
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -221,6 +227,7 @@ for continuum_ms in continuum_mses:
                yaxis='amp',
                avgchannel='1000', # minimum possible # of channels
                plotfile=contimagename+".uvwave_vs_amp.png",
+               coloraxis='observation',
                showlegend=True,
                showgui=False,
                antenna=antennae,
@@ -264,7 +271,7 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
-        logprint("Imaging parameters are: {0}".format(dirty_impars),
+        logprint("(dirty, pre-) Imaging parameters are: {0}".format(dirty_impars),
                  origin='almaimf_cont_selfcal')
         tclean(vis=selfcal_ms,
                field=field.encode(),
@@ -516,26 +523,70 @@ for continuum_ms in continuum_mses:
             impars_thisiter['niter'] = 0
             logprint("(dirty) Imaging parameters are: {0}".format(impars_thisiter),
                      origin='almaimf_cont_selfcal')
-            tclean(vis=selfcal_ms,
-                   field=field.encode(),
-                   imagename=imname,
-                   phasecenter=phasecenter,
-                   outframe='LSRK',
-                   veltype='radio',
-                   usemask='user',
-                   mask=maskname,
-                   interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
-                   antenna=antennae,
-                   reffreq=reffreq,
-                   savemodel='modelcolumn',
-                   datacolumn='corrected',
-                   pbcor=True,
-                   calcres=True,
-                   calcpsf=False,
-                   **impars_thisiter
-                  )
+            logprint("This tclean run with zero iterations is only being done to "
+                     "populate the model column from image {0}.".format(imname),
+                     origin='almaimf_cont_selfcal')
+            success = tclean(vis=selfcal_ms,
+                             field=field.encode(),
+                             imagename=imname,
+                             phasecenter=phasecenter,
+                             outframe='LSRK',
+                             veltype='radio',
+                             usemask='user',
+                             mask=maskname,
+                             interactive=False,
+                             cell=cellsize,
+                             imsize=imsize,
+                             antenna=antennae,
+                             reffreq=reffreq,
+                             savemodel='modelcolumn',
+                             datacolumn='corrected',
+                             pbcor=True,
+                             calcres=True,
+                             calcpsf=False,
+                             **impars_thisiter
+                            )
+            if not success:
+                success = tclean(vis=selfcal_ms,
+                                 field=field.encode(),
+                                 imagename=imname,
+                                 phasecenter=phasecenter,
+                                 outframe='LSRK',
+                                 veltype='radio',
+                                 usemask='user',
+                                 mask=maskname,
+                                 interactive=False,
+                                 cell=cellsize,
+                                 imsize=imsize,
+                                 antenna=antennae,
+                                 #reffreq=reffreq,
+                                 savemodel='modelcolumn',
+                                 datacolumn='corrected',
+                                 pbcor=True,
+                                 calcres=True,
+                                 calcpsf=False,
+                                 **impars_thisiter
+                                )
+
+            assert success
+
+
+            # BACKUP PLAN: modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
+            # BACKUP PLAN:              contimagename+"_robust{0}.model.tt1".format(robust)]
+
+            # BACKUP PLAN: logprint("Using ``ft`` to populate the model column",
+            # BACKUP PLAN:          origin='almaimf_cont_selfcal')
+            # BACKUP PLAN: ft(vis=selfcal_ms,
+            # BACKUP PLAN:    field=field.encode(),
+            # BACKUP PLAN:    model=modelname,
+            # BACKUP PLAN:    nterms=2,
+            # BACKUP PLAN:    usescratch=True
+            # BACKUP PLAN:   )
+
+            # BACKUP PLAN: logprint("Skipped completed file {0} (dirty),"
+            # BACKUP PLAN:          " populated model column".format(imname),
+            # BACKUP PLAN:          origin='almaimf_cont_selfcal')
+
             os.system('ln -s {0} {1}.mask'.format(maskname, imname))
 
         regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
