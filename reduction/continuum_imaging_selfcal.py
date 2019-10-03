@@ -563,18 +563,18 @@ for continuum_ms in continuum_mses:
                  origin='contim_selfcal')
 
         pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-        impars_thisiter = copy.copy(imaging_parameters[pars_key])
-        if 'maskname' in impars_thisiter:
-            if isinstance(impars_thisiter['maskname'], str):
-                maskname = impars_thisiter['maskname']
+        impars_finaliter = copy.copy(imaging_parameters[pars_key])
+        if 'maskname' in impars_finaliter:
+            if isinstance(impars_finaliter['maskname'], str):
+                maskname = impars_finaliter['maskname']
                 logprint("Warning: only one mask found!  "
                          "Mask should be set to a dictionary of format "
                          "{iternumber: maskname}.  Self calibration iterations "
                          "will not work until this is changed.",
                          origin='almaimf_cont_selfcal')
             else:
-                maskname = impars_thisiter['maskname'][0]
-            del impars_thisiter['maskname']
+                maskname = impars_finaliter['maskname'][0]
+            del impars_finaliter['maskname']
             if '/' not in maskname and not os.path.exists(maskname):
                 maskname = os.path.join(almaimf_rootdir,
                                         'clean_regions',
@@ -603,7 +603,7 @@ for continuum_ms in continuum_mses:
                savemodel='none',
                datacolumn='corrected',
                pbcor=True,
-               **impars_thisiter
+               **impars_finaliter
               )
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
