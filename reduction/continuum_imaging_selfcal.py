@@ -252,7 +252,7 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = dirty_impars['maskname'][0]
-            del dirty_impars['maskname']
+        del dirty_impars['maskname']
         if '/' not in maskname and not os.path.exists(maskname):
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
@@ -313,7 +313,7 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = impars_thisiter['maskname'][0]
-            del impars_thisiter['maskname']
+        del impars_thisiter['maskname']
         if '/' not in maskname and not os.path.exists(maskname):
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
@@ -563,7 +563,25 @@ for continuum_ms in continuum_mses:
                  origin='contim_selfcal')
 
         pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-        impars = imaging_parameters[pars_key]
+        impars_thisiter = copy.copy(imaging_parameters[pars_key])
+        if 'maskname' in impars_thisiter:
+            if isinstance(impars_thisiter['maskname'], str):
+                maskname = impars_thisiter['maskname']
+                logprint("Warning: only one mask found!  "
+                         "Mask should be set to a dictionary of format "
+                         "{iternumber: maskname}.  Self calibration iterations "
+                         "will not work until this is changed.",
+                         origin='almaimf_cont_selfcal')
+            else:
+                maskname = impars_thisiter['maskname'][0]
+            del impars_thisiter['maskname']
+            if '/' not in maskname and not os.path.exists(maskname):
+                maskname = os.path.join(almaimf_rootdir,
+                                        'clean_regions',
+                                        maskname)
+            if not os.path.exists(maskname):
+                raise IOError("Mask {0} not found".format(maskname))
+
 
         modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
                      contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
@@ -585,7 +603,7 @@ for continuum_ms in continuum_mses:
                savemodel='none',
                datacolumn='corrected',
                pbcor=True,
-               **impars
+               **impars_thisiter
               )
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',

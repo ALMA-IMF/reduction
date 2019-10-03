@@ -60,6 +60,7 @@ else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
 
+from getversion import git_date, git_version
 
 from taskinit import casalog
 from taskinit import msmdtool
