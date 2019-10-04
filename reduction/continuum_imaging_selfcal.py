@@ -538,7 +538,6 @@ for continuum_ms in continuum_mses:
                      "populate the model column from image {0}.".format(imname),
                      origin='almaimf_cont_selfcal')
             try:
-
                 tclean(vis=selfcal_ms,
                              field=field.encode(),
                              imagename=imname,
@@ -551,7 +550,7 @@ for continuum_ms in continuum_mses:
                              cell=cellsize,
                              imsize=imsize,
                              antenna=antennae,
-                             reffreq=reffreq,
+                             #reffreq=reffreq,
                              savemodel='modelcolumn',
                              datacolumn='corrected',
                              pbcor=True,
@@ -562,7 +561,8 @@ for continuum_ms in continuum_mses:
                 test_tclean_success()
             except Exception as ex:
                 print(ex)
-                logprint("tclean FAILED with reffreq={0}.  Trying again w/o".format(reffreq),
+                logprint("tclean FAILED with reffreq unspecified."
+                         "  Trying again with reffreq={0}.".format(reffreq),
                          origin='almaimf_cont_selfcal')
                 tclean(vis=selfcal_ms,
                        field=field.encode(),
@@ -576,7 +576,7 @@ for continuum_ms in continuum_mses:
                        cell=cellsize,
                        imsize=imsize,
                        antenna=antennae,
-                       #reffreq=reffreq,
+                       reffreq=reffreq,
                        savemodel='modelcolumn',
                        datacolumn='corrected',
                        pbcor=True,
