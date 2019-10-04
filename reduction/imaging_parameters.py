@@ -72,10 +72,15 @@ imaging_parameters_nondefault = {
     'G337.92_B3_12M_robust0': {'threshold': '0.25mJy', # RMS ~0.5-0.6 mJy
                                'scales': [0,3,9,27],
                               },
-    'W51-E_B6_12M_robust0': {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
+    'W51-E_B6_12M_robust0': {'threshold': {0: '0.3mJy', 1: '0.25mJy', 2: '0.25mJy',
+                                           3: '0.25mJy', 4: '0.25mJy', 5: '0.25mJy',
+                                           6: '0.2mJy',},
                              'scales': [0,3,9,27],
                             },
-    'W51-E_B3_12M_robust0': {'threshold': '0.15mJy', # RMS ~0.1-0.4 mJy
+    'W51-E_B3_12M_robust0': {'threshold': {0: '0.15mJy', 1: '0.15mJy',
+                                           2: '0.1mJy', 3: '0.09mJy',
+                                           4: '0.09mJy', 5: '0.08mJy',
+                                           6: '0.07mJy'},
                              'scales': [0,3,9,27],
                             },
     'W51-E_B3_12M_robust2': {'threshold': '3mJy',

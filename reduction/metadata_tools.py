@@ -364,3 +364,14 @@ def effectiveResolutionAtFreq(vis, spw, freq, kms=True):
     if (len(bws) == 1):
         bws = bws[0]
     return bws
+
+def test_tclean_success():
+    # An EXTREMELY HACKY way to test whether tclean succeeded on the previous iteration
+    with open(casalog.logfile(), "r") as fh:
+        lines = fh.readlines()
+
+    for line in lines[-5:]:
+        if 'SEVERE  tclean::::      An error occurred running task tclean.' in line:
+            raise ValueError("tclean failed.  See log for detailed error report.\n{0}".format(line))
+        if 'SEVERE' in line:
+            raise ValueError("SEVERE error message encountered: {0}".format(line))
