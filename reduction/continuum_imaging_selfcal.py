@@ -392,6 +392,8 @@ for continuum_ms in continuum_mses:
         maskname = make_custom_mask(field, imname+".image.tt0",
                                     almaimf_rootdir, band,
                                     rootdir=imaging_root,
+                                    suffix='_clean_robust{0}_{1}'.format(robust,
+                                                                         arrayname)
                                    )
     except Exception as ex:
         logprint("Did not make a mask from the clean data.  The exception was: "
@@ -694,17 +696,33 @@ for continuum_ms in continuum_mses:
             if not os.path.exists(maskname):
                 raise IOError("Mask {0} not found".format(maskname))
 
+
+        # if a 'final iteration' region mask is specified, use that
+        regsuffix = '_finaliter_robust{0}_{1}'.format(robust, arrayname)
+        regfn = os.path.join(almaimf_rootdir,
+                             'clean_regions/{0}_{1}{2}.reg'.format(field,
+                                                                   band,
+                                                                   regsuffix))
+        if os.path.exists(regfn):
+            # note that imname is from the final self-calibration iteration
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        almaimf_rootdir,
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix=regsuffix
+                                       )
+
         for key, val in impars_finaliter.items():
             if isinstance(val, dict):
                 impars_finaliter[key] = val['final'] if 'final' in val else val[selfcaliter]
 
         modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
                      contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
-        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
+        finaliterimname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
         tclean(vis=selfcal_ms,
                field=field.encode(),
-               imagename=imname,
+               imagename=finaliterimname,
                phasecenter=phasecenter,
                startmodel=modelname,
                outframe='LSRK',
@@ -721,7 +739,7 @@ for continuum_ms in continuum_mses:
                **impars_finaliter
               )
         test_tclean_success()
-        ia.open(imname+".image.tt0")
+        ia.open(finaliterimname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
                                impars.items()])
@@ -730,8 +748,8 @@ for continuum_ms in continuum_mses:
                                "git_date: {0}".format(git_date)])
         ia.close()
         # overwrite=True because these could already exist
-        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
-        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+        exportfits(finaliterimname+".image.tt0", finaliterimname+".image.tt0.fits", overwrite=True)
+        exportfits(finaliterimname+".image.tt0.pbcor", finaliterimname+".image.tt0.pbcor.fits", overwrite=True)
 
     logprint("Completed band {0}".format(band),
              origin='contim_selfcal')
