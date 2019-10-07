@@ -718,7 +718,7 @@ for continuum_ms in continuum_mses:
 
         finaliterimname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
-        if os.path.exists(finalitername+".model.tt0"):
+        if os.path.exists(finaliterimname+".model.tt0"):
             # if there is already a model with this name on disk, we're continuing from that
             # one instead of starting from scratch
             modelname=''
