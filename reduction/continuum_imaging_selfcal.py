@@ -716,10 +716,15 @@ for continuum_ms in continuum_mses:
             if isinstance(val, dict):
                 impars_finaliter[key] = val['final'] if 'final' in val else val[selfcaliter]
 
-        modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
-                     contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
         finaliterimname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
+        if os.path.exists(finalitername+".model.tt0"):
+            # if there is already a model with this name on disk, we're continuing from that
+            # one instead of starting from scratch
+            modelname=''
+        else:
+            modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
+                         contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
         tclean(vis=selfcal_ms,
                field=field.encode(),
                imagename=finaliterimname,

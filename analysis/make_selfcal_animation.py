@@ -13,7 +13,7 @@ pl.rcParams['ytick.color'] = 'w'
 pl.rcParams['xtick.color'] = 'w'
 
 
-def make_anim(imname):
+def make_anim(imname, nselfcaliter=7):
     # base imname: W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0
 
     fig, (ax1, ax2, ax3) = pl.subplots(ncols=3, figsize=(18,6))
@@ -59,13 +59,13 @@ def make_anim(imname):
 
             return im, (ax1,ax2,ax3)
 
-    anim = FuncAnimation(fig, update, frames=range(0,7), interval=400)
+    anim = FuncAnimation(fig, update, frames=range(0,nselfcaliter), interval=400)
     anim.save(f'{imname}_selfcal_anim.gif', dpi=dpi, writer='imagemagick')
 
     return anim
 
 
-def make_anim_single(imname, suffix, stretch='asinh', min_percent=1, max_percent=99.00):
+def make_anim_single(imname, suffix, nselfcaliter=7, stretch='asinh', min_percent=1, max_percent=99.00):
     # base imname: W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0
 
     fig, ax = pl.subplots(ncols=1, figsize=(8,8))
@@ -98,7 +98,7 @@ def make_anim_single(imname, suffix, stretch='asinh', min_percent=1, max_percent
 
             return im, ax
 
-    anim = FuncAnimation(fig, update, frames=range(0,7), interval=400)
+    anim = FuncAnimation(fig, update, frames=range(0,nselfcaliter), interval=400)
     anim.save(f'{imname}_{suffix}_selfcal_anim.gif', dpi=dpi, writer='imagemagick')
 
     return anim
