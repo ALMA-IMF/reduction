@@ -35,7 +35,8 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
 
     regs = regions.read_ds9(regfn)
 
-    logprint("Using region file {0} to create mask".format(regfn),
+    logprint("Using region file {0} to create mask from image "
+             "{1}".format(regfn,imname),
              origin='make_custom_mask')
 
     cube = SpectralCube.read(imname, format='casa_image')
