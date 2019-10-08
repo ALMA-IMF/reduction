@@ -55,11 +55,9 @@ There are two ways to specify masks:
    'maskname': {0: 'clean_mask1.crtf', 1: 'clean_mask2.crtf', 2: 'clean_mask3.crtf', 3: 'clean_mask4.crtf'},
 """
 
-import os, copy, sys, argparse
-
-sys.path.append('./')
-ALMAIMF_ROOTDIR = os.path.dirname(os.path.realpath(sys.argv[2]))
-sys.path.append(ALMAIMF_ROOTDIR)
+import os
+import copy
+import sys
 
 almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 if almaimf_rootdir is None:
@@ -78,8 +76,8 @@ import numpy as np
 
 from getversion import git_date, git_version
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
-                            check_model_is_populated)
-from make_custom_mask import make_custom_mask, make_rms_mask
+                            check_model_is_populated, test_tclean_success)
+from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
 
@@ -100,30 +98,19 @@ imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
-# Command line options
-parser = argparse.ArgumentParser()
-parser.add_argument('-c', nargs=1, 
-        help='Casa parameter.')
-parser.add_argument('--exclude7M', action='store_true',
-        help='Include 7M data')
-parser.add_argument('--rms_region', 
-        help='CASA region file')
-parser.add_argument('--nrms', default=5., type=float,
-        help='Number of rms level')
-args = parser.parse_args()
-
-# Command line takes precedence
-if args.exclude7M:
-    exclude_7m = args.exclude7M
-    only_7m = False
-    arrayname = '12M'
-elif 'exclude_7m' not in locals():
+if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
         exclude_7m = bool(os.getenv('EXCLUDE_7M').lower() == 'true')
     else:
         exclude_7m = False
-        arrayname = '7M12M'
-logprint("Beginning selfcal script with exclude_7m={0}".format(exclude_7m),
+
+if 'only_7m' not in locals():
+    if os.getenv('ONLY_7M') is not None:
+        only_7m = bool(os.getenv('ONLY_7M').lower() == 'true')
+    else:
+        only_7m = False
+
+logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
          origin='contim_selfcal')
 
 
@@ -173,6 +160,7 @@ for continuum_ms in continuum_mses:
 
     logprint("Beginning {2} band {0} array {1}".format(band, arrayname, field),
              origin='contim_selfcal')
+    logprint("Continuum MS is: {0}".format(continuum_ms), origin='contim_selfcal')
 
     # create a downsampled split MS
     # A different MS will be used for the 12M-only and 7M+12M data
@@ -180,6 +168,9 @@ for continuum_ms in continuum_mses:
     # long time even if 7M antennae are selected out)
     selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
     if not os.path.exists(selfcal_ms):
+
+        logprint("Did not find selfcal ms.  Creating new one: "
+                 "{0}".format(selfcal_ms), origin='contim_selfcal')
 
         msmd.open(continuum_ms)
         fdm_spws = msmd.spwsforfield(field)
@@ -213,6 +204,8 @@ for continuum_ms in continuum_mses:
               field=field,
              )
 
+    logprint("Selfcal MS is: "
+             "{0}".format(selfcal_ms), origin='contim_selfcal')
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -234,6 +227,7 @@ for continuum_ms in continuum_mses:
                yaxis='amp',
                avgchannel='1000', # minimum possible # of channels
                plotfile=contimagename+".uvwave_vs_amp.png",
+               coloraxis='observation',
                showlegend=True,
                showgui=False,
                antenna=antennae,
@@ -265,7 +259,7 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
         else:
             maskname = dirty_impars['maskname'][0]
-            del dirty_impars['maskname']
+        del dirty_impars['maskname']
         if '/' not in maskname and not os.path.exists(maskname):
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
@@ -277,7 +271,7 @@ for continuum_ms in continuum_mses:
     imname = contimagename+"_robust{0}_dirty".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
-        logprint("Imaging parameters are: {0}".format(dirty_impars),
+        logprint("(dirty, pre-) Imaging parameters are: {0}".format(dirty_impars),
                  origin='almaimf_cont_selfcal')
         tclean(vis=selfcal_ms,
                field=field.encode(),
@@ -294,6 +288,7 @@ for continuum_ms in continuum_mses:
                datacolumn='data',
                **dirty_impars
               )
+        test_tclean_success()
 
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
@@ -303,6 +298,15 @@ for continuum_ms in continuum_mses:
                       history=["git_version: {0}".format(git_version),
                                "git_date: {0}".format(git_date)])
         ia.close()
+
+    if 'maskname' not in locals():
+        maskname = make_custom_mask(field, imname+".image.tt0",
+                                    almaimf_rootdir,
+                                    band,
+                                    rootdir=imaging_root,
+                                    suffix='_dirty_robust{0}_{1}'.format(robust,
+                                                                         arrayname)
+                                   )
     imname = contimagename+"_robust{0}".format(robust)
 
     # copy the imaging parameters and make the "iter-zero" version
@@ -316,9 +320,8 @@ for continuum_ms in continuum_mses:
                      "will not work until this is changed.",
                      origin='almaimf_cont_selfcal')
         else:
-            maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
-                    impars_thisiter['maskname'][0])
-            del impars_thisiter['maskname']
+            maskname = impars_thisiter['maskname'][0]
+        del impars_thisiter['maskname']
         if '/' not in maskname and not os.path.exists(maskname):
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
@@ -329,7 +332,6 @@ for continuum_ms in continuum_mses:
     for key, val in impars_thisiter.items():
         if isinstance(val, dict):
             impars_thisiter[key] = val[0]
-    print maskname
 
     if not os.path.exists(imname+".image.tt0"):
         if maskname:
@@ -353,6 +355,7 @@ for continuum_ms in continuum_mses:
                pbcor=True,
                **impars_thisiter
               )
+        test_tclean_success()
         ia.open(imname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
@@ -385,14 +388,20 @@ for continuum_ms in continuum_mses:
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
     # the appropriate name)
-    if 'maskname' not in locals() and not args.rms_region:
+    try:
         maskname = make_custom_mask(field, imname+".image.tt0",
                                     almaimf_rootdir, band,
                                     rootdir=imaging_root,
+                                    suffix='_clean_robust{0}_{1}'.format(robust,
+                                                                         arrayname)
                                    )
-    elif args.rms_region:
-        maskname = make_rms_mask(imname+".image.tt0", args.rms_region, 
-                args.nrms)
+    except Exception as ex:
+        logprint("Did not make a mask from the clean data.  The exception was: "
+                 "{0}.  If you specified {{'maskname': <something>}} for each "
+                 "selfcal iteration in imaging_parameters.py, this is OK and "
+                 "can be ignored.".format(str(ex)),
+                 origin='almaimf_cont_selfcal')
+
 
     cals = []
 
@@ -422,8 +431,7 @@ for continuum_ms in continuum_mses:
         impars_thisiter = copy.copy(impars)
         if 'maskname' in impars_thisiter:
             if selfcaliter in impars_thisiter['maskname']:
-                maskname = os.path.join(ALMAIMF_ROOTDIR,'clean_regions',
-                        impars_thisiter['maskname'][selfcaliter])
+                maskname = impars_thisiter['maskname'][selfcaliter]
             else:
                 logprint("Self cal iteration {0} has no associated mask. "
                          "Using mask {1} instead.".format(selfcaliter, maskname),
@@ -437,6 +445,7 @@ for continuum_ms in continuum_mses:
         if not os.path.exists(maskname):
             raise IOError("Mask {0} not found".format(maskname))
 
+        # grab any iteration-specific values of the self-cal parameter
         for key, val in impars_thisiter.items():
             if isinstance(val, dict):
                 impars_thisiter[key] = val[selfcaliter]
@@ -479,7 +488,7 @@ for continuum_ms in continuum_mses:
 
             # do this even if the output file exists: we need to populate the
             # modelcolumn
-            logprint("Imaging parameters are: {0}".format(impars_thisiter),
+            logprint("Imaging parameters are: {0} for image name {1}".format(impars_thisiter, imname),
                      origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
                    field=field.encode(),
@@ -499,6 +508,7 @@ for continuum_ms in continuum_mses:
                    pbcor=True,
                    **impars_thisiter
                   )
+            test_tclean_success()
             ia.open(imname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
@@ -526,27 +536,115 @@ for continuum_ms in continuum_mses:
             impars_thisiter['niter'] = 0
             logprint("(dirty) Imaging parameters are: {0}".format(impars_thisiter),
                      origin='almaimf_cont_selfcal')
-            tclean(vis=selfcal_ms,
-                   field=field.encode(),
-                   imagename=imname,
-                   phasecenter=phasecenter,
-                   outframe='LSRK',
-                   veltype='radio',
-                   usemask='user',
-                   mask=maskname,
-                   interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
-                   antenna=antennae,
-                   reffreq=reffreq,
-                   savemodel='modelcolumn',
-                   datacolumn='corrected',
-                   pbcor=True,
-                   calcres=True,
-                   calcpsf=False,
-                   **impars_thisiter
-                  )
-            os.system('ln -s {0} {1}.mask'.format(maskname, imname))
+            logprint("This tclean run with zero iterations is only being done to "
+                     "populate the model column from image {0}.".format(imname),
+                     origin='almaimf_cont_selfcal')
+            try:
+                tclean(vis=selfcal_ms,
+                             field=field.encode(),
+                             imagename=imname,
+                             phasecenter=phasecenter,
+                             outframe='LSRK',
+                             veltype='radio',
+                             usemask='user',
+                             mask=maskname,
+                             interactive=False,
+                             cell=cellsize,
+                             imsize=imsize,
+                             antenna=antennae,
+                             #reffreq=reffreq,
+                             savemodel='modelcolumn',
+                             datacolumn='corrected',
+                             pbcor=True,
+                             calcres=True,
+                             calcpsf=False,
+                             **impars_thisiter
+                            )
+                test_tclean_success()
+            except Exception as ex:
+                print(ex)
+                logprint("tclean FAILED with reffreq unspecified."
+                         "  Trying again with reffreq={0}.".format(reffreq),
+                         origin='almaimf_cont_selfcal')
+                tclean(vis=selfcal_ms,
+                       field=field.encode(),
+                       imagename=imname,
+                       phasecenter=phasecenter,
+                       outframe='LSRK',
+                       veltype='radio',
+                       usemask='user',
+                       mask=maskname,
+                       interactive=False,
+                       cell=cellsize,
+                       imsize=imsize,
+                       antenna=antennae,
+                       reffreq=reffreq,
+                       savemodel='modelcolumn',
+                       datacolumn='corrected',
+                       pbcor=True,
+                       calcres=True,
+                       calcpsf=False,
+                       **impars_thisiter
+                      )
+                test_tclean_success()
+            # # even if this works, I hate it.
+            # if not success:
+            #     logprint("tclean FAILED with NO REFFREQ.  Trying again with a totally bullshit approach",
+            #              origin='almaimf_cont_selfcal')
+            #     modelname = [imname+".model.tt0",
+            #                  imname+".model.tt1"]
+            #     success = tclean(vis=selfcal_ms,
+            #                      field=field.encode(),
+            #                      imagename=imname+"_BULL",
+            #                      phasecenter=phasecenter,
+            #                      startmodel=modelname,
+            #                      outframe='LSRK',
+            #                      veltype='radio',
+            #                      usemask='user',
+            #                      mask=maskname,
+            #                      interactive=False,
+            #                      cell=cellsize,
+            #                      imsize=imsize,
+            #                      antenna=antennae,
+            #                      #reffreq=reffreq,
+            #                      savemodel='modelcolumn',
+            #                      datacolumn='corrected',
+            #                      pbcor=True,
+            #                      calcres=True,
+            #                      calcpsf=True,
+            #                      **impars_thisiter
+            #                     )
+            #if not success:
+            #    # BACKUP PLAN: use ft instead of tclean [WRONG because it doesn't
+            #    # use the same imager]
+            #    modelname = [imname+".model.tt0",
+            #                 imname+".model.tt1"]
+
+            #    logprint("Using ``ft`` to populate the model column from {0}".format(modelname),
+            #             origin='almaimf_cont_selfcal')
+            #    success = ft(vis=selfcal_ms,
+            #                 field=field.encode(),
+            #                 model=modelname,
+            #                 nterms=2,
+            #                 usescratch=True
+            #                )
+
+            #    logprint("Completed ft with result={0} for image={1}"
+            #             " populated model column".format(success, imname),
+            #             origin='almaimf_cont_selfcal')
+
+            #    # link ("copy") the current mask to be this round's mask
+            #    # why am I doing this?  Isn't the mask always well-defined?
+            #    # this can only introduce conflicts in the mask naming...
+            #    # (maybe this was copied from ft above...)
+            #    #os.system('ln -s {0} {1}.mask'.format(maskname, imname))
+
+
+            # if not success:
+            #     raise ValueError("tclean failed to restore the model {0}.model* "
+            #                      "into the model column".format(imname))
+
+
 
         regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
                                                        selfcaliter)
@@ -561,30 +659,75 @@ for continuum_ms in continuum_mses:
                                         rootdir=imaging_root,
                                         suffix=regsuffix
                                        )
-        elif args.rms_region and os.path.exists(args.rms_region):
-            maskname = make_rms_mask(imname+".image.tt0", args.rms_region, 
-                    args.nrms)
+        else:
+            logprint("Did not make a custom mask for iteration {0} because "
+                     "region file name {1} was not found.  The mask name being "
+                     "used is {2}.  If you specified {{'maskname': {2}}}, "
+                     "this is expected.".format(selfcaliter, regfn, maskname),
+                     origin='contim_selfcal')
 
 
         logprint("Completed gaincal iteration {0}".format(selfcaliter),
                  origin='contim_selfcal')
 
 
-    for robust in (-2, 2):
-        logprint("Imaging self-cal iter {0} with robust {1}"
+    for robust in (-2, 0, 2):
+        logprint("Imaging self-cal iter {0} (final) with robust {1}"
                  .format(selfcaliter, robust),
                  origin='contim_selfcal')
 
         pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-        impars = imaging_parameters[pars_key]
+        impars_finaliter = copy.copy(imaging_parameters[pars_key])
+        if 'maskname' in impars_finaliter:
+            if isinstance(impars_finaliter['maskname'], str):
+                maskname = impars_finaliter['maskname']
+                logprint("Warning: only one mask found!  "
+                         "Mask should be set to a dictionary of format "
+                         "{iternumber: maskname}.  Self calibration iterations "
+                         "will not work until this is changed.",
+                         origin='almaimf_cont_selfcal')
+            else:
+                maskname = impars_finaliter['maskname'][0]
+            del impars_finaliter['maskname']
+            if '/' not in maskname and not os.path.exists(maskname):
+                maskname = os.path.join(almaimf_rootdir,
+                                        'clean_regions',
+                                        maskname)
+            if not os.path.exists(maskname):
+                raise IOError("Mask {0} not found".format(maskname))
 
-        modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
-                     contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
-        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
+
+        # if a 'final iteration' region mask is specified, use that
+        regsuffix = '_finaliter_robust{0}_{1}'.format(robust, arrayname)
+        regfn = os.path.join(almaimf_rootdir,
+                             'clean_regions/{0}_{1}{2}.reg'.format(field,
+                                                                   band,
+                                                                   regsuffix))
+        if os.path.exists(regfn):
+            # note that imname is from the final self-calibration iteration
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        almaimf_rootdir,
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix=regsuffix
+                                       )
+
+        for key, val in impars_finaliter.items():
+            if isinstance(val, dict):
+                impars_finaliter[key] = val['final'] if 'final' in val else val[selfcaliter]
+
+        finaliterimname = contimagename+"_robust{0}_selfcal{1}".format(robust,
                                                               selfcaliter)
+        if os.path.exists(finalitername+".model.tt0"):
+            # if there is already a model with this name on disk, we're continuing from that
+            # one instead of starting from scratch
+            modelname=''
+        else:
+            modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
+                         contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
         tclean(vis=selfcal_ms,
                field=field.encode(),
-               imagename=imname,
+               imagename=finaliterimname,
                phasecenter=phasecenter,
                startmodel=modelname,
                outframe='LSRK',
@@ -598,9 +741,10 @@ for continuum_ms in continuum_mses:
                savemodel='none',
                datacolumn='corrected',
                pbcor=True,
-               **impars
+               **impars_finaliter
               )
-        ia.open(imname+".image.tt0")
+        test_tclean_success()
+        ia.open(finaliterimname+".image.tt0")
         ia.sethistory(origin='almaimf_cont_selfcal',
                       history=["{0}: {1}".format(key, val) for key, val in
                                impars.items()])
@@ -609,8 +753,8 @@ for continuum_ms in continuum_mses:
                                "git_date: {0}".format(git_date)])
         ia.close()
         # overwrite=True because these could already exist
-        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
-        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+        exportfits(finaliterimname+".image.tt0", finaliterimname+".image.tt0.fits", overwrite=True)
+        exportfits(finaliterimname+".image.tt0.pbcor", finaliterimname+".image.tt0.pbcor.fits", overwrite=True)
 
     logprint("Completed band {0}".format(band),
              origin='contim_selfcal')

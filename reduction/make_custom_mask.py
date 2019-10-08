@@ -10,16 +10,11 @@ Requirements installation:
 import os
 import numpy as np
 
-from tasks import imstat, makemask
-
 # non-casa requirements
-try:
-    import regions
-    from spectral_cube import SpectralCube
-    from astropy import units as u
-    from metadata_tools import logprint
-except:
-    print 'Non-casa requirements not available'
+import regions
+from spectral_cube import SpectralCube
+from astropy import units as u
+from metadata_tools import logprint
 
 try:
     from casatools import image
@@ -40,7 +35,8 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
 
     regs = regions.read_ds9(regfn)
 
-    logprint("Using region file {0} to create mask".format(regfn),
+    logprint("Using region file {0} to create mask from image "
+             "{1}".format(regfn,imname),
              origin='make_custom_mask')
 
     cube = SpectralCube.read(imname, format='casa_image')
@@ -82,28 +78,5 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
                         pixels=mask_array.astype('float')[:,:,None,None],
                         csys=cs.torecord(), overwrite=True), "FAILURE in final mask creation step"
     ia.close()
-
-    return maskname
-
-def make_rms_mask(imname, rms_region, nrms=5.):
-    # Calculate the rms inside input region
-    rms = imstat(imagename=imname, region=rms_region)['rms'][0]
-    rmslevel = rms * nrms
-    print 'Mask for: ', imname
-    print 'rms level: ', rmslevel
-
-    # Calculate internal mask
-    ia.open(imname)
-    ia.calcmask('"%s" > %.1e' % (imname, rmslevel), name='selfcal_mask')
-    ia.close()
-
-    # Create mask file
-    maskname = imname+".selfcal.mask"
-    makemask(mode='copy', inpimage=imname,
-            inpmask=imname+":selfcal_mask",
-            output=maskname, overwrite=True)
-
-    # Delete internal mask
-    makemask(mode='delete', inpmask=imname+":selfcal_mask")
 
     return maskname
