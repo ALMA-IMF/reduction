@@ -81,8 +81,14 @@ imaging_parameters_nondefault = {
     #                2:'G338.93_B3_12M_selfcal3.crtf'}
     #                        },
     'G338.93_B3_12M_robust0': {'threshold': {0: '0.1mJy'},
-        'niter': {0: 20000},
+        'niter': {0: 200000},
         'maskname':{0:'G338.93_B3_12M_big.crtf'}},
+    'G338.93_B3_12M_robust2': {'threshold': {0: '0.1mJy'},
+        'niter': {0: 200000},
+        'maskname':{0:'G338.93_B3_12M_robust2_big.crtf'}},
+    'G338.93_B3_12M_robust0': {'threshold': {0: '0.1mJy'},
+        'niter': {0: 200000},
+        'maskname':{0:'G338.93_B3_12M_robust-2_big.crtf'}},
     'W51-E_B6_12M_robust0': {'threshold': '1mJy', # RMS ~0.5-0.6 mJy
                              'scales': [0,3,9,27],
                             },
