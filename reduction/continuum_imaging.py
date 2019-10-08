@@ -29,7 +29,15 @@ to be done using the selfcal.ms file instead of the default continuum MS file.
 It is primarily for debug purposes and you shouldn't need it.
 """
 
-import os
+import os, sys, argparse
+
+try:
+    # If run from command line
+    aux = os.path.dirname(os.path.realpath(sys.argv[2]))
+    if os.path.isdir(aux):
+        almaimf_rootdir = aux
+except:
+    pass
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
