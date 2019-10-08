@@ -36,8 +36,9 @@ try:
     aux = os.path.dirname(os.path.realpath(sys.argv[2]))
     if os.path.isdir(aux):
         almaimf_rootdir = aux
+        from_cmd = True
 except:
-    pass
+    from_cmd = False
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
@@ -61,12 +62,30 @@ from imaging_parameters import imaging_parameters
 from tasks import tclean, exportfits, plotms, split
 from taskinit import msmdtool, iatool
 import copy
+from utils import validate_mask_path
 msmd = msmdtool()
 ia = iatool()
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
+
+# Command line options
+if from_cmd:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', nargs=1, 
+            help='Casa parameter')
+    parser.add_argument('--exclude7M', action='store_true',
+            help='Include 7M data')
+    parser.add_argument('--only7M', action='store_true',
+            help='Only image 7M data')
+    parser.add_argument('--use_selfcal', action='store_true',
+            help='Use self-calibrated ms')
+    args = parser.parse_args()
+    exclude_7m = args.exclude7M
+    only_7m = args.only7M
+    if args.use_selfcal:
+        os.environ['USE_SELFCAL_MS'] = "true"
 
 if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
@@ -199,7 +218,8 @@ for continuum_ms in continuum_mses:
         dirty_impars = copy.copy(impars)
         dirty_impars['niter'] = 0
         if 'maskname' in dirty_impars:
-            maskname = dirty_impars['maskname'][0]
+            maskname = validate_mask_path(dirty_impars['maskname'][0],
+                    almaimf_rootdir)
             del dirty_impars['maskname']
 
         imname = contimagename+"_robust{0}_dirty".format(robust)
@@ -245,18 +265,22 @@ for continuum_ms in continuum_mses:
                 raise KeyError("No text label was found in one of the regions."
                                "  Regions must have text={xxJy} or {xxmJy} to "
                                "indicate the threshold level")
-        except Exception as ex:
-            logprint("Exception: {0}".format(str(ex)))
-            logprint("Because no region file was found to create a mask, only "
-                     "the dirty image was made for {0}".format(imname))
-            continue
-            #raise ValueError("Make the region file first!")
+        except IOError as ex:
+            if 'maskname' in locals() and os.path.exists(maskname):
+                logprint("Using mask: %s" % maskname)
+            else:
+                logprint("Exception: {0}".format(str(ex)))
+                logprint("Because no region file was found to create a mask, only "
+                        "the dirty image was made for {0}".format(imname))
+                continue
+                #raise ValueError("Make the region file first!")
 
         # for compatibility w/self-calibration: if a list of parameters is used,
         # just use the 0'th iteration's parameters
         impars_thisiter = copy.copy(impars)
         if 'maskname' in impars_thisiter:
-            maskname = impars_thisiter['maskname'][0]
+            maskname = validate_mask_path(impars_thisiter['maskname'][0],
+                    almaimf_rootdir)
             del impars_thisiter['maskname']
         for key, val in impars_thisiter.items():
             if isinstance(val, dict):
@@ -313,7 +337,10 @@ for continuum_ms in continuum_mses:
                                                                              arrayname)
                                        )
         except IOError as ex:
-            logprint("No cleaned-once mask found; skipping reclean")
+            if 'maskname' in locals() and os.path.exists(maskname):
+                logprint("Reclean using mask: %s" % maskname)
+            else:
+                logprint("No cleaned-once mask found; skipping reclean")
         except KeyError as ex:
             if 'label' in str(ex):
                 logprint("Bad Region Exception: {0}".format(str(ex)))
