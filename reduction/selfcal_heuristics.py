@@ -6,7 +6,8 @@ except ImportError:
     from taskinit import tbtool
     tb = tbtool()
 
-def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.):
+def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.,
+                               makeplot=False):
     """
     After an initial self-calibration run, determine which fields have good
     enough solutions.  This only inspects the *phase* component of the
@@ -21,6 +22,8 @@ def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.):
     maxphasenoise : float
         The maximum average phase noise permissible for a given field in
         radians
+    makeplot : bool
+        If set, plot the phase centers good / bad as blue circles, red squares
 
     Returns
     -------
@@ -38,6 +41,8 @@ def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.):
     solns = tb.getcol('CPARAM')
     fields = tb.getcol('FIELD_ID')
     snr = tb.getcol('SNR')
+    if makeplot:
+        ra, dec = tb.getcol('PHASE_DIR')
     tb.close()
 
     okfields=[]
@@ -54,6 +59,16 @@ def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.):
             okfields.append(field)
         else:
             not_ok_fields.append(field)
+
+    if makeplot:
+        import pylab as pl
+        pl.plot(ra[0][okfields]*180/np.pi,
+                dec[0][okfields]*180/np.pi,
+                color='b', marker='o', linestyle='none')
+        pl.plot(ra[0][not_ok_fields]*180/np.pi,
+                dec[0][not_ok_fields]*180/np.pi,
+                color='r', marker='s', linestyle='none')
+
 
     return okfields, not_ok_fields
 

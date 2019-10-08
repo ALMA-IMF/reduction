@@ -100,7 +100,7 @@ def determine_phasecenter(ms, field, formatted=False):
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
                      min_pixscale=0.05, only_7m=False, exclude_7m=False,
-                     makeplot=False):
+                     makeplot=False, veryverbose=False):
     """
     Parameters
     ----------
@@ -108,7 +108,7 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         Minimum allowed pixel scale in arcsec
     """
 
-    logprint("Determining imsize of individual ms {0}".format(ms))
+    logprint("Determining imsize of individual ms {0} spw {1}".format(ms, spw))
 
     cen_ra, cen_dec = phasecenter
 
@@ -239,9 +239,10 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
                        furthest_dec_pix_minus, furthest_dec_pix_plus])
 
 
-    logprint("RA/Dec degree centers and pixel centers of pointings are \n{0}\nand\n{1}"
-             .format(list(zip(ptgctrs_ra_deg, ptgctrs_dec_deg)),
-                     list(zip(pix_centers_ra, pix_centers_dec))))
+    if veryverbose:
+        logprint("RA/Dec degree centers and pixel centers of pointings are \n{0}\nand\n{1}"
+                 .format(list(zip(ptgctrs_ra_deg, ptgctrs_dec_deg)),
+                         list(zip(pix_centers_ra, pix_centers_dec))))
     logprint("Furthest RA pixels from center are {0},{1}"
              .format(furthest_ra_pix_minus, furthest_ra_pix_plus))
     logprint("Furthest Dec pixels from center are {0},{1}"
@@ -285,6 +286,7 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
             spws = msmd.spwsforfield(field)
             msmd.close()
 
+            logprint("Determining imsize of all spectral windows: {0}".format(spws))
             results = [get_indiv_imsize(ms, field, phasecenter, spw,
                                         pixfraction_of_fwhm, **kwargs)
                        for spw in spws]
@@ -362,3 +364,14 @@ def effectiveResolutionAtFreq(vis, spw, freq, kms=True):
     if (len(bws) == 1):
         bws = bws[0]
     return bws
+
+def test_tclean_success():
+    # An EXTREMELY HACKY way to test whether tclean succeeded on the previous iteration
+    with open(casalog.logfile(), "r") as fh:
+        lines = fh.readlines()
+
+    for line in lines[-5:]:
+        if 'SEVERE  tclean::::      An error occurred running task tclean.' in line:
+            raise ValueError("tclean failed.  See log for detailed error report.\n{0}".format(line))
+        if 'SEVERE' in line:
+            raise ValueError("SEVERE error message encountered: {0}".format(line))

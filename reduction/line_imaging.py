@@ -338,9 +338,18 @@ for band in band_list:
 
                 pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
                 impars = line_imaging_parameters[pars_key]
+
+                impars['imsize'] = imsize
+                impars['cell'] = cellsize
+                impars['phasecenter'] = phasecenter
+                impars['field'] = [field.encode()]*len(vis)
+
                 if 'local_impars' in locals():
                     impars.update(local_impars)
                 # Todo: should we re-calculate the threshold after the continuum subtraction?
+
+                logprint("Continuum imaging parameters are {0}".format(impars),
+                         origin='almaimf_line_imaging')
                 tclean(vis=[vv+".contsub" for vv in vis],
                        imagename=lineimagename+".contsub",
                        restoringbeam='',

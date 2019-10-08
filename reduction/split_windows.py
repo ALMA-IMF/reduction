@@ -31,6 +31,15 @@ You can set the following environmental variables for this script:
         If this parameter is set, filter out the imaging targets and only split
         fields with this name (e.g., "W43-MM1", "W51-E", etc.).
         Metadata will still be collected for *all* available MSes.
+
+
+cont.dat files
+--------------
+By default, the ALMA-pipeline-derived cont.dat file will be used.  However, you
+can specify an override by creating a file "{field}.{band}.cont.dat"
+ALMAIMF_ROOTDIR directory.  For example, if you wanted to override the cont.dat
+file for field "ORION" in band 9, you would create a file called
+ORION.B9.cont.dat. Note that the names are case sensitive.
 """
 import os
 import json
@@ -51,6 +60,7 @@ else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
 
+from getversion import git_date, git_version
 
 from taskinit import casalog
 from taskinit import msmdtool
@@ -67,6 +77,7 @@ tb = tbtool()
 bands = {'B3': (80, 110),
          'B6': (210, 250),
         }
+
 
 def logprint(string):
     casalog.post(string, origin='make_imaging_scripts')
@@ -239,9 +250,12 @@ for band in bands:
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
-            # the cont.dat file should be in the calibration/ directory in the
-            # same SB folder
-            contfile = os.path.join(path, '../calibration/cont.dat')
+            if os.path.exists(os.path.join(ALMAIMF_ROOTDIR, "{field}.{band}.cont.dat")):
+                contfile = os.path.join(ALMAIMF_ROOTDIR, "{field}.{band}.cont.dat")
+            else:
+                # the cont.dat file should be in the calibration/ directory in the
+                # same SB folder
+                contfile = os.path.join(path, '../calibration/cont.dat')
 
             if not os.path.exists(contfile):
                 logprint("No cont.dat file found for {0}.  Skipping."
