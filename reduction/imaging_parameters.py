@@ -180,7 +180,7 @@ for ii in range(1,5):
                                                         'calmode': 'p',
                                                         'combine': '', # do not combine across scans, only within
                                                        })
-for ii in range(6,8):
+for ii in range(5,8):
     selfcal_pars['W51-IRS2_B6_12M_robust0'][ii] = {'solint': '60s', # this is effectively 'inf'?
                                                    'gaintype': 'T',
                                                    'calmode': 'p',
