@@ -300,13 +300,23 @@ for continuum_ms in continuum_mses:
         ia.close()
 
     if 'maskname' not in locals():
-        maskname = make_custom_mask(field, imname+".image.tt0",
-                                    almaimf_rootdir,
-                                    band,
-                                    rootdir=imaging_root,
-                                    suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                         arrayname)
-                                   )
+        # either use the reclean-based mask or the dirty mask
+        try:
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        almaimf_rootdir,
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix='_clean_robust{0}_{1}'.format(robust,
+                                                                             arrayname)
+                                       )
+        except IOError:
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        almaimf_rootdir,
+                                        band,
+                                        rootdir=imaging_root,
+                                        suffix='_dirty_robust{0}_{1}'.format(robust,
+                                                                             arrayname)
+                                       )
     imname = contimagename+"_robust{0}".format(robust)
 
     # copy the imaging parameters and make the "iter-zero" version

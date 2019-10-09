@@ -45,19 +45,22 @@ def make_anim(imname, nselfcaliter=7):
 
     def update(ii):
 
-        if ii == 0:
-            return im, (ax1,ax2,ax3)
-        else:
-            cube = SpectralCube.read(f'{imname}_selfcal{ii}.image.tt0', format='casa_image')
-            im1.set_data(cube[0].value)
-            cube = SpectralCube.read(f'{imname}_selfcal{ii}.residual.tt0', format='casa_image')
-            im2.set_data(cube[0].value)
-            cube = SpectralCube.read(f'{imname}_selfcal{ii}.model.tt0', format='casa_image')
-            im3.set_data(cube[0].value)
+        try:
+            if ii == 0:
+                return (im1,im2,im3), (ax1,ax2,ax3)
+            else:
+                cube = SpectralCube.read(f'{imname}_selfcal{ii}.image.tt0', format='casa_image')
+                im1.set_data(cube[0].value)
+                cube = SpectralCube.read(f'{imname}_selfcal{ii}.residual.tt0', format='casa_image')
+                im2.set_data(cube[0].value)
+                cube = SpectralCube.read(f'{imname}_selfcal{ii}.model.tt0', format='casa_image')
+                im3.set_data(cube[0].value)
 
-            title.set_text(f"Selfcal iteration {ii}")
+                title.set_text(f"Selfcal iteration {ii}")
 
-            return im, (ax1,ax2,ax3)
+                return (im1,im2,im3), (ax1,ax2,ax3)
+        except Exception as ex:
+            print(ex)
 
     anim = FuncAnimation(fig, update, frames=range(0,nselfcaliter), interval=400)
     anim.save(f'{imname}_selfcal_anim.gif', dpi=dpi, writer='imagemagick')
@@ -79,24 +82,30 @@ def make_anim_single(imname, suffix, nselfcaliter=7, stretch='asinh', min_percen
     ax.set_xticklabels([])
     ax.set_yticklabels([])
 
-    cube = SpectralCube.read(f'{imname}.{suffix}.tt0', format='casa_image')
-    norm = visualization.simple_norm(data=cube[0].value, stretch=stretch,
+    cube_before = SpectralCube.read(f'{imname}.{suffix}.tt0', format='casa_image')
+    data = cube_before[0].value
+    norm = visualization.simple_norm(data=data, stretch=stretch,
                                      min_percent=min_percent,
                                      max_percent=max_percent)
-    im1 = ax.imshow(cube[0].value, norm=norm)
-    title = pl.suptitle("Before selfcal")
+    im1 = ax.imshow(data, norm=norm)
+    title = pl.title("Before selfcal")
 
     def update(ii):
 
-        if ii == 0:
-            return im, ax
-        else:
-            cube = SpectralCube.read(f'{imname}_selfcal{ii}.{suffix}.tt0', format='casa_image')
-            im1.set_data(cube[0].value)
+        try:
+            if ii == 0:
+                im1.set_data(data)
+                title.set_text(f"Before selfcal")
+                return im1, ax
+            else:
+                cube = SpectralCube.read(f'{imname}_selfcal{ii}.{suffix}.tt0', format='casa_image')
+                im1.set_data(cube[0].value)
 
-            title.set_text(f"Selfcal iteration {ii}")
+                title.set_text(f"Selfcal iteration {ii}")
 
-            return im, ax
+                return im1, ax
+        except Exception as ex:
+            print(ex)
 
     anim = FuncAnimation(fig, update, frames=range(0,nselfcaliter), interval=400)
     anim.save(f'{imname}_{suffix}_selfcal_anim.gif', dpi=dpi, writer='imagemagick')

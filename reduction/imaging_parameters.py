@@ -72,6 +72,12 @@ imaging_parameters_nondefault = {
     'G337.92_B3_12M_robust0': {'threshold': '0.25mJy', # RMS ~0.5-0.6 mJy
                                'scales': [0,3,9,27],
                               },
+    'W51-IRS2_B6_12M_robust0': {'threshold':
+                                {0: '0.3mJy', 1: '0.25mJy', 2: '0.25mJy',
+                                 3: '0.25mJy', 4: '0.25mJy', 5: '0.25mJy',
+                                 6: '0.2mJy',},
+                                'scales': [0,3,9,27],
+                            },
     'W51-E_B6_12M_robust0': {'threshold': {0: '0.3mJy', 1: '0.25mJy', 2: '0.25mJy',
                                            3: '0.25mJy', 4: '0.25mJy', 5: '0.25mJy',
                                            6: '0.2mJy',},
@@ -166,6 +172,20 @@ default_selfcal_pars = {ii: {'solint': 'int',
 
 selfcal_pars = {key: copy.copy(default_selfcal_pars)
                 for key in imaging_parameters}
+
+
+for ii in range(1,5):
+    selfcal_pars['W51-IRS2_B6_12M_robust0'][ii].update({'solint': '60s', # this is effectively 'inf'?
+                                                        'gaintype': 'T',
+                                                        'calmode': 'p',
+                                                        'combine': '', # do not combine across scans, only within
+                                                       })
+for ii in range(6,8):
+    selfcal_pars['W51-IRS2_B6_12M_robust0'][ii] = {'solint': '60s', # this is effectively 'inf'?
+                                                   'gaintype': 'T',
+                                                   'calmode': 'p',
+                                                   'combine': '', # do not combine across scans, only within
+                                                  }
 
 selfcal_pars['W51-E_B6_12M_robust0'][5] = {'solint': 'inf',
                                            'gaintype': 'G',
