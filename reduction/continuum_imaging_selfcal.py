@@ -195,9 +195,16 @@ for continuum_ms in continuum_mses:
 
         msmd.close()
 
+        tb.open(continuum_ms)
+        if 'CORRECTED_DATA' in tb.colnames():
+            datacolumn='corrected'
+        else:
+            datacolumn='data'
+        tb.close()
+
         split(vis=continuum_ms,
               outputvis=selfcal_ms,
-              datacolumn='data',
+              datacolumn=datacolumn,
               antenna=antennae,
               spw=spwstr,
               width=width,
