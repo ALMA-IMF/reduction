@@ -174,7 +174,8 @@ for continuum_ms in continuum_mses:
                                                 phasecenter=(racen,deccen),
                                                 exclude_7m=exclude_7m,
                                                 only_7m=only_7m,
-                                                spw=0, pixfraction_of_fwhm=1/4.))
+                                                spw='all',
+                                                pixfraction_of_fwhm=1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 

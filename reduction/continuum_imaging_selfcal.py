@@ -382,14 +382,9 @@ for continuum_ms in continuum_mses:
         modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
                      contimagename+"_robust{0}.model.tt1".format(robust)]
 
-        logprint("Using ``ft`` to populate the model column",
-                 origin='almaimf_cont_selfcal')
-        ft(vis=selfcal_ms,
-           field=field.encode(),
-           model=modelname,
-           nterms=2,
-           usescratch=True
-          )
+        populate_model_column(imname, selfcal_ms, field, impars_thisiter,
+                              phasecenter, maskname, cellsize, imsize,
+                              antennae, startmodel=modelname)
 
         logprint("Skipped completed file {0} (dirty),"
                  " populated model column".format(imname),
@@ -531,129 +526,9 @@ for continuum_ms in continuum_mses:
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
         else:
-            # run tclean to repopulate the modelcolumn prior to gaincal
-            # (force niter = 0 so we don't clean any more)
-
-
-            # bugfix: for no reason at all, the reference frequency can change.
-            # tclean chokes if it gets the wrong reffreq.
-            ia.open(imname+".image.tt0")
-            reffreq = "{0}Hz".format(ia.coordsys().referencevalue()['numeric'][3])
-            ia.close()
-
-            # have to remove mask for tclean to work
-            os.system('rm -r {0}.mask'.format(imname))
-            impars_thisiter['niter'] = 0
-            logprint("(dirty) Imaging parameters are: {0}".format(impars_thisiter),
-                     origin='almaimf_cont_selfcal')
-            logprint("This tclean run with zero iterations is only being done to "
-                     "populate the model column from image {0}.".format(imname),
-                     origin='almaimf_cont_selfcal')
-            try:
-                tclean(vis=selfcal_ms,
-                             field=field.encode(),
-                             imagename=imname,
-                             phasecenter=phasecenter,
-                             outframe='LSRK',
-                             veltype='radio',
-                             usemask='user',
-                             mask=maskname,
-                             interactive=False,
-                             cell=cellsize,
-                             imsize=imsize,
-                             antenna=antennae,
-                             #reffreq=reffreq,
-                             savemodel='modelcolumn',
-                             datacolumn='corrected',
-                             pbcor=True,
-                             calcres=True,
-                             calcpsf=False,
-                             **impars_thisiter
-                            )
-                test_tclean_success()
-            except Exception as ex:
-                print(ex)
-                logprint("tclean FAILED with reffreq unspecified."
-                         "  Trying again with reffreq={0}.".format(reffreq),
-                         origin='almaimf_cont_selfcal')
-                tclean(vis=selfcal_ms,
-                       field=field.encode(),
-                       imagename=imname,
-                       phasecenter=phasecenter,
-                       outframe='LSRK',
-                       veltype='radio',
-                       usemask='user',
-                       mask=maskname,
-                       interactive=False,
-                       cell=cellsize,
-                       imsize=imsize,
-                       antenna=antennae,
-                       reffreq=reffreq,
-                       savemodel='modelcolumn',
-                       datacolumn='corrected',
-                       pbcor=True,
-                       calcres=True,
-                       calcpsf=False,
-                       **impars_thisiter
-                      )
-                test_tclean_success()
-            # # even if this works, I hate it.
-            # if not success:
-            #     logprint("tclean FAILED with NO REFFREQ.  Trying again with a totally bullshit approach",
-            #              origin='almaimf_cont_selfcal')
-            #     modelname = [imname+".model.tt0",
-            #                  imname+".model.tt1"]
-            #     success = tclean(vis=selfcal_ms,
-            #                      field=field.encode(),
-            #                      imagename=imname+"_BULL",
-            #                      phasecenter=phasecenter,
-            #                      startmodel=modelname,
-            #                      outframe='LSRK',
-            #                      veltype='radio',
-            #                      usemask='user',
-            #                      mask=maskname,
-            #                      interactive=False,
-            #                      cell=cellsize,
-            #                      imsize=imsize,
-            #                      antenna=antennae,
-            #                      #reffreq=reffreq,
-            #                      savemodel='modelcolumn',
-            #                      datacolumn='corrected',
-            #                      pbcor=True,
-            #                      calcres=True,
-            #                      calcpsf=True,
-            #                      **impars_thisiter
-            #                     )
-            #if not success:
-            #    # BACKUP PLAN: use ft instead of tclean [WRONG because it doesn't
-            #    # use the same imager]
-            #    modelname = [imname+".model.tt0",
-            #                 imname+".model.tt1"]
-
-            #    logprint("Using ``ft`` to populate the model column from {0}".format(modelname),
-            #             origin='almaimf_cont_selfcal')
-            #    success = ft(vis=selfcal_ms,
-            #                 field=field.encode(),
-            #                 model=modelname,
-            #                 nterms=2,
-            #                 usescratch=True
-            #                )
-
-            #    logprint("Completed ft with result={0} for image={1}"
-            #             " populated model column".format(success, imname),
-            #             origin='almaimf_cont_selfcal')
-
-            #    # link ("copy") the current mask to be this round's mask
-            #    # why am I doing this?  Isn't the mask always well-defined?
-            #    # this can only introduce conflicts in the mask naming...
-            #    # (maybe this was copied from ft above...)
-            #    #os.system('ln -s {0} {1}.mask'.format(maskname, imname))
-
-
-            # if not success:
-            #     raise ValueError("tclean failed to restore the model {0}.model* "
-            #                      "into the model column".format(imname))
-
+            populate_model_column(imname, selfcal_ms, field, impars_thisiter,
+                                  phasecenter, maskname, cellsize, imsize,
+                                  antennae)
 
 
         regsuffix = '_selfcal{2}_robust{0}_{1}'.format(robust, arrayname,
