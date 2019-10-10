@@ -268,7 +268,7 @@ for continuum_ms in continuum_mses:
             raise IOError("Mask {0} not found".format(maskname))
 
 
-    imname = contimagename+"_robust{0}_dirty".format(robust)
+    imname = contimagename+"_robust{0}_dirty_preselfcal".format(robust)
 
     if not os.path.exists(imname+".image.tt0"):
         logprint("(dirty, pre-) Imaging parameters are: {0}".format(dirty_impars),
@@ -317,7 +317,7 @@ for continuum_ms in continuum_mses:
                                         suffix='_dirty_robust{0}_{1}'.format(robust,
                                                                              arrayname)
                                        )
-    imname = contimagename+"_robust{0}".format(robust)
+    imname = contimagename+"_robust{0}_preselfcal".format(robust)
 
     # copy the imaging parameters and make the "iter-zero" version
     impars_thisiter = copy.copy(impars)
