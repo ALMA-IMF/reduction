@@ -6,11 +6,12 @@ try:
     from casac import casac
     synthesisutils = casac.synthesisutils
     from taskinit import msmdtool, casalog, qatool, tbtool, mstool, iatool
+    from tasks import tclean
 except ImportError:
     from casatools import (quanta as qatool, table as tbtool, msmetadata as
                            msmdtool, synthesisutils, ms as mstool,
                            ia as iatool)
-    from casatasks import casalog
+    from casatasks import casalog, tclean
 msmd = msmdtool()
 ms = mstool()
 qa = qatool()
