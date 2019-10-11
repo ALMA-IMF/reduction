@@ -58,6 +58,7 @@ There are two ways to specify masks:
 import os
 import copy
 import sys
+import shutil
 
 almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 if almaimf_rootdir is None:
@@ -386,13 +387,15 @@ for continuum_ms in continuum_mses:
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
     else:
-        # populate the model column
-        modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
-                     contimagename+"_robust{0}.model.tt1".format(robust)]
+        # populate the model column (should be from data on disk matching
+        # this format, but we don't need to - and can't - specify it)
+        # If you want to use `ft`, you need to specify this:
+        # modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
+        #              contimagename+"_robust{0}.model.tt1".format(robust)]
 
         populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                               phasecenter, maskname, cellsize, imsize,
-                              antennae, startmodel=modelname)
+                              antennae)
 
         logprint("Skipped completed file {0} (dirty),"
                  " populated model column".format(imname),
@@ -609,8 +612,14 @@ for continuum_ms in continuum_mses:
             if isinstance(val, dict):
                 impars_finaliter[key] = val['final'] if 'final' in val else val[selfcaliter]
 
-        finaliterimname = contimagename+"_robust{0}_selfcal{1}".format(robust,
-                                                              selfcaliter)
+        finaliterimname = contimagename+"_robust{0}_selfcal{1}_finaliter".format(robust,
+                                                                                 selfcaliter)
+        if 'maskname' in locals() and maskname != "" and os.path.exist(finaliterimname+".mask"):
+            logprint("Removing existing mask file {0} because mask {1} exists"
+                     .format(finaliterimname+".mask", maskname),
+                     origin='almaimf_cont_selfcal')
+            shutil.rmtree(finaliterimname+".mask")
+
         if os.path.exists(finaliterimname+".model.tt0"):
             # if there is already a model with this name on disk, we're continuing from that
             # one instead of starting from scratch
