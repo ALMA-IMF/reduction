@@ -168,6 +168,7 @@ Self-calibration parameters are defined here
 default_selfcal_pars = {ii: {'solint': 'int',
                              'gaintype': 'G',
                              'solnorm': True,
+                             'calwt': False,
                              'calmode': 'p'}
                         for ii in range(1,5)}
 
