@@ -182,6 +182,14 @@ for ii in range(1,5):
                                                         'minsnr': 5,
                                                         'combine': '', # do not combine across scans, only within
                                                        })
+    selfcal_pars['W51-E_B6_12M_robust0'][ii]['minsnr'] = 5
+    selfcal_pars['W51-E_B3_12M_robust0'][ii]['minsnr'] = 5
+    selfcal_pars['W51-E_B6_7M12M_robust0'][ii]['minsnr'] = 5
+    selfcal_pars['W51-E_B3_7M12M_robust0'][ii]['minsnr'] = 5
+    selfcal_pars['W51-E_B6_12M_robust0'][ii]['gaintype'] = 'T'
+    selfcal_pars['W51-E_B3_12M_robust0'][ii]['gaintype'] = 'T'
+    selfcal_pars['W51-E_B6_7M12M_robust0'][ii]['gaintype'] = 'T'
+    selfcal_pars['W51-E_B3_7M12M_robust0'][ii]['gaintype'] = 'T'
 for ii in range(5,8):
     selfcal_pars['W51-IRS2_B6_12M_robust0'][ii] = {'solint': '60s', # this is effectively 'inf'?
                                                    'gaintype': 'T',
@@ -191,32 +199,38 @@ for ii in range(5,8):
                                                   }
 
 selfcal_pars['W51-E_B6_12M_robust0'][5] = {'solint': 'inf',
-                                           'gaintype': 'G',
+                                           'gaintype': 'T',
                                            'calmode': 'ap',
+                                           'minsnr': 5,
                                           }
 selfcal_pars['W51-E_B6_12M_robust0'][6] = {'solint': 'inf',
-                                           'gaintype': 'G',
+                                           'gaintype': 'T',
                                            'calmode': 'ap',
+                                           'minsnr': 5,
                                           }
 
 selfcal_pars['W51-E_B6_7M12M_robust0'][5] = copy.copy(selfcal_pars['W51-E_B6_7M12M_robust0'][4]) # one extra phase iteration
 selfcal_pars['W51-E_B6_7M12M_robust0'][6] = {'solint': 'inf',
-                                             'gaintype': 'G',
+                                             'gaintype': 'T',
                                              'calmode': 'ap',
+                                             'minsnr': 5,
                                             }
 selfcal_pars['W51-E_B6_7M12M_robust0'][7] = {'solint': 'inf',
-                                             'gaintype': 'G',
+                                             'gaintype': 'T',
                                              'calmode': 'ap',
+                                             'minsnr': 5,
                                             }
 
 selfcal_pars['W51-E_B3_12M_robust0'][5] = copy.copy(selfcal_pars['W51-E_B3_12M_robust0'][4])
 selfcal_pars['W51-E_B3_12M_robust0'][6] = {'solint': 'inf',
-                                           'gaintype': 'G',
+                                           'gaintype': 'T',
                                            'calmode': 'ap',
+                                           'minsnr': 5,
                                           }
 selfcal_pars['W51-E_B3_12M_robust0'][7] = {'solint': 'inf',
-                                           'gaintype': 'G',
+                                           'gaintype': 'T',
                                            'calmode': 'ap',
+                                            'minsnr': 5,
                                           }
 
 selfcal_pars['G333.60_B3_12M_robust-2'][4] = {'solint': 'inf',
