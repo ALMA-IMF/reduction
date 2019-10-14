@@ -116,7 +116,7 @@ imaging_parameters_nondefault = {
     'W51-E_B6_7M12M_robust0': {'threshold': '3mJy', # RMS ~ ??
                                'scales': [0,3,9,27],
                               },
-    'W51-E_B3_7M12M_robust0': {'threshold': '2mJy', # RMS ~ ??
+    'W51-E_B3_7M12M_robust0': {'threshold': '1mJy', # RMS ~ ??
                                'scales': [0,3,9,27],
                               },
        #12M of band 3
@@ -182,8 +182,8 @@ for key in imaging_parameters_nondefault:
 Self-calibration parameters are defined here
 """
 
-default_selfcal_pars = {ii: {'solint': 'int',
-                             'gaintype': 'G',
+default_selfcal_pars = {ii: {'solint': 'inf',
+                             'gaintype': 'T',
                              'solnorm': True,
                              'calmode': 'p'}
                         for ii in range(1,5)}
