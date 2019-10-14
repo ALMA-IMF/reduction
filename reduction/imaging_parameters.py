@@ -188,7 +188,7 @@ default_selfcal_pars = {ii: {'solint': 'int',
                              'calmode': 'p'}
                         for ii in range(1,5)}
 
-selfcal_pars = {key: copy.copy(default_selfcal_pars)
+selfcal_pars = {key: copy.deepcopy(default_selfcal_pars)
                 for key in imaging_parameters}
 
 
