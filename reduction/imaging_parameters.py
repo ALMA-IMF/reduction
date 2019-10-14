@@ -199,6 +199,12 @@ for ii in range(1,5):
                                                         'minsnr': 5,
                                                         'combine': '', # do not combine across scans, only within
                                                        })
+    selfcal_pars['W51-IRS2_B6_7M12M_robust0'][ii].update({'solint': 'inf',
+                                                          'gaintype': 'T',
+                                                          'calmode': 'p',
+                                                          'minsnr': 5,
+                                                          'combine': '', # do not combine across scans, only within
+                                                         })
     selfcal_pars['W51-E_B6_12M_robust0'][ii]['minsnr'] = 5
     selfcal_pars['W51-E_B3_12M_robust0'][ii]['minsnr'] = 5
     selfcal_pars['W51-E_B6_7M12M_robust0'][ii]['minsnr'] = 5
@@ -214,6 +220,18 @@ for ii in range(5,8):
                                                    'minsnr': 5,
                                                    'combine': '', # do not combine across scans, only within
                                                   }
+    selfcal_pars['W51-IRS2_B6_7M12M_robust0'][ii] = {'solint': 'inf',
+                                                     'gaintype': 'T',
+                                                     'calmode': 'ap',
+                                                     'minsnr': 5,
+                                                     'combine': '', # do not combine across scans, only within
+                                                    }
+selfcal_pars['W51-IRS2_B6_12M_robust0'][8] = {'solint': 'inf',
+                                              'gaintype': 'T',
+                                              'calmode': 'ap',
+                                              'minsnr': 5,
+                                              }
+
 
 selfcal_pars['W51-E_B6_12M_robust0'][5] = {'solint': 'inf',
                                            'gaintype': 'T',
