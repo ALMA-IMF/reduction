@@ -1,4 +1,5 @@
 from spectral_cube import SpectralCube
+import os
 import pylab as pl
 from astropy import visualization
 from matplotlib.animation import FuncAnimation
@@ -32,13 +33,13 @@ def make_anim(imname, nselfcaliter=7):
     fig.subplots_adjust(hspace=0)
 
 
-    cube = SpectralCube.read(f'{imname}.image.tt0', format='casa_image')
+    cube = SpectralCube.read(f'{imname}_preselfcal.image.tt0', format='casa_image')
     norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.00)
     im1 = ax1.imshow(cube[0].value, norm=norm)
-    cube = SpectralCube.read(f'{imname}.residual.tt0', format='casa_image')
+    cube = SpectralCube.read(f'{imname}_preselfcal.residual.tt0', format='casa_image')
     norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.95)
     im2 = ax2.imshow(cube[0].value, norm=norm)
-    cube = SpectralCube.read(f'{imname}.model.tt0', format='casa_image')
+    cube = SpectralCube.read(f'{imname}_preselfcal.model.tt0', format='casa_image')
     norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.00)
     im3 = ax3.imshow(cube[0].value, norm=norm)
     title = pl.suptitle("Before selfcal")
@@ -82,7 +83,7 @@ def make_anim_single(imname, suffix, nselfcaliter=7, stretch='asinh', min_percen
     ax.set_xticklabels([])
     ax.set_yticklabels([])
 
-    cube_before = SpectralCube.read(f'{imname}.{suffix}.tt0', format='casa_image')
+    cube_before = SpectralCube.read(f'{imname}_preselfcal.{suffix}.tt0', format='casa_image')
     data = cube_before[0].value
     norm = visualization.simple_norm(data=data, stretch=stretch,
                                      min_percent=min_percent,
@@ -93,6 +94,13 @@ def make_anim_single(imname, suffix, nselfcaliter=7, stretch='asinh', min_percen
     def update(ii):
 
         try:
+            if os.path.exists(f'{imname}_selfcal{ii}_finaliter.{suffix}.tt0'):
+                cube = SpectralCube.read(f'{imname}_selfcal{ii}_finaliter.{suffix}.tt0', format='casa_image')
+                im1.set_data(cube[0].value)
+
+                title.set_text(f"Selfcal iteration {ii} (final clean)")
+
+                return im1, ax
             if ii == 0:
                 im1.set_data(data)
                 title.set_text(f"Before selfcal")
@@ -107,7 +115,7 @@ def make_anim_single(imname, suffix, nselfcaliter=7, stretch='asinh', min_percen
         except Exception as ex:
             print(ex)
 
-    anim = FuncAnimation(fig, update, frames=range(0,nselfcaliter), interval=400)
+    anim = FuncAnimation(fig, update, frames=range(0, nselfcaliter), interval=400)
     anim.save(f'{imname}_{suffix}_selfcal_anim.gif', dpi=dpi, writer='imagemagick')
 
     return anim

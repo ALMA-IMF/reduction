@@ -470,8 +470,8 @@ for continuum_ms in continuum_mses:
         # start from previous model to save time
         # (in principle, should converge anyway)
         if selfcaliter == 1:
-            modelname = [contimagename+"_robust{0}.model.tt0".format(robust),
-                         contimagename+"_robust{0}.model.tt1".format(robust)]
+            modelname = [contimagename+"_robust{0}_preselfcal.model.tt0".format(robust),
+                         contimagename+"_robust{0}_preselfcal.model.tt1".format(robust)]
         else:
             modelname = [contimagename+"_robust{0}_selfcal{1}.model.tt0".format(robust, selfcaliter-1),
                          contimagename+"_robust{0}_selfcal{1}.model.tt1".format(robust, selfcaliter-1)]
@@ -614,7 +614,7 @@ for continuum_ms in continuum_mses:
 
         finaliterimname = contimagename+"_robust{0}_selfcal{1}_finaliter".format(robust,
                                                                                  selfcaliter)
-        if 'maskname' in locals() and maskname != "" and os.path.exist(finaliterimname+".mask"):
+        if 'maskname' in locals() and maskname != "" and os.path.exists(finaliterimname+".mask"):
             logprint("Removing existing mask file {0} because mask {1} exists"
                      .format(finaliterimname+".mask", maskname),
                      origin='almaimf_cont_selfcal')
