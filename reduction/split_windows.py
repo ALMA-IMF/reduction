@@ -250,8 +250,8 @@ for band in bands:
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
-            if os.path.exists(os.path.join(ALMAIMF_ROOTDIR, "{field}.{band}.cont.dat")):
-                contfile = os.path.join(ALMAIMF_ROOTDIR, "{field}.{band}.cont.dat")
+            if os.path.exists(os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")):
+                contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")
             else:
                 # the cont.dat file should be in the calibration/ directory in the
                 # same SB folder
