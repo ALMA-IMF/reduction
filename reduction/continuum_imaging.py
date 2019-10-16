@@ -54,6 +54,7 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
 else:
     import sys
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 
 from getversion import git_date, git_version
 from metadata_tools import determine_imsize, determine_phasecenter, logprint
@@ -220,7 +221,7 @@ for continuum_ms in continuum_mses:
         dirty_impars['niter'] = 0
         if 'maskname' in dirty_impars:
             maskname = validate_mask_path(dirty_impars['maskname'][0],
-                    almaimf_rootdir)
+                                          os.getenv('ALMAIMF_ROOTDIR'))
             del dirty_impars['maskname']
 
         imname = contimagename+"_robust{0}_dirty".format(robust)
@@ -281,7 +282,7 @@ for continuum_ms in continuum_mses:
         impars_thisiter = copy.copy(impars)
         if 'maskname' in impars_thisiter:
             maskname = validate_mask_path(impars_thisiter['maskname'][0],
-                    almaimf_rootdir)
+                                          os.getenv('ALMAIMF_ROOTDIR'))
             del impars_thisiter['maskname']
         for key, val in impars_thisiter.items():
             if isinstance(val, dict):
