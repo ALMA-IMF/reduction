@@ -10,7 +10,7 @@ try:
 except ImportError:
     from casatools import (quanta as qatool, table as tbtool, msmetadata as
                            msmdtool, synthesisutils, ms as mstool,
-                           ia as iatool)
+                           image as iatool)
     from casatasks import casalog, tclean
 msmd = msmdtool()
 ms = mstool()
