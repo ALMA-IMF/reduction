@@ -19,7 +19,7 @@ def find_and_plot_cont(basename, background='mean'):
     meansel = clipped.mask
 
     spec = OneDSpectrum.from_hdu(fits.open(basename+'.{0}spec.fits'.format(background)))
-    
+
     spec.quicklook()
     pl.plot(spec.spectral_axis, clipped, linewidth=4, alpha=0.75, zorder=10, color='r')
     clipped.mask = medsel
