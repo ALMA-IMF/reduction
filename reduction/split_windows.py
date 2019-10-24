@@ -437,14 +437,14 @@ for band in bands:
                    concatvis=merged_continuum_bsens_fn,)
 
         # for debug purposes, we also track the split, unmerged MSes
-        cont_mses_unconcat.append(cont_to_merge[band][field])
+        cont_mses_unconcat += cont_to_merge[band][field]
 
 with open('continuum_mses.txt', 'w') as fh:
     for line in cont_mses:
         fh.write(line+'\n')
 
 with open('continuum_mses_unconcat.txt', 'w') as fh:
-    for line in cont_mses:
+    for line in cont_mses_unconcat:
         fh.write(line+'\n')
 
 with open('cont_metadata.json', 'w') as fh:
