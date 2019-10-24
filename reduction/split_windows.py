@@ -47,6 +47,16 @@ import numpy as np
 
 import sys
 
+try:
+    # If run from command line
+    aux = os.path.dirname(os.path.realpath(sys.argv[2]))
+    if os.path.isdir(aux):
+        almaimf_rootdir = aux
+except:
+    pass
+
+if 'almaimf_rootdir' in locals():
+    os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
 if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
         import metadata_tools
@@ -250,8 +260,10 @@ for band in bands:
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
-            if os.path.exists(os.path.join(ALMAIMF_ROOTDIR, "{field}.{band}.cont.dat")):
-                contfile = os.path.join(ALMAIMF_ROOTDIR, "{field}.{band}.cont.dat")
+            if os.path.exists(os.path.join(os.environ['ALMAIMF_ROOTDIR'], 
+                    "{field}.{band}.cont.dat")):
+                contfile = os.path.join(os.environ['ALMAIMF_ROOTDIR'], 
+                        "{field}.{band}.cont.dat")
             else:
                 # the cont.dat file should be in the calibration/ directory in the
                 # same SB folder
