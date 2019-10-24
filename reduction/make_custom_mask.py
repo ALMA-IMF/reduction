@@ -16,8 +16,8 @@ try:
     from spectral_cube import SpectralCube
     from astropy import units as u
     from metadata_tools import logprint
-except ImportError:
-    print 'non-casa requirements unavailable'
+except:
+    print('non-casa requirements unavailable')
 
 try:
     from casatools import image

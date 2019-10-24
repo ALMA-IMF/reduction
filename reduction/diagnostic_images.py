@@ -44,7 +44,7 @@ def load_images(basename, crop=True):
         imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
                         if crop else
                         cubes['mask'].with_mask(include_mask)[0])
-    except AssertionError:
+    except (AssertionError,OSError,IOError):
         # this implies there is no mask
         pass
 
