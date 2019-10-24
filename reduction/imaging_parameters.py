@@ -164,6 +164,15 @@ imaging_parameters_nondefault = {
     'G353.41_B6_7M12M_robust2': {'threshold': '0.82mJy', # 2*RMS
                              'scales': [0,3,9],
                             },
+    'G327.29_B6_12M_robust0': {'threshold': {0: '1.0mJy'},
+        'niter': {0: 200000},
+        'maskname':{0:'G327.29_B6_12M_robust0_workingmask0.crtf'}},
+    'G327.29_B6_12M_robust2': {'threshold': {0: '2.5mJy'},
+        'niter': {0: 200000},
+        'maskname':{0:'G327.29_B6_12M_robust2_workingmask0.crtf'}},
+    'G327.29_B6_12M_robust-2': {'threshold': {0: '0.9mJy'},
+        'niter': {0: 200000},
+        'maskname':{0:'G327.29_B6_12M_robust-2_workingmask0.crtf'}},
 
 }
 for key in imaging_parameters_nondefault:
