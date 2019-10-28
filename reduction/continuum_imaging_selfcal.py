@@ -512,6 +512,13 @@ for continuum_ms in continuum_mses:
                              "Using manually-specified self-calibration field {0}".format(selfcal_field_id),
                              origin='contim_selfcal')
                     okfields = selfcal_field_id
+            elif selfcal_field_id is not None:
+                intersection = set(okfields).intersection(set(selfcal_field_id))
+                logprint("Using fields {0} as manually specified for self-calibration, "
+                         "though {1} were found to be good (the intersection is {2}"
+                         .format(selfcal_field_id, okfields, intersection),
+                         origin='contim_selfcal')
+                okfields = selfcal_field_id
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
             clearcal(vis=selfcal_ms, addmodel=True)
             # use gainfield so we interpolate the good solutions to the other
