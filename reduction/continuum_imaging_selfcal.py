@@ -15,6 +15,8 @@ You can set the following environmental variables for this script:
         you want to self-calibrate on.  This will override the selfcal
         heuristics and will instead use just the selected field to
         self-calibrate on.  However, the full mosaic will still be imaged.
+        (can also be specified by setting `selfcal_field_id = [1]` or similar;
+        the variable must be a list of integers though)
     BAND_TO_IMAGE=B3 or B6
         If this parameter is set, only image the selected band.
 
@@ -168,6 +170,10 @@ if 'selfcal_field_id' not in locals():
         selfcal_field_id = list(map(int, os.getenv('SELFCAL_FIELD_ID').split(",")))
     else:
         selfcal_field_id = None
+else:
+    assert isinstance(selfcal_field_id, list)
+    for entry in selfcal_field_id:
+        assert isinstance(1,int)
 
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
