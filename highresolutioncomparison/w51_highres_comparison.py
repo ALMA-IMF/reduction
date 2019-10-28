@@ -26,22 +26,22 @@ psf_center = coordinates.SkyCoord('19:23:43.5 -14:30:20',
 
 
 zoomregions = {'eSmm2':
-               {'bottomleft': coordinates.SkyCoord('19:23:43.823',
-                                                   '+14:30:21.814',
+               {'bottomleft': coordinates.SkyCoord('19:23:43.802',
+                                                   '+14:30:22.308',
                                                    unit=(u.h, u.deg),
-                                                   frame='icrs'),
-                'topright': coordinates.SkyCoord('19:23:43.743',
-                                                 '+14:30:22.857',
+                                                   frame='fk5'),
+                'topright': coordinates.SkyCoord('19:23:43.762',
+                                                 '+14:30:22.550',
                                                  unit=(u.h, u.deg),
-                                                 frame='icrs'),
-                'inregion': 'W51e',
-                'bbox':[0.26,0.43],
+                                                 frame='fk5'),
+                'inregion': 'W51e8',
+                'bbox':[0.26,0.28],
                 'loc': 2,
                 'l1':4,
-                'l2':1,
+                'l2':2,
                 'min': -0.0005,
                 'max': 0.004,
-                'zoom': 0.45,
+                'zoom': 1,
                },
                'e8s':
                {'bottomleft': coordinates.SkyCoord('19:23:43.915',
@@ -52,14 +52,50 @@ zoomregions = {'eSmm2':
                                                  '+14:30:27.828',
                                                  unit=(u.h, u.deg),
                                                  frame='icrs'),
-                'inregion': 'W51e',
+                'inregion': 'W51e8',
                 'bbox':[0.26,0.9],
                 'loc': 2,
-                'l1':3,
+                'l1':4,
                 'l2':1,
                 'min': -0.0005,
                 'max': 0.005,
-                'zoom': 0.45,
+                'zoom': 1,
+               },
+               'e2disk':
+               {'bottomleft': coordinates.SkyCoord('19:23:44.090',
+                                                   '+14:30:33.408',
+                                                   unit=(u.h, u.deg),
+                                                   frame='fk5'),
+                'topright': coordinates.SkyCoord('19:23:44.063',
+                                                 '+14:30:33.645',
+                                                 unit=(u.h, u.deg),
+                                                 frame='fk5'),
+                'inregion': 'W51e2',
+                'bbox':[0.25,0.25],
+                'loc': 2,
+                'l1':4,
+                'l2':2,
+                'min': -0.0005,
+                'max': 0.002,
+                'zoom': 0.5,
+               },
+               'e2disk2':
+               {'bottomleft': coordinates.SkyCoord('19:23:43.866',
+                                                   '+14:30:40.225',
+                                                   unit=(u.h, u.deg),
+                                                   frame='fk5'),
+                'topright': coordinates.SkyCoord('19:23:43.843',
+                                                 '+14:30:40.692',
+                                                 unit=(u.h, u.deg),
+                                                 frame='fk5'),
+                'inregion': 'W51e2',
+                'bbox':[0.45,0.9],
+                'loc': 2,
+                'l1':1,
+                'l2':4,
+                'min': -0.0005,
+                'max': 0.003,
+                'zoom': 0.5,
                },
               }
 
@@ -96,6 +132,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
                    vmin=-0.001, vmax=0.01,
                    bottomleft=None,
                    topright=None,
+                   norm=asinh_norm.AsinhNorm(),
                    tick_fontsize=pl.rcParams['axes.labelsize']):
 
     hdu = fits.open(fn)[0]
@@ -122,7 +159,7 @@ def inset_overlays(fn, zoomregions, fignum=1,
                    transform=ax.get_transform(mywcs),
                    vmin=vmin*1e3, vmax=vmax*1e3, cmap=pl.cm.gray_r,
                    interpolation='nearest',
-                   origin='lower', norm=asinh_norm.AsinhNorm())
+                   origin='lower', norm=norm)
 
     (x1,y1),(x2,y2) = (mywcs.wcs_world2pix([[bottomleft.ra.deg,
                                              bottomleft.dec.deg]],0)[0],
@@ -281,7 +318,8 @@ if __name__ == "__main__":
     fn2 = 'W51e2cax.cont.image.pbcor.fits.gz'
 
 
-    figure = inset_overlays(fn=fn1, fnzoom=fn2, zoomregions=zoomregions,
+    figure = inset_overlays(fn=fn1, fnzoom=fn2,
+                            zoomregions={k:v for k,v in zoomregions.items() if v['inregion'] == 'W51e8'},
                             vmin=-0.001, vmax=0.1,
                             bottomleft=coordinates.SkyCoord('19:23:44.300',
                                                        '14:30:18.313',
@@ -290,6 +328,23 @@ if __name__ == "__main__":
                             topright=coordinates.SkyCoord('19:23:43.467',
                                                        '14:30:30.978',
                                                        frame='icrs',
+                                                       unit=(u.hour, u.deg),),
+                           )
+    figure.savefig('W51e8_zoomin.pdf', bbox_inches='tight', dpi=300)
+    figure.savefig('W51e8_zoomin.png', bbox_inches='tight', dpi=300)
+
+
+    figure = inset_overlays(fn=fn1, fnzoom=fn2,
+                            zoomregions={k:v for k,v in zoomregions.items() if v['inregion'] == 'W51e2'},
+                            vmin=-0.001, vmax=0.2,
+                            #norm=pl.matplotlib.colors.LogNorm(), #visualizaiton.simple_norm(stretch='log', vmin=-0.001, vmax=0.2),
+                            bottomleft=coordinates.SkyCoord('19:23:44.3',
+                                                       '14:30:31.500',
+                                                       frame='fk5',
+                                                       unit=(u.hour, u.deg),),
+                            topright=coordinates.SkyCoord('19:23:43.6',
+                                                       '14:30:41.620',
+                                                       frame='fk5',
                                                        unit=(u.hour, u.deg),),
                            )
     figure.savefig('W51e2_zoomin.pdf', bbox_inches='tight', dpi=300)
