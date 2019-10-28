@@ -10,6 +10,11 @@ You can set the following environmental variables for this script:
         If this parameter is set, filter out the imaging targets and only split
         fields with this name (e.g., "W43-MM1", "W51-E", etc.).
         Metadata will still be collected for *all* available MSes.
+    SELFCAL_FIELD_ID=<number>
+        Specify a single number or a comma-separated list of numbers for fields
+        you want to self-calibrate on.  This will override the selfcal
+        heuristics and will instead use just the selected field to
+        self-calibrate on.  However, the full mosaic will still be imaged.
     BAND_TO_IMAGE=B3 or B6
         If this parameter is set, only image the selected band.
 
@@ -111,6 +116,13 @@ if 'only_7m' not in locals():
         only_7m = bool(os.getenv('ONLY_7M').lower() == 'true')
     else:
         only_7m = False
+
+if 'selfcal_field_id' not in locals():
+    if os.getenv('SELFCAL_FIELD_ID') is not None:
+        selfcal_field_id = list(map(int, os.getenv('SELFCAL_FIELD_ID').split(",")))
+    else:
+        selfcal_field_id = None
+
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
          origin='contim_selfcal')
@@ -482,13 +494,19 @@ for continuum_ms in continuum_mses:
         if not os.path.exists(imname+".image.tt0"):
 
             okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
-            if len(okfields) == 0:
-                logprint("All fields flagged out of gaincal solns!",
-                         origin='contim_selfcal')
-                raise ValueError("All fields flagged out of gaincal solns!")
-            okfields_str = ",".join(["{0}".format(x) for x in okfields])
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
+            if len(okfields) == 0:
+                if selfcal_field_id is None:
+                    logprint("All fields flagged out of gaincal solns!",
+                             origin='contim_selfcal')
+                    raise ValueError("All fields flagged out of gaincal solns!")
+                else:
+                    logprint("All fields flagged out of gaincal solns.  "
+                             "Using manually-specified self-calibration field {0}".format(selfcal_field_id),
+                             origin='contim_selfcal')
+                    okfields = selfcal_field_id
+            okfields_str = ",".join(["{0}".format(x) for x in okfields])
             clearcal(vis=selfcal_ms, addmodel=True)
             # use gainfield so we interpolate the good solutions to the other
             # fields
