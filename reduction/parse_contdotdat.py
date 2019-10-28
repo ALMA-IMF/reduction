@@ -139,14 +139,15 @@ def cont_channel_selection_to_contdotdat(cont_channel_selection, msname,
             spw = spw_mapping[spwn]
         elif spw_mapping is not None:
             continue
-        print(f"spectral window = {spw}")
+        print("spectral window = {spw}".format(spw=spw))
         freqs = ms.cvelfreqs(spw)
-        
+
         chansel = spwsel.split(":")[1]
         freqsels[spw] = []
         for chs in chansel.split(";"):
             lo,hi = map(int, chs.split("~"))
-            freqsels[spw].append(f"{freqs[lo]/1e9}~{freqs[hi]/1e9}GHz")
+            freqsels[spw].append("{0}~{1}GHz".format(freqs[lo]/1e9,
+                                                     freqs[hi]/1e9))
 
     ms.close()
 
