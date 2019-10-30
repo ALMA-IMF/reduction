@@ -34,9 +34,11 @@ import os, sys, argparse
 try:
     # If run from command line
     aux = os.path.dirname(os.path.realpath(sys.argv[2]))
-    if os.path.isdir(aux):
+    if os.path.isdir(aux) and os.path.exists(os.path.join(aux, 'continuum_imaging.py')):
         almaimf_rootdir = aux
         from_cmd = True
+    else:
+        from_cmd = False
 except:
     from_cmd = False
 
@@ -142,6 +144,8 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_imaging'
                     )
             continue
+        elif '_' in os.getenv('FIELD_ID'):
+            field = os.getenv('FIELD_ID')
 
 
     suffix = "_bsens" if "bsens" in continuum_ms else ""

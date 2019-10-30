@@ -146,7 +146,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 metadata[band][field]['vis'].append(fn)
                 metadata[band][field]['spws'].append(spws)
             else:
-                metadata[band][field] = {'path': [dirpath],
+                metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                          'vis': [fn],
                                          'spws': [spws],
                                         }
@@ -323,7 +323,7 @@ for band in bands:
 
 
             if not os.path.exists(contvis) or not os.path.exists(contvis_bestsens):
-                tb.open(invis)
+                tb.open(visfile)
                 if 'CORRECTED_DATA' in tb.colnames():
                     datacolumn='corrected'
                 else:
@@ -332,7 +332,7 @@ for band in bands:
 
 
             if os.path.exists(contvis):
-                logprint("Skipping {0} because it's done".format(contvis),)
+                logprint("Continuum: Skipping {0} because it's done".format(contvis),)
             elif field not in fields:
                 logprint("Skipping {0} because it is not one of the "
                          "selected fields (but its metadata is being "
@@ -374,6 +374,8 @@ for band in bands:
                              width=widths,
                              datacolumn=datacolumn), "Split failed!"
 
+                if not os.path.exists(contvis):
+                    raise IOError("Split failed for {0}".format(contvis))
 
                 # If you flagged any line channels, restore the previous flags
                 flagmanager(vis=visfile, mode='restore',
@@ -447,14 +449,14 @@ for band in bands:
                    concatvis=merged_continuum_bsens_fn,)
 
         # for debug purposes, we also track the split, unmerged MSes
-        cont_mses_unconcat.append(cont_to_merge[band][field])
+        cont_mses_unconcat += cont_to_merge[band][field]
 
 with open('continuum_mses.txt', 'w') as fh:
     for line in cont_mses:
         fh.write(line+'\n')
 
 with open('continuum_mses_unconcat.txt', 'w') as fh:
-    for line in cont_mses:
+    for line in cont_mses_unconcat:
         fh.write(line+'\n')
 
 with open('cont_metadata.json', 'w') as fh:
