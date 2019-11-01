@@ -11,13 +11,10 @@ import os
 import numpy as np
 
 # non-casa requirements
-try:
-    import regions
-    from spectral_cube import SpectralCube
-    from astropy import units as u
-    from metadata_tools import logprint
-except:
-    print('non-casa requirements unavailable')
+import regions
+from spectral_cube import SpectralCube
+from astropy import units as u
+from metadata_tools import logprint
 
 try:
     from casatools import image
