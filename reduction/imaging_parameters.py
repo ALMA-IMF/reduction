@@ -79,6 +79,12 @@ imaging_parameters_nondefault = {
                                 },
                                 'scales': [0,3,9,27],
                             },
+    'W51-IRS2_B3_12M_robust0': {'threshold':
+                                {0: '0.3mJy', 1: '0.2mJy', 2: '0.2mJy',
+                                 3: '0.1mJy', 4: '0.08mJy'
+                                },
+                                'scales': [0,3,9,27],
+                            },
     #'G338.93_B3_12M_robust0': {'threshold': {0: '0.5mJy', 1: '0.25mJy', 2:
     #    '0.1mJy', 3: '0.1mJy'},
     #    'niter': {0: 2000, 1: 5000, 2: 10000, 3: 20000},
