@@ -336,7 +336,7 @@ if __name__ == "__main__":
 
     figure = inset_overlays(fn=fn1, fnzoom=fn2,
                             zoomregions={k:v for k,v in zoomregions.items() if v['inregion'] == 'W51e2'},
-                            vmin=-0.001, vmax=0.2,
+                            vmin=-0.001, vmax=0.03,
                             #norm=pl.matplotlib.colors.LogNorm(), #visualizaiton.simple_norm(stretch='log', vmin=-0.001, vmax=0.2),
                             bottomleft=coordinates.SkyCoord('19:23:44.3',
                                                        '14:30:31.500',
