@@ -163,6 +163,8 @@ for continuum_ms in continuum_mses:
             logprint("Skipping {0} because it is not in FIELD_ID={1}"
                      .format(field, os.getenv('FIELD_ID')))
             continue
+        elif '_' in os.getenv('FIELD_ID'):
+            field = os.getenv('FIELD_ID')
 
     if exclude_7m:
         msmd.open(continuum_ms)
