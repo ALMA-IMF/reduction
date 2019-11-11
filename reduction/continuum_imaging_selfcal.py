@@ -99,9 +99,10 @@ from applycal_cli import applycal_cli as applycal
 from exportfits_cli import exportfits_cli as exportfits
 from ft_cli import ft_cli as ft
 
-from taskinit import msmdtool, iatool
+from taskinit import msmdtool, iatool, tbtool
 msmd = msmdtool()
 ia = iatool()
+tb = tbtool()
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
