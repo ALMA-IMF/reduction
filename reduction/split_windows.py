@@ -89,7 +89,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
     for fn in dirnames:
         if fn[-10:] == ".split.cal":
 
-            logprint("Collecting metadata for {0}".format(fn))
+            logprint("Collecting metadata for {0} in {1}".format(fn, dirpath))
 
             msmd.open(os.path.join(dirpath, fn))
 
@@ -144,6 +144,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:
                 fh.write("{0}".format(antnames))
+            logprint("Acquired metadata for {0} in {1}_{2} successfully"
+                     .format(fn, field, band))
 
 
             msmd.close()
