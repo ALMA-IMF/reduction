@@ -28,6 +28,9 @@ def imstats(fn):
     peak = np.nanmax(data)
 
     return {'beam': bm.to_header_keywords(),
+            'bmaj': bm.major.to(u.arcsec).value,
+            'bmin': bm.minor.to(u.arcsec).value,
+            'bpa': bm.pa.value,
             'mad': mad,
             'peak': peak,
             'peak/mad': peak/mad,
