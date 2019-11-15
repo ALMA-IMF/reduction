@@ -1,4 +1,7 @@
 import numpy as np
+import json
+from astropy.table import Table
+from astropy import units as u
 from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
@@ -16,6 +19,9 @@ def imstats(fn):
     peak = np.nanmax(data)
 
     return {'beam': bm.to_header_keywords(),
+            'bmaj': bm.major.to(u.arcsec).value,
+            'bmin': bm.minor.to(u.arcsec).value,
+            'bpa': bm.pa.value,
             'mad': mad,
             'peak': peak,
             'peak/mad': peak/mad,
@@ -81,6 +87,21 @@ def savestats():
     stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0.fits", ditch_suffix=".image.tt0.fits")
     with open('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
+
+    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix']
+    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
+
+    rows = []
+    for entry in stats:
+        rows += [[entry['meta'][key] for key in meta_keys] +
+                 [entry['stats'][key] for key in stats_keys]]
+
+    tbl = Table(rows=rows, names=meta_keys+stats_keys)
+
+    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv')
+    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.html', format='ascii.html')
+
+    return tbl
 
 if __name__ == "__main__":
     import socket
