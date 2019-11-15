@@ -67,18 +67,30 @@ import copy
 import sys
 import shutil
 
-almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
-if almaimf_rootdir is None:
+try:
+    # If run from command line
+    aux = os.path.dirname(os.path.realpath(sys.argv[2]))
+    if os.path.isdir(aux):
+        almaimf_rootdir = aux
+        from_cmd = True
+except:
+    from_cmd = False
+
+if 'almaimf_rootdir' in locals():
+    os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
+if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
         import metadata_tools
-        almaimf_rootdir = os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+        os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
     except ImportError:
         raise ValueError("metadata_tools not found on path; make sure to "
                          "specify ALMAIMF_ROOTDIR environment variable "
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    sys.path.append(almaimf_rootdir)
+    import sys
+    sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 
 import numpy as np
 
@@ -107,6 +119,19 @@ tb = tbtool()
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
+
+# Command line options
+if from_cmd:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', nargs=1, 
+            help='Casa parameter')
+    parser.add_argument('--exclude7M', action='store_true',
+            help='Include 7M data')
+    parser.add_argument('--only7M', action='store_true',
+            help='Only image 7M data')
+    args = parser.parse_args()
+    exclude_7m = args.exclude7M
+    only_7m = args.only7M
 
 if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
