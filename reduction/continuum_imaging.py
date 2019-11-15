@@ -327,6 +327,8 @@ for continuum_ms in continuum_mses:
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
+            exportfits(imname+".model.tt0", imname+".model.tt0.fits")
+            exportfits(imname+".residual.tt0", imname+".residual.tt0.fits")
         else:
             logprint("Skipping completed file {0}".format(imname), origin='almaimf_cont_imaging')
 
@@ -403,6 +405,8 @@ for continuum_ms in continuum_mses:
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
+            exportfits(imname+".model.tt0", imname+".model.tt0.fits")
+            exportfits(imname+".residual.tt0", imname+".residual.tt0.fits")
         else:
             logprint("Skipping completed file {0}".format(imname),
                      origin='almaimf_cont_imaging')
