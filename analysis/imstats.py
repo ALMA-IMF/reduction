@@ -53,6 +53,7 @@ def parse_fn(fn):
             'selfcaliter': selfcal_entry[-1],
             'robust': robust,
             'suffix': split[-1],
+            'bsens': 'bsens' in fn.lower(),
            }
 
 def assemble_stats(globstr, ditch_suffix=None):
@@ -84,7 +85,7 @@ class MyEncoder(json.JSONEncoder):
             return super(MyEncoder, self).default(obj)
 
 def savestats():
-    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0.fits", ditch_suffix=".image.tt0.fits")
+    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0*.fits", ditch_suffix=".image.tt0.fits")
     with open('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
