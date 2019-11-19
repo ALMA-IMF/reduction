@@ -78,11 +78,30 @@ class MyEncoder(json.JSONEncoder):
             return super(MyEncoder, self).default(obj)
 
 def savestats():
-    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0.fits", ditch_suffix=".image.tt0.fits")
+    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0*.fits", ditch_suffix=".image.tt")
     with open('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
+
+    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix']
+    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
+
+    rows = []
+    for entry in stats:
+        rows += [[entry['meta'][key] for key in meta_keys] +
+                 [entry['stats'][key] for key in stats_keys]]
+
+    tbl = Table(rows=rows, names=meta_keys+stats_keys)
+
+    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv', overwrite=True)
+    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.html',
+              format='ascii.html', overwrite=True)
+    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.tex')
+    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.js.html',
+              format='jsviewer')
+
+    return tbl
 
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        savestats()
+        tbl = savestats()
