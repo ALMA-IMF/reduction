@@ -12,23 +12,33 @@ def load_images(basename, crop=True):
 
     for imn in imnames:
         if not os.path.exists(f'{basename}.{imn}.tt0'):
-            raise IOError(f"File {basename}.{imn}.tt0 does not exist")
+            if os.path.exists(f'{basename}.{imn}.tt0.fits'):
+                suffix = ".fits"
+            else:
+                raise IOError(f"File {basename}.{imn}.tt0 does not exist")
+        else:
+            suffix = ""
 
-    cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0', format='casa_image')
+    cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0{suffix}',
+                                    format='fits' if 'fits' in suffix else 'casa_image')
              for imn in imnames}
 
     assert hasattr(cubes['image'], 'beam'), "No beam found in cube!"
     assert hasattr(cubes['image'], 'pixels_per_beam'), "No beam found in cube!"
 
-    pb = SpectralCube.read(f'{basename}.pb.tt0', format='casa_image')
+    if os.path.exists(f'{basename}.pb.tt0{suffix}'):
+        pb = SpectralCube.read(f'{basename}.pb.tt0{suffix}',
+                               format='fits' if 'fits' in suffix else 'casa_image')
 
 
-    #masks = [cube != 0 * cube.unit for cube in cubes.values()]
-    #include_mask = reduce(lambda x,y: x or y, masks)
-    #include_mask = cubes['residual'] != 0*cubes['residual'].unit
-    include_mask = pb > 0.05*pb.unit
+        #masks = [cube != 0 * cube.unit for cube in cubes.values()]
+        #include_mask = reduce(lambda x,y: x or y, masks)
+        #include_mask = cubes['residual'] != 0*cubes['residual'].unit
+        include_mask = pb > 0.05*pb.unit
 
-    cubes['pb'] = pb
+        cubes['pb'] = pb
+    else:
+        include_mask = True
 
 
     imgs = {imn:
@@ -39,7 +49,8 @@ def load_images(basename, crop=True):
 
 
     try:
-        casamask = SpectralCube.read(f'{basename}.mask', format='casa_image')
+        casamask = SpectralCube.read(f'{basename}.mask',
+                                     format='fits' if 'fits' in suffix else 'casa_image')
         cubes['mask'] = casamask
         imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
                         if crop else

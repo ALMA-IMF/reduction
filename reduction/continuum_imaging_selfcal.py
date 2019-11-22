@@ -23,6 +23,26 @@ You can set the following environmental variables for this script:
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
 
+What does it do
+===============
+The imaging self-calibration step does the following:
+
+    (1) Select data based on the FIELD_ID, EXCLUDE_7M, and BAND_TO_IMAGE
+    parameters
+    (2) split those data into a new file called <basename>_<arrayname>_selfcal.ms,
+    where <basename> is the name of the merged calibrated continuum measurement set.
+    (3) do initial dirty imaging in a file named <preamble>_dirty_preselfcal
+    (4) create a mask using ds9 regions based off of the dirty image (or,
+    optionally, off an existing cleaned image).  This step will be skipped if you
+    use a CRTF region
+    (5) re-image the data in a file named <preamble>_preselfcal using the mask
+    from (4) (or whatever mask you've specified).  If this image already exists,
+    the model column of the ms will be populated based on the existing image.
+    (6) optionally make a new mask based on the cleaned image in (5)
+    (7) Begin the self-calibration iterations:
+        (a) Calculate gain solutions based on the imaging_parameters.py selfcal
+        parameters dictionary
+
 
 Restarting
 ==========

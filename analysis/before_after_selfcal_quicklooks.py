@@ -65,7 +65,9 @@ def get_selfcal_number(fn):
     except:
         return 0
 
+
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+#for field in ("G333.60",):
     for band in (3,6):
         for config in ('7M12M', '12M'):
 
@@ -73,7 +75,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             fns = [x for x in glob.glob(f"{field}*_B{band}_*_{config}_*selfcal[0-9]*.image.tt0")
                    if 'robust0' in x]
             # for not all-in-the-same-place stuff
-            fns = [x for x in glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_*selfcal[0-9]*.image.tt0.fits")
+            fns = [x for x in glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_*selfcal[0-9]*.image.tt0*.fits")
                    if 'robust0' in x]
 
             if any(fns):
@@ -99,6 +101,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     print(field, band, config, ex)
                     continue
 
+                print(fns)
                 print(f"{field}_B{band}:{last_selfcal}")
             else:
                 print(f"No hits for {field}_B{band}_{config}")
