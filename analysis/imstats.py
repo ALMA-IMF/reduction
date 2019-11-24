@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 import json
 from astropy.table import Table,Column
 from astropy import units as u
@@ -6,6 +7,7 @@ from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
 import os
+import glob
 
 
 def get_requested_sens():
@@ -89,18 +91,11 @@ class MyEncoder(json.JSONEncoder):
         else:
             return super(MyEncoder, self).default(obj)
 
-template = """
-<html>
-<script type='text/javascript'>
-var filename = "{filename}.png";
-document.write('<center><a href='+'"'+filename+'"'+'> <img src="'+filename+'" height=341 border=0></a></center>');
-document.write('<iframe src="{form_url}" width="1200" height="1326" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>')</script></html>
-"""
-def make_quicklook_analysis_form(filename, metadata, savepath):
+def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
     base_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true"
     form_url_dict = {#"868884739":"{reviewer}",
-                     "639517087":"{field}",
-                     "400258516":"{band}",
+                     "639517087": "{field}",
+                     "400258516": "{band}",
                      "841871158": "{selfcal}",
                      "312922422": "{array}",
                      "678487127": "{robust}",
@@ -108,9 +103,31 @@ def make_quicklook_analysis_form(filename, metadata, savepath):
                     }
     form_url = base_form_url + "".join(f'&entry.{key}={value}' for key,value in form_url_dict.items())
 
+    template = """
+    <html>
+    <body onbeforeunload="document.write('unloading...')" beforeunload=null>
+    <center>
+        <img src="{filename}" style="width: 100%;" border=0>
+    </center>
+    <iframe id=frame name=frame src="{form_url}" width="1200" height="1326" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    </body>
+    <script type="text/javascript">
+    window.onbeforeunload="document.write('unloading...')";
+    window.beforeunload=null;
+    </script>
+    Previous: <a href="{prev}">{prev}</a> |
+    Next: <a href="{next_}">{next_}</a>
+    <script type="text/javascript">
+    let params = new URLSearchParams(location.search);
+    var name = params.get('name');
+    if (name) {{{{document.getElementById('frame').src = document.getElementById('frame').src + "&entry.868884739=" + name;}}}}
+    </script>
+    </html>
+    """
+
     with open(f'{savepath}/{filename}.html', 'w') as fh:
         fh.write(template
-                 .format(form_url=form_url, filename=filename)
+                 .format(form_url=form_url, filename=filename+".png", prev=prev, next_=next_)
                  .format(**metadata)
                 )
 
@@ -125,6 +142,7 @@ def get_selfcal_number(fn):
 def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/quicklooks/"):
     import glob
     from diagnostic_images import load_images, show as show_images
+    from astropy import visualization
     import pylab as pl
 
     try:
@@ -132,42 +150,188 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
     except:
         pass
 
-    for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
-    #for field in ("G333.60",):
-        for band in (3,6):
-            for config in ('7M12M', '12M'):
-                for robust in (-2, 0, 2):
 
-                    # for not all-in-the-same-place stuff
-                    fns = [x for x in glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal[0-9]*.image.tt0*.fits") ]
+    filedict = {(field, band, config, robust, selfcal):
+        glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
+                for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
+                for band in (3,6)
+                for config in ('7M12M', '12M')
+                for robust in (-2, 0, 2)
+                for selfcal in range(0,8)
+               }
+    badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
+    print(f"Bad files: {badfiledict}")
+    filedict = {key: val for key, val in filedict.items() if len(val) > 1}
+    filelist = [key + (fn,) for key, val in filedict.items() for fn in val]
 
-                    for fn in fns:
-                        image = fn
-                        basename = image.split(".image.tt0")[0]
-                        outname = basename.split("/")[-1]
+    prev = 'index.html'
 
-                        try:
-                            imgs, cubes = load_images(basename)
-                        except Exception as ex:
-                            print(ex)
-                            continue
-                        show_images(imgs)
+    flist = []
 
-                        pl.savefig(f"{savepath}/{outname}.png")
+    #for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+    ##for field in ("G333.60",):
+    #    for band in (3,6):
+    #        for config in ('7M12M', '12M'):
+    #            for robust in (-2, 0, 2):
 
-                        metadata = {'field': field,
-                                    'band': band,
-                                    'selfcal': get_selfcal_number(basename),
-                                    'array': config,
-                                    'robust': robust,
-                                   }
-                        make_quicklook_analysis_form(filename=outname,
-                                                     metadata=metadata,
-                                                     savepath=savepath)
+    #                # for not all-in-the-same-place stuff
+    #                fns = [x for x in glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal[0-9]*.image.tt0*.fits") ]
 
-                        print(fns)
-                    else:
-                        print(f"No hits for {field}_B{band}_{config}_robust{robust}")
+    #                for fn in fns:
+    for ii,(field, band, config, robust, selfcal, fn) in enumerate(filelist):
+
+        image = fn
+        basename,suffix = image.split(".image.tt0")
+        outname = basename.split("/")[-1]
+
+        if prev == outname+".html":
+            print(f"{ii}: {(field, band, config, robust, fn)} yielded the same prev "
+                  f"{prev} as last time, skipping.")
+            continue
+
+
+        jj = 1
+        while jj < len(filelist):
+            if ii+jj < len(filelist):
+                next_ = filelist[ii+jj][5].split(".image.tt0")[0].split("/")[-1]+".html"
+            else:
+                next_ = "index.html"
+
+            if next_ == outname+".html":
+                jj = jj + 1
+            else:
+                break
+
+        assert next_ != outname+".html"
+
+        try:
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore')
+                imgs, cubes = load_images(basename, suffix=suffix)
+        except KeyError as ex:
+            print(ex)
+            raise
+        except Exception as ex:
+            print(f"EXCEPTION: {type(ex)}: {str(ex)}")
+            continue
+        logn = visualization.ImageNormalize(stretch=visualization.LogStretch())
+        pl.close(1)
+        pl.figure(1, figsize=(14,6))
+        show_images(imgs, norm=logn)
+
+        pl.savefig(f"{savepath}/{outname}.png",
+                   bbox_inches='tight')
+
+        metadata = {'field': field,
+                    'band': band,
+                    'selfcal': selfcal, #get_selfcal_number(basename),
+                    'array': config,
+                    'robust': robust,
+                   }
+        make_quicklook_analysis_form(filename=outname,
+                                     metadata=metadata,
+                                     savepath=savepath,
+                                     prev=prev,
+                                     next_=next_,
+                                    )
+        metadata['outname'] = outname
+        flist.append(metadata)
+        prev = outname+".html"
+
+
+    #make_rand_html(savepath)
+    make_index(savepath, flist)
+
+def make_index(savepath, flist):
+    css = """
+    .right {
+    width: 80%;
+    float: right;
+}
+
+.left {
+    float: left;
+    /* the next props are meant to keep this block independent from the other floated one */
+    width: auto;
+    overflow: hidden;
+}
+"""
+    js = """
+      <script>
+
+      let params = new URLSearchParams(location.search);
+      var name = params.get('name');
+
+      function changeSrc(loc) {
+          if (name) {
+              document.getElementById('iframe').src = loc + "?name=" + name;
+          } else {
+              document.getElementById('iframe').src = loc;
+          }
+      }
+      </script>"""
+    with open(f"{savepath}/index.html", "w") as fh:
+        fh.write("<html>\n")
+        fh.write(f'<style type="text/css">{css}</style>\n')
+        fh.write(f"{js}\n")
+        fh.write("<div class='left' style='max-width:20%'>\n")
+        fh.write("<ul>\n")
+        for metadata in flist:
+            filename = metadata['outname']+".html"
+            meta_str = (f"{metadata['field']}_{metadata['band']}"
+                        f"_selfcal{metadata['selfcal']}"
+                        f"_{metadata['array']}_robust{metadata['robust']}")
+            #fh.write(f'<li><a href="{filename}">{meta_str}</a></li>\n')
+            fh.write(f"<li><button onclick=\"changeSrc('{filename}')\">{meta_str}</a></li>\n")
+        fh.write("</ul>\n")
+        fh.write("</div>\n")
+        fh.write("<div class='right' style='width:80%'>\n")
+        fh.write("<iframe name=iframe id=iframe src='' width='100%' height='100%'></iframe>\n")
+        fh.write("</div>\n")
+        fh.write("</html>\n")
+
+def make_rand_html(savepath):
+    randform_template = """
+<html>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+
+<script type="text/javascript">
+function random_form(){{
+    var myimages=new Array()
+    {randarr_defs}
+    var ry=Math.floor(Math.random()*myimages.length);
+    while (myimages[ry] == undefined) {{
+        var ry=Math.floor(Math.random()*myimages.length);
+    }}
+
+}}
+
+var loadNewContent = function {
+  $.ajax(random_form(), {
+    success: function(response) {
+
+        $("#content2").html(response);
+
+
+    }
+  }); };
+
+var reader = new FileReader();
+var newdocument = reader.readAsText(random_form(), "UTF-16");
+
+document.write(newdocument)
+
+</script>
+</html>
+"""
+    forms = glob.glob(f"{savepath}/*html")
+
+    randarr_defs = "\n".join([f"myimages[{ii}]='{fn}'" for ii, fn in
+                              enumerate(forms)])
+
+    with open(f"{savepath}/index.html", "w") as fh:
+        fh.write(randform_template.format(randarr_defs=randarr_defs,))
+
 
 
 def savestats():
@@ -213,4 +377,5 @@ if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
         #tbl = savestats()
+        make_analysis_forms()
         pass
