@@ -8,27 +8,40 @@ from astropy import units as u
 
 imnames = ['image', 'model', 'residual']
 
-def load_images(basename, crop=True):
+def load_images(basename, suffix=None, crop=True):
+    import warnings
 
-    for imn in imnames:
-        if not os.path.exists(f'{basename}.{imn}.tt0'):
-            if os.path.exists(f'{basename}.{imn}.tt0.fits'):
-                suffix = ".fits"
-            else:
-                raise IOError(f"File {basename}.{imn}.tt0 does not exist")
-        else:
-            suffix = ""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0{suffix}',
+                                        format='fits' if 'fits' in sfx else 'casa_image')
+                 for sfx in ("", ".fits")
+                 for imn in imnames
+                 if os.path.exists(f'{basename}.{imn}.tt0{suffix}')
+                }
 
-    cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0{suffix}',
-                                    format='fits' if 'fits' in suffix else 'casa_image')
-             for imn in imnames}
 
     assert hasattr(cubes['image'], 'beam'), "No beam found in cube!"
     assert hasattr(cubes['image'], 'pixels_per_beam'), "No beam found in cube!"
 
+    # catch some whack errors...
+    for key in cubes:
+        if cubes[key].spectral_axis.unit != cubes['image'].spectral_axis.unit:
+            cubes[key] = cubes[key].with_spectral_unit(cubes['image'].spectral_axis.unit)
+
     if os.path.exists(f'{basename}.pb.tt0{suffix}'):
         pb = SpectralCube.read(f'{basename}.pb.tt0{suffix}',
                                format='fits' if 'fits' in suffix else 'casa_image')
+
+        # pb can have a bad CD in its wcs, but that CD is totally
+        # irrelevant in most cases
+        # this is unfortunately a hack
+        if pb.shape == cubes['image'].shape:
+            if pb.wcs.wcs.cdelt[-1] != cubes['image'].wcs.wcs.cdelt[-1]:
+                pb._wcs.wcs.cdelt[-1] = cubes['image'].wcs.wcs.cdelt[-1]
+                pb._wcs.wcs.crval[-1] = cubes['image'].wcs.wcs.crval[-1]
+                pb._wcs.wcs.cunit[-1] = cubes['image'].wcs.wcs.cunit[-1]
+                pb._wcs.wcs.ctype[-1] = cubes['image'].wcs.wcs.ctype[-1]
 
 
         #masks = [cube != 0 * cube.unit for cube in cubes.values()]
@@ -38,18 +51,24 @@ def load_images(basename, crop=True):
 
         cubes['pb'] = pb
     else:
-        include_mask = True
+        include_mask = None
 
+    if include_mask is not None:
+        mcubes = {imn: cubes[imn].with_mask(include_mask)
+                  for imn in cubes}
+    else:
+        mcubes = cubes
 
     imgs = {imn:
-            cubes[imn].with_mask(include_mask).minimal_subcube()[0]
+            mcubes[imn].minimal_subcube()[0]
             if crop else
-            cubes[imn].with_mask(include_mask)[0]
-            for imn in imnames}
+            mcubes[imn][0]
+            for imn in imnames
+            if imn in mcubes}
 
 
     try:
-        casamask = SpectralCube.read(f'{basename}.mask',
+        casamask = SpectralCube.read(f'{basename}.mask{suffix}',
                                      format='fits' if 'fits' in suffix else 'casa_image')
         cubes['mask'] = casamask
         imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
@@ -61,8 +80,9 @@ def load_images(basename, crop=True):
 
     imgs['includemask'] = include_mask # the mask applied to the cube
 
-    # give up on the 'Slice' nature so we can change units
-    imgs['model'] = imgs['model'].quantity * cubes['image'].pixels_per_beam * u.pix / u.beam
+    if 'model' in imgs:
+        # give up on the 'Slice' nature so we can change units
+        imgs['model'] = imgs['model'].quantity * cubes['image'].pixels_per_beam * u.pix / u.beam
 
     return imgs, cubes
 
@@ -78,6 +98,13 @@ def show(imgs, zoom=None, clear=True, norm=asinhn,
     if 'mask' not in imgs:
         imnames_toplot = list(imnames_toplot)
         imnames_toplot.remove('mask')
+
+    # filter out things that weren't found in images
+    # (this makes the code below robust, as in it won't fail, but it can defeat
+    # the purpose of this code if that goal is to make plots of multiple
+    # images)
+    imnames_toplot = [x for x in imnames_toplot
+                      if x in imgs]
 
     for ii,imn in enumerate(imnames_toplot):
         ax = pl.subplot(1, len(imnames_toplot), ii+1)
