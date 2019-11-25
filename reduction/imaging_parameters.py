@@ -98,6 +98,8 @@ imaging_parameters_nondefault = {
                                             1: 'G008.67_B6_12M_robust0.crtf',}},
     'G008.67_B3_12M_robust0': {'maskname': {0: 'G008.67_B6_12M_robust0.crtf',
                                             1: 'G008.67_B6_12M_robust0.crtf',}},
+    'G012.80_B3_12M_robust0':{'threshold':{0:'10.0mJy', 1:'10mJy', 2:'5mJy', 3:'3mJy', 4:'1mJy', 5:'0.25mJy'},
+        'niter':{0:500, 1:100, 2:1000, 3:3000, 4:5000, 5:7000},
     'G337.92_B3_12M_robust0': {'threshold': '0.25mJy', # RMS ~0.5-0.6 mJy
                                'scales': [0,3,9,27],
                               },
@@ -463,6 +465,40 @@ selfcal_pars['G327.29_B6_12M_robust0'][5] = {'solint': '5s',
                                            'calmode': 'p',
                                            'solnorm': True
                                           }
+selfcal_pars['G012.80_B3_12M_robust0'][1] = {'solint': 'inf',
+                                          'gaintype':'T',
+                                          'calmode':'p',
+                                          'minsnr':5,
+                                          }
+
+
+selfcal_pars['G012.80_B3_12M_robust0'][2] = {'solint': '1200s',
+                                          'gaintype':'T',
+                                          'calmode':'p',
+                                          'minsnr':5,
+                                          }
+
+
+selfcal_pars['G012.80_B3_12M_robust0'][3] = {'solint': '300s',
+                                          'gaintype':'T',
+                                          'calmode':'p',
+                                          'minsnr':5,
+                                          }
+
+
+selfcal_pars['G012.80_B3_12M_robust0'][4] = {'solint': '300s',
+                                          'gaintype':'T',
+                                          'calmode':'p',
+                                          'minsnr':5,
+                                          }
+
+
+selfcal_pars['G012.80_B3_12M_robust0'][5] = {'solint': 'inf',
+                                          'gaintype':'T',
+                                          'calmode':'a',
+                                          'minsnr':5,
+                                          }
+
 time_interval_progression_of_selfcal = {0: 'inf', 1:'60s', 2: '45s', 3:'30s', 4:'15s',5:'10s'}
 for ii in range(1,5):
     selfcal_pars['G010.62_B3_7M12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
