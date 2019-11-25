@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 import glob
 import os
 from astropy.io import fits
@@ -108,18 +109,23 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x][0]
 
                 preselfcal_name = fns[0].replace(f"_selfcal{last_selfcal}","_preselfcal")
+                if "_finaliter" in preselfcal_name:
+                    preselfcal_name = preselfcal_name.replace("_finaliter","")
                 if not os.path.exists(preselfcal_name):
                     # try alternate naming scheme
                     preselfcal_name = fns[0].replace(f"_selfcal{last_selfcal}","")
-                if "_finaliter" in preselfcal_name:
-                    preselfcal_name = preselfcal_name.replace("_finaliter","")
+                    if "_finaliter" in preselfcal_name:
+                        preselfcal_name = preselfcal_name.replace("_finaliter","")
 
                 try:
-                    ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name, postselfcal_name)
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings('ignore')
+                        ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name, postselfcal_name)
                     if not os.path.exists(f"{field}/B{band}/comparisons/"):
                         os.mkdir(f"{field}/B{band}/comparisons/")
                     pl.savefig(f"{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
                 except Exception as ex:
+                    print(f"Failure for pre={preselfcal_name} post={postselfcal_name}")
                     print(field, band, config, ex)
                     continue
 
@@ -157,5 +163,5 @@ tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.te
           formats=formats,
           overwrite=True)
 tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.js.html',
-          formats=formats,
+          #formats=formats,
           format='jsviewer')
