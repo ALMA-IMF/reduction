@@ -292,6 +292,23 @@ if __name__ == "__main__":
                                                        frame='icrs',
                                                        unit=(u.hour, u.deg),),
                            )
+    figure.savefig('W51e8_zoomin.pdf', bbox_inches='tight', dpi=300)
+    figure.savefig('W51e8_zoomin.png', bbox_inches='tight', dpi=300)
+
+
+    figure = inset_overlays(fn=fn1, fnzoom=fn2,
+                            zoomregions={k:v for k,v in zoomregions.items() if v['inregion'] == 'W51e2'},
+                            vmin=-0.001, vmax=0.03,
+                            #norm=pl.matplotlib.colors.LogNorm(), #visualizaiton.simple_norm(stretch='log', vmin=-0.001, vmax=0.2),
+                            bottomleft=coordinates.SkyCoord('19:23:44.3',
+                                                       '14:30:31.500',
+                                                       frame='fk5',
+                                                       unit=(u.hour, u.deg),),
+                            topright=coordinates.SkyCoord('19:23:43.6',
+                                                       '14:30:41.620',
+                                                       frame='fk5',
+                                                       unit=(u.hour, u.deg),),
+                           )
     figure.savefig('W51e2_zoomin.pdf', bbox_inches='tight', dpi=300)
     figure.savefig('W51e2_zoomin.png', bbox_inches='tight', dpi=300)
 
