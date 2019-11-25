@@ -110,9 +110,13 @@ def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
     <html>
     <body onbeforeunload="document.write('unloading...')" beforeunload=null>
     <center>
+        <div> {filename} </div>
         <img src="{filename}" style="width: 100%;" border=0>
     </center>
-    <iframe id=frame name=frame src="{form_url}" width="1200" height="1326" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    <iframe id=frame name=frame sandbox="allow-scripts allow-forms
+        allow-pointer-lock allow-same-origin" src="{form_url}" width="1200"
+        height="1326" frameborder="0" marginheight="0"
+        marginwidth="0">Loading…</iframe>
     </body>
     <script type="text/javascript">
     window.onbeforeunload="document.write('unloading...')";
@@ -130,7 +134,8 @@ def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
 
     with open(f'{savepath}/{filename}.html', 'w') as fh:
         fh.write(template
-                 .format(form_url=form_url, filename=filename+".png", prev=prev, next_=next_)
+                 .format(form_url=form_url, filename=filename+".png",
+                         prev=prev, next_=next_)
                  .format(**metadata)
                 )
 
@@ -210,6 +215,8 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         try:
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore')
+                print(f"{ii}: {(field, band, config, robust, fn)}"
+                      f" basename='{basename}', suffix='{suffix}'")
                 imgs, cubes = load_images(basename, suffix=suffix)
         except KeyError as ex:
             print(ex)
@@ -238,6 +245,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                                      next_=next_,
                                     )
         metadata['outname'] = outname
+        metadata['suffix'] = suffix
         flist.append(metadata)
         prev = outname+".html"
 
@@ -283,7 +291,8 @@ def make_index(savepath, flist):
             filename = metadata['outname']+".html"
             meta_str = (f"{metadata['field']}_{metadata['band']}"
                         f"_selfcal{metadata['selfcal']}"
-                        f"_{metadata['array']}_robust{metadata['robust']}")
+                        f"_{metadata['array']}_robust{metadata['robust']} "
+                        f"{metadata['suffix']}")
             #fh.write(f'<li><a href="{filename}">{meta_str}</a></li>\n')
             fh.write(f"<li><button onclick=\"changeSrc('{filename}')\">{meta_str}</a></li>\n")
         fh.write("</ul>\n")
@@ -379,6 +388,5 @@ def savestats():
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        #tbl = savestats()
+        tbl = savestats()
         make_analysis_forms()
-        pass

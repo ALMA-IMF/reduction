@@ -1,8 +1,11 @@
+import numpy as np
 import glob
 import os
 from astropy.io import fits
 from astropy import visualization
+from astropy.table import Table, Column
 from spectral_cube import SpectralCube
+from astropy.stats import mad_std
 import pylab as pl
 
 
@@ -56,7 +59,16 @@ def make_comparison_image(preselfcal, postselfcal):
 
     pl.subplots_adjust(wspace=0.0)
 
-    return ax1,ax2,ax3,fig
+    diffstats = {'mean': np.nanmean(diff),
+                 'max': np.nanmax(diff),
+                 'min': np.nanmin(diff),
+                 'median': np.nanmedian(diff),
+                 'mad': mad_std(diff, ignore_nan=True),
+                 'dr_pre': np.nanmax(data_pre) / mad_std(data_pre, ignore_nan=True),
+                 'dr_post': np.nanmax(data_post) / mad_std(data_post, ignore_nan=True),
+                }
+
+    return ax1, ax2, ax3, fig, diffstats
 
 def get_selfcal_number(fn):
     numberstring = fn.split("selfcal")[1][0]
@@ -65,6 +77,16 @@ def get_selfcal_number(fn):
     except:
         return 0
 
+
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv')
+tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMeanDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMedianDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='dr_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='dr_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
 #for field in ("G333.60",):
@@ -93,7 +115,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     preselfcal_name = preselfcal_name.replace("_finaliter","")
 
                 try:
-                    make_comparison_image(preselfcal_name, postselfcal_name)
+                    ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name, postselfcal_name)
                     if not os.path.exists(f"{field}/B{band}/comparisons/"):
                         os.mkdir(f"{field}/B{band}/comparisons/")
                     pl.savefig(f"{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
@@ -101,7 +123,39 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     print(field, band, config, ex)
                     continue
 
+                matchrow = ((tbl['region'] == field) &
+                            (tbl['band'] == f'B{band}') &
+                            (tbl['array'] == '12Monly' if config == '12M' else config) &
+                            (tbl['robust'] == 'r0.0')
+                           )
+                tbl['scMaxDiff'][matchrow] = diffstats['max']
+                tbl['scMinDiff'][matchrow] = diffstats['min']
+                tbl['scMADDiff'][matchrow] = diffstats['mad']
+                tbl['scMeanDiff'][matchrow] = diffstats['mean']
+                tbl['scMedianDiff'][matchrow] = diffstats['median']
+                tbl['dr_pre'][matchrow] = diffstats['dr_pre']
+                tbl['dr_post'][matchrow] = diffstats['dr_post']
+                tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
+
                 print(fns)
                 print(f"{field}_B{band}:{last_selfcal}")
             else:
                 print(f"No hits for {field}_B{band}_{config}")
+
+
+formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
+           'scMaxDiff': lambda x: f'{x:0.6g}',
+           'BeamVsReq': lambda x: f'{x:0.2f}',
+          }
+
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.ecsv',
+          overwrite=True)
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.html',
+          formats=formats,
+          format='ascii.html', overwrite=True)
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.tex',
+          formats=formats,
+          overwrite=True)
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.js.html',
+          formats=formats,
+          format='jsviewer')
