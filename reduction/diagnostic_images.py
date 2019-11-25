@@ -54,13 +54,21 @@ def load_images(basename, suffix=None, crop=True):
         include_mask = None
 
     if include_mask is not None:
-        mcubes = {imn: cubes[imn].with_mask(include_mask)
+        mcubes = {imn: (cubes[imn]
+                        .with_mask(include_mask)
+                        .with_mask(cubes[imn] != 0*cubes[imn].unit))
                   for imn in cubes}
     else:
         mcubes = cubes
 
+    # base the cropping off of the image
+    if crop:
+        view = mcubes['image'].subcube_slices_from_mask(mcubes['image'].mask)
+    else:
+        view = (slice(None),)*3
+
     imgs = {imn:
-            mcubes[imn].minimal_subcube()[0]
+            mcubes[imn][view][0]
             if crop else
             mcubes[imn][0]
             for imn in imnames
