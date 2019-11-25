@@ -223,8 +223,35 @@ imaging_parameters_nondefault = {
         'niter': {5: 20000}},
     'G327.29_B6_12M_robust-2': {'threshold': {5: '1.0mJy'},
         'niter': {5: 20000}},
+'G010.62_B3_7M12M_robust0': {'threshold': {0:'7mJy', 1: '3mJy', 2: '1.5 mJy', 3:'0.7mJy', 4:'0.35mJy'},
+                                 'niter':{0:700, 1:1300, 2: 2500, 3: 5000, 4: 10000},
+                                 'maskname':{0:'G010.62_centralBox_50_30.reg',
+                                             1:'G010.62_B3_50mJy.crtf', #
+                                             2:'G010.62_B3_15mJy.crtf', #
+                                             3:'G010.62_B3_05mJy.crtf', #
+                                             4:'G010.62_B3_03mJy.crtf', #
+                             }},
+'G010.62_B3_12M_robust0': {'threshold': {0:'10mJy', 1: '5mJy', 2: '2.5 mJy', 3:'1.0mJy', 4:'0.5mJy',5:'0.3mJy'},
+                                 'niter':{0:700, 1:1300, 2: 2500, 3: 5000, 4: 10000,5:10000},
+                                 'maskname':{0:'G010.62_centralBox_50_30.crtf',
+                                             1:'G010.62_B3_50mJy.crtf', #
+                                             2:'G010.62_B3_15mJy.crtf', #
+                                             3:'G010.62_B3_05mJy.crtf', #
+                                             4:'G010.62_B3_03mJy.crtf', #
+                                             5:'G010.62_B3_01mJy.crtf'
+                                         }},
+'G010.62_B6_12M_robust0': {'threshold': {0:'10mJy', 1: '5mJy', 2: '2.5 mJy', 3:'1.0mJy', 4:'0.5mJy',5:'0.3mJy'},
+                                 'niter':{0:700, 1:1300, 2: 2500, 3: 5000, 4: 10000,5:10000},
+                                 'maskname':{0:'G010.62_centralBox_50_30.crtf',
+                                             1:'G010.62_B3_50mJy.crtf', # Using Band 3 masks for the moment
+                                             2:'G010.62_B3_15mJy.crtf', #
+                                             3:'G010.62_B3_05mJy.crtf', #
+                                             4:'G010.62_B3_03mJy.crtf', #
+                                             5:'G010.62_B3_01mJy.crtf'
+                                         }},
 
 }
+
 for key in imaging_parameters_nondefault:
     assert key in imaging_parameters
     imaging_parameters[key].update(imaging_parameters_nondefault[key])
@@ -436,6 +463,14 @@ selfcal_pars['G327.29_B6_12M_robust0'][5] = {'solint': '5s',
                                            'calmode': 'p',
                                            'solnorm': True
                                           }
+time_interval_progression_of_selfcal = {0: 'inf', 1:'60s', 2: '45s', 3:'30s', 4:'15s',5:'10s'}
+for ii in range(1,5):
+    selfcal_pars['G010.62_B3_7M12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
+    selfcal_pars['G010.62_B3_12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
+    selfcal_pars['G010.62_B6_7M12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
+    selfcal_pars['G010.62_B6_12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
+
+
 
 line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub):
                            {
