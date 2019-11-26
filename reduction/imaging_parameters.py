@@ -99,7 +99,7 @@ imaging_parameters_nondefault = {
     'G008.67_B3_12M_robust0': {'maskname': {0: 'G008.67_B6_12M_robust0.crtf',
                                             1: 'G008.67_B6_12M_robust0.crtf',}},
     'G012.80_B3_12M_robust0':{'threshold':{0:'10.0mJy', 1:'10mJy', 2:'5mJy', 3:'3mJy', 4:'1mJy', 5:'0.25mJy'},
-        'niter':{0:500, 1:100, 2:1000, 3:3000, 4:5000, 5:7000},
+                              'niter':{0:500, 1:100, 2:1000, 3:3000, 4:5000, 5:7000}},
     'G337.92_B3_12M_robust0': {'threshold': '0.25mJy', # RMS ~0.5-0.6 mJy
                                'scales': [0,3,9,27],
                               },
