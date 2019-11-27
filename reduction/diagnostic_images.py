@@ -97,7 +97,7 @@ def load_images(basename, suffix=None, crop=True):
 asinhn = visualization.ImageNormalize(stretch=visualization.AsinhStretch())
 
 def show(imgs, zoom=None, clear=True, norm=asinhn,
-         imnames_toplot=('image', 'model', 'residual', 'mask'),
+         imnames_toplot=('mask', 'model', 'image', 'residual'),
          **kwargs):
 
     if clear:

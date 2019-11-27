@@ -224,12 +224,20 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         except Exception as ex:
             print(f"EXCEPTION: {type(ex)}: {str(ex)}")
             continue
-        logn = visualization.ImageNormalize(stretch=visualization.LogStretch())
+        norm = visualization.ImageNormalize(stretch=visualization.AsinhStretch(),
+                                            interval=visualization.PercentileInterval(99.95))
+        # set the scaling based on one of these...
+        # (this call inplace-modifies logn, according to the docs)
+        if 'residual' in imgs:
+            norm(imgs['residual'][imgs['residual'] == imgs['residual']])
+        elif 'image' in imgs:
+            norm(imgs['image'][imgs['image'] == imgs['image']])
         pl.close(1)
         pl.figure(1, figsize=(14,6))
-        show_images(imgs, norm=logn)
+        show_images(imgs, norm=norm, imnames_toplot=('mask', 'model', 'image', 'residual'))
 
         pl.savefig(f"{savepath}/{outname}.png",
+                   dpi=150,
                    bbox_inches='tight')
 
         metadata = {'field': field,
