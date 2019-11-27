@@ -80,14 +80,12 @@ import copy
 import sys
 import shutil
 
-try:
-    # If run from command line
-    aux = os.path.dirname(os.path.realpath(sys.argv[2]))
-    if os.path.isdir(aux):
-        almaimf_rootdir = aux
-        from_cmd = True
-except:
-    from_cmd = False
+from_cmd = False
+# If run from command line
+aux = os.path.dirname(sys.argv[2])
+if os.path.isdir(aux):
+    almaimf_rootdir = aux
+    from_cmd = True
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
@@ -107,6 +105,7 @@ almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 
 import numpy as np
 
+print(sys.path, "rootdir: ", almaimf_rootdir, "from_cmd: ", from_cmd, 'aux: ', aux)
 from getversion import git_date, git_version
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated, test_tclean_success,
@@ -124,10 +123,11 @@ from applycal_cli import applycal_cli as applycal
 from exportfits_cli import exportfits_cli as exportfits
 from ft_cli import ft_cli as ft
 
-from taskinit import msmdtool, iatool, tbtool
+from taskinit import msmdtool, iatool, tbtool, mstool
 msmd = msmdtool()
 ia = iatool()
 tb = tbtool()
+ms = mstool()
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
@@ -432,6 +432,19 @@ for continuum_ms in continuum_mses:
 
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
+
+        # CHECK FOR MODEL FAILURES!
+        ms.open(selfcal_ms)
+        model_data = ms.getdata(['MODEL_PHASE'])
+        ms.close()
+        if np.all(model_data['model_phase'] == 0):
+            logprint("SEVERE error encountered: model column was not populated!"
+                     "Therefore, populated model column from {0}".format(imname),
+                     origin='almaimf_cont_selfcal')
+            populate_model_column(imname, selfcal_ms, field, impars_thisiter,
+                                  phasecenter, maskname, cellsize, imsize,
+                                  antennae)
+
     else:
         # populate the model column (should be from data on disk matching
         # this format, but we don't need to - and can't - specify it)
@@ -582,6 +595,19 @@ for continuum_ms in continuum_mses:
             # overwrite=True because these could already exist
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+
+            # CHECK FOR MODEL FAILURES!
+            ms.open(selfcal_ms)
+            model_data = ms.getdata(['MODEL_PHASE'])
+            ms.close()
+            if np.all(model_data['model_phase'] == 0):
+                logprint("SEVERE error encountered: model column was not populated!"
+                         "Therefore, populated model column from {0}".format(imname),
+                         origin='almaimf_cont_selfcal')
+                populate_model_column(imname, selfcal_ms, field, impars_thisiter,
+                                      phasecenter, maskname, cellsize, imsize,
+                                      antennae)
+
         else:
             populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                   phasecenter, maskname, cellsize, imsize,
