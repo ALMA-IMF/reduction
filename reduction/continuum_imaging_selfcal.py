@@ -82,10 +82,11 @@ import shutil
 
 from_cmd = False
 # If run from command line
-aux = os.path.dirname(sys.argv[2])
-if os.path.isdir(aux):
-    almaimf_rootdir = aux
-    from_cmd = True
+if len(sys.argv) > 2:
+    aux = os.path.dirname(sys.argv[2])
+    if os.path.isdir(aux):
+        almaimf_rootdir = aux
+        from_cmd = True
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
