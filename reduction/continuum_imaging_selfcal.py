@@ -113,7 +113,6 @@ almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 
 import numpy as np
 
-print(sys.path, "rootdir: ", almaimf_rootdir, "from_cmd: ", from_cmd, 'aux: ', aux)
 from getversion import git_date, git_version
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated, test_tclean_success,
