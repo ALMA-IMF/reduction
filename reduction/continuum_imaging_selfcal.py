@@ -107,7 +107,6 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    import sys
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 

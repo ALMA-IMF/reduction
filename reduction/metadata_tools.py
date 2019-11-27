@@ -103,7 +103,7 @@ def determine_phasecenter(ms, field, formatted=False):
         return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
-                     min_pixscale=0.05, only_7m=False, exclude_7m=False,
+                     min_pixscale=0.02, only_7m=False, exclude_7m=False,
                      makeplot=False, veryverbose=False):
     """
     Parameters
