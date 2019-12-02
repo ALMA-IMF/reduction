@@ -95,6 +95,7 @@ def logprint(string):
     print(string)
 
 metadata = {b:{} for b in bands}
+contdat_files = {}
 
 for dirpath, dirnames, filenames in os.walk('.'):
     for fn in dirnames:
@@ -138,6 +139,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 msmd.close()
                 continue
 
+            if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
+                contdat_files[(field, band)] = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
 
             spws = msmd.spwsforfield(field)
             targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
@@ -273,9 +276,14 @@ for band in bands:
                 contfile = os.path.join(path, '../calibration/cont.dat')
 
             if not os.path.exists(contfile):
-                logprint("No cont.dat file found for {0}.  Skipping."
-                         .format(path))
-                continue
+                logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
+                         .format(path, band, field))
+                if (band, field) in contdat_files:
+                    contfile = contdat_files[(band, field)]
+                    logprint("No cont.dat file: Using {0} instead.".format(contfile))
+                else:
+                    logprint("No cont.dat file: Skipping.")
+                    continue
             cont_channel_selection = parse_contdotdat(contfile)
 
             visfile = os.path.join(path, vis)
@@ -285,11 +293,11 @@ for band in bands:
             cont_to_merge[band][field].append(contvis)
 
             if os.path.exists(contvis) and os.path.exists(contvis_bestsens):
-                logprint("Skipping width determination for {0} because "
-                         "it's done (both for bsens & cont)".format(contvis),)
+                logprint("Skipping width determination for {0} = {1}:{2} because "
+                         "it's done (both for bsens & cont)".format(contvis, band, field),)
             else:
-                logprint("Determining widths for {0} to {1}"
-                         .format(visfile, contvis),)
+                logprint("Determining widths for {0} to {1}, {2}:{3}"
+                         .format(visfile, contvis, band, field),)
 
                 # determine target widths
                 msmd.open(visfile)
