@@ -456,7 +456,7 @@ for continuum_ms in continuum_mses:
         ms.open(selfcal_ms)
         model_data = ms.getdata(['MODEL_PHASE'])
         ms.close()
-        if np.all(model_data['model_phase'] == 0):
+        if 'model_phase' not in model_data or np.all(model_data['model_phase'] == 0):
             logprint("SEVERE error encountered: model column was not populated!"
                      "Therefore, populated model column from {0}".format(imname),
                      origin='almaimf_cont_selfcal')
@@ -632,7 +632,7 @@ for continuum_ms in continuum_mses:
             ms.open(selfcal_ms)
             model_data = ms.getdata(['MODEL_PHASE'])
             ms.close()
-            if np.all(model_data['model_phase'] == 0):
+            if 'model_phase' not in model_data or np.all(model_data['model_phase'] == 0):
                 logprint("SEVERE error encountered: model column was not populated!"
                          "Therefore, populated model column from {0}".format(imname),
                          origin='almaimf_cont_selfcal')
