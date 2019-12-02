@@ -47,13 +47,14 @@ import numpy as np
 
 import sys
 
-try:
-    # If run from command line
-    aux = os.path.dirname(os.path.realpath(sys.argv[2]))
+from_cmd = False
+# If run from command line
+if len(sys.argv) > 2:
+    aux = os.path.dirname(sys.argv[2])
     if os.path.isdir(aux):
         almaimf_rootdir = aux
-except:
-    pass
+        from_cmd = True
+
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
@@ -104,6 +105,22 @@ for dirpath, dirnames, filenames in os.walk('.'):
             msmd.open(os.path.join(dirpath, fn))
 
             antnames = msmd.antennanames()
+            fieldnames = np.array(msmd.fieldnames())
+            field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
+            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
+            field = field[0]
+
+            # noinspection PyInterpreter
+            frq0 = msmd.chanfreqs(0)
+            for bb,(lo, hi) in bands.items():
+                try:
+                    if lo*1e9 < frq0 and hi*1e9 > frq0:
+                        band = bb
+                except ValueError:
+                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
+                        band = bb
+
+
             if any('PM' in nm for nm in antnames):
                 if len(antnames) <= 4:
                     with open(os.path.join(dirpath, "{0}_{1}_TP".format(field, band)), 'w') as fh:
@@ -121,20 +138,6 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 msmd.close()
                 continue
 
-            fieldnames = np.array(msmd.fieldnames())
-            field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
-            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
-            field = field[0]
-
-            # noinspection PyInterpreter
-            frq0 = msmd.chanfreqs(0)
-            for bb,(lo, hi) in bands.items():
-                try:
-                    if lo*1e9 < frq0 and hi*1e9 > frq0:
-                        band = bb
-                except ValueError:
-                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
-                        band = bb
 
             spws = msmd.spwsforfield(field)
             targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
