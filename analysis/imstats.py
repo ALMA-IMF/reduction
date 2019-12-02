@@ -387,7 +387,7 @@ def savestats():
     tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv', overwrite=True)
     tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.html',
               format='ascii.html', overwrite=True)
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.tex')
+    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.tex', overwrite=True)
     tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.js.html',
               format='jsviewer')
 
