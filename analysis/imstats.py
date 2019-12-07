@@ -163,9 +163,11 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
                 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
                 for band in (3,6)
-                for config in ('7M12M', '12M')
-                for robust in (-2, 0, 2)
-                for selfcal in range(0,8)
+                #for config in ('7M12M', '12M')
+                for config in ('12M',)
+                #for robust in (-2, 0, 2)
+                for robust in (0,)
+                for selfcal in range(0,9)
                }
     badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
     print(f"Bad files: {badfiledict}")
@@ -230,8 +232,11 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         # (this call inplace-modifies logn, according to the docs)
         if 'residual' in imgs:
             norm(imgs['residual'][imgs['residual'] == imgs['residual']])
-        elif 'image' in imgs:
-            norm(imgs['image'][imgs['image'] == imgs['image']])
+        else:
+            print(f"Skipped {fn} because no residual was found.  imgs.keys={imgs.keys()}")
+            continue
+        #elif 'image' in imgs:
+        #    norm(imgs['image'][imgs['image'] == imgs['image']])
         pl.close(1)
         pl.figure(1, figsize=(14,6))
         show_images(imgs, norm=norm, imnames_toplot=('mask', 'model', 'image', 'residual'))
@@ -245,6 +250,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                     'selfcal': selfcal, #get_selfcal_number(basename),
                     'array': config,
                     'robust': robust,
+                    'finaliter': 'finaliter' in fn,
                    }
         make_quicklook_analysis_form(filename=outname,
                                      metadata=metadata,
@@ -254,7 +260,9 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                                     )
         metadata['outname'] = outname
         metadata['suffix'] = suffix
-        flist.append(metadata)
+        if robust == 0:
+            # only keep robust=0 for simplicity
+            flist.append(metadata)
         prev = outname+".html"
 
 
@@ -300,6 +308,7 @@ def make_index(savepath, flist):
             meta_str = (f"{metadata['field']}_{metadata['band']}"
                         f"_selfcal{metadata['selfcal']}"
                         f"_{metadata['array']}_robust{metadata['robust']} "
+                        f"{' finaliter' if metadata['finaliter'] else ''}"
                         f"{metadata['suffix']}")
             #fh.write(f'<li><a href="{filename}">{meta_str}</a></li>\n')
             fh.write(f"<li><button onclick=\"changeSrc('{filename}')\">{meta_str}</a></li>\n")
@@ -355,7 +364,7 @@ document.write(newdocument)
 
 
 def savestats():
-    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0*.fits", ditch_suffix=".image.tt")
+    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
     with open('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
