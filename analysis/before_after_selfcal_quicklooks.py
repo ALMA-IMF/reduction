@@ -159,7 +159,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 matchrow = ((tbl['region'] == field) &
                             (tbl['band'] == f'B{band}') &
-                            (tbl['array'] == '12Monly' if config == '12M' else config) &
+                            (tbl['array'] == ('12Monly' if config == '12M' else config)) &
                             (tbl['robust'] == 'r0.0')
                            )
                 tbl['scMaxDiff'][matchrow] = diffstats['max']
