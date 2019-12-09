@@ -623,7 +623,7 @@ selfcal_pars['G012.80_B3_12M_robust0'][1] = {'solint': 'inf',
 selfcal_pars['G327.29_B6_7M12M_robust0'][1] = {'solint': 'inf',
                                            'gaintype': 'G',
                                            'calmode': 'p',
-                                           'solnorm': True
+                                           'solnorm': True}
 selfcal_pars['G012.80_B3_12M_robust0'][2] = {'solint': '1200s',
                                           'gaintype':'T',
                                           'calmode':'p',
