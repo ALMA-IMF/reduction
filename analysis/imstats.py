@@ -397,5 +397,5 @@ def savestats():
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        tbl = savestats()
+        #tbl = savestats()
         make_analysis_forms()
