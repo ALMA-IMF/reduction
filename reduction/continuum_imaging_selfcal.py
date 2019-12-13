@@ -184,6 +184,14 @@ logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(e
 with open('continuum_mses.txt', 'r') as fh:
     continuum_mses = [x.strip() for x in fh.readlines()]
 
+if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
+    do_bsens = True
+    logprint("Using BSENS measurement set")
+    continuum_mses += [x.replace('_continuum_merged.cal.ms',
+                                 '_continuum_merged_bsens.cal.ms')
+                       for x in continuum_mses]
+
+
 for continuum_ms in continuum_mses:
 
     # strip off .cal.ms
@@ -233,7 +241,10 @@ for continuum_ms in continuum_mses:
     # A different MS will be used for the 12M-only and 7M+12M data
     # (much of the processing time is writing models to the MS, which takes a
     # long time even if 7M antennae are selected out)
-    selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
+    if do_bsens:
+        selfcal_ms = basename+"_"+arrayname+"_selfcal_bsens.ms"
+    else:
+        selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
     if not os.path.exists(selfcal_ms):
 
         logprint("Did not find selfcal ms.  Creating new one: "
