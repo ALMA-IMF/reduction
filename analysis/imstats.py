@@ -223,6 +223,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
             raise
         except Exception as ex:
             print(f"EXCEPTION: {type(ex)}: {str(ex)}")
+            raise
             continue
         norm = visualization.ImageNormalize(stretch=visualization.AsinhStretch(),
                                             interval=visualization.PercentileInterval(99.95))

@@ -11,11 +11,12 @@ imnames = ['image', 'model', 'residual']
 def load_images(basename, suffix=None, crop=True):
     import warnings
 
+    sfx = '.fits' if '.fits' in suffix else ''
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0{suffix}',
                                         format='fits' if 'fits' in sfx else 'casa_image')
-                 for sfx in ("", ".fits")
                  for imn in imnames
                  if os.path.exists(f'{basename}.{imn}.tt0{suffix}')
                 }
@@ -79,9 +80,12 @@ def load_images(basename, suffix=None, crop=True):
         casamask = SpectralCube.read(f'{basename}.mask{suffix}',
                                      format='fits' if 'fits' in suffix else 'casa_image')
         cubes['mask'] = casamask
-        imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
-                        if crop else
-                        cubes['mask'].with_mask(include_mask)[0])
+        if include_mask is not None:
+            imgs['mask'] = (cubes['mask'].with_mask(include_mask).minimal_subcube()[0]
+                            if crop else
+                            cubes['mask'].with_mask(include_mask)[0])
+        else:
+            imgs['mask'] = cubes['mask'][0]
     except (AssertionError,OSError,IOError):
         # this implies there is no mask
         pass
