@@ -277,7 +277,10 @@ for continuum_ms in continuum_mses:
             else:
                 logprint("Exception: {0}".format(str(ex)))
                 logprint("Because no region file was found to create a mask, only "
-                        "the dirty image was made for {0}".format(imname))
+                         "the dirty image was made for {0}".format(imname))
+                if 'maskname' in dirty_impars:
+                    logprint("However, mask {0} was found in image parameters.  "
+                             "Check that it exists".format(dirty_impars['maskname']))
                 continue
                 #raise ValueError("Make the region file first!")
 
