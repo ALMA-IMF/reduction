@@ -1,0 +1,9 @@
+# Region file format: DS9 version 4.1
+# Filename: /wkh05/fernndoi/G327/band6/imaging_results/G327.29_B6__continuum_merged_7M12M_robust0_selfcal2.image.tt0
+global color=green dash=0 dashlist=8 3 delete=1 edit=1 fixed=0 font="helvetica 10 normal roman" highlite=1 include=1 move=1 select=1 source=1 width=1
+fk5
+ellipse(-121.702375,-54.608366,12.83",7.25",0) # text={2.64mJy}
+ellipse(-121.709542,-54.612342,3.79",2.19",0) # text={2.64mJy}
+ellipse(-121.706017,-54.610368,10.10",6.05",0) # text={2.64mJy}
+ellipse(-121.704195,-54.613216,12.24",6.80",0) # text={2.64mJy}
+box(-121.715942,-54.617711,73.64",34.10",0) # text={5.28mJy}
