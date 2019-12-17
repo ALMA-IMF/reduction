@@ -175,7 +175,7 @@ if 'selfcal_field_id' not in locals():
 else:
     assert isinstance(selfcal_field_id, list)
     for entry in selfcal_field_id:
-        assert isinstance(1,int)
+        assert isinstance(entry,int)
 
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
@@ -572,7 +572,13 @@ for continuum_ms in continuum_mses:
 
         if not os.path.exists(imname+".image.tt0"):
 
-            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
+            if 'minsnr' in selfcalpars[selfcaliter]:
+                minsnr = selfcalpars[selfcaliter]['minsnr']
+            else:
+                minsnr = 5
+
+            okfields,notokfields = goodenough_field_solutions(caltable,
+                                                              minsnr=minsnr)
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
             if len(okfields) == 0:
