@@ -167,12 +167,14 @@ if 'only_7m' not in locals():
 if 'selfcal_field_id' not in locals():
     if os.getenv('SELFCAL_FIELD_ID') is not None:
         selfcal_field_id = list(map(int, os.getenv('SELFCAL_FIELD_ID').split(",")))
+        logprint("Using selfcal_field_id = {0}".format(selfcal_field_id),
+                 origin='contim_selfcal')
     else:
         selfcal_field_id = None
-else:
+elif selfcal_field_id is not None:
     assert isinstance(selfcal_field_id, list)
     for entry in selfcal_field_id:
-        assert isinstance(1,int)
+        assert isinstance(entry,int)
 
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
@@ -186,10 +188,13 @@ with open('continuum_mses.txt', 'r') as fh:
 
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
-    logprint("Using BSENS measurement set")
+    logprint("Using BSENS measurement set",
+             origin='contim_selfcal')
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
                                  '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
+else:
+    do_bsens = False
 
 
 for continuum_ms in continuum_mses:
@@ -570,7 +575,13 @@ for continuum_ms in continuum_mses:
 
         if not os.path.exists(imname+".image.tt0"):
 
-            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
+            if 'minsnr' in selfcalpars[selfcaliter]:
+                minsnr = selfcalpars[selfcaliter]['minsnr']
+            else:
+                minsnr = 5
+
+            okfields,notokfields = goodenough_field_solutions(caltable,
+                                                              minsnr=minsnr)
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
             if len(okfields) == 0:
