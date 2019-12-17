@@ -168,6 +168,8 @@ if 'only_7m' not in locals():
 if 'selfcal_field_id' not in locals():
     if os.getenv('SELFCAL_FIELD_ID') is not None:
         selfcal_field_id = list(map(int, os.getenv('SELFCAL_FIELD_ID').split(",")))
+        logprint("Using selfcal_field_id = {0}".format(selfcal_field_id),
+                 origin='contim_selfcal')
     else:
         selfcal_field_id = None
 else:
@@ -187,7 +189,8 @@ with open('continuum_mses.txt', 'r') as fh:
 
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
-    logprint("Using BSENS measurement set")
+    logprint("Using BSENS measurement set",
+             origin='contim_selfcal')
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
                                  '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
