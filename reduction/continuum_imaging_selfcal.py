@@ -194,6 +194,8 @@ if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
                                  '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
+else:
+    do_bsens = False
 
 
 for continuum_ms in continuum_mses:
