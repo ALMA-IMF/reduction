@@ -99,7 +99,7 @@ def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
     form_url_dict = {#"868884739":"{reviewer}",
                      "639517087": "{field}",
                      "400258516": "{band}",
-                     "841871158": "{selfcal}",
+                     "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
                      "312922422": "{array}",
                      "678487127": "{robust}",
                      #"1301985958": "{comment}",
@@ -163,9 +163,11 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
                 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
                 for band in (3,6)
-                for config in ('7M12M', '12M')
-                for robust in (-2, 0, 2)
-                for selfcal in range(0,8)
+                #for config in ('7M12M', '12M')
+                for config in ('12M',)
+                #for robust in (-2, 0, 2)
+                for robust in (0,)
+                for selfcal in ("",) + tuple(range(0,9))
                }
     badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
     print(f"Bad files: {badfiledict}")
@@ -215,7 +217,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         try:
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore')
-                print(f"{ii}: {(field, band, config, robust, fn)}"
+                print(f"{ii}: {(field, band, config, robust, fn, selfcal)}"
                       f" basename='{basename}', suffix='{suffix}'")
                 imgs, cubes = load_images(basename, suffix=suffix)
         except KeyError as ex:
@@ -298,8 +300,10 @@ def make_index(savepath, flist):
         fh.write("<ul>\n")
         for metadata in flist:
             filename = metadata['outname']+".html"
-            meta_str = (f"{metadata['field']}_{metadata['band']}"
-                        f"_selfcal{metadata['selfcal']}"
+            meta_str = (f"{metadata['field']}_{metadata['band']}" +
+                        (f"_selfcal{metadata['selfcal']}"
+                         if isinstance(metadata['selfcal'], int) else
+                         "_preselfcal") +
                         f"_{metadata['array']}_robust{metadata['robust']} "
                         f"{metadata['suffix']}")
             #fh.write(f'<li><a href="{filename}">{meta_str}</a></li>\n')
