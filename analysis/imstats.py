@@ -99,7 +99,7 @@ def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
     form_url_dict = {#"868884739":"{reviewer}",
                      "639517087": "{field}",
                      "400258516": "{band}",
-                     "841871158": "{selfcal}",
+                     "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
                      "312922422": "{array}",
                      "678487127": "{robust}",
                      #"1301985958": "{comment}",
@@ -167,7 +167,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                 for config in ('12M',)
                 #for robust in (-2, 0, 2)
                 for robust in (0,)
-                for selfcal in range(0,9)
+                for selfcal in ("",) + tuple(range(0,9))
                }
     badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
     print(f"Bad files: {badfiledict}")
@@ -217,7 +217,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         try:
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore')
-                print(f"{ii}: {(field, band, config, robust, fn)}"
+                print(f"{ii}: {(field, band, config, robust, fn, selfcal)}"
                       f" basename='{basename}', suffix='{suffix}'")
                 imgs, cubes = load_images(basename, suffix=suffix)
         except KeyError as ex:
@@ -306,8 +306,10 @@ def make_index(savepath, flist):
         fh.write("<ul>\n")
         for metadata in flist:
             filename = metadata['outname']+".html"
-            meta_str = (f"{metadata['field']}_{metadata['band']}"
-                        f"_selfcal{metadata['selfcal']}"
+            meta_str = (f"{metadata['field']}_{metadata['band']}" +
+                        (f"_selfcal{metadata['selfcal']}"
+                         if isinstance(metadata['selfcal'], int) else
+                         "_preselfcal") +
                         f"_{metadata['array']}_robust{metadata['robust']} "
                         f"{' finaliter' if metadata['finaliter'] else ''}"
                         f"{metadata['suffix']}")
