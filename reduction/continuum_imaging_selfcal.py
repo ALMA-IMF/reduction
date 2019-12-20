@@ -86,6 +86,7 @@ import os
 import copy
 import sys
 import shutil
+import glob
 
 from_cmd = False
 # If run from command line
@@ -617,6 +618,9 @@ for continuum_ms in continuum_mses:
             # do this even if the output file exists: we need to populate the
             # modelcolumn
             logprint("Imaging parameters are: {0} for image name {1}".format(impars_thisiter, imname),
+                     origin='almaimf_cont_selfcal')
+            existing_files = glob.glob(imname+"*")
+            logprint("Pre-existing files matching imname = {0}".format(existing_files),
                      origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
                    field=field.encode(),
