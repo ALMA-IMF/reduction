@@ -56,6 +56,34 @@ for key in imaging_parameters:
 
 
 imaging_parameters_nondefault = {
+'G010.62_B3_12M_robust0': {'threshold': {0:'10mJy', 1: '5mJy', 2: '2.5 mJy', 3:'0.8mJy', 4:'0.2mJy',5:'0.14mJy'},
+                                 'niter':{0:700, 1:700, 2: 2000, 3: 5000, 4: 10000, 5:15000},
+                                 'maskname':{0:'G010.62_55arcsecCircle.crtf',
+                                             1:'G010_ds9_15mJy.crtf', # 
+                                             2:'G010_ds9_15mJy.crtf', # 
+                                             3:'G010_ds9_1mJy.crtf', # 
+                                             4:'G010_ds9_0.5mJy.crtf', # 
+                                             5:'G010_ds9_0.3mJy.crtf'}
+                       },
+'G010.62_B3_7M12M_robust0': {'threshold': {0:'10mJy', 1: '5mJy', 2: '2.5 mJy', 3:'0.8mJy', 4:'0.5mJy',5:'0.32mJy'},
+                                 'niter':{0:700, 1:1300, 2: 2500, 3: 5000, 4: 15000, 5:15000},
+                                 'maskname':{0:'G010.62_55arcsecCircle.crtf',
+                                             1:'G010_ds9_15mJy.crtf', # 
+                                             2:'G010_ds9_15mJy.crtf', # 
+                                             3:'G010_ds9_1mJy.crtf', # 
+                                             4:'G010_ds9_0.5mJy.crtf', # 
+                                             5:'G010_ds9_0.3mJy.crtf'}
+                       },
+'G010.62_B6_12M_robust0': {'threshold': {0:'10mJy', 1: '5mJy', 2: '2.5 mJy', 3:'0.8mJy', 4:'0.35mJy',5:'0.2mJy'},
+                                 'niter':{0:700, 1:1300, 2: 2500, 3: 5000, 4: 15000, 5:15000},
+                                 'maskname':{
+                                     0:'G010.62_bigPoly.crtf',
+                                     1:'G010_ds9_B6_20mJy.crtf', # 
+                                     2:'G010_ds9_B6_5mJy.crtf', # 
+                                     3:'G010_ds9_B6_1mJy.crtf', # 
+                                     4:'G010_ds9_B6_05mJy.crtf', # 
+                                     5:'G010.62_B6_03mJy.mask'}
+                       },
         ##### G333.60 #####
     'G333.60_B3_12M_robust0': {'threshold': {0: '0.8mJy', 1: '0.8mJy', 2: '0.4mJy', 3: '0.2mJy', 4: '0.1mJy'},
                                'niter': {0: 2000, 1: 2000, 2: 6000, 3: 18000, 4: 36000},
@@ -356,6 +384,13 @@ default_selfcal_pars = {ii: {'solint': 'inf',
 
 selfcal_pars = {key: copy.deepcopy(default_selfcal_pars)
                 for key in imaging_parameters}
+
+time_interval_progression_of_selfcal = {0: 'inf', 1:'60s', 2: '45s', 3:'30s', 4:'15s',5:'10s'}
+for ii in range(1,6):
+    selfcal_pars['G010.62_B3_7M12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
+    selfcal_pars['G010.62_B3_12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
+    selfcal_pars['G010.62_B6_7M12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
+    selfcal_pars['G010.62_B6_12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
 
 
 for ii in range(1,5):
@@ -668,13 +703,6 @@ selfcal_pars['G012.80_B3_12M_robust0'][5] = {'solint': 'inf',
                                           'calmode':'a',
                                           'minsnr':5,
                                           }
-
-time_interval_progression_of_selfcal = {0: 'inf', 1:'60s', 2: '45s', 3:'30s', 4:'15s',5:'10s'}
-for ii in range(1,5):
-    selfcal_pars['G010.62_B3_7M12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
-    selfcal_pars['G010.62_B3_12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
-    selfcal_pars['G010.62_B6_7M12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
-    selfcal_pars['G010.62_B6_12M_robust0'][ii]['solint'] = time_interval_progression_of_selfcal[ii]
 
 
 
