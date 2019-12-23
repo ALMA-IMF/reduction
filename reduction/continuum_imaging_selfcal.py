@@ -174,7 +174,8 @@ if 'selfcal_field_id' not in locals():
     else:
         selfcal_field_id = None
 elif selfcal_field_id is not None:
-    assert isinstance(selfcal_field_id, list)
+    if not isinstance(selfcal_field_id, list):
+        selfcal_field_id = [selfcal_field_id]
     for entry in selfcal_field_id:
         assert isinstance(entry,int)
 
