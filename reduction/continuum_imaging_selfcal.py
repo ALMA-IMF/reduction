@@ -177,7 +177,7 @@ elif selfcal_field_id is not None:
     if not isinstance(selfcal_field_id, list):
         selfcal_field_id = [selfcal_field_id]
     for entry in selfcal_field_id:
-        assert isinstance(entry,int)
+        assert isinstance(entry,int), "{0} is not an int".format(entry)
 
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
@@ -188,6 +188,10 @@ logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(e
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
 with open('continuum_mses.txt', 'r') as fh:
     continuum_mses = [x.strip() for x in fh.readlines()]
+
+if len(continuum_mses) == 0:
+    raise IOError("Your continuum_mses.txt file is empty.  There is nothing "
+                  "to image or self-calibrate.")
 
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
