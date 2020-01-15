@@ -270,6 +270,7 @@ for band in bands:
 
             if os.path.exists(os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")):
                 contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")
+                logprint("##### Found manually-created cont.dat file {0}".format(contfile))
             else:
                 # the cont.dat file should be in the calibration/ directory in the
                 # same SB folder
