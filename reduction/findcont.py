@@ -1,7 +1,8 @@
 from astropy.io import fits
 from astropy import stats
+from astropy import units as u
 from spectral_cube import SpectralCube, OneDSpectrum
-from scipy.ndimage import find_objects
+from scipy.ndimage import find_objects, label
 import pylab as pl
 
 def find_and_plot_cont(basename, background='mean'):
@@ -27,4 +28,11 @@ def find_and_plot_cont(basename, background='mean'):
     clipped.mask = maxsel
     pl.plot(spec.spectral_axis, clipped, linewidth=3, alpha=0.75, zorder=11)
 
-    return find_objects(meansel)
+    labels, _ = label(meansel)
+    return find_objects(labels)
+
+def objects_to_casaformat(objects, spectral_axis):
+    for obj, in objects:
+        start = spectral_axis[obj.start].to(u.GHz).value
+        stop = spectral_axis[obj.stop-1].to(u.GHz).value
+        print(f"{start}~{stop}GHz LSRK")
