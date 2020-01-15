@@ -367,3 +367,6 @@ for band in band_list:
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
 
             logprint("Completed {0}".format(vis), origin='almaimf_line_imaging')
+
+
+logprint("Completed line_imaging.py run", origin='almaimf_line_imaging')

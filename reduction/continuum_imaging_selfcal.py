@@ -16,6 +16,26 @@ You can set the following environmental variables for this script:
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
 
+What does it do
+===============
+The imaging self-calibration step does the following:
+
+    (1) Select data based on the FIELD_ID, EXCLUDE_7M, and BAND_TO_IMAGE
+    parameters
+    (2) split those data into a new file called <basename>_<arrayname>_selfcal.ms,
+    where <basename> is the name of the merged calibrated continuum measurement set.
+    (3) do initial dirty imaging in a file named <preamble>_dirty_preselfcal
+    (4) create a mask using ds9 regions based off of the dirty image (or,
+    optionally, off an existing cleaned image).  This step will be skipped if you
+    use a CRTF region
+    (5) re-image the data in a file named <preamble>_preselfcal using the mask
+    from (4) (or whatever mask you've specified).  If this image already exists,
+    the model column of the ms will be populated based on the existing image.
+    (6) optionally make a new mask based on the cleaned image in (5)
+    (7) Begin the self-calibration iterations:
+        (a) Calculate gain solutions based on the imaging_parameters.py selfcal
+        parameters dictionary
+
 
 Restarting
 ==========
@@ -59,19 +79,31 @@ import os
 import copy
 import sys
 import shutil
+import glob
 
-almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
-if almaimf_rootdir is None:
+from_cmd = False
+# If run from command line
+if len(sys.argv) > 2:
+    aux = os.path.dirname(sys.argv[2])
+    if os.path.isdir(aux):
+        almaimf_rootdir = aux
+        from_cmd = True
+
+if 'almaimf_rootdir' in locals():
+    os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
+if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
         import metadata_tools
-        almaimf_rootdir = os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+        os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
     except ImportError:
         raise ValueError("metadata_tools not found on path; make sure to "
                          "specify ALMAIMF_ROOTDIR environment variable "
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    sys.path.append(almaimf_rootdir)
+    import sys
+    sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 
 import numpy as np
 
@@ -92,13 +124,28 @@ from applycal_cli import applycal_cli as applycal
 from exportfits_cli import exportfits_cli as exportfits
 from ft_cli import ft_cli as ft
 
-from taskinit import msmdtool, iatool
+from taskinit import msmdtool, iatool, tbtool, mstool
 msmd = msmdtool()
 ia = iatool()
+tb = tbtool()
+ms = mstool()
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
+
+# Command line options
+if from_cmd:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', nargs=1, 
+            help='Casa parameter')
+    parser.add_argument('--exclude7M', action='store_true',
+            help='Include 7M data')
+    parser.add_argument('--only7M', action='store_true',
+            help='Only image 7M data')
+    args = parser.parse_args()
+    exclude_7m = args.exclude7M
+    only_7m = args.only7M
 
 if 'exclude_7m' not in locals():
     if os.getenv('EXCLUDE_7M') is not None:
@@ -120,6 +167,14 @@ logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(e
 # (this file has one continuum MS full path, e.g. /path/to/file.ms, per line)
 with open('continuum_mses.txt', 'r') as fh:
     continuum_mses = [x.strip() for x in fh.readlines()]
+
+if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
+    do_bsens = True
+    logprint("Using BSENS measurement set")
+    continuum_mses += [x.replace('_continuum_merged.cal.ms',
+                                 '_continuum_merged_bsens.cal.ms')
+                       for x in continuum_mses]
+
 
 for continuum_ms in continuum_mses:
 
@@ -168,7 +223,10 @@ for continuum_ms in continuum_mses:
     # A different MS will be used for the 12M-only and 7M+12M data
     # (much of the processing time is writing models to the MS, which takes a
     # long time even if 7M antennae are selected out)
-    selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
+    if do_bsens:
+        selfcal_ms = basename+"_"+arrayname+"_selfcal_bsens.ms"
+    else:
+        selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
     if not os.path.exists(selfcal_ms):
 
         logprint("Did not find selfcal ms.  Creating new one: "
@@ -386,6 +444,19 @@ for continuum_ms in continuum_mses:
 
         exportfits(imname+".image.tt0", imname+".image.tt0.fits")
         exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
+
+        # CHECK FOR MODEL FAILURES!
+        ms.open(selfcal_ms)
+        model_data = ms.getdata(['MODEL_PHASE'])
+        ms.close()
+        if 'model_phase' not in model_data or np.all(model_data['model_phase'] == 0):
+            logprint("SEVERE error encountered: model column was not populated!"
+                     "Therefore, populated model column from {0}".format(imname),
+                     origin='almaimf_cont_selfcal')
+            populate_model_column(imname, selfcal_ms, field, impars_thisiter,
+                                  phasecenter, maskname, cellsize, imsize,
+                                  antennae)
+
     else:
         # populate the model column (should be from data on disk matching
         # this format, but we don't need to - and can't - specify it)
@@ -506,6 +577,9 @@ for continuum_ms in continuum_mses:
             # modelcolumn
             logprint("Imaging parameters are: {0} for image name {1}".format(impars_thisiter, imname),
                      origin='almaimf_cont_selfcal')
+            existing_files = glob.glob(imname+"*")
+            logprint("Pre-existing files matching imname = {0}".format(existing_files),
+                     origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
                    field=field.encode(),
                    imagename=imname,
@@ -536,6 +610,19 @@ for continuum_ms in continuum_mses:
             # overwrite=True because these could already exist
             exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+
+            # CHECK FOR MODEL FAILURES!
+            ms.open(selfcal_ms)
+            model_data = ms.getdata(['MODEL_PHASE'])
+            ms.close()
+            if 'model_phase' not in model_data or np.all(model_data['model_phase'] == 0):
+                logprint("SEVERE error encountered: model column was not populated!"
+                         "Therefore, populated model column from {0}".format(imname),
+                         origin='almaimf_cont_selfcal')
+                populate_model_column(imname, selfcal_ms, field, impars_thisiter,
+                                      phasecenter, maskname, cellsize, imsize,
+                                      antennae)
+
         else:
             populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                   phasecenter, maskname, cellsize, imsize,

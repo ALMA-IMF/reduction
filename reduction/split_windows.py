@@ -47,6 +47,17 @@ import numpy as np
 
 import sys
 
+from_cmd = False
+# If run from command line
+if len(sys.argv) > 2:
+    aux = os.path.dirname(sys.argv[2])
+    if os.path.isdir(aux):
+        almaimf_rootdir = aux
+        from_cmd = True
+
+
+if 'almaimf_rootdir' in locals():
+    os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
 if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
         import metadata_tools
@@ -84,16 +95,33 @@ def logprint(string):
     print(string)
 
 metadata = {b:{} for b in bands}
+contdat_files = {}
 
 for dirpath, dirnames, filenames in os.walk('.'):
     for fn in dirnames:
         if fn[-10:] == ".split.cal":
 
-            logprint("Collecting metadata for {0}".format(fn))
+            logprint("Collecting metadata for {0} in {1}".format(fn, dirpath))
 
             msmd.open(os.path.join(dirpath, fn))
 
             antnames = msmd.antennanames()
+            fieldnames = np.array(msmd.fieldnames())
+            field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
+            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
+            field = field[0]
+
+            # noinspection PyInterpreter
+            frq0 = msmd.chanfreqs(0)
+            for bb,(lo, hi) in bands.items():
+                try:
+                    if lo*1e9 < frq0 and hi*1e9 > frq0:
+                        band = bb
+                except ValueError:
+                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
+                        band = bb
+
+
             if any('PM' in nm for nm in antnames):
                 if len(antnames) <= 4:
                     with open(os.path.join(dirpath, "{0}_{1}_TP".format(field, band)), 'w') as fh:
@@ -111,20 +139,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 msmd.close()
                 continue
 
-            fieldnames = np.array(msmd.fieldnames())
-            field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
-            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
-            field = field[0]
-
-            # noinspection PyInterpreter
-            frq0 = msmd.chanfreqs(0)
-            for bb,(lo, hi) in bands.items():
-                try:
-                    if lo*1e9 < frq0 and hi*1e9 > frq0:
-                        band = bb
-                except ValueError:
-                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
-                        band = bb
+            if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
+                contdat_files[(field, band)] = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
 
             spws = msmd.spwsforfield(field)
             targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
@@ -136,7 +152,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 metadata[band][field]['vis'].append(fn)
                 metadata[band][field]['spws'].append(spws)
             else:
-                metadata[band][field] = {'path': [dirpath],
+                metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                          'vis': [fn],
                                          'spws': [spws],
                                         }
@@ -144,6 +160,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:
                 fh.write("{0}".format(antnames))
+            logprint("Acquired metadata for {0} in {1}_{2} successfully"
+                     .format(fn, field, band))
 
 
             msmd.close()
@@ -258,9 +276,14 @@ for band in bands:
                 contfile = os.path.join(path, '../calibration/cont.dat')
 
             if not os.path.exists(contfile):
-                logprint("No cont.dat file found for {0}.  Skipping."
-                         .format(path))
-                continue
+                logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
+                         .format(path, band, field))
+                if (band, field) in contdat_files:
+                    contfile = contdat_files[(band, field)]
+                    logprint("No cont.dat file: Using {0} instead.".format(contfile))
+                else:
+                    logprint("No cont.dat file: Skipping.")
+                    continue
             cont_channel_selection = parse_contdotdat(contfile)
 
             visfile = os.path.join(path, vis)
@@ -270,11 +293,11 @@ for band in bands:
             cont_to_merge[band][field].append(contvis)
 
             if os.path.exists(contvis) and os.path.exists(contvis_bestsens):
-                logprint("Skipping width determination for {0} because "
-                         "it's done (both for bsens & cont)".format(contvis),)
+                logprint("Skipping width determination for {0} = {1}:{2} because "
+                         "it's done (both for bsens & cont)".format(contvis, band, field),)
             else:
-                logprint("Determining widths for {0} to {1}"
-                         .format(visfile, contvis),)
+                logprint("Determining widths for {0} to {1}, {2}:{3}"
+                         .format(visfile, contvis, band, field),)
 
                 # determine target widths
                 msmd.open(visfile)
@@ -313,7 +336,7 @@ for band in bands:
 
 
             if not os.path.exists(contvis) or not os.path.exists(contvis_bestsens):
-                tb.open(invis)
+                tb.open(visfile)
                 if 'CORRECTED_DATA' in tb.colnames():
                     datacolumn='corrected'
                 else:
@@ -322,7 +345,7 @@ for band in bands:
 
 
             if os.path.exists(contvis):
-                logprint("Skipping {0} because it's done".format(contvis),)
+                logprint("Continuum: Skipping {0} because it's done".format(contvis),)
             elif field not in fields:
                 logprint("Skipping {0} because it is not one of the "
                          "selected fields (but its metadata is being "
@@ -364,6 +387,8 @@ for band in bands:
                              width=widths,
                              datacolumn=datacolumn), "Split failed!"
 
+                if not os.path.exists(contvis):
+                    raise IOError("Split failed for {0}".format(contvis))
 
                 # If you flagged any line channels, restore the previous flags
                 flagmanager(vis=visfile, mode='restore',
@@ -437,14 +462,14 @@ for band in bands:
                    concatvis=merged_continuum_bsens_fn,)
 
         # for debug purposes, we also track the split, unmerged MSes
-        cont_mses_unconcat.append(cont_to_merge[band][field])
+        cont_mses_unconcat += cont_to_merge[band][field]
 
 with open('continuum_mses.txt', 'w') as fh:
     for line in cont_mses:
         fh.write(line+'\n')
 
 with open('continuum_mses_unconcat.txt', 'w') as fh:
-    for line in cont_mses:
+    for line in cont_mses_unconcat:
         fh.write(line+'\n')
 
 with open('cont_metadata.json', 'w') as fh:

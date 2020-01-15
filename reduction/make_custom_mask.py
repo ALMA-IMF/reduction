@@ -11,13 +11,10 @@ import os
 import numpy as np
 
 # non-casa requirements
-try:
-    import regions
-    from spectral_cube import SpectralCube
-    from astropy import units as u
-    from metadata_tools import logprint
-except:
-    print('non-casa requirements unavailable')
+import regions
+from spectral_cube import SpectralCube
+from astropy import units as u
+from metadata_tools import logprint
 
 try:
     from casatools import image
@@ -59,7 +56,9 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
         preg = reg.to_pixel(image.wcs)
         msk = preg.to_mask()
 
-        mask_array[msk.bbox.slices] = (msk.multiply(image) > threshold) | mask_array[msk.bbox.slices]
+        msk.cutout(mask_array)[:] = (msk.multiply(image) > threshold) | msk.cutout(mask_array)
+        # cutout does some extra check-for-overlap work
+        #mask_array[msk.bbox.slices] = (msk.multiply(image) > threshold) | mask_array[msk.bbox.slices]
 
 
     # CASA transposes arrays!!!!!
