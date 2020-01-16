@@ -94,6 +94,8 @@ def logprint(string):
     casalog.post(string, origin='make_imaging_scripts')
     print(string)
 
+logprint("ALMAIMF_ROOTDIR directory set to {0}".format(os.getenv('ALMAIMF_ROOTDIR')))
+
 metadata = {b:{} for b in bands}
 contdat_files = {}
 
@@ -275,6 +277,9 @@ for band in bands:
                 # the cont.dat file should be in the calibration/ directory in the
                 # same SB folder
                 contfile = os.path.join(path, '../calibration/cont.dat')
+                logprint("Using cont.dat file {0} for {1}:{2}".format(contfile,
+                                                                      band,
+                                                                      field))
 
             if not os.path.exists(contfile):
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
