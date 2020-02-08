@@ -94,6 +94,8 @@ def logprint(string):
     casalog.post(string, origin='make_imaging_scripts')
     print(string)
 
+logprint("ALMAIMF_ROOTDIR directory set to {0}".format(os.getenv('ALMAIMF_ROOTDIR')))
+
 metadata = {b:{} for b in bands}
 contdat_files = {}
 

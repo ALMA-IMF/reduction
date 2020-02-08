@@ -484,6 +484,9 @@ for continuum_ms in continuum_mses:
             populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                   phasecenter, maskname, cellsize, imsize,
                                   antennae)
+        else:
+            logprint("Model column was populated from pre-selfcal image.",
+                     origin='almaimf_cont_selfcal')
 
     else:
         # populate the model column (should be from data on disk matching
