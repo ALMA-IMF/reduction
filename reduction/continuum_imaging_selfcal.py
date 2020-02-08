@@ -309,7 +309,7 @@ for continuum_ms in continuum_mses:
                                                 exclude_7m=exclude_7m,
                                                 only_7m=only_7m,
                                                 spw='all',
-                                                pixfraction_of_fwhm=1/4.))
+                                                pixfraction_of_fwhm=1/8. if only_7m else 1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
@@ -484,6 +484,9 @@ for continuum_ms in continuum_mses:
             populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                   phasecenter, maskname, cellsize, imsize,
                                   antennae)
+        else:
+            logprint("Model column was populated from pre-selfcal image.",
+                     origin='almaimf_cont_selfcal')
 
     else:
         # populate the model column (should be from data on disk matching
