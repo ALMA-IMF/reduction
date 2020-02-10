@@ -506,19 +506,24 @@ for continuum_ms in continuum_mses:
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
     # the appropriate name)
-    try:
-        maskname = make_custom_mask(field, imname+".image.tt0",
-                                    almaimf_rootdir, band,
-                                    rootdir=imaging_root,
-                                    suffix='_clean_robust{0}_{1}'.format(robust,
-                                                                         arrayname)
-                                   )
-    except Exception as ex:
-        logprint("Did not make a mask from the clean data.  The exception was: "
-                 "{0}.  If you specified {{'maskname': <something>}} for each "
-                 "selfcal iteration in imaging_parameters.py, this is OK and "
-                 "can be ignored.".format(str(ex)),
-                 origin='almaimf_cont_selfcal')
+    if 'maskname' not in locals() or 'crtf' not in maskname:
+        try:
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        almaimf_rootdir, band,
+                                        rootdir=imaging_root,
+                                        suffix='_clean_robust{0}_{1}'.format(robust,
+                                                                             arrayname)
+                                       )
+        except Exception as ex:
+            logprint("Did not make a mask from the clean data.  The exception was: "
+                     "{0}.  If you specified {{'maskname': <something>}} for each "
+                     "selfcal iteration in imaging_parameters.py, this is OK and "
+                     "can be ignored.".format(str(ex)),
+                     origin='almaimf_cont_selfcal')
+    elif 'crtf' in maskname:
+        logprint("Using mask {0} for iteration {1}"
+                 .format(maskname, 0),
+                 origin='contim_selfcal')
 
 
     cals = []
@@ -685,7 +690,11 @@ for continuum_ms in continuum_mses:
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
-        if os.path.exists(regfn):
+        if 'crtf' in maskname:
+            logprint("Using mask {0} for iteration {1}".format(maskname,
+                                                               selfcaliter),
+                     origin='contim_selfcal')
+        elif os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
                                         almaimf_rootdir,
                                         band,
@@ -736,7 +745,11 @@ for continuum_ms in continuum_mses:
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
-        if os.path.exists(regfn):
+        if 'crtf' in maskname:
+            logprint("Using mask {0} for iteration {1} (finaliter)"
+                     .format(maskname, selfcaliter),
+                     origin='contim_selfcal')
+        elif os.path.exists(regfn):
             # note that imname is from the final self-calibration iteration
             maskname = make_custom_mask(field, imname+".image.tt0",
                                         almaimf_rootdir,
