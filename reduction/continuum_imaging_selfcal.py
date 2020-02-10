@@ -177,6 +177,8 @@ elif selfcal_field_id is not None:
         selfcal_field_id = [selfcal_field_id]
     for entry in selfcal_field_id:
         assert isinstance(entry,int), "{0} is not an int".format(entry)
+    logprint("Using selfcal_field_id = {0}".format(selfcal_field_id),
+             origin='contim_selfcal')
 
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
