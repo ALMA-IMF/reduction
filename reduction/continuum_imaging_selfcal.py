@@ -142,13 +142,13 @@ if not os.path.exists(imaging_root):
 
 # Command line options
 if from_cmd:
+    import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', nargs=1, 
-            help='Casa parameter')
+    parser.add_argument('-c', nargs=1, help='Casa parameter')
     parser.add_argument('--exclude7M', action='store_true',
-            help='Include 7M data')
+                        help='Include 7M data')
     parser.add_argument('--only7M', action='store_true',
-            help='Only image 7M data')
+                        help='Only image 7M data')
     args = parser.parse_args()
     exclude_7m = args.exclude7M
     only_7m = args.only7M
