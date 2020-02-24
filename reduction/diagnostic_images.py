@@ -15,10 +15,10 @@ def load_images(basename, suffix=None, crop=True):
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        cubes = {imn: SpectralCube.read(f'{basename}.{imn}.tt0{suffix}',
+        cubes = {imn: SpectralCube.read('{basename}.{imn}.tt0{suffix}'.format(**locals()),
                                         format='fits' if 'fits' in sfx else 'casa_image')
                  for imn in imnames
-                 if os.path.exists(f'{basename}.{imn}.tt0{suffix}')
+                 if os.path.exists('{basename}.{imn}.tt0{suffix}'.format(**locals()))
                 }
 
 
@@ -30,8 +30,8 @@ def load_images(basename, suffix=None, crop=True):
         if cubes[key].spectral_axis.unit != cubes['image'].spectral_axis.unit:
             cubes[key] = cubes[key].with_spectral_unit(cubes['image'].spectral_axis.unit)
 
-    if os.path.exists(f'{basename}.pb.tt0{suffix}'):
-        pb = SpectralCube.read(f'{basename}.pb.tt0{suffix}',
+    if os.path.exists('{basename}.pb.tt0{suffix}'.format(**locals())):
+        pb = SpectralCube.read('{basename}.pb.tt0{suffix}'.format(**locals()),
                                format='fits' if 'fits' in suffix else 'casa_image')
 
         # pb can have a bad CD in its wcs, but that CD is totally
@@ -77,7 +77,7 @@ def load_images(basename, suffix=None, crop=True):
 
 
     try:
-        casamask = SpectralCube.read(f'{basename}.mask{suffix}',
+        casamask = SpectralCube.read('{basename}.mask{suffix}'.format(**locals()),
                                      format='fits' if 'fits' in suffix else 'casa_image')
         cubes['mask'] = casamask
         if include_mask is not None:
