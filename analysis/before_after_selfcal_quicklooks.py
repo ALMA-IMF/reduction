@@ -47,11 +47,11 @@ def make_comparison_image(preselfcal, postselfcal):
     ax1 = pl.subplot(1,3,1)
     ax2 = pl.subplot(1,3,2)
     ax3 = pl.subplot(1,3,3)
-    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none')
+    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none', cmap='gray')
     ax1.set_title("preselfcal")
-    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none')
+    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none', cmap='gray')
     ax2.set_title("postselfcal")
-    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none')
+    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none', cmap='gray')
     ax3.set_title("post-pre")
 
     for ax in (ax1,ax2,ax3):
