@@ -234,12 +234,15 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars_dirty
                       )
-                ia.sethistory(origin='almaimf_line_imaging',
-                              history=["{0}: {1}".format(key, val) for key, val in
-                                       impars_dirty.items()])
-                ia.sethistory(origin='almaimf_line_imaging',
-                              history=["git_version: {0}".format(git_version),
-                                       "git_date: {0}".format(git_date)])
+                for suffix in ('image', 'residual', 'model'):
+                    ia.open(lineimagename+"."+suffix)
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["{0}: {1}".format(key, val) for key, val in
+                                           impars_dirty.items()])
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["git_version: {0}".format(git_version),
+                                           "git_date: {0}".format(git_date)])
+                    ia.close()
 
                 if os.path.exists(lineimagename+".image"):
                     # tclean with niter=0 is not supposed to produce a .image file,
@@ -248,6 +251,10 @@ for band in band_list:
                     dirty_tclean_made_residual = True
             elif not os.path.exists(lineimagename+".residual"):
                 raise ValueError("The residual image is required for further imaging.")
+            else:
+                logprint("Found existing files matching {0}".format(lineimagename),
+                         origin='almaimf_line_imaging'
+                        )
 
             if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
                 logprint("WARNING: The PSF for {0} exists, but no image exists."
@@ -266,18 +273,31 @@ for band in band_list:
             ia.open(lineimagename+".residual")
             stats = ia.statistics(robust=True)
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
-            threshold = "{0:0.4f}Jy".format(5*rms) # 3 rms might be OK in practice
-            logprint("Threshold used = {0} = 5x{1}".format(threshold, rms),
-                     origin='almaimf_line_imaging')
             ia.close()
 
+            continue_imaging = False
+            if 'threshold' in impars:
+                if 'sigma' in impars['threshold']:
+                    nsigma = int(impars['threshold'].strip('sigma'))
+                    threshold = "{0:0.4f}Jy".format(nsigma*rms) # 3 rms might be OK in practice
+                    logprint("Threshold used = {0} = {2}x{1}".format(threshold, rms, nsigma),
+                             origin='almaimf_line_imaging')
+                    impars['threshold'] = threshold
+                else:
+                    threshold = impars['threshold']
+                    nsigma = (u.Quantity(threshold) / rms).to(u.Jy).value
+                    logprint("Manual threshold used = {0} = {2}x{1}"
+                             .format(threshold, rms, nsigma),
+                             origin='almaimf_line_imaging')
 
-            if dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
+                if u.Quantity(threshold).to(u.Jy).value < stats['max']:
+                    # if the threshold was not reached, keep cleaning
+                    continue_imaging = True
+
+            if continue_imaging or dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 if 'local_impars' in locals():
                     local_impars['threshold'] = threshold
-
-                impars['threshold'] = threshold
 
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
@@ -287,12 +307,15 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars
                       )
-                ia.sethistory(origin='almaimf_line_imaging',
-                              history=["{0}: {1}".format(key, val) for key, val in
-                                       impars.items()])
-                ia.sethistory(origin='almaimf_line_imaging',
-                              history=["git_version: {0}".format(git_version),
-                                       "git_date: {0}".format(git_date)])
+                for suffix in ('image', 'residual', 'model'):
+                    ia.open(lineimagename+"."+suffix)
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["{0}: {1}".format(key, val) for key, val in
+                                           impars.items()])
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["git_version: {0}".format(git_version),
+                                           "git_date: {0}".format(git_date)])
+                    ia.close()
 
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
@@ -325,6 +348,19 @@ for band in band_list:
                               fitorder=1,
                               want_cont=False)
 
+            # if there is already a residual, check if it has met the target threshold
+            continue_imaging = False
+            if os.path.exists(lineimagename+".contsub.residual"):
+                logprint("Computing residual image statistics for {0}".format(lineimagename+".contsub"), origin='almaimf_line_imaging')
+                ia.open(lineimagename+".contsub.residual")
+                stats = ia.statistics(robust=True)
+                rms = float(stats['medabsdevmed'] * 1.482602218505602)
+                ia.close()
+
+                if u.Quantity(threshold).to(u.Jy).value < stats['max']:
+                    # if the threshold was not reached, keep cleaning
+                    continue_imaging = True
+
             if os.path.exists(lineimagename+".contsub.psf") and not os.path.exists(lineimagename+".contsub.image"):
                 logprint("WARNING: The PSF for {0} contsub exists, "
                          "but no image exists."
@@ -334,7 +370,7 @@ for band in band_list:
                          "(warning issued after imaging, before contsub imaging)"
                          .format(lineimagename),
                          origin='almaimf_line_imaging')
-            elif not os.path.exists(lineimagename+".contsub.image"):
+            elif continue_imaging or not os.path.exists(lineimagename+".contsub.image"):
 
                 pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
                 impars = line_imaging_parameters[pars_key]
@@ -355,12 +391,15 @@ for band in band_list:
                        restoringbeam='',
                        **impars
                       )
-                ia.sethistory(origin='almaimf_line_imaging',
-                              history=["{0}: {1}".format(key, val) for key, val in
-                                       impars.items()])
-                ia.sethistory(origin='almaimf_line_imaging',
-                              history=["git_version: {0}".format(git_version),
-                                       "git_date: {0}".format(git_date)])
+                for suffix in ('image', 'residual', 'model'):
+                    ia.open(lineimagename+".contsub."+suffix)
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["{0}: {1}".format(key, val) for key, val in
+                                           impars.items()])
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["git_version: {0}".format(git_version),
+                                           "git_date: {0}".format(git_date)])
+                    ia.close()
 
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',

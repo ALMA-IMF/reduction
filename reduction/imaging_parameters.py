@@ -193,13 +193,11 @@ imaging_parameters_nondefault = {
     'W51-E_B3_7M12M_robust0': {'threshold': '1mJy', # RMS ~ ??
                                'scales': [0,3,9,27],
                               },
-    
                  #W43-MM3 B6
     'W43-MM3_B6_12M_robust0': {'threshold': {0: '1.0mJy', 1: '1.0mJy', 2: '0.25mJy', 3: '0.25mJy', 4: '0.25mJy', 5: '0.25mJy'},
                                'niter': {0: 1000, 1: 3000, 2: 12000, 3: 12000, 4: 12000, 5: 15000},
                                'scales': [0,3,9,27],
                               },
-    
        #12M of band 3
     'G353.41_B3_12M_robust-2': {'threshold': '0.5mJy', # 2*RMS
                              'scales': [0,3,9,27],
@@ -705,12 +703,10 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             'deconvolver': 'multiscale',
                             'outframe': 'LSRK',
                             'veltype': 'radio',
-                            #'sidelobethreshold': 1.0,
+                            #'sidelobethreshold': 2.0,
                             #'noisethreshold': 5.0,
                             #'usemask': 'auto-multithresh',
-                            'usemask':'pb',
-                            'pbmask':0.5,
-                            'threshold': '7.0mJy',
+                            'threshold': '5sigma',
                             'interactive': False,
                             'pblimit': 0.2,
                             'nterms': 1
@@ -728,6 +724,7 @@ default_lines = {'n2hp': '93.173700GHz',
                  '12co': '230.538GHz',
                  'h30a': '231.900928GHz',
                  'h41a': '92.034434GHz',
+                 'c18o': '219.560358GHz',
                 }
 field_vlsr = {'W51-E': '55km/s',
               'W51-IRS2': '55km/s',

@@ -10,6 +10,13 @@ You can set the following environmental variables for this script:
         If this parameter is set, filter out the imaging targets and only split
         fields with this name (e.g., "W43-MM1", "W51-E", etc.).
         Metadata will still be collected for *all* available MSes.
+    SELFCAL_FIELD_ID=<number>
+        Specify a single number or a comma-separated list of numbers for fields
+        you want to self-calibrate on.  This will override the selfcal
+        heuristics and will instead use just the selected field to
+        self-calibrate on.  However, the full mosaic will still be imaged.
+        (can also be specified by setting `selfcal_field_id = [1]` or similar;
+        the variable must be a list of integers though)
     BAND_TO_IMAGE=B3 or B6
         If this parameter is set, only image the selected band.
 
@@ -136,13 +143,13 @@ if not os.path.exists(imaging_root):
 
 # Command line options
 if from_cmd:
+    import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', nargs=1, 
-            help='Casa parameter')
+    parser.add_argument('-c', nargs=1, help='Casa parameter')
     parser.add_argument('--exclude7M', action='store_true',
-            help='Include 7M data')
+                        help='Include 7M data')
     parser.add_argument('--only7M', action='store_true',
-            help='Only image 7M data')
+                        help='Only image 7M data')
     args = parser.parse_args()
     exclude_7m = args.exclude7M
     only_7m = args.only7M
@@ -159,6 +166,22 @@ if 'only_7m' not in locals():
     else:
         only_7m = False
 
+if 'selfcal_field_id' not in locals():
+    if os.getenv('SELFCAL_FIELD_ID') is not None:
+        selfcal_field_id = list(map(int, os.getenv('SELFCAL_FIELD_ID').split(",")))
+        logprint("Using selfcal_field_id = {0}".format(selfcal_field_id),
+                 origin='contim_selfcal')
+    else:
+        selfcal_field_id = None
+elif selfcal_field_id is not None:
+    if not isinstance(selfcal_field_id, list):
+        selfcal_field_id = [selfcal_field_id]
+    for entry in selfcal_field_id:
+        assert isinstance(entry,int), "{0} is not an int".format(entry)
+    logprint("Using selfcal_field_id = {0}".format(selfcal_field_id),
+             origin='contim_selfcal')
+
+
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
          origin='contim_selfcal')
 
@@ -168,9 +191,14 @@ logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(e
 with open('continuum_mses.txt', 'r') as fh:
     continuum_mses = [x.strip() for x in fh.readlines()]
 
+if len(continuum_mses) == 0:
+    raise IOError("Your continuum_mses.txt file is empty.  There is nothing "
+                  "to image or self-calibrate.")
+
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
-    logprint("Using BSENS measurement set")
+    logprint("Using BSENS measurement set",
+             origin='contim_selfcal')
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
                                  '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
@@ -283,7 +311,7 @@ for continuum_ms in continuum_mses:
                                                 exclude_7m=exclude_7m,
                                                 only_7m=only_7m,
                                                 spw='all',
-                                                pixfraction_of_fwhm=1/4.))
+                                                pixfraction_of_fwhm=1/8. if only_7m else 1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
@@ -458,6 +486,9 @@ for continuum_ms in continuum_mses:
             populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                   phasecenter, maskname, cellsize, imsize,
                                   antennae)
+        else:
+            logprint("Model column was populated from pre-selfcal image.",
+                     origin='almaimf_cont_selfcal')
 
     else:
         # populate the model column (should be from data on disk matching
@@ -477,19 +508,24 @@ for continuum_ms in continuum_mses:
     # make a custom mask using the first-pass clean
     # (note: this will be replaced after each iteration if there is a file with
     # the appropriate name)
-    try:
-        maskname = make_custom_mask(field, imname+".image.tt0",
-                                    almaimf_rootdir, band,
-                                    rootdir=imaging_root,
-                                    suffix='_clean_robust{0}_{1}'.format(robust,
-                                                                         arrayname)
-                                   )
-    except Exception as ex:
-        logprint("Did not make a mask from the clean data.  The exception was: "
-                 "{0}.  If you specified {{'maskname': <something>}} for each "
-                 "selfcal iteration in imaging_parameters.py, this is OK and "
-                 "can be ignored.".format(str(ex)),
-                 origin='almaimf_cont_selfcal')
+    if 'maskname' not in locals() or 'crtf' not in maskname:
+        try:
+            maskname = make_custom_mask(field, imname+".image.tt0",
+                                        almaimf_rootdir, band,
+                                        rootdir=imaging_root,
+                                        suffix='_clean_robust{0}_{1}'.format(robust,
+                                                                             arrayname)
+                                       )
+        except Exception as ex:
+            logprint("Did not make a mask from the clean data.  The exception was: "
+                     "{0}.  If you specified {{'maskname': <something>}} for each "
+                     "selfcal iteration in imaging_parameters.py, this is OK and "
+                     "can be ignored.".format(str(ex)),
+                     origin='almaimf_cont_selfcal')
+    elif 'crtf' in maskname:
+        logprint("Using mask {0} for iteration {1}"
+                 .format(maskname, 0),
+                 origin='contim_selfcal')
 
 
     cals = []
@@ -554,14 +590,33 @@ for continuum_ms in continuum_mses:
 
         if not os.path.exists(imname+".image.tt0"):
 
-            okfields,notokfields = goodenough_field_solutions(caltable, minsnr=5)
-            if len(okfields) == 0:
-                logprint("All fields flagged out of gaincal solns!",
-                         origin='contim_selfcal')
-                raise ValueError("All fields flagged out of gaincal solns!")
-            okfields_str = ",".join(["{0}".format(x) for x in okfields])
+            if 'minsnr' in selfcalpars[selfcaliter]:
+                minsnr = selfcalpars[selfcaliter]['minsnr']
+            else:
+                minsnr = 5
+
+            okfields,notokfields = goodenough_field_solutions(caltable,
+                                                              minsnr=minsnr)
             logprint("Fields {0} had min snr 5, fields {1} did not"
                      .format(okfields, notokfields), origin='contim_selfcal')
+            if len(okfields) == 0:
+                if selfcal_field_id is None:
+                    logprint("All fields flagged out of gaincal solns!",
+                             origin='contim_selfcal')
+                    raise ValueError("All fields flagged out of gaincal solns!")
+                else:
+                    logprint("All fields flagged out of gaincal solns.  "
+                             "Using manually-specified self-calibration field {0}".format(selfcal_field_id),
+                             origin='contim_selfcal')
+                    okfields = selfcal_field_id
+            elif selfcal_field_id is not None:
+                intersection = set(okfields).intersection(set(selfcal_field_id))
+                logprint("Using fields {0} as manually specified for self-calibration, "
+                         "though {1} were found to be good (the intersection is {2}"
+                         .format(selfcal_field_id, okfields, intersection),
+                         origin='contim_selfcal')
+                okfields = selfcal_field_id
+            okfields_str = ",".join(["{0}".format(x) for x in okfields])
             clearcal(vis=selfcal_ms, addmodel=True)
             # use gainfield so we interpolate the good solutions to the other
             # fields
@@ -637,7 +692,11 @@ for continuum_ms in continuum_mses:
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
-        if os.path.exists(regfn):
+        if 'crtf' in maskname:
+            logprint("Using mask {0} for iteration {1}".format(maskname,
+                                                               selfcaliter),
+                     origin='contim_selfcal')
+        elif os.path.exists(regfn):
             maskname = make_custom_mask(field, imname+".image.tt0",
                                         almaimf_rootdir,
                                         band,
@@ -688,7 +747,11 @@ for continuum_ms in continuum_mses:
                              'clean_regions/{0}_{1}{2}.reg'.format(field,
                                                                    band,
                                                                    regsuffix))
-        if os.path.exists(regfn):
+        if 'crtf' in maskname:
+            logprint("Using mask {0} for iteration {1} (finaliter)"
+                     .format(maskname, selfcaliter),
+                     origin='contim_selfcal')
+        elif os.path.exists(regfn):
             # note that imname is from the final self-calibration iteration
             maskname = make_custom_mask(field, imname+".image.tt0",
                                         almaimf_rootdir,
