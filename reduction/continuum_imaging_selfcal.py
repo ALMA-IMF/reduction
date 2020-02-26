@@ -174,6 +174,8 @@ if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false
     continuum_mses += [x.replace('_continuum_merged.cal.ms',
                                  '_continuum_merged_bsens.cal.ms')
                        for x in continuum_mses]
+else:
+    do_bsens = False
 
 
 for continuum_ms in continuum_mses:
@@ -373,7 +375,7 @@ for continuum_ms in continuum_mses:
                                         almaimf_rootdir,
                                         band,
                                         rootdir=imaging_root,
-                                        suffix='_clean_robust{0}_{1}'.format(robust,
+                                        suffix='_dirty_robust{0}_{1}'.format(robust,
                                                                              arrayname)
                                        )
         except IOError:
@@ -381,7 +383,7 @@ for continuum_ms in continuum_mses:
                                         almaimf_rootdir,
                                         band,
                                         rootdir=imaging_root,
-                                        suffix='_dirty_robust{0}_{1}'.format(robust,
+                                        suffix='_clean_robust{0}_{1}'.format(robust,
                                                                              arrayname)
                                        )
     imname = contimagename+"_robust{0}_preselfcal".format(robust)
