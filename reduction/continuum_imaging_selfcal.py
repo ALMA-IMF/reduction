@@ -403,7 +403,7 @@ for continuum_ms in continuum_mses:
                                         almaimf_rootdir,
                                         band,
                                         rootdir=imaging_root,
-                                        suffix='_dirty_robust{0}_{1}'.format(robust,
+                                        suffix='_clean_robust{0}_{1}'.format(robust,
                                                                              arrayname)
                                        )
         except IOError:
@@ -411,7 +411,7 @@ for continuum_ms in continuum_mses:
                                         almaimf_rootdir,
                                         band,
                                         rootdir=imaging_root,
-                                        suffix='_clean_robust{0}_{1}'.format(robust,
+                                        suffix='_dirty_robust{0}_{1}'.format(robust,
                                                                              arrayname)
                                        )
     imname = contimagename+"_robust{0}_preselfcal".format(robust)
