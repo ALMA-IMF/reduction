@@ -506,34 +506,34 @@ selfcal_pars['G333.60_B3_12M_robust0'][3] = {'solint': 'int',
 selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
                                              'gaintype': 'T',
                                              'calmode': 'ap',
-                                                                                         'solnorm': True,
+                                             'solnorm': True,
                                             }
 
 selfcal_pars['G333.60_B6_12M_robust0'][1] = {'solint': 'inf',
                                              'gaintype': 'T',
                                              'calmode': 'p',
-                                                                                         'combine': 'spw',
+                                             'combine': 'spw',
                                             }
 selfcal_pars['G333.60_B6_12M_robust0'][2] = {'solint': 'inf',
                                              'gaintype': 'T',
                                              'calmode': 'p',
-                                                                                         'combine': 'spw',
+                                             'combine': 'spw',
                                             }
 selfcal_pars['G333.60_B6_12M_robust0'][3] = {'solint': 'int',
                                              'gaintype': 'T',
                                              'calmode': 'p',
-                                                                                         'combine': 'spw',
+                                             'combine': 'spw',
                                             }
 selfcal_pars['G333.60_B6_12M_robust0'][4] = {'solint': 'int',
                                              'gaintype': 'T',
                                              'calmode': 'p',
-                                                                                         'combine': 'spw',
+                                             'combine': 'spw',
                                             }
 selfcal_pars['G333.60_B6_12M_robust0'][5] = {'solint': 'inf',
                                              'gaintype': 'T',
                                              'calmode': 'ap',
-                                                                                         'combine': 'spw',
-                                                                                         'solnorm': True,
+                                             'combine': 'spw',
+                                             'solnorm': True,
                                             }
 #####  ######
 
