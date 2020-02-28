@@ -731,7 +731,7 @@ for continuum_ms in continuum_mses:
                          "will not work until this is changed.",
                          origin='almaimf_cont_selfcal')
             else:
-                maskname = impars_finaliter['maskname'][0]
+                maskname = impars_finaliter['maskname'][selfcaliter]
             del impars_finaliter['maskname']
             if '/' not in maskname and not os.path.exists(maskname):
                 maskname = os.path.join(almaimf_rootdir,
