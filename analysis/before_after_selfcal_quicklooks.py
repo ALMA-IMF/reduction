@@ -78,8 +78,10 @@ def get_selfcal_number(fn):
     except:
         return 0
 
+import imstats
+tbl = imstats.savestats()
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv')
+#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv')
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
@@ -108,14 +110,19 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x][0]
 
-                preselfcal_name = fns[0].replace(f"_selfcal{last_selfcal}","_preselfcal")
+                preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
                 if "_finaliter" in preselfcal_name:
                     preselfcal_name = preselfcal_name.replace("_finaliter","")
+                if not os.path.exists(preselfcal_name) and '_v0.1' in preselfcal_name:
+                    preselfcal_name = preselfcal_name.replace("_v0.1", "")
                 if not os.path.exists(preselfcal_name):
+                    print(f"No preselfcal file called {preselfcal_name} found, using alternatives")
                     # try alternate naming scheme
-                    preselfcal_name = fns[0].replace(f"_selfcal{last_selfcal}","")
+                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","")
                     if "_finaliter" in preselfcal_name:
                         preselfcal_name = preselfcal_name.replace("_finaliter","")
+                if "_selfcal" in preselfcal_name:
+                    raise ValueError("?!?!?!")
 
                 try:
                     with warnings.catch_warnings():
