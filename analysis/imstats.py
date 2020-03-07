@@ -75,8 +75,11 @@ def assemble_stats(globstr, ditch_suffix=None):
     for fn in ProgressBar(glob.glob(globstr)):
         if ditch_suffix is not None:
             meta = parse_fn(fn.split(ditch_suffix)[0])
+            # don't do this on the suffix-ditched version
+            meta['pbcor'] = 'pbcor' in fn.lower()
         else:
             meta = parse_fn(fn)
+        meta['filename'] = fn
         stats = imstats(fn)
         allstats.append({'meta': meta, 'stats': stats})
 
@@ -366,7 +369,8 @@ def savestats():
 
     requested = get_requested_sens()
 
-    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix', 'pbcor']
+    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
+                 'pbcor', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
@@ -401,5 +405,5 @@ def savestats():
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        #tbl = savestats()
+        tbl = savestats()
         make_analysis_forms()
