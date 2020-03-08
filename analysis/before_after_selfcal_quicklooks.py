@@ -67,6 +67,10 @@ def make_comparison_image(preselfcal, postselfcal):
                  'mad': mad_std(diff, ignore_nan=True),
                  'dr_pre': np.nanmax(data_pre) / mad_std(data_pre, ignore_nan=True),
                  'dr_post': np.nanmax(data_post) / mad_std(data_post, ignore_nan=True),
+                 'max_pre': np.nanmax(data_pre),
+                 'max_post': np.nanmax(data_post),
+                 'mad_pre': mad_std(data_pre, ignore_nan=True),
+                 'mad_post':  mad_std(data_post, ignore_nan=True),
                 }
 
     return ax1, ax2, ax3, fig, diffstats
@@ -89,6 +93,10 @@ tbl.add_column(Column(name='scMeanDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMedianDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='max_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='max_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
@@ -148,6 +156,10 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['scMedianDiff'][matchrow] = diffstats['median']
                 tbl['dr_pre'][matchrow] = diffstats['dr_pre']
                 tbl['dr_post'][matchrow] = diffstats['dr_post']
+                tbl['max_pre'][matchrow] = diffstats['max_pre']
+                tbl['max_post'][matchrow] = diffstats['max_post']
+                tbl['mad_pre'][matchrow] = diffstats['mad_pre']
+                tbl['mad_post'][matchrow] = diffstats['mad_post']
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
 
                 print(fns)
