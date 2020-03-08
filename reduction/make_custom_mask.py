@@ -55,8 +55,10 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
 
         preg = reg.to_pixel(image.wcs)
         msk = preg.to_mask()
+        assert hasattr(image, 'unit'), "Image {imname} failed to have units".format(imname=imname)
         mimg = msk.multiply(image)
-        assert hasattr(mimg, 'unit')
+        assert mimg is not None
+        assert hasattr(mimg, 'unit'), "Masked Image {imname} failed to have units".format(imname=imname)
         assert mimg.unit.is_equivalent(u.Jy)
 
         msk.cutout(mask_array)[:] = (mimg > threshold) | msk.cutout(mask_array)
