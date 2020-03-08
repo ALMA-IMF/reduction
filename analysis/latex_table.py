@@ -32,18 +32,18 @@ cols_to_keep = {'region':'Region',
                 'bmaj':r'$\theta_{maj}$',
                 'bmin':r'$\theta_{min}$',
                 'bpa':'BPA',
+                'Req_Res': r"$\theta_{req}$",
+                'BeamVsReq': r"$\theta_{req}$/\theta_{maj}$",
+                #'peak/mad': "DR",
                 'peak':'$S_{peak}$',
                 'mad':'$\sigma_{MAD}$',
-                #'peak/mad': "DR",
-                'Req_Res': r"$\theta_{req}$",
                 'Req_Sens': r"\sigma_{req}$",
-                'SensVsReq': r"$\sigma{req}$/\sigma_{MAD}$",
-                'BeamVsReq': r"$\theta_{req}$/\theta_{maj}$",
+                'SensVsReq': r"$\sigma_{req}$/\sigma_{MAD}$",
                 'dr_pre': "DR$_{pre}$",
                 'dr_post': "DR$_{post}$",
                 'dr_improvement': "DR$_{post}$/DR$_{pre}$"}
 
-units = {'$S_{peak}$':u.mJy.to_string(u.format.LatexInline),
+units = {'$S_{peak}$':u.Jy.to_string(u.format.LatexInline),
          '$\sigma_{MAD}$':u.mJy.to_string(u.format.LatexInline),
          '$\sigma_{req}$':u.mJy.to_string(u.format.LatexInline),
          r'$\theta_{req}$':u.arcsec.to_string(u.format.LatexInline),
@@ -55,6 +55,7 @@ latexdict['units'] = units
 
 wtbl = wtbl[list(cols_to_keep.keys())]
 
+
 for old, new in cols_to_keep.items():
     if old in wtbl.colnames:
         #wtbl[old].meta['description'] = description[old]
@@ -62,9 +63,25 @@ for old, new in cols_to_keep.items():
         if new in units:
             wtbl[new].unit = units[new]
 
+float_cols =  ['$\\theta_{maj}$',
+ '$\\theta_{min}$',
+ 'BPA',
+ '$S_{peak}$',
+ '$\\sigma_{MAD}$',
+ '$\\theta_{req}$',
+ '\\sigma_{req}$',
+ '$\\sigma_{req}$/\\sigma_{MAD}$',
+ '$\\theta_{req}$/\\theta_{maj}$',
+ 'DR$_{pre}$',
+ 'DR$_{post}$',
+ 'DR$_{post}$/DR$_{pre}$']
+
+# convert to mJy
+wtbl['$\sigma_{MAD}$'] *= 1000
+
 
 formats = {key: lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2)))
-           for key in cols_to_keep.values()}
+           for key in float_cols}
 
 wtbl.write('selfcal_summary.ecsv', format='ascii.ecsv', overwrite=True)
 
@@ -81,6 +98,6 @@ latexdict['tablefoot'] = ("}\par\n"
 
                          )
 
-wtbl.write(paths.texpath("selfcal_summary.tex"), formats=formats,
+wtbl.write("../datapaper/selfcal_summary.tex", formats=formats,
            overwrite=True, latexdict=latexdict)
 
