@@ -165,11 +165,44 @@ imaging_parameters_nondefault = {
                                'scales': [0,3,9,27],
                               },
     
-                 #W43-MM3 B6
+       #W43-MM2 B6
+    'W43-MM2_B6_12M_robust0': {'threshold': {0: '2.0mJy', 1: '2.0mJy', 2: '0.7mJy', 3: '0.5mJy', 4: 'O.35mJy', 5: '0.25mJy'},
+                               'niter': {0: 1000, 1: 3000, 2: 10000, 3: 12000, 4: 15000, 5: 15000},
+                               'scales': [0,3,9,27],
+                              },
+    'W43-MM2_B6_7M12M_robust0': {'threshold': {0: '1.0mJy', 1: '1.0mJy', 2: '0.7mJy', 3: '0.35mJy'},
+                               'niter': {0: 1000, 1: 5000, 2: 10000, 3: 10000},
+                               'scales': [0,3,9,27],
+                              },
+    
+       #W43-MM3 B6
     'W43-MM3_B6_12M_robust0': {'threshold': {0: '1.0mJy', 1: '1.0mJy', 2: '0.25mJy', 3: '0.25mJy', 4: '0.25mJy', 5: '0.25mJy'},
                                'niter': {0: 1000, 1: 3000, 2: 12000, 3: 12000, 4: 12000, 5: 15000},
                                'scales': [0,3,9,27],
                               },
+    'W43-MM3_B6_7M12M_robust0': {'threshold': {0: '1.0mJy', 1: '1.0mJy', 2: '0.7mJy', 3: '0.35mJy'},
+                               'niter': {0: 1000, 1: 5000, 2: 10000, 3: 10000},
+                               'scales': [0,3,9,27],
+                              },
+    
+       #W43-MM1 B3
+    'W43-MM1_B3_12M_robust0': {'threshold': {0: '1.0mJy', 1: '0.25mJy', 2: '0.1mJy'},
+                               'niter': {0: 1000, 1: 9000, 2: 15000},
+                               'scales': [0,3,9,27],
+                              },
+    
+       #W43-MM2 B3
+    'W43-MM2_B3_12M_robust0': {'threshold': {0: '0.2mJy', 1: '0.5mJy', 2: '0.1mJy', 3: '0.1mJy'},
+                               'niter': {0: 9000, 1: 10000, 2: 16000, 3: 16000},
+                               'scales': [0,3,9,27],
+                              },
+    
+       #W43-MM3 B3
+    'W43-MM3_B3_12M_robust0': {'threshold': {0: '1.0mJy', 1: '0.75mJy', 2: '0.15mJy'},
+                               'niter': {0: 1000, 1: 6000, 2: 12000},
+                               'scales': [0,3,9,27],
+                              },
+
     
        #12M of band 3
     'G353.41_B3_12M_robust-2': {'threshold': '0.5mJy', # 2*RMS
@@ -356,7 +389,44 @@ selfcal_pars['W51-E_B3_12M_robust0'][7] = {'solint': 'inf',
                                            'calmode': 'ap',
                                             'minsnr': 5,
                                           }
+# W43-MM2 B6
+   #12M only#
+selfcal_pars['W43-MM2_B6_12M_robust0'][1] = {'solint': 'inf',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM2_B6_12M_robust0'][2] = {'solint': '1200',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM2_B6_12M_robust0'][3] = {'solint': '600',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM2_B6_12M_robust0'][4] = {'solint': '300',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM2_B6_12M_robust0'][5] = {'solint': 'int',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+   #7M 12M
+selfcal_pars['W43-MM2_B6_7M12M_robust0'][1] = {'solint': 'inf',
+                                               'gaintype': 'G',
+                                               'calmode': 'p',
+                                              }
+selfcal_pars['W43-MM2_B6_7M12M_robust0'][2] = {'solint': '500',
+                                               'gaintype': 'G',
+                                               'calmode': 'p',
+                                              }
+selfcal_pars['W43-MM2_B6_7M12M_robust0'][3] = {'solint': 'int',
+                                               'gaintype': 'G',
+                                               'calmode': 'p',
+                                              }
+
 # W43-MM3 B6
+   #12M only
 selfcal_pars['W43-MM3_B6_12M_robust0'][1] = {'solint': 'inf',
                                              'gaintype': 'G',
                                              'calmode': 'p',
@@ -373,9 +443,59 @@ selfcal_pars['W43-MM3_B6_12M_robust0'][4] = {'solint': '300',
                                              'gaintype': 'G',
                                              'calmode': 'p',
                                             }
-selfcal_pars['W43-MM3_B6_12M_robust0'][5] = {'solint': '300',
+selfcal_pars['W43-MM3_B6_12M_robust0'][5] = {'solint': 'int',
                                              'gaintype': 'G',
-                                             'calmode': 'a',
+                                             'calmode': 'p',
+                                            }
+   #7M 12M
+selfcal_pars['W43-MM3_B6_7M12M_robust0'][1] = {'solint': 'inf',
+                                               'gaintype': 'G',
+                                               'calmode': 'p',
+                                              }
+selfcal_pars['W43-MM3_B6_7M12M_robust0'][2] = {'solint': '500',
+                                               'gaintype': 'G',
+                                               'calmode': 'p',
+                                              }
+selfcal_pars['W43-MM3_B6_7M12M_robust0'][3] = {'solint': 'int',
+                                               'gaintype': 'G',
+                                               'calmode': 'p',
+                                              }
+
+# W43-MM1 B3
+   #12M only
+selfcal_pars['W43-MM1_B3_12M_robust0'][1] = {'solint': '300',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM1_B3_12M_robust0'][2] = {'solint': '300',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+
+# W43-MM2 B3
+   #12M only
+selfcal_pars['W43-MM2_B3_12M_robust0'][1] = {'solint': 'inf',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM2_B3_12M_robust0'][2] = {'solint': '300',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM2_B3_12M_robust0'][3] = {'solint': 'int',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+
+# W43-MM3 B3
+   #12M only
+selfcal_pars['W43-MM3_B3_12M_robust0'][1] = {'solint': 'inf',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['W43-MM3_B3_12M_robust0'][2] = {'solint': '300',
+                                             'gaintype': 'G',
+                                             'calmode': 'p',
                                             }
 
 ##### G333.60 ######
