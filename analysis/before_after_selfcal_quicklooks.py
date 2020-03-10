@@ -35,6 +35,8 @@ def make_comparison_image(preselfcal, postselfcal):
         print(preselfcal, postselfcal, cube_pre.shape, cube_post.shape)
         raise ex
 
+    fits.PrimaryHDU(data=diff, header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits")
+
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
 
