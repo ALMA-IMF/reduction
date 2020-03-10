@@ -399,7 +399,134 @@ imaging_parameters_nondefault = {
                                              5:'G010.62_B3_01mJy.crtf'
                                          }},
 
+
+# G351.77
+  'G351.77_B6_7M12M_robust0': {'threshold': {0: '4.0mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy', 4: '0.25mJy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
+                               'maskname': {0: 'G351.77_B6_12M_robust2.crtf',
+                                            1: 'G351.77_B6_12M_robust2.crtf',
+                                            2: 'G351.77_B6_12M_robust2.crtf',
+                                            3: 'G351.77_B6_12M_robust2.crtf',
+                                            4: 'G351.77_B6_12M_robust2.crtf'}
+                              },
+
+   'G351.77_B6_7M12M_robust2': {'threshold': {0: '4.0mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy', 4: '0.25mJy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
+                               'maskname': {0: 'G351.77_B6_12M_robust2.crtf',
+                                            1: 'G351.77_B6_12M_robust2.crtf',
+                                            2: 'G351.77_B6_12M_robust2.crtf',
+                                            3: 'G351.77_B6_12M_robust2.crtf',
+                                            4: 'G351.77_B6_12M_robust2.crtf'}
+                              },
+  'G351.77_B6_7M12M_robust-2': {'threshold': {0: '4.0mJy', 1: '0.75mJy', 2: '0.50mJy', 3: '0.25mJy', 4: '0.25mJy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
+                               'maskname': {0: 'G351.77_B6_12M_robust2.crtf',
+                                            1: 'G351.77_B6_12M_robust2.crtf',
+                                            2: 'G351.77_B6_12M_robust2.crtf',
+                                            3: 'G351.77_B6_12M_robust2.crtf',
+                                            4: 'G351.77_B6_12M_robust2.crtf'}
+                              },
+
+                                                #rms:6e-4
+   'G351.77_B6_12M_robust0': {'threshold': {0: '12e-4Jy', 1: '12e-4Jy', 2: '12e-4Jy', 3: '12e-4Jy',4: '12e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
+                               'maskname': {0: 'G351.77_B6_12M_robust2.crtf',
+                                            1: 'G351.77_B6_12M_robust2.crtf',
+                                            2: 'G351.77_B6_12M_robust2.crtf',
+                                            3: 'G351.77_B6_12M_robust2.crtf',
+                                            4: 'G351.77_B6_12M_robust2.crtf'}
+                              },
+
+ 
+                                               #rms: 5e-4
+   'G351.77_B6_12M_robust2': {'threshold': {0: '10e-4Jy', 1: '10e-4Jy', 2: '10e-4Jy', 3: '10e-4Jy', 4: '10e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4:18000},
+                               'maskname': {0: 'G351.77_B6_12M_robust2.crtf',
+                                            1: 'G351.77_B6_12M_robust2.crtf',
+                                            2: 'G351.77_B6_12M_robust2.crtf',
+                                            3: 'G351.77_B6_12M_robust2.crtf',
+                                            4: 'G351.77_B6_12M_robust2.crtf'}
+                              },
+                                                 # rms: 7.2e-4
+   'G351.77_B6_12M_robust-2': {'threshold': {0: '14.4e-4Jy', 1: '14.4e-4Jy', 2: '14.4e-4Jy', 3: '14.4e-4Jy', 4: '14.4e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4:18000},
+                               'maskname': {0: 'G351.77_B6_12M_robust-2.crtf',
+                                            1: 'G351.77_B6_12M_robust-2.crtf',
+                                            2: 'G351.77_B6_12M_robust-2.crtf',
+                                            3: 'G351.77_B6_12M_robust-2.crtf',
+                                            4: 'G351.77_B6_12M_robust-2.crtf'}
+                              },
+
+  'G351.77_B3_12M_robust-2': {'threshold': {0: '8e-4Jy', 1: '8e-4Jy', 2: '8e-4Jy', 3: '8e-4Jy', 4: '8e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
+                               'maskname': {0: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            1: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            2: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            3: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            4: 'G351.77_B3_12M_robust2_bsens.crtf'}
+                              },
+                                                # rms: 2.7e-4 for bsens # rms : 1.5e-4
+#   'G351.77_B3_12M_robust2': {'threshold': {0: '5.4e-4Jy', 1: '5.4e-4Jy', 2: '5.4e-4Jy', 3: '5.4e-4Jy', 4: '5.4e-4Jy'},
+   'G351.77_B3_12M_robust2': {'threshold': {0: '3e-4Jy', 1: '3e-4Jy', 2: '3e-4Jy', 3: '3e-4Jy', 4: '3e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4:18000},
+                               'maskname': {0: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            1: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            2: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            3: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            4: 'G351.77_B3_12M_robust2_bsens.crtf'}
+                              },
+#  'G351.77_B3_12M_robust0': {'threshold': {0: '7e-4Jy', 1: '7e-4Jy', 2: '7e-4Jy', 3: '7e-4Jy', 4: '7e-4Jy'},
+  'G351.77_B3_12M_robust0': {'threshold': {0: '3e-4Jy', 1: '3e-4Jy', 2: '3e-4Jy', 3: '3e-4Jy', 4: '3e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4:18000},
+                               'maskname': {0: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            1: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            2: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            3: 'G351.77_B3_12M_robust2_bsens.crtf',
+                                            4: 'G351.77_B3_12M_robust2_bsens.crtf'}
+                              },
+#  'G351.77_B3_7M12M_robust-2': {'threshold': {0: '8e-4Jy', 1: '8e-4Jy', 2: '8e-4Jy', 3: '8e-4Jy', 4: '8e-4Jy'},
+#  rms = 1.6 e-4Jy/b
+  'G351.77_B3_7M12M_robust-2': {'threshold': {0: '3.2e-4Jy', 1: '3.2e-4Jy', 2: '3.2e-4Jy', 3: '3.2e-4Jy', 4: '3.2e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
+			       'scales': [0,3],
+                               'maskname': {0: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            1: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            2: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            3: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            4: 'G351.77_B3_7M12M_robust2_bsens.crtf'}
+                              },
+                                                # rms: 2.7e-4
+#   'G351.77_B3_7M12M_robust2': {'threshold': {0: '5.4e-4Jy', 1: '5.4e-4Jy', 2: '5.4e-4Jy', 3: '5.4e-4Jy', 4: '5.4e-4Jy'},
+# rms ~ 0.9e-5
+   'G351.77_B3_7M12M_robust2': {'threshold': {0: '1.8e-4Jy', 1: '1.8e-4Jy', 2: '1.8e-4Jy', 3: '1.8e-4Jy', 4: '1.8e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4:18000},
+			       'scales': [0,3],			       
+                               'maskname': {0: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            1: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            2: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            3: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            4: 'G351.77_B3_7M12M_robust2_bsens.crtf'}
+                              },
+#rms ~1e-4 Jy/b
+  'G351.77_B3_7M12M_robust0': {'threshold': {0: '2e-4Jy', 1: '2e-4Jy', 2: '2e-4Jy', 3: '2e-4Jy', 4: '2e-4Jy'},
+# no bsens
+#  'G351.77_B3_7M12M_robust0': {'threshold': {0: '7e-4Jy', 1: '7e-4Jy', 2: '7e-4Jy', 3: '7e-4Jy', 4: '7e-4Jy'},
+                               'niter': {0: 1000, 1: 3000, 2: 9000, 3: 9000, 4:9000},
+			       'scales': [0,3],
+                               'maskname': {0: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            1: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            2: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            3: 'G351.77_B3_7M12M_robust2_bsens.crtf',
+                                            4: 'G351.77_B3_7M12M_robust2_bsens.crtf'}
+                              },
+
+
+
 }
+
+
+
+
 
 for key in imaging_parameters_nondefault:
     assert key in imaging_parameters
