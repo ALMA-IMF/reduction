@@ -342,6 +342,9 @@ for continuum_ms in continuum_mses:
     # NOTE: if anything besides `maskname` and `niter` ends up with a
     # dictionary, we'll need to parse it here
 
+    if do_bsens and (pars_key+"_bsens") in selfcal_pars:
+        pars_key = pars_key+"_bsens"
+
     selfcalpars = selfcal_pars[pars_key]
 
     logprint("Selfcal parameters are: {0}".format(selfcalpars),
@@ -720,6 +723,9 @@ for continuum_ms in continuum_mses:
         logprint("Imaging self-cal iter {0} (final) with robust {1}"
                  .format(selfcaliter, robust),
                  origin='contim_selfcal')
+
+        if do_bsens and (pars_key+"_bsens") in selfcal_pars:
+            pars_key = pars_key+"_bsens"
 
         pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
         impars_finaliter = copy.copy(imaging_parameters[pars_key])
