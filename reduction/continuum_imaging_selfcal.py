@@ -336,16 +336,20 @@ for continuum_ms in continuum_mses:
     robust = 0
 
     pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-    impars = imaging_parameters[pars_key]
+    if do_bsens and (pars_key+"_bsens") in imaging_parameters:
+        impars = imaging_parameters[pars_key+"_bsens"]
+    else:
+        impars = imaging_parameters[pars_key]
+
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
     # NOTE: if anything besides `maskname` and `niter` ends up with a
     # dictionary, we'll need to parse it here
 
     if do_bsens and (pars_key+"_bsens") in selfcal_pars:
-        pars_key = pars_key+"_bsens"
-
-    selfcalpars = selfcal_pars[pars_key]
+        selfcalpars = selfcal_pars[pars_key+"_bsens"]
+    else:
+        selfcalpars = selfcal_pars[pars_key]
 
     logprint("Selfcal parameters are: {0}".format(selfcalpars),
              origin='almaimf_cont_selfcal')
@@ -724,11 +728,11 @@ for continuum_ms in continuum_mses:
                  .format(selfcaliter, robust),
                  origin='contim_selfcal')
 
-        if do_bsens and (pars_key+"_bsens") in selfcal_pars:
-            pars_key = pars_key+"_bsens"
-
         pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-        impars_finaliter = copy.copy(imaging_parameters[pars_key])
+        if do_bsens and (pars_key+"_bsens") in imaging_parameters:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key+"_bsens"])
+        else:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key])
         if 'maskname' in impars_finaliter:
             if isinstance(impars_finaliter['maskname'], str):
                 maskname = impars_finaliter['maskname']

@@ -24,6 +24,15 @@ do 4 iterations of phase-only self calibration.  If you would like to add additi
 steps, you can add them by adding new entries to the self-calibration parameter
 dictionary for your source following the template laid out below.
 
+
+You can copy any set of parameters and add `_bsens` to the end of the name to
+have it use special parameters only for the bsens imaging.  For example:
+    'G010.62_B3_12M_robust0': {...},
+    'G010.62_B3_12M_robust0_bsens: {...},'
+would be the parameters used for non-bsens and for bsens data, respectively.
+If you have ONLY a non-bsens parameter key (you do not have a _bsens set
+of parameters), the bsens selfcal & imaging will use the same as the non-bsens.
+
 """
 import copy
 allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41 Sgr_B2_DS".split()
