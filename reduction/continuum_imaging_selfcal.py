@@ -19,6 +19,8 @@ You can set the following environmental variables for this script:
         the variable must be a list of integers though)
     BAND_TO_IMAGE=B3 or B6
         If this parameter is set, only image the selected band.
+    DO_BSENS=<boolean>
+        Do bsens?  If not, do cleanest.  Default is cleanest
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
