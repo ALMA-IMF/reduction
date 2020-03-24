@@ -194,6 +194,8 @@ if len(continuum_mses) == 0:
     raise IOError("Your continuum_mses.txt file is empty.  There is nothing "
                   "to image or self-calibrate.")
 
+if 'do_bsens' in locals():
+    os.environ['DO_BSENS'] = str(do_bsens)
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
     logprint("Using BSENS measurement set",
