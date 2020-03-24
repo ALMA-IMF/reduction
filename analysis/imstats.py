@@ -170,7 +170,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                 for config in ('12M',)
                 #for robust in (-2, 0, 2)
                 for robust in (0,)
-                for selfcal in range(0,9)
+                for selfcal in ("",) + tuple(range(0,9))
                }
     badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
     print(f"Bad files: {badfiledict}")
