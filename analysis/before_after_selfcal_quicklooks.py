@@ -26,8 +26,10 @@ def make_comparison_image(preselfcal, postselfcal):
     # these break shapes!
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
-    data_pre = cube_pre[0].value
-    data_post = cube_post[0].value
+    slices_post = cube_post.subcube_slices_from_mask(cube_post.mask & cube_pre.mask,
+                                                     spatial_only=True)
+    data_pre = cube_pre[0].value[slices_post]
+    data_post = cube_post[0].value[slices_post]
 
     try:
         diff = (data_post - data_pre)
@@ -35,25 +37,34 @@ def make_comparison_image(preselfcal, postselfcal):
         print(preselfcal, postselfcal, cube_pre.shape, cube_post.shape)
         raise ex
 
-    fits.PrimaryHDU(data=diff, header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits")
+    fits.PrimaryHDU(data=diff,
+                    header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits",
+                                                     overwrite=True)
 
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
 
 
-    norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
-                                     min_cut=-0.001)
+    norm = visualization.simple_norm(data=diff.squeeze(),
+                                     stretch='asinh',
+                                     min_cut=-0.001,
+                                     max_percent=99)
     if norm.vmax < 0.001:
         norm.vmax = 0.001
+    if norm.vmax > 0.01:
+        norm.vmax = 0.01
 
     ax1 = pl.subplot(1,3,1)
     ax2 = pl.subplot(1,3,2)
     ax3 = pl.subplot(1,3,3)
-    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none', cmap='gray')
+    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none',
+               cmap='gray')
     ax1.set_title("preselfcal")
-    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none', cmap='gray')
+    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none',
+               cmap='gray')
     ax2.set_title("postselfcal")
-    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none', cmap='gray')
+    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none',
+               cmap='gray')
     ax3.set_title("post-pre")
 
     for ax in (ax1,ax2,ax3):
