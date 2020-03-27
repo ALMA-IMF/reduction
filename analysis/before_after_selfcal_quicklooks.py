@@ -26,8 +26,10 @@ def make_comparison_image(preselfcal, postselfcal):
     # these break shapes!
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
-    data_pre = cube_pre[0].value
-    data_post = cube_post[0].value
+    slices_post = cube_post.subcube_slices_from_mask(cube_post.mask & cube_pre.mask,
+                                                     spatial_only=True)
+    data_pre = cube_pre[0].value[slices_post]
+    data_post = cube_post[0].value[slices_post]
 
     try:
         diff = (data_post - data_pre)
@@ -35,23 +37,34 @@ def make_comparison_image(preselfcal, postselfcal):
         print(preselfcal, postselfcal, cube_pre.shape, cube_post.shape)
         raise ex
 
+    fits.PrimaryHDU(data=diff,
+                    header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits",
+                                                     overwrite=True)
+
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
 
 
-    norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
-                                     min_cut=-0.001)
+    norm = visualization.simple_norm(data=diff.squeeze(),
+                                     stretch='asinh',
+                                     min_cut=-0.001,
+                                     max_percent=99)
     if norm.vmax < 0.001:
         norm.vmax = 0.001
+    if norm.vmax > 0.01:
+        norm.vmax = 0.01
 
     ax1 = pl.subplot(1,3,1)
     ax2 = pl.subplot(1,3,2)
     ax3 = pl.subplot(1,3,3)
-    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none', cmap='gray')
+    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none',
+               cmap='gray')
     ax1.set_title("preselfcal")
-    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none', cmap='gray')
+    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none',
+               cmap='gray')
     ax2.set_title("postselfcal")
-    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none', cmap='gray')
+    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none',
+               cmap='gray')
     ax3.set_title("post-pre")
 
     for ax in (ax1,ax2,ax3):
@@ -67,6 +80,10 @@ def make_comparison_image(preselfcal, postselfcal):
                  'mad': mad_std(diff, ignore_nan=True),
                  'dr_pre': np.nanmax(data_pre) / mad_std(data_pre, ignore_nan=True),
                  'dr_post': np.nanmax(data_post) / mad_std(data_post, ignore_nan=True),
+                 'max_pre': np.nanmax(data_pre),
+                 'max_post': np.nanmax(data_post),
+                 'mad_pre': mad_std(data_pre, ignore_nan=True),
+                 'mad_post':  mad_std(data_post, ignore_nan=True),
                 }
 
     return ax1, ax2, ax3, fig, diffstats
@@ -78,8 +95,10 @@ def get_selfcal_number(fn):
     except:
         return 0
 
+import imstats
+tbl = imstats.savestats()
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv')
+#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv')
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
@@ -87,6 +106,10 @@ tbl.add_column(Column(name='scMeanDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMedianDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='max_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='max_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
@@ -108,14 +131,19 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x][0]
 
-                preselfcal_name = fns[0].replace(f"_selfcal{last_selfcal}","_preselfcal")
+                preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
                 if "_finaliter" in preselfcal_name:
                     preselfcal_name = preselfcal_name.replace("_finaliter","")
+                if not os.path.exists(preselfcal_name) and '_v0.1' in preselfcal_name:
+                    preselfcal_name = preselfcal_name.replace("_v0.1", "")
                 if not os.path.exists(preselfcal_name):
+                    print(f"No preselfcal file called {preselfcal_name} found, using alternatives")
                     # try alternate naming scheme
-                    preselfcal_name = fns[0].replace(f"_selfcal{last_selfcal}","")
+                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","")
                     if "_finaliter" in preselfcal_name:
                         preselfcal_name = preselfcal_name.replace("_finaliter","")
+                if "_selfcal" in preselfcal_name:
+                    raise ValueError("?!?!?!")
 
                 try:
                     with warnings.catch_warnings():
@@ -131,7 +159,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 matchrow = ((tbl['region'] == field) &
                             (tbl['band'] == f'B{band}') &
-                            (tbl['array'] == '12Monly' if config == '12M' else config) &
+                            (tbl['array'] == ('12Monly' if config == '12M' else config)) &
                             (tbl['robust'] == 'r0.0')
                            )
                 tbl['scMaxDiff'][matchrow] = diffstats['max']
@@ -141,6 +169,10 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['scMedianDiff'][matchrow] = diffstats['median']
                 tbl['dr_pre'][matchrow] = diffstats['dr_pre']
                 tbl['dr_post'][matchrow] = diffstats['dr_post']
+                tbl['max_pre'][matchrow] = diffstats['max_pre']
+                tbl['max_post'][matchrow] = diffstats['max_post']
+                tbl['mad_pre'][matchrow] = diffstats['mad_pre']
+                tbl['mad_post'][matchrow] = diffstats['mad_post']
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
 
                 print(fns)

@@ -19,6 +19,8 @@ You can set the following environmental variables for this script:
         the variable must be a list of integers though)
     BAND_TO_IMAGE=B3 or B6
         If this parameter is set, only image the selected band.
+    DO_BSENS=<boolean>
+        Do bsens?  If not, do cleanest.  Default is cleanest
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
@@ -108,7 +110,6 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    import sys
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 
@@ -195,6 +196,8 @@ if len(continuum_mses) == 0:
     raise IOError("Your continuum_mses.txt file is empty.  There is nothing "
                   "to image or self-calibrate.")
 
+if 'do_bsens' in locals():
+    os.environ['DO_BSENS'] = str(do_bsens)
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
     logprint("Using BSENS measurement set",
@@ -229,6 +232,8 @@ for continuum_ms in continuum_mses:
             logprint("Skipping {0} because it is not in FIELD_ID={1}"
                      .format(field, os.getenv('FIELD_ID')))
             continue
+        elif '_' in os.getenv('FIELD_ID'):
+            field = os.getenv('FIELD_ID')
 
     if exclude_7m:
         msmd.open(continuum_ms)
@@ -335,13 +340,20 @@ for continuum_ms in continuum_mses:
     robust = 0
 
     pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-    impars = imaging_parameters[pars_key]
+    if do_bsens and (pars_key+"_bsens") in imaging_parameters:
+        impars = imaging_parameters[pars_key+"_bsens"]
+    else:
+        impars = imaging_parameters[pars_key]
+
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
     # NOTE: if anything besides `maskname` and `niter` ends up with a
     # dictionary, we'll need to parse it here
 
-    selfcalpars = selfcal_pars[pars_key]
+    if do_bsens and (pars_key+"_bsens") in selfcal_pars:
+        selfcalpars = selfcal_pars[pars_key+"_bsens"]
+    else:
+        selfcalpars = selfcal_pars[pars_key]
 
     logprint("Selfcal parameters are: {0}".format(selfcalpars),
              origin='almaimf_cont_selfcal')
@@ -721,7 +733,10 @@ for continuum_ms in continuum_mses:
                  origin='contim_selfcal')
 
         pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
-        impars_finaliter = copy.copy(imaging_parameters[pars_key])
+        if do_bsens and (pars_key+"_bsens") in imaging_parameters:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key+"_bsens"])
+        else:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key])
         if 'maskname' in impars_finaliter:
             if isinstance(impars_finaliter['maskname'], str):
                 maskname = impars_finaliter['maskname']
@@ -731,7 +746,7 @@ for continuum_ms in continuum_mses:
                          "will not work until this is changed.",
                          origin='almaimf_cont_selfcal')
             else:
-                maskname = impars_finaliter['maskname'][0]
+                maskname = impars_finaliter['maskname'][selfcaliter]
             del impars_finaliter['maskname']
             if '/' not in maskname and not os.path.exists(maskname):
                 maskname = os.path.join(almaimf_rootdir,

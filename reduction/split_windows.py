@@ -279,6 +279,9 @@ for band in bands:
                 # same SB folder
                 logprint("Did not find a manually-created cont.dat file named {0}; instead using local cont.dat.".format(contfile))
                 contfile = os.path.join(path, '../calibration/cont.dat')
+                logprint("Using cont.dat file {0} for {1}:{2}".format(contfile,
+                                                                      band,
+                                                                      field))
 
             if not os.path.exists(contfile):
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "

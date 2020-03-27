@@ -93,6 +93,9 @@ robust = 0
 for band in band_list:
     for field in to_image[band]:
         spwnames = tuple('spw{0}'.format(x) for x in to_image[band][field])
+        logprint("Found spectral windows {0} in band {1}: field {2}"
+                 .format(to_image[band][field].keys(), band, field),
+                 origin='almaimf_line_imaging')
         for spw in to_image[band][field]:
 
             # python 2.7 specific hack: force 'field' to be a bytestring
@@ -117,8 +120,9 @@ for band in band_list:
                 targetfreq = restfreq * (1 - vlsr/constants.c)
                 if freqs.min() > targetfreq or freqs.max() < targetfreq:
                     # Skip this spw: it is not in range
-                    logprint("Skipped spectral window {0} for line {1} because it's out of range"
-                             .format(spw, line_name),
+                    logprint("Skipped spectral window {0} for line {1}"
+                             " with frequency {2} because it's out of range"
+                             .format(spw, line_name, targetfreq),
                              origin='almaimf_line_imaging')
                     continue
                 else:

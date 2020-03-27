@@ -75,8 +75,11 @@ def assemble_stats(globstr, ditch_suffix=None):
     for fn in ProgressBar(glob.glob(globstr)):
         if ditch_suffix is not None:
             meta = parse_fn(fn.split(ditch_suffix)[0])
+            # don't do this on the suffix-ditched version
+            meta['pbcor'] = 'pbcor' in fn.lower()
         else:
             meta = parse_fn(fn)
+        meta['filename'] = fn
         stats = imstats(fn)
         allstats.append({'meta': meta, 'stats': stats})
 
@@ -233,8 +236,11 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         # (this call inplace-modifies logn, according to the docs)
         if 'residual' in imgs:
             norm(imgs['residual'][imgs['residual'] == imgs['residual']])
-        elif 'image' in imgs:
-            norm(imgs['image'][imgs['image'] == imgs['image']])
+        else:
+            print(f"Skipped {fn} because no residual was found.  imgs.keys={imgs.keys()}")
+            continue
+        #elif 'image' in imgs:
+        #    norm(imgs['image'][imgs['image'] == imgs['image']])
         pl.close(1)
         pl.figure(1, figsize=(14,6))
         show_images(imgs, norm=norm, imnames_toplot=('mask', 'model', 'image', 'residual'))
@@ -248,6 +254,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                     'selfcal': selfcal, #get_selfcal_number(basename),
                     'array': config,
                     'robust': robust,
+                    'finaliter': 'finaliter' in fn,
                    }
         make_quicklook_analysis_form(filename=outname,
                                      metadata=metadata,
@@ -257,7 +264,9 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                                     )
         metadata['outname'] = outname
         metadata['suffix'] = suffix
-        flist.append(metadata)
+        if robust == 0:
+            # only keep robust=0 for simplicity
+            flist.append(metadata)
         prev = outname+".html"
 
 
@@ -305,6 +314,7 @@ def make_index(savepath, flist):
                          if isinstance(metadata['selfcal'], int) else
                          "_preselfcal") +
                         f"_{metadata['array']}_robust{metadata['robust']} "
+                        f"{' finaliter' if metadata['finaliter'] else ''}"
                         f"{metadata['suffix']}")
             #fh.write(f'<li><a href="{filename}">{meta_str}</a></li>\n')
             fh.write(f"<li><button onclick=\"changeSrc('{filename}')\">{meta_str}</a></li>\n")
@@ -360,13 +370,14 @@ document.write(newdocument)
 
 
 def savestats():
-    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0*.fits", ditch_suffix=".image.tt")
+    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
     with open('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
     requested = get_requested_sens()
 
-    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix', 'pbcor']
+    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
+                 'pbcor', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
@@ -401,5 +412,5 @@ def savestats():
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        #tbl = savestats()
+        tbl = savestats()
         make_analysis_forms()
