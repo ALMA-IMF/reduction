@@ -180,6 +180,13 @@ imaging_parameters_nondefault = {
                                 },
                                 'scales': [0,3,9,27],
                             },
+    'W51-IRS2_B3_7M12M_robust0': {'threshold':
+                                {0: '0.5mJy', 1: '0.5mJy',
+                                 2: '0.5mJy', 3: '0.5mJy',
+                                 4: '0.5mJy',
+                                },
+                                'scales': [0,3,9,27],
+                            },
     'W51-IRS2_B3_12M_robust0': {'threshold':
                                 {0: '0.3mJy', 1: '0.2mJy', 2: '0.2mJy',
                                  3: '0.1mJy', 4: '0.08mJy',
@@ -607,6 +614,18 @@ for ii in range(1,5):
                                                         'combine': '', # do not combine across scans, only within
                                                        })
     selfcal_pars['W51-IRS2_B6_7M12M_robust0'][ii].update({'solint': 'inf',
+                                                          'gaintype': 'T',
+                                                          'calmode': 'p',
+                                                          'minsnr': 5,
+                                                          'combine': '', # do not combine across scans, only within
+                                                         })
+    selfcal_pars['W51-IRS2_B3_12M_robust0'][ii].update({'solint': 'inf',
+                                                          'gaintype': 'T',
+                                                          'calmode': 'p',
+                                                          'minsnr': 5,
+                                                          'combine': '', # do not combine across scans, only within
+                                                         })
+    selfcal_pars['W51-IRS2_B3_7M12M_robust0'][ii].update({'solint': 'inf',
                                                           'gaintype': 'T',
                                                           'calmode': 'p',
                                                           'minsnr': 5,
