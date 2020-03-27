@@ -154,12 +154,14 @@ imaging_parameters_nondefault = {
                                 {0: '0.3mJy', 1: '0.25mJy', 2: '0.25mJy',
                                  3: '0.25mJy', 4: '0.25mJy', 5: '0.25mJy',
                                  6: '0.2mJy', 7: '0.2mJy', 8: '0.2mJy',
+                                 'final': '0.2mJy',
                                 },
                                 'scales': [0,3,9,27],
                             },
     'W51-IRS2_B3_12M_robust0': {'threshold':
                                 {0: '0.3mJy', 1: '0.2mJy', 2: '0.2mJy',
-                                 3: '0.1mJy', 4: '0.08mJy'
+                                 3: '0.1mJy', 4: '0.08mJy',
+                                 'final': '0.08mJy',
                                 },
                                 'scales': [0,3,9,27],
                             },

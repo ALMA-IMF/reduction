@@ -200,13 +200,17 @@ if 'do_bsens' in locals():
     os.environ['DO_BSENS'] = str(do_bsens)
 if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false':
     do_bsens = True
-    logprint("Using BSENS measurement set",
-             origin='contim_selfcal')
-    continuum_mses += [x.replace('_continuum_merged.cal.ms',
-                                 '_continuum_merged_bsens.cal.ms')
-                       for x in continuum_mses]
+    logprint("Using BSENS measurement set", origin='contim_selfcal')
+    continuum_mses = [x.replace('_continuum_merged.cal.ms',
+                                '_continuum_merged_bsens.cal.ms')
+                      for x in continuum_mses]
 else:
     do_bsens = False
+
+
+logprint("parameters are: do_sens={do_bsens} only_7m={only_7m} "
+         "exclude_7m={exclude_7m} selfcal_field_id={selfcal_field_id}".format(**locals()))
+
 
 
 for continuum_ms in continuum_mses:
@@ -321,6 +325,9 @@ for continuum_ms in continuum_mses:
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
     contimagename = os.path.join(imaging_root, basename) + "_" + arrayname
+    if do_bsens:
+        # just a sanity check
+        assert 'bsens' in contimagename
 
     if not os.path.exists(contimagename+".uvwave_vs_amp.png"):
         # make a diagnostic plot to show the UV distribution
@@ -539,6 +546,10 @@ for continuum_ms in continuum_mses:
                  .format(maskname, 0),
                  origin='contim_selfcal')
 
+
+
+
+    # BEGIN SELFCAL HERE
 
     cals = []
 
