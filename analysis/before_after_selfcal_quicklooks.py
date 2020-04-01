@@ -7,6 +7,7 @@ from astropy import visualization
 from astropy.table import Table, Column
 from spectral_cube import SpectralCube
 from astropy.stats import mad_std
+from astropy import log
 import pylab as pl
 
 
@@ -28,13 +29,13 @@ def make_comparison_image(preselfcal, postselfcal):
     #cube_post = cube_post.minimal_subcube()
     slices_post = cube_post.subcube_slices_from_mask(cube_post.mask & cube_pre.mask,
                                                      spatial_only=True)
-    data_pre = cube_pre[0].value[slices_post]
-    data_post = cube_post[0].value[slices_post]
+    data_pre = cube_pre[0].value[slices_post[1:]]
+    data_post = cube_post[0].value[slices_post[1:]]
 
     try:
         diff = (data_post - data_pre)
     except Exception as ex:
-        print(preselfcal, postselfcal, cube_pre.shape, cube_post.shape)
+        log.error(preselfcal, postselfcal, cube_pre.shape, cube_post.shape)
         raise ex
 
     fits.PrimaryHDU(data=diff,
@@ -129,7 +130,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 last_selfcal = max(selfcal_nums)
 
-                postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x][0]
+                postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x if 'diff' not in x][0]
 
                 preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
                 if "_finaliter" in preselfcal_name:
@@ -152,9 +153,11 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     if not os.path.exists(f"{field}/B{band}/comparisons/"):
                         os.mkdir(f"{field}/B{band}/comparisons/")
                     pl.savefig(f"{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                except IndexError:
+                    raise
                 except Exception as ex:
-                    print(f"Failure for pre={preselfcal_name} post={postselfcal_name}")
-                    print(field, band, config, ex)
+                    log.error(f"Failure for pre={preselfcal_name} post={postselfcal_name}")
+                    log.error((field, band, config, ex))
                     continue
 
                 matchrow = ((tbl['region'] == field) &
@@ -179,6 +182,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 print(f"{field}_B{band}:{last_selfcal}")
             else:
                 print(f"No hits for {field}_B{band}_{config}")
+
+            print()
 
 
 formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
