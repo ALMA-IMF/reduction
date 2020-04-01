@@ -105,13 +105,13 @@ imaging_parameters_nondefault = {
                                             5: 'mask_G333_B3_12m_0.0015.crtf'},
                                'scales': [0,3,9,27],
                               },
-    'G333.60_B3_12M_robust2': {'threshold': '0.2mJy', 'niter': 36000,
+    'G333.60_B3_12M_robust2': {'threshold': '0.07mJy', 'niter': 90000,
                                'scales': [0,3,9],
-                               'maskname': 'mask_G333_B3_4.crtf',
+                               'maskname': 'mask_G333_B3_12m_0.0015.crtf',
                               },
-    'G333.60_B3_12M_robust-2': {'threshold': '0.1mJy', 'niter': 36000,
+    'G333.60_B3_12M_robust-2': {'threshold': '0.07mJy', 'niter': 90000,
                                 'scales': [0,3,9,27],
-                                'maskname': 'mask_G333_B3_4.crtf',
+                                'maskname': 'mask_G333_B3_12m_0.0015.crtf',
                             },
         # B3 7m12M CLEANEST CONTINUUM #
     'G333.60_B3_7M12M_robust0': {'threshold': {0: '0.8mJy', 1: '0.8mJy', 2: '0.4mJy', 3: '0.2mJy', 4: '0.1mJy', 5: '0.07mJy'},
@@ -178,6 +178,21 @@ imaging_parameters_nondefault = {
                                 {0: '0.3mJy', 1: '0.25mJy', 2: '0.25mJy',
                                  3: '0.25mJy', 4: '0.25mJy', 5: '0.25mJy',
                                  6: '0.2mJy', 7: '0.2mJy', 8: '0.2mJy',
+                                 'final': '0.2mJy',
+                                },
+                                'scales': [0,3,9,27],
+                            },
+    'W51-IRS2_B3_7M12M_robust0': {'threshold':
+                                {0: '0.5mJy', 1: '0.5mJy',
+                                 2: '0.5mJy', 3: '0.5mJy',
+                                 4: '0.5mJy',
+                                },
+                                'scales': [0,3,9,27],
+                            },
+    'W51-IRS2_B3_12M_robust0': {'threshold':
+                                {0: '0.3mJy', 1: '0.2mJy', 2: '0.2mJy',
+                                 3: '0.1mJy', 4: '0.08mJy',
+                                 'final': '0.08mJy',
                                 },
                                 'scales': [0,3,9,27],
                             },
@@ -207,7 +222,10 @@ imaging_parameters_nondefault = {
     'W51-E_B3_12M_robust0': {'threshold': {0: '0.15mJy', 1: '0.15mJy',
                                            2: '0.1mJy', 3: '0.09mJy',
                                            4: '0.09mJy', 5: '0.08mJy',
-                                           6: '0.07mJy'},
+                                           6: '0.07mJy',
+                                           7: '0.07mJy',
+                                           'final': '0.07mJy',
+                                          },
                              'scales': [0,3,9,27],
                             },
     'W51-E_B3_12M_robust2': {'threshold': '3mJy',
@@ -604,6 +622,18 @@ for ii in range(1,5):
                                                           'minsnr': 5,
                                                           'combine': '', # do not combine across scans, only within
                                                          })
+    selfcal_pars['W51-IRS2_B3_12M_robust0'][ii].update({'solint': 'inf',
+                                                          'gaintype': 'T',
+                                                          'calmode': 'p',
+                                                          'minsnr': 5,
+                                                          'combine': '', # do not combine across scans, only within
+                                                         })
+    selfcal_pars['W51-IRS2_B3_7M12M_robust0'][ii].update({'solint': 'inf',
+                                                          'gaintype': 'T',
+                                                          'calmode': 'p',
+                                                          'minsnr': 5,
+                                                          'combine': '', # do not combine across scans, only within
+                                                         })
     selfcal_pars['W51-E_B6_12M_robust0'][ii]['minsnr'] = 5
     selfcal_pars['W51-E_B3_12M_robust0'][ii]['minsnr'] = 5
     selfcal_pars['W51-E_B6_7M12M_robust0'][ii]['minsnr'] = 5
@@ -776,19 +806,46 @@ selfcal_pars['W43-MM3_B3_12M_robust0'][2] = {'solint': '300',
                                             }
 
 ##### G333.60 ######
+# B3 12M CLEANEST CONTINUUM #
 selfcal_pars['G333.60_B3_12M_robust0'][1] = {'solint': 'inf',
                                              'gaintype': 'T',
                                              'calmode': 'p',
                                             }
-selfcal_pars['G333.60_B3_12M_robust0'][2] = {'solint': 'int',
+selfcal_pars['G333.60_B3_12M_robust0'][2] = {'solint': '15s',
                                              'gaintype': 'T',
                                              'calmode': 'p',
                                             }
-selfcal_pars['G333.60_B3_12M_robust0'][3] = {'solint': 'int',
+selfcal_pars['G333.60_B3_12M_robust0'][3] = {'solint': '5s',
                                              'gaintype': 'T',
                                              'calmode': 'p',
                                             }
-selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'inf',
+selfcal_pars['G333.60_B3_12M_robust0'][4] = {'solint': 'int',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['G333.60_B3_12M_robust0'][5] = {'solint': 'inf',
+                                             'gaintype': 'T',
+                                             'calmode': 'ap',
+                                             'solnorm': True,
+                                            }
+# B3 7M12M CLEANEST CONTINUUM #
+selfcal_pars['G333.60_B3_7M12M_robust0'][1] = {'solint': 'inf',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['G333.60_B3_7M12M_robust0'][2] = {'solint': '15s',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['G333.60_B3_7M12M_robust0'][3] = {'solint': '5s',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['G333.60_B3_7M12M_robust0'][4] = {'solint': 'int',
+                                             'gaintype': 'T',
+                                             'calmode': 'p',
+                                            }
+selfcal_pars['G333.60_B3_7M12M_robust0'][5] = {'solint': 'inf',
                                              'gaintype': 'T',
                                              'calmode': 'ap',
                                              'solnorm': True,
