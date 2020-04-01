@@ -113,7 +113,6 @@ for dirpath, dirnames, filenames in os.walk('.'):
             assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
             field = field[0]
 
-            # noinspection PyInterpreter
             frq0 = msmd.chanfreqs(0)
             for bb,(lo, hi) in bands.items():
                 try:
