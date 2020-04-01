@@ -393,14 +393,15 @@ imaging_parameters_nondefault = {
     #    },
     # G327.29 B6 12M selfcal
     'G327.29_B6_12M_robust0': {'threshold': {0: '2.0mJy', 1:'1.5mJy', 
-            2:'1.0mJy', 3:'1.0mJy', 4:'0.8mJy', 5:'0.5mJy'},
-        'niter': {0: 1000, 1:1000, 2:5000, 3:8000, 4:10000, 5:10000},
+        2:'1.0mJy', 3:'1.0mJy', 4:'0.8mJy', 5:'0.5mJy', 'final':'0.5mJy'},
+        'niter': {0: 1000, 1:1000, 2:5000, 3:8000, 4:10000, 5:10000,
+            'final':20000},
         'scales': [0,3,9,27]
         },
-    'G327.29_B6_12M_robust2': {'threshold': {5: '1.0mJy'},
-        'niter': {5: 20000}},
-    'G327.29_B6_12M_robust-2': {'threshold': {5: '1.0mJy'},
-        'niter': {5: 20000}},
+    'G327.29_B6_12M_robust2': {'threshold': {'final': '1.0mJy'},
+        'niter': {'final': 20000}},
+    'G327.29_B6_12M_robust-2': {'threshold': {'final': '1.0mJy'},
+        'niter': {'final': 20000}},
     # G327.29 B6 7M12M no selfcal imaging
     #'G327.29_B6_7M12M_robust0': {'threshold': {0:'0.5mJy'},
     #    'niter': {0:200000},
