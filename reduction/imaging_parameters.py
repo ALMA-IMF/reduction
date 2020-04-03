@@ -1075,6 +1075,9 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                            for contsub in ("","_contsub")
                           }
 
+line_imaging_parameters['G337.92_B3_12M_robust0']['usemask'] = 'auto-multithresh'
+line_imaging_parameters['G337.92_B3_12M_robust0_contsub']['usemask'] = 'auto-multithresh'
+
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
                  'h2co303': '218.222195GHz',
