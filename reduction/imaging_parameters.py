@@ -1045,6 +1045,32 @@ selfcal_pars['G012.80_B3_12M_robust0'][5] = {'solint': 'inf',
                                           'minsnr':5,
                                           }
 
+selfcal_pars['G012.80_B6_12M_robust0'][1] = {'solint': 'inf',
+                                          'gaintype':'G',
+                                          'calmode':'p',
+                                          'minsnr':5,
+                                          }
+selfcal_pars['G012.80_B6_12M_robust0'][2] = {'solint': 'inf',
+                                          'gaintype':'G',
+                                          'calmode':'p',
+                                          'minsnr':5,
+                                          }
+selfcal_pars['G012.80_B6_12M_robust0'][3] = {'solint': '1200s',
+                                          'gaintype':'G',
+                                          'calmode':'p',
+                                          'minsnr':5,
+                                          }
+selfcal_pars['G012.80_B6_12M_robust0'][4] = {'solint': '600s',
+                                          'gaintype':'G',
+                                          'calmode':'p',
+                                          'minsnr':4,
+                                          }
+selfcal_pars['G012.80_B6_12M_robust0'][5] = {'solint': 'inf',
+                                          'gaintype':'G',
+                                          'calmode':'a',
+                                          'minsnr':5,
+                                          }
+
 
 
 line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub):
