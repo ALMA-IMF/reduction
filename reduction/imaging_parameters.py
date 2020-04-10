@@ -1153,6 +1153,7 @@ line_parameters = {field: {line: {'restfreq': freq,
 line_parameters['G353.41']['n2hp']['cubewidth'] = '32km/s'
 line_parameters['W51-E']['n2hp']['cubewidth'] = '60km/s'
 line_parameters['G010.62']['n2hp']['cubewidth'] = '60km/s'
+line_parameters['G010.62']['h41a']['cubewidth'] = '120km/s'
 line_parameters['G338.93']['sio']['cubewidth'] = '120km/s'
 
 for field in allfields:
