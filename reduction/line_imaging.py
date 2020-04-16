@@ -177,14 +177,24 @@ for band in band_list:
                 for vv in vis:
                     msmd.open(vv)
                     count_spws = len(msmd.spwsforfield(field))
-                    msmd.close()
                     chanwidth = np.max([np.abs(
                         effectiveResolutionAtFreq(vv,
                                                   spw='{0}'.format(i),
                                                   freq=u.Quantity(linpars['restfreq']).to(u.GHz),
                                                   kms=True)) for i in
                         range(count_spws)])
+
+                    # second awful check b/c Todd's script failed for some cases
+                    for spw in range(count_spws):
+                        chanwidths_hz = msmd.chanwidths(int(spw))
+                        chanfreqs_hz = msmd.chanfreqs(int(spw))
+                        ckms = constants.c.to(u.km/u.s).value
+                        if any(chanwidths_hz > (chanwidth / ckms)*chanfreqs_hz):
+                            chanwidth = np.max(chanwidths_hz/chanfreqs_hz * ckms)
+                    msmd.close()
+
                     chanwidths.append(chanwidth)
+
                 # chanwidth: mean? max?
                 chanwidth = np.mean(chanwidths)
                 logprint("Channel widths were {0}, mean = {1}".format(chanwidths,
