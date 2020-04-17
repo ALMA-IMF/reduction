@@ -36,14 +36,14 @@ tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
 #for field in ("G333.60",):
     for band in (3,6):
-        for config in ('7M12M', '12M'):
+        for imtype in ('cleanest', 'bsens', '7m12m', ):
 
-            # for all-in-the-same-place stuff
-            fns = [x for x in glob.glob(f"{field}*_B{band}_*_{config}_*selfcal[0-9]*.image.tt0")
-                   if 'robust0' in x]
             # for not all-in-the-same-place stuff
-            fns = [x for x in glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_*selfcal[0-9]*.image.tt0*.fits")
+            fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*selfcal[0-9]*.image.tt0*.fits")
                    if 'robust0' in x]
+
+            config = '7M12M' if '7m' in imtype else '12M'
+
 
             if any(fns):
                 selfcal_nums = [get_selfcal_number(fn) for fn in fns]
@@ -83,7 +83,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 matchrow = ((tbl['region'] == field) &
                             (tbl['band'] == f'B{band}') &
                             (tbl['array'] == ('12Monly' if config == '12M' else config)) &
-                            (tbl['robust'] == 'r0.0')
+                            (tbl['robust'] == 'r0.0') &
+                            (tbl['bsens'] if 'bsens' in imtype else ~tbl['bsens'])
                            )
                 tbl['scMaxDiff'][matchrow] = diffstats['max']
                 tbl['scMinDiff'][matchrow] = diffstats['min']
