@@ -13,7 +13,8 @@ import pylab as pl
 from before_after_selfcal_quicklooks import make_comparison_image, get_selfcal_number
 
 cwd = os.getcwd()
-os.chdir('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020')
+basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020'
+os.chdir(basepath)
 
 import imstats
 
@@ -71,9 +72,9 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     with warnings.catch_warnings():
                         warnings.filterwarnings('ignore')
                         ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name, postselfcal_name)
-                    if not os.path.exists(f"{field}/B{band}/comparisons/"):
-                        os.mkdir(f"{field}/B{band}/comparisons/")
-                    pl.savefig(f"{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                    if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
+                        os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
+                    pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
                 except IndexError:
                     raise
                 except Exception as ex:
