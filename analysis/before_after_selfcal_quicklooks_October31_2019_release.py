@@ -12,6 +12,7 @@ import pylab as pl
 
 from before_after_selfcal_quicklooks import make_comparison_image, get_selfcal_number
 
+cwd = os.getcwd()
 os.chdir('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release')
 
 import imstats
@@ -122,3 +123,5 @@ tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.te
 tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.js.html',
           #formats=formats,
           format='jsviewer')
+
+os.chdir(cwd)
