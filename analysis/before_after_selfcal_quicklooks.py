@@ -45,15 +45,15 @@ def make_comparison_image(preselfcal, postselfcal):
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
 
+    minv = np.nanpercentile(data_pre, 0.05)
+    maxv = np.nanpercentile(data_pre, 99.5)
 
-    norm = visualization.simple_norm(data=diff.squeeze(),
-                                     stretch='asinh',
-                                     min_cut=-0.001,
-                                     max_percent=99)
+    norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
+                                     #min_percent=0.05, max_percent=99.995,)
+                                     min_cut=minv, max_cut=maxv)
     if norm.vmax < 0.001:
         norm.vmax = 0.001
-    if norm.vmax > 0.01:
-        norm.vmax = 0.01
+
 
     ax1 = pl.subplot(1,3,1)
     ax2 = pl.subplot(1,3,2)
