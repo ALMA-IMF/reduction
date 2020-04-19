@@ -9,4 +9,4 @@ runpy.run_path('before_after_selfcal_quicklooks_October31_2019_release.py', run_
 runpy.run_path('bsens_comparison.py', run_name="__main__")
 runpy.run_path('compare_to_auto.py', run_name="__main__")
 runpy.run_path('imstats.py', run_name="__main__")
-runpy.run_path('latex_table.py', run_name="__main__")
+# run locall runpy.run_path('latex_table.py', run_name="__main__")
