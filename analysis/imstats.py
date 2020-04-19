@@ -150,11 +150,13 @@ def get_selfcal_number(fn):
     except:
         return 0
 
-def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/quicklooks/"):
+def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
     import glob
     from diagnostic_images import load_images, show as show_images
     from astropy import visualization
     import pylab as pl
+
+    savepath = f'{basepath}/quicklooks'
 
     try:
         os.mkdir(savepath)
@@ -369,15 +371,19 @@ document.write(newdocument)
 
 
 
-def savestats():
-    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
-    with open('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.json', 'w') as fh:
+def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release"):
+    if 'October' in basepath:
+        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
+    else:
+        # extra layer: bsens, cleanest, etc
+        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
+    with open(f'{basepath}/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
     requested = get_requested_sens()
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
-                 'pbcor', 'filename']
+                 'bsens', 'pbcor', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
@@ -400,11 +406,11 @@ def savestats():
     tbl.add_column(Column(name='SensVsReq', data=tbl['mad']*1e3/tbl['Req_Sens']))
     tbl.add_column(Column(name='BeamVsReq', data=(tbl['bmaj']*tbl['bmin'])**0.5/tbl['Req_Res']))
 
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv', overwrite=True)
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.html',
+    tbl.write(f'{basepath}/metadata.ecsv', overwrite=True)
+    tbl.write(f'{basepath}/metadata.html',
               format='ascii.html', overwrite=True)
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.tex', overwrite=True)
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.js.html',
+    tbl.write(f'{basepath}/metadata.tex', overwrite=True)
+    tbl.write(f'{basepath}/metadata.js.html',
               format='jsviewer')
 
     return tbl
@@ -412,5 +418,7 @@ def savestats():
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        tbl = savestats()
-        make_analysis_forms()
+        for basepath in ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
+                         "/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
+            tbl = savestats(basepath=basepath)
+            make_analysis_forms(basepath=basepath)

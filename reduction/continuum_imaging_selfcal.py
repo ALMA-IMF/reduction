@@ -210,7 +210,7 @@ else:
     do_bsens = False
 
 
-logprint("parameters are: do_sens={do_bsens} only_7m={only_7m} "
+logprint("parameters are: do_bsens={do_bsens} only_7m={only_7m} "
          "exclude_7m={exclude_7m} selfcal_field_id={selfcal_field_id}".format(**locals()),
          origin='contim_selfcal')
 
