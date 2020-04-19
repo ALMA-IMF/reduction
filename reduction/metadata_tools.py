@@ -103,7 +103,7 @@ def determine_phasecenter(ms, field, formatted=False):
         return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
-                     min_pixscale=0.05, only_7m=False, exclude_7m=False,
+                     min_pixscale=0.02, only_7m=False, exclude_7m=False,
                      makeplot=False, veryverbose=False):
     """
     Parameters
@@ -151,13 +151,8 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     # compute baselines to determine synth beamsize
     tb.open(ms+"/ANTENNA")
     positions = tb.getcol('POSITION')
+    diameters = tb.getcol('DISH_DIAMETER')
     tb.close()
-
-    # note that for concatenated MSes, this includes baselines that don't exist
-    # (i.e., it includes baselines between TM1 and TM2 positions)
-    baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
-    max_baseline = baseline_lengths.max()
-    logprint("Maximum baseline length = {0}".format(max_baseline))
 
     antsize = np.array([msmd.antennadiameter(antid)['value']
                         for antid in first_antid]) # m
@@ -171,7 +166,10 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         # this one is trivial: should be all True
         field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y > 7])
 
+        bl_sel = diameters != 7
+
         antsize = np.array([x for x in antsize if x > 7])
+        logprint("Determining pixel scale and image size for only 12m data")
     elif only_7m:
         assert 7 in antsize, "No 7m antennae found in ms {0}".format(ms)
         assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
@@ -181,10 +179,21 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         # this one is trivial: should be all True
         field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y == 7])
 
+        bl_sel = diameters == 7
+
         antsize = np.array([x for x in antsize if x == 7])
+        logprint("Determining pixel scale and image size for only 7m data")
     else:
         # the shape matters if any are false...
         field_id_has_scans = field_id_has_scans[field_id_has_scans]
+        bl_sel = slice(None)
+        logprint("Determining pixel scale and image size for all data, both 7m and 12m")
+
+    # note that for concatenated MSes, this includes baselines that don't exist
+    # (i.e., it includes baselines between TM1 and TM2 positions)
+    baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
+    max_baseline = baseline_lengths[bl_sel,:][:,bl_sel].max()
+    logprint("Maximum baseline length = {0}".format(max_baseline))
 
     # because we're working with line-split data, we assume the reffreq comes
     # from spw 0

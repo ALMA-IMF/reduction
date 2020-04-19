@@ -94,6 +94,8 @@ def logprint(string):
     casalog.post(string, origin='make_imaging_scripts')
     print(string)
 
+logprint("ALMAIMF_ROOTDIR directory set to {0}".format(os.getenv('ALMAIMF_ROOTDIR')))
+
 metadata = {b:{} for b in bands}
 contdat_files = {}
 
@@ -111,7 +113,6 @@ for dirpath, dirnames, filenames in os.walk('.'):
             assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
             field = field[0]
 
-            # noinspection PyInterpreter
             frq0 = msmd.chanfreqs(0)
             for bb,(lo, hi) in bands.items():
                 try:
@@ -268,12 +269,18 @@ for band in bands:
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
-            if os.path.exists(os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")):
-                contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")
+            contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                    "{field}.{band}.cont.dat".format(field=field, band=band))
+            if os.path.exists(contfile):
+                logprint("##### Found manually-created cont.dat file {0}".format(contfile))
             else:
                 # the cont.dat file should be in the calibration/ directory in the
                 # same SB folder
+                logprint("Did not find a manually-created cont.dat file named {0}; instead using local cont.dat.".format(contfile))
                 contfile = os.path.join(path, '../calibration/cont.dat')
+                logprint("Using cont.dat file {0} for {1}:{2}".format(contfile,
+                                                                      band,
+                                                                      field))
 
             if not os.path.exists(contfile):
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
