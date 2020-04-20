@@ -69,14 +69,15 @@ def make_comparison_image(preselfcal, postselfcal):
     im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none',
                cmap='gray')
     ax3.set_title("post-pre")
-    cbax = fig.add_axes([0.9,0.05,0.1,0.9])
-    fig.colorbar(ax=cbax, mappable=im)
 
     for ax in (ax1,ax2,ax3):
         ax.set_xticks([])
         ax.set_yticks([])
 
     pl.subplots_adjust(wspace=0.0)
+
+    cbax = fig.add_axes([0.9,0.05,0.15,0.7])
+    fig.colorbar(ax=cbax, mappable=im)
 
     diffstats = {'mean': np.nanmean(diff),
                  'max': np.nanmax(diff),
