@@ -42,7 +42,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
             # for not all-in-the-same-place stuff
             fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*selfcal[0-9]*.image.tt0*.fits")
-                   if 'robust0' in x]
+                   if 'robust0_' in x]
 
             config = '7M12M' if '7m' in imtype else '12M'
 
@@ -79,7 +79,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     raise
                 except Exception as ex:
                     log.error(f"Failure for pre={preselfcal_name} post={postselfcal_name}")
-                    log.error((field, band, config, ex))
+                    log.error((field, band, config, imtype, ex))
                     continue
 
                 matchrow = ((tbl['region'] == field) &
@@ -102,7 +102,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
 
                 print(fns)
-                print(f"{field}_B{band}:{last_selfcal}")
+                print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
             else:
                 print(f"No hits for {field}_B{band}_{config}")
 
