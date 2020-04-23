@@ -750,7 +750,7 @@ for continuum_ms in continuum_mses:
                  origin='contim_selfcal')
 
 
-    for robust in (-2, 0, 2):
+    for robust in (0, -2, 2):
         logprint("Imaging self-cal iter {0} (final) with robust {1}"
                  .format(selfcaliter, robust),
                  origin='contim_selfcal')
