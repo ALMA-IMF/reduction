@@ -1406,6 +1406,47 @@ line_parameters['G010.62']['n2hp']['cubewidth'] = '60km/s'
 line_parameters['G010.62']['h41a']['cubewidth'] = '120km/s'
 line_parameters['G338.93']['sio']['cubewidth'] = '120km/s'
 
+# line_parameters for H41a
+line_parameters['G008.67']['h41a']['vlsr'] = '44km/s'
+line_parameters['G008.67']['h41a']['cubewidth'] = '100km/s'
+line_parameters['G010.62']['h41a']['vlsr'] = '0km/s'
+line_parameters['G010.62']['h41a']['cubewidth'] = '100km/s'
+line_parameters['G012.80']['h41a']['vlsr'] = '32km/s'
+line_parameters['G012.80']['h41a']['cubewidth'] = '100km/s'
+line_parameters['G327.29']['h41a']['vlsr'] = '-42km/s'
+line_parameters['G327.29']['h41a']['cubewidth'] = '60km/s'
+line_parameters['G328.25']['h41a']['vlsr'] = '-37km/s'
+line_parameters['G328.25']['h41a']['cubewidth'] = '60km/s'
+
+line_parameters['G333.60']['h41a']['vlsr'] = '-44km/s'
+line_parameters['G333.60']['h41a']['cubewidth'] = '100km/s'
+line_parameters['G333.60']['h41a']['niter'] = 300000
+line_parameters['G333.60']['h41a']['scales'] = [0,3,9,27]
+line_parameters['G333.60']['h41a']['width'] = '2km/s'
+
+
+line_parameters['G337.92']['h41a']['vlsr'] = '-36km/s'
+line_parameters['G337.92']['h41a']['cubewidth'] = '80km/s'
+line_parameters['G338.93']['h41a']['vlsr'] = '-63km/s'
+line_parameters['G338.93']['h41a']['cubewidth'] = '60km/s'
+line_parameters['G353.41']['h41a']['vlsr'] = '-17km/s'
+line_parameters['G353.41']['h41a']['cubewidth'] = '80km/s'
+line_parameters['W43-MM1']['h41a']['vlsr'] = '100km/s'
+line_parameters['W43-MM1']['h41a']['cubewidth'] = '80km/s'
+line_parameters['W43-MM2']['h41a']['vlsr'] = '103km/s'
+line_parameters['W43-MM2']['h41a']['cubewidth'] = '60km/s'
+line_parameters['W43-MM3']['h41a']['vlsr'] = '90km/s'
+line_parameters['W43-MM3']['h41a']['cubewidth'] = '100km/s'
+line_parameters['W51-E']['h41a']['vlsr'] = '59km/s'
+line_parameters['W51-E']['h41a']['cubewidth'] = '100km/s'
+line_parameters['W51-IRS2']['h41a']['vlsr'] = '56km/s'
+line_parameters['W51-IRS2']['h41a']['cubewidth'] = '100km/s'
+
+
+
+
+
+
 for field in allfields:
     line_parameters[field]['12co']['cubewidth'] = '150km/s'
 
