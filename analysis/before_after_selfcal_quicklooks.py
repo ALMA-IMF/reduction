@@ -76,7 +76,7 @@ def make_comparison_image(preselfcal, postselfcal):
 
     pl.subplots_adjust(wspace=0.0)
 
-    cbax = fig.add_axes([0.9,0.05,0.15,0.7])
+    cbax = fig.add_axes([0.91,0.18,0.03,0.64])
     fig.colorbar(ax=cbax, mappable=im)
 
     diffstats = {'mean': np.nanmean(diff),
