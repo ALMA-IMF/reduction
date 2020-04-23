@@ -150,6 +150,7 @@ imaging_parameters_nondefault = {
 
 
 
+
 'G010.62_B3_12M_robust0': {'threshold': {0:'10mJy', 1: '5mJy', 2: '2.5 mJy', 3:'0.8mJy', 4:'0.2mJy',5:'0.14mJy'},
                                  'niter':{0:700, 1:700, 2: 2000, 3: 5000, 4: 10000, 5:15000},
                                  'maskname':{0:'G010.62_55arcsecCircle.crtf',
@@ -1310,7 +1311,6 @@ selfcal_pars['G328.25_B6_7M12M_robust0'][2] = {'gaintype': 'T','solint': '300','
 selfcal_pars['G328.25_B6_7M12M_robust0'][3] = {'gaintype': 'T','solint': '90s','combine':'scan','calmode': 'p'}
 selfcal_pars['G328.25_B6_7M12M_robust0'][4] = {'gaintype': 'T','solint': '60s','combine':'scan','calmode': 'p'}
 #selfcal_pars['G328.25_B6_12M_robust0'][5] = {'gaintype': 'T','solint': '30s','combine':'scan','calmode': 'p'}
-
 
 
 selfcal_pars['G012.80_B6_12M_robust0'][1] = {'solint': 'inf',
