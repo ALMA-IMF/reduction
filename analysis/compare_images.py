@@ -60,7 +60,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     pl.subplots_adjust(wspace=0.0)
 
-    cbax = fig.add_axes([0.91,0.18,0.03,0.64])
+    cbax = fig.add_axes([0.91,0.25,0.03,0.50])
     fig.colorbar(cax=cbax, mappable=im)
 
     return ax1,ax2,ax3,fig
