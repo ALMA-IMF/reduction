@@ -426,7 +426,8 @@ for continuum_ms in continuum_mses:
                                         band,
                                         rootdir=imaging_root,
                                         suffix='_clean_robust{0}_{1}'.format(robust,
-                                                                             arrayname)
+                                                                             arrayname),
+                                        do_bsens=do_bsens
                                        )
         except IOError:
             maskname = make_custom_mask(field, imname+".image.tt0",
@@ -434,7 +435,8 @@ for continuum_ms in continuum_mses:
                                         band,
                                         rootdir=imaging_root,
                                         suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                             arrayname)
+                                                                             arrayname),
+                                        do_bsens=do_bsens
                                        )
     imname = contimagename+"_robust{0}_preselfcal".format(robust)
 
@@ -540,7 +542,8 @@ for continuum_ms in continuum_mses:
                                             almaimf_rootdir, band,
                                             rootdir=imaging_root,
                                             suffix='_clean_robust{0}_{1}'.format(robust,
-                                                                                 arrayname)
+                                                                                 arrayname),
+                                            do_bsens=do_bsens
                                            )
         except Exception as ex:
             logprint("Did not make a mask from the clean data.  The exception was: "
@@ -736,7 +739,8 @@ for continuum_ms in continuum_mses:
                                             almaimf_rootdir,
                                             band,
                                             rootdir=imaging_root,
-                                            suffix=regsuffix
+                                            suffix=regsuffix,
+                                            do_bsens=do_bsens
                                            )
         else:
             logprint("Did not make a custom mask for iteration {0} because "
@@ -799,7 +803,8 @@ for continuum_ms in continuum_mses:
                                             almaimf_rootdir,
                                             band,
                                             rootdir=imaging_root,
-                                            suffix=regsuffix
+                                            suffix=regsuffix,
+                                            do_bsens=do_bsens
                                            )
 
         for key, val in impars_finaliter.items():
