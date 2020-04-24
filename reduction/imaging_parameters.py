@@ -1363,9 +1363,9 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             'deconvolver': 'multiscale',
                             'outframe': 'LSRK',
                             'veltype': 'radio',
-                            #'sidelobethreshold': 2.0,
-                            #'noisethreshold': 5.0,
-                            #'usemask': 'auto-multithresh',
+                            'sidelobethreshold': 2.0,
+                            'noisethreshold': 5.0,
+                            'usemask': 'auto-multithresh',
                             'threshold': '5sigma',
                             'interactive': False,
                             'pblimit': 0.2,
@@ -1374,7 +1374,8 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                            for field in allfields
                            for band in ('B3','B6')
                            for array in ('12M', '7M12M', '7M')
-                           for robust in (-2, 0, 2)
+                           #for robust in (0,)
+						   for robust in (-2,0,2)
                            for contsub in ("","_contsub")
                           }
 
@@ -1431,9 +1432,12 @@ line_parameters['G328.25']['h41a']['cubewidth'] = '60km/s'
 
 line_parameters['G333.60']['h41a']['vlsr'] = '-44km/s'
 line_parameters['G333.60']['h41a']['cubewidth'] = '100km/s'
-line_parameters['G333.60']['h41a']['niter'] = 300000
-line_parameters['G333.60']['h41a']['scales'] = [0,3,9,27]
 line_parameters['G333.60']['h41a']['width'] = '2km/s'
+
+line_imaging_parameters['G333.60_B3_12M_robust0']['niter'] = 500000
+line_imaging_parameters['G333.60_B3_12M_robust0']['scales'] = [0,3,9,27]
+line_imaging_parameters['G333.60_B3_12M_robust0_contsub']['niter'] = 500000
+line_imaging_parameters['G333.60_B3_12M_robust0_contsub']['scales'] = [0,3,9,27]
 
 
 line_parameters['G337.92']['h41a']['vlsr'] = '-36km/s'

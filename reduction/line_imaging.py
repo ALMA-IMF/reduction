@@ -6,9 +6,9 @@ script.
 You can set the following environmental variables for this script:
     CHANCHUNKS=<number>
         The chanchunks parameter for tclean.  Depending on the version, it may
-        be acceptable to specify this as -1, or it has to be positive.  This is
-        the number of channels that will be imaged all at once; if this is too
-        large, the data won't fit into memory and CASA will crash.
+        be acceptable to specify this as -1, or it has to be positive.  From inline
+help in CASA 5.6.1: This parameter controls the number of chunks to split the cube into.
+For now, please pick chanchunks so that nchan/chanchunks is an integer.
     EXCLUDE_7M=<boolean>
         If this parameter is set (to anything), the 7m data will not be
         included in the images if they are present.
@@ -85,7 +85,7 @@ else:
 
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
-chanchunks = os.getenv('CHANCHUNKS') or 16
+chanchunks = int(os.getenv('CHANCHUNKS')) or 16
 
 # global default: only do robust 0 for lines
 robust = 0
