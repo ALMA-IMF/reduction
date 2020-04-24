@@ -24,12 +24,21 @@ except ImportError:
     ia = iatool()
 
 def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
-                     suffix=""):
+                     suffix="", do_bsens=False):
 
     regfn = os.path.join(almaimf_code_path,
-                         'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
-                                                               band_id,
-                                                               suffix))
+                        'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
+                                                            band_id,
+                                                            suffix))
+    if do_bsens:
+        regfnbsens = os.path.join(almaimf_code_path,
+                            'clean_regions/{0}_{1}{2}_bsens.reg'.format(fieldname,
+                                                                band_id,
+                                                                suffix))
+        if os.path.exists(regfnbsens):
+            logprint('Using BSENS region: {0}'.format(regfn))
+            regfn = regfnbsens
+            suffix = suffix + '_bsens'
     if not os.path.exists(regfn):
         raise IOError("Region file {0} does not exist".format(regfn))
 

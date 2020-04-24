@@ -85,7 +85,7 @@ else:
 
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
-chanchunks = int(os.getenv('CHANCHUNKS')) or 16
+chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
 # global default: only do robust 0 for lines
 robust = 0
@@ -212,7 +212,7 @@ for band in band_list:
                 # calculate vstart
                 vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
                 local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
-                local_impars['chanchunks'] = chanchunks
+                local_impars['chanchunks'] = int(chanchunks)
 
                 local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
                                        / u.Quantity(local_impars['width'])).value)
@@ -220,7 +220,7 @@ for band in band_list:
                     local_impars['chanchunks'] = local_impars['nchan']
                 impars.update(local_impars)
             else:
-                impars['chanchunks'] = chanchunks
+                impars['chanchunks'] = int(chanchunks)
 
             impars['imsize'] = imsize
             impars['cell'] = cellsize
