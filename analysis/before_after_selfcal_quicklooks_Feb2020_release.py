@@ -100,6 +100,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['mad_pre'][matchrow] = diffstats['mad_pre']
                 tbl['mad_post'][matchrow] = diffstats['mad_post']
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
+                tbl['casaversion_pre'][matchrow] = fits.getheader(preselfcal_name)['ORIGIN']
+                tbl['casaversion_post'][matchrow] = fits.getheader(postselfcal_name)['ORIGIN']
 
                 print(fns)
                 print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
