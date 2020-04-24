@@ -22,6 +22,8 @@ import imstats
 tbl = imstats.savestats()
 
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
+tbl.add_column(Column(name='casaversion_pre', data=['']*len(tbl)))
+tbl.add_column(Column(name='casaversion_post', data=['']*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
