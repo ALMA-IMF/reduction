@@ -47,6 +47,8 @@ def make_comparison_image(preselfcal, postselfcal):
 
     minv = np.nanpercentile(data_pre, 0.05)
     maxv = np.nanpercentile(data_pre, 99.5)
+    if np.abs(minv) > maxv:
+        minv = -maxv
 
     norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
                                      #min_percent=0.05, max_percent=99.995,)
@@ -64,7 +66,7 @@ def make_comparison_image(preselfcal, postselfcal):
     ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none',
                cmap='gray')
     ax2.set_title("postselfcal")
-    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none',
+    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none',
                cmap='gray')
     ax3.set_title("post-pre")
 
@@ -73,6 +75,9 @@ def make_comparison_image(preselfcal, postselfcal):
         ax.set_yticks([])
 
     pl.subplots_adjust(wspace=0.0)
+
+    cbax = fig.add_axes([0.91,0.18,0.03,0.64])
+    fig.colorbar(ax=cbax, mappable=im)
 
     diffstats = {'mean': np.nanmean(diff),
                  'max': np.nanmax(diff),
