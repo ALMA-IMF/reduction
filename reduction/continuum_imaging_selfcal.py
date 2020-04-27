@@ -384,6 +384,10 @@ for continuum_ms in continuum_mses:
             # maskname = '' is if you explicitly want no mask or a pbmask
             raise IOError("Mask {0} not found".format(maskname))
 
+    # remove any parameters that are dictionaries; we don't want them for the dirty imaging
+    for key, val in dirty_impars.items():
+        if isinstance(val, dict):
+            del dirty_impars[key]
 
     imname = contimagename+"_robust{0}_dirty_preselfcal".format(robust)
 
@@ -460,7 +464,7 @@ for continuum_ms in continuum_mses:
             raise IOError("Mask {0} not found".format(maskname))
 
     for key, val in impars_thisiter.items():
-        if isinstance(val, dict):
+        if isinstance(val, dict) and 0 in val:
             impars_thisiter[key] = val[0]
 
     if not os.path.exists(imname+".image.tt0"):
@@ -604,7 +608,7 @@ for continuum_ms in continuum_mses:
 
         # grab any iteration-specific values of the self-cal parameter
         for key, val in impars_thisiter.items():
-            if isinstance(val, dict):
+            if isinstance(val, dict) and selfcaliter in val:
                 impars_thisiter[key] = val[selfcaliter]
 
 
