@@ -376,11 +376,11 @@ for continuum_ms in continuum_mses:
         elif 0 in dirty_impars['maskname']:
             maskname = dirty_impars['maskname'][0]
         del dirty_impars['maskname']
-        if maskname in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
+        if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if maskname in locals() and not os.path.exists(maskname) and maskname != '':
+        if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             # maskname = '' is if you explicitly want no mask or a pbmask
             raise IOError("Mask {0} not found".format(maskname))
 
@@ -452,11 +452,11 @@ for continuum_ms in continuum_mses:
         elif 0 in impars_thisiter['maskname']:
             maskname = impars_thisiter['maskname'][0]
         del impars_thisiter['maskname']
-        if maskname in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
+        if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if maskname in locals() and not os.path.exists(maskname) and maskname != '':
+        if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             raise IOError("Mask {0} not found".format(maskname))
 
     for key, val in impars_thisiter.items():
