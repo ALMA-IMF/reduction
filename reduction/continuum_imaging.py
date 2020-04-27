@@ -207,7 +207,7 @@ for continuum_ms in continuum_mses:
                                                 exclude_7m=exclude_7m,
                                                 only_7m=only_7m,
                                                 spw='all',
-                                                pixfraction_of_fwhm=1/4.))
+                                                pixfraction_of_fwhm=1/8. if only_7m else 1/4.))
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
@@ -258,13 +258,16 @@ for continuum_ms in continuum_mses:
             ia.close()
 
         try:
-            maskname = make_custom_mask(field, imname+".image.tt0",
-                                        os.getenv('ALMAIMF_ROOTDIR'),
-                                        band,
-                                        rootdir=imaging_root,
-                                        suffix='_dirty_robust{0}_{1}'.format(robust,
-                                                                             arrayname)
-                                       )
+            if 'maskname' in locals() and os.path.exists(maskname):
+                pass
+            else:
+                maskname = make_custom_mask(field, imname+".image.tt0",
+                                            os.getenv('ALMAIMF_ROOTDIR'),
+                                            band,
+                                            rootdir=imaging_root,
+                                            suffix='_dirty_robust{0}_{1}'.format(robust,
+                                                                                arrayname)
+                                        )
         except KeyError as ex:
             if 'label' in str(ex):
                 logprint("Bad Region Exception: {0}".format(str(ex)))
@@ -277,7 +280,10 @@ for continuum_ms in continuum_mses:
             else:
                 logprint("Exception: {0}".format(str(ex)))
                 logprint("Because no region file was found to create a mask, only "
-                        "the dirty image was made for {0}".format(imname))
+                         "the dirty image was made for {0}".format(imname))
+                if 'maskname' in dirty_impars:
+                    logprint("However, mask {0} was found in image parameters.  "
+                             "Check that it exists".format(dirty_impars['maskname']))
                 continue
                 #raise ValueError("Make the region file first!")
 

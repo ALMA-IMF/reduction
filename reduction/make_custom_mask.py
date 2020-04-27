@@ -24,12 +24,21 @@ except ImportError:
     ia = iatool()
 
 def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
-                     suffix=""):
+                     suffix="", do_bsens=False):
 
     regfn = os.path.join(almaimf_code_path,
-                         'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
-                                                               band_id,
-                                                               suffix))
+                        'clean_regions/{0}_{1}{2}.reg'.format(fieldname,
+                                                            band_id,
+                                                            suffix))
+    if do_bsens:
+        regfnbsens = os.path.join(almaimf_code_path,
+                            'clean_regions/{0}_{1}{2}_bsens.reg'.format(fieldname,
+                                                                band_id,
+                                                                suffix))
+        if os.path.exists(regfnbsens):
+            logprint('Using BSENS region: {0}'.format(regfn))
+            regfn = regfnbsens
+            suffix = suffix + '_bsens'
     if not os.path.exists(regfn):
         raise IOError("Region file {0} does not exist".format(regfn))
 
@@ -55,8 +64,15 @@ def make_custom_mask(fieldname, imname, almaimf_code_path, band_id, rootdir="",
 
         preg = reg.to_pixel(image.wcs)
         msk = preg.to_mask()
+        assert hasattr(image, 'unit'), "Image {imname} failed to have units".format(imname=imname)
+        mimg = msk.multiply(image)
+        assert mimg is not None
+        assert hasattr(mimg, 'unit'), "Masked Image {imname} failed to have units".format(imname=imname)
+        assert mimg.unit.is_equivalent(u.Jy)
 
-        mask_array[msk.bbox.slices] = (msk.multiply(image) > threshold) | mask_array[msk.bbox.slices]
+        msk.cutout(mask_array)[:] = (mimg > threshold) | msk.cutout(mask_array)
+        # cutout does some extra check-for-overlap work
+        #mask_array[msk.bbox.slices] = (msk.multiply(image) > threshold) | mask_array[msk.bbox.slices]
 
 
     # CASA transposes arrays!!!!!

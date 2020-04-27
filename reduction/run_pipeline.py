@@ -68,7 +68,7 @@ for scigoal in science_goal_dirs:
 
             curdir = os.getcwd()
 
-            if os.path.exists(os.path.join(dirpath,'calibrated')):
+            if os.path.exists(os.path.join(dirpath, 'calibrated')):
                 logprint("Skipping script {0} in {1} because calibrated "
                          "exists".format(scriptforpi, dirpath), origin='pipeline_runner')
             elif os.path.exists(os.path.join(dirpath, 'calibration')):
@@ -92,3 +92,5 @@ for scigoal in science_goal_dirs:
                     sys.exit(0)
             else:
                 raise ValueError("Landed in the wrong directory.")
+
+logprint("Completed run_pipeline.py")

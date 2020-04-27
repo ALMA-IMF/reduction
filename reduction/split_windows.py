@@ -47,13 +47,14 @@ import numpy as np
 
 import sys
 
-try:
-    # If run from command line
-    aux = os.path.dirname(os.path.realpath(sys.argv[2]))
+from_cmd = False
+# If run from command line
+if len(sys.argv) > 2:
+    aux = os.path.dirname(sys.argv[2])
     if os.path.isdir(aux):
         almaimf_rootdir = aux
-except:
-    pass
+        from_cmd = True
+
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
@@ -93,7 +94,10 @@ def logprint(string):
     casalog.post(string, origin='make_imaging_scripts')
     print(string)
 
+logprint("ALMAIMF_ROOTDIR directory set to {0}".format(os.getenv('ALMAIMF_ROOTDIR')))
+
 metadata = {b:{} for b in bands}
+contdat_files = {}
 
 for dirpath, dirnames, filenames in os.walk('.'):
     for fn in dirnames:
@@ -104,6 +108,21 @@ for dirpath, dirnames, filenames in os.walk('.'):
             msmd.open(os.path.join(dirpath, fn))
 
             antnames = msmd.antennanames()
+            fieldnames = np.array(msmd.fieldnames())
+            field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
+            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
+            field = field[0]
+
+            frq0 = msmd.chanfreqs(0)
+            for bb,(lo, hi) in bands.items():
+                try:
+                    if lo*1e9 < frq0 and hi*1e9 > frq0:
+                        band = bb
+                except ValueError:
+                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
+                        band = bb
+
+
             if any('PM' in nm for nm in antnames):
                 if len(antnames) <= 4:
                     with open(os.path.join(dirpath, "{0}_{1}_TP".format(field, band)), 'w') as fh:
@@ -121,20 +140,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 msmd.close()
                 continue
 
-            fieldnames = np.array(msmd.fieldnames())
-            field = fieldnames[msmd.fieldsforintent('OBSERVE_TARGET#ON_SOURCE')]
-            assert len(np.unique(field)) == 1,"ERROR: field={0} fieldnames={1}".format(field, fieldnames)
-            field = field[0]
-
-            # noinspection PyInterpreter
-            frq0 = msmd.chanfreqs(0)
-            for bb,(lo, hi) in bands.items():
-                try:
-                    if lo*1e9 < frq0 and hi*1e9 > frq0:
-                        band = bb
-                except ValueError:
-                    if lo*1e9 < np.min(frq0) and hi*1e9 > np.max(frq0):
-                        band = bb
+            if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
+                contdat_files[(field, band)] = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
 
             spws = msmd.spwsforfield(field)
             targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
@@ -262,17 +269,28 @@ for band in bands:
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
-            if os.path.exists(os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")):
-                contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'), "{field}.{band}.cont.dat")
+            contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                    "{field}.{band}.cont.dat".format(field=field, band=band))
+            if os.path.exists(contfile):
+                logprint("##### Found manually-created cont.dat file {0}".format(contfile))
             else:
                 # the cont.dat file should be in the calibration/ directory in the
                 # same SB folder
+                logprint("Did not find a manually-created cont.dat file named {0}; instead using local cont.dat.".format(contfile))
                 contfile = os.path.join(path, '../calibration/cont.dat')
+                logprint("Using cont.dat file {0} for {1}:{2}".format(contfile,
+                                                                      band,
+                                                                      field))
 
             if not os.path.exists(contfile):
-                logprint("No cont.dat file found for {0}.  Skipping."
-                         .format(path))
-                continue
+                logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
+                         .format(path, band, field))
+                if (band, field) in contdat_files:
+                    contfile = contdat_files[(band, field)]
+                    logprint("No cont.dat file: Using {0} instead.".format(contfile))
+                else:
+                    logprint("No cont.dat file: Skipping.")
+                    continue
             cont_channel_selection = parse_contdotdat(contfile)
 
             visfile = os.path.join(path, vis)
@@ -282,11 +300,11 @@ for band in bands:
             cont_to_merge[band][field].append(contvis)
 
             if os.path.exists(contvis) and os.path.exists(contvis_bestsens):
-                logprint("Skipping width determination for {0} because "
-                         "it's done (both for bsens & cont)".format(contvis),)
+                logprint("Skipping width determination for {0} = {1}:{2} because "
+                         "it's done (both for bsens & cont)".format(contvis, band, field),)
             else:
-                logprint("Determining widths for {0} to {1}"
-                         .format(visfile, contvis),)
+                logprint("Determining widths for {0} to {1}, {2}:{3}"
+                         .format(visfile, contvis, band, field),)
 
                 # determine target widths
                 msmd.open(visfile)

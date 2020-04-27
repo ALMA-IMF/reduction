@@ -75,8 +75,11 @@ def assemble_stats(globstr, ditch_suffix=None):
     for fn in ProgressBar(glob.glob(globstr)):
         if ditch_suffix is not None:
             meta = parse_fn(fn.split(ditch_suffix)[0])
+            # don't do this on the suffix-ditched version
+            meta['pbcor'] = 'pbcor' in fn.lower()
         else:
             meta = parse_fn(fn)
+        meta['filename'] = fn
         stats = imstats(fn)
         allstats.append({'meta': meta, 'stats': stats})
 
@@ -99,7 +102,7 @@ def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
     form_url_dict = {#"868884739":"{reviewer}",
                      "639517087": "{field}",
                      "400258516": "{band}",
-                     "841871158": "{selfcal}",
+                     "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
                      "312922422": "{array}",
                      "678487127": "{robust}",
                      #"1301985958": "{comment}",
@@ -147,11 +150,13 @@ def get_selfcal_number(fn):
     except:
         return 0
 
-def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/quicklooks/"):
+def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
     import glob
     from diagnostic_images import load_images, show as show_images
     from astropy import visualization
     import pylab as pl
+
+    savepath = f'{basepath}/quicklooks'
 
     try:
         os.mkdir(savepath)
@@ -163,9 +168,11 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
                 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
                 for band in (3,6)
-                for config in ('7M12M', '12M')
-                for robust in (-2, 0, 2)
-                for selfcal in range(0,8)
+                #for config in ('7M12M', '12M')
+                for config in ('12M',)
+                #for robust in (-2, 0, 2)
+                for robust in (0,)
+                for selfcal in ("",) + tuple(range(0,9))
                }
     badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
     print(f"Bad files: {badfiledict}")
@@ -215,7 +222,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         try:
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore')
-                print(f"{ii}: {(field, band, config, robust, fn)}"
+                print(f"{ii}: {(field, band, config, robust, fn, selfcal)}"
                       f" basename='{basename}', suffix='{suffix}'")
                 imgs, cubes = load_images(basename, suffix=suffix)
         except KeyError as ex:
@@ -223,6 +230,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
             raise
         except Exception as ex:
             print(f"EXCEPTION: {type(ex)}: {str(ex)}")
+            raise
             continue
         norm = visualization.ImageNormalize(stretch=visualization.AsinhStretch(),
                                             interval=visualization.PercentileInterval(99.95))
@@ -230,8 +238,11 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         # (this call inplace-modifies logn, according to the docs)
         if 'residual' in imgs:
             norm(imgs['residual'][imgs['residual'] == imgs['residual']])
-        elif 'image' in imgs:
-            norm(imgs['image'][imgs['image'] == imgs['image']])
+        else:
+            print(f"Skipped {fn} because no residual was found.  imgs.keys={imgs.keys()}")
+            continue
+        #elif 'image' in imgs:
+        #    norm(imgs['image'][imgs['image'] == imgs['image']])
         pl.close(1)
         pl.figure(1, figsize=(14,6))
         show_images(imgs, norm=norm, imnames_toplot=('mask', 'model', 'image', 'residual'))
@@ -245,6 +256,7 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                     'selfcal': selfcal, #get_selfcal_number(basename),
                     'array': config,
                     'robust': robust,
+                    'finaliter': 'finaliter' in fn,
                    }
         make_quicklook_analysis_form(filename=outname,
                                      metadata=metadata,
@@ -254,7 +266,9 @@ def make_analysis_forms(savepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                                     )
         metadata['outname'] = outname
         metadata['suffix'] = suffix
-        flist.append(metadata)
+        if robust == 0:
+            # only keep robust=0 for simplicity
+            flist.append(metadata)
         prev = outname+".html"
 
 
@@ -297,9 +311,12 @@ def make_index(savepath, flist):
         fh.write("<ul>\n")
         for metadata in flist:
             filename = metadata['outname']+".html"
-            meta_str = (f"{metadata['field']}_{metadata['band']}"
-                        f"_selfcal{metadata['selfcal']}"
+            meta_str = (f"{metadata['field']}_{metadata['band']}" +
+                        (f"_selfcal{metadata['selfcal']}"
+                         if isinstance(metadata['selfcal'], int) else
+                         "_preselfcal") +
                         f"_{metadata['array']}_robust{metadata['robust']} "
+                        f"{' finaliter' if metadata['finaliter'] else ''}"
                         f"{metadata['suffix']}")
             #fh.write(f'<li><a href="{filename}">{meta_str}</a></li>\n')
             fh.write(f"<li><button onclick=\"changeSrc('{filename}')\">{meta_str}</a></li>\n")
@@ -354,14 +371,19 @@ document.write(newdocument)
 
 
 
-def savestats():
-    stats = assemble_stats("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/*/*/*.image.tt0*.fits", ditch_suffix=".image.tt")
-    with open('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.json', 'w') as fh:
+def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release"):
+    if 'October' in basepath:
+        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
+    else:
+        # extra layer: bsens, cleanest, etc
+        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
+    with open(f'{basepath}/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
     requested = get_requested_sens()
 
-    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix', 'pbcor']
+    meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
+                 'bsens', 'pbcor', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
@@ -384,11 +406,11 @@ def savestats():
     tbl.add_column(Column(name='SensVsReq', data=tbl['mad']*1e3/tbl['Req_Sens']))
     tbl.add_column(Column(name='BeamVsReq', data=(tbl['bmaj']*tbl['bmin'])**0.5/tbl['Req_Res']))
 
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv', overwrite=True)
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.html',
+    tbl.write(f'{basepath}/metadata.ecsv', overwrite=True)
+    tbl.write(f'{basepath}/metadata.html',
               format='ascii.html', overwrite=True)
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.tex')
-    tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.js.html',
+    tbl.write(f'{basepath}/metadata.tex', overwrite=True)
+    tbl.write(f'{basepath}/metadata.js.html',
               format='jsviewer')
 
     return tbl
@@ -396,5 +418,7 @@ def savestats():
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        tbl = savestats()
-        make_analysis_forms()
+        for basepath in ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
+                         "/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
+            tbl = savestats(basepath=basepath)
+            make_analysis_forms(basepath=basepath)

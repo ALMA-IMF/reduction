@@ -3,7 +3,7 @@ import string
 try:
     from __casac__.quanta import quanta
     from taskinit import msmdtool
-except ImportError:
+except (ImportError, ModuleNotFoundError):
     from casatools import quanta
     from casatools import msmetadata as msmdtool
 qq = quanta()
@@ -133,7 +133,7 @@ def cont_channel_selection_to_contdotdat(cont_channel_selection, msname,
 
     freqsels = {}
 
-    for spwsel in flagchannels.split(","):
+    for spwsel in cont_channel_selection.split(","):
         spwn = int(spwsel.split(":")[0])
         if spw_mapping is not None and spwn in spw_mapping:
             spw = spw_mapping[spwn]
