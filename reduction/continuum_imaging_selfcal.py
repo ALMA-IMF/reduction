@@ -382,7 +382,8 @@ for continuum_ms in continuum_mses:
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if not os.path.exists(maskname):
+        if not os.path.exists(maskname) and maskname != '':
+            # maskname = '' is if you explicitly want no mask or a pbmask
             raise IOError("Mask {0} not found".format(maskname))
 
 
@@ -780,7 +781,7 @@ for continuum_ms in continuum_mses:
                 maskname = os.path.join(almaimf_rootdir,
                                         'clean_regions',
                                         maskname)
-            if not os.path.exists(maskname):
+            if not os.path.exists(maskname) and maskname != '':
                 raise IOError("Mask {0} not found".format(maskname))
 
 
