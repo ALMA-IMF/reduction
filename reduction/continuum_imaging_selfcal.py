@@ -466,6 +466,9 @@ for continuum_ms in continuum_mses:
     for key, val in impars_thisiter.items():
         if isinstance(val, dict) and 0 in val:
             impars_thisiter[key] = val[0]
+        elif isinstance(val, dict):
+            # remove entries that are unspecified
+            del impars_thisiter[key]
 
     if not os.path.exists(imname+".image.tt0"):
         if maskname:
@@ -493,7 +496,7 @@ for continuum_ms in continuum_mses:
             ia.open(imname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
-                                   impars.items()])
+                                   impars_thisiter.items()])
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
                                    "git_date: {0}".format(git_date)])
@@ -610,6 +613,9 @@ for continuum_ms in continuum_mses:
         for key, val in impars_thisiter.items():
             if isinstance(val, dict) and selfcaliter in val:
                 impars_thisiter[key] = val[selfcaliter]
+            elif isinstance(val, dict):
+                # remove entries that are unspecified
+                del impars_thisiter[key]
 
 
         # start from previous model to save time
@@ -865,7 +871,7 @@ for continuum_ms in continuum_mses:
             ia.open(finaliterimname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
-                                   impars.items()])
+                                   impars_finaliter.items()])
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
                                    "git_date: {0}".format(git_date)])
