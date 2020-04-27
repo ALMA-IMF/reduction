@@ -48,6 +48,7 @@ imaging_parameters = {"{0}_{1}_{2}_robust{3}".format(field, band, array, robust)
                        'gridder': 'mosaic',
                        'specmode': 'mfs',
                        'deconvolver': 'mtmfs',
+                       'usemask': 'user',
                        'nterms': 2,
                       }
                       for field in allfields
