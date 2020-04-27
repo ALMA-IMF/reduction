@@ -73,8 +73,6 @@ or if you want to totally start over:
     # and remove the .cal files in the parent directory
     rm -r W51-E_B3_*cal
 
-"""
-"""
 MASKING
 =======
 There are two ways to specify masks:
@@ -375,10 +373,10 @@ for continuum_ms in continuum_mses:
                      "{iternumber: maskname}.  Self calibration iterations "
                      "will not work until this is changed.",
                      origin='almaimf_cont_selfcal')
-        else:
+        elif 0 in dirty_impars['maskname']:
             maskname = dirty_impars['maskname'][0]
         del dirty_impars['maskname']
-        if '/' not in maskname and not os.path.exists(maskname):
+        if '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
@@ -451,14 +449,14 @@ for continuum_ms in continuum_mses:
                      "{iternumber: maskname}.  Self calibration iterations "
                      "will not work until this is changed.",
                      origin='almaimf_cont_selfcal')
-        else:
+        elif 0 in impars_thisiter['maskname']:
             maskname = impars_thisiter['maskname'][0]
         del impars_thisiter['maskname']
-        if '/' not in maskname and not os.path.exists(maskname):
+        if '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if not os.path.exists(maskname):
+        if not os.path.exists(maskname) and maskname != '':
             raise IOError("Mask {0} not found".format(maskname))
 
     for key, val in impars_thisiter.items():
