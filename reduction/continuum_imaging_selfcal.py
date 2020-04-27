@@ -753,6 +753,22 @@ for continuum_ms in continuum_mses:
                  origin='contim_selfcal')
 
 
+
+
+    # finaliter section begins here
+
+
+    # make sure the calibration tables have been applied, otherwise re-runs can
+    # result in starting from un-corrected data
+    if not dryrun:
+        clearcal(vis=selfcal_ms, addmodel=True)
+        # use gainfield so we interpolate the good solutions to the other
+        # fields
+        assert len(cals) >= selfcaliter
+        applycal(vis=selfcal_ms, gainfield=okfields_str, gaintable=cals,
+                 interp="linear", applymode='calonly', calwt=False)
+
+
     for robust in (0, -2, 2):
         logprint("Imaging self-cal iter {0} (final) with robust {1}"
                  .format(selfcaliter, robust),
