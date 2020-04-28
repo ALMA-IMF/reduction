@@ -49,6 +49,8 @@ for fn in glob.glob(f"{basepath}/*/*/bsens/*.image.tt0.pbcor.fits"):
             if "operands could not be broadcast together with shapes" in str(ex):
                 print("Shapes: ",bsens_fh[0].data.shape, clean_fh[0].data.shape)
             print(ex)
+        if not os.path.exists(f'{filepath}/comparisons/'):
+            os.mkdir(f'{filepath}/comparisons/')
         pl.savefig(f"{filepath}/comparisons/{field}_12M_bsens_vs_cleanest_comparison.png", bbox_inches='tight', dpi=200)
     else:
         print(f"Skipping {bsens} because there was a shape mismatch.")
