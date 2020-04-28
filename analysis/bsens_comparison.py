@@ -18,6 +18,8 @@ for fn in glob.glob("*/*/bsens/*.image.tt0.pbcor.fits"):
     #print(os.path.exists(bsens), os.path.exists(clean))
     field = fn.split("_uid")[0].split("/")[-1]
 
+    filepath = fn.split("bsens")[0]
+
     bsens_fh = fits.open(bsens)
     try:
         clean_fh = fits.open(clean)
@@ -45,6 +47,6 @@ for fn in glob.glob("*/*/bsens/*.image.tt0.pbcor.fits"):
             if "operands could not be broadcast together with shapes" in str(ex):
                 print("Shapes: ",bsens_fh[0].data.shape, clean_fh[0].data.shape)
             print(ex)
-        pl.savefig(f"comparisons/{field}_12M_bsens_vs_cleanest_comparison.png", bbox_inches='tight', dpi=200)
+        pl.savefig(f"{filepath}/comparisons/{field}_12M_bsens_vs_cleanest_comparison.png", bbox_inches='tight', dpi=200)
     else:
         print(f"Skipping {bsens} because there was a shape mismatch.")
