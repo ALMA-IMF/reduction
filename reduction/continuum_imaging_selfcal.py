@@ -602,11 +602,11 @@ for continuum_ms in continuum_mses:
                          origin="contim_selfcal"
                         )
             del impars_thisiter['maskname']
-        if '/' not in maskname and not os.path.exists(maskname):
+        if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if not os.path.exists(maskname):
+        if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             raise IOError("Mask {0} not found".format(maskname))
 
         # grab any iteration-specific values of the self-cal parameter
@@ -801,11 +801,11 @@ for continuum_ms in continuum_mses:
                 else:
                     maskname = impars_finaliter['maskname'][selfcaliter]
             del impars_finaliter['maskname']
-            if '/' not in maskname and not os.path.exists(maskname):
+            if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
                 maskname = os.path.join(almaimf_rootdir,
                                         'clean_regions',
                                         maskname)
-            if not os.path.exists(maskname) and maskname != '':
+            if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
                 raise IOError("Mask {0} not found".format(maskname))
 
 
