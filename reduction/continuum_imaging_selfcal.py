@@ -850,6 +850,8 @@ for continuum_ms in continuum_mses:
             modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
                          contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
         if not dryrun:
+            logprint("Final imaging parameters are: {0} for image name {1}".format(impars_finaliter, finaliterimname),
+                     origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
                    field=field.encode(),
                    imagename=finaliterimname,
