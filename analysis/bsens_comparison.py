@@ -44,7 +44,7 @@ for fn in glob.glob(f"{basepath}/*/*/bsens/*.image.tt0.pbcor.fits"):
               f"{diff[np.isfinite(diff)].sum():15.3f} {mad_std(diff, ignore_nan=True):15.5f} "
              )
         try:
-            make_comparison_image(bsens, clean)
+            make_comparison_image(clean, bsens, title1='cleanest', title2='bsens')
         except Exception as ex:
             if "operands could not be broadcast together with shapes" in str(ex):
                 print("Shapes: ",bsens_fh[0].data.shape, clean_fh[0].data.shape)
