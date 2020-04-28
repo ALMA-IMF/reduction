@@ -11,7 +11,9 @@ from compare_images import make_comparison_image
 
 print("{4:14s}{0:>15s} {1:>15s} {2:>15s} {3:>15s} {5:>15s} {6:>15s}".format("bsens_sum", "bsens_mad",  "clean_sum",  "clean_mad", "field & band", "diff_sum", "diff_mad"))
 
-for fn in glob.glob("*/*/bsens/*.image.tt0.pbcor.fits"):
+basepath = "/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/"
+
+for fn in glob.glob(f"{basepath}/*/*/bsens/*.image.tt0.pbcor.fits"):
     pl.clf()
     bsens = fn
     clean = fn.replace("_bsens","").replace("/bsens/","/cleanest/")
