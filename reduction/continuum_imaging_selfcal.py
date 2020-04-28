@@ -566,6 +566,7 @@ for continuum_ms in continuum_mses:
 
     # BEGIN SELFCAL HERE
 
+    okfields_list = []
     cals = []
 
     for selfcaliter in selfcalpars.keys():
@@ -659,12 +660,17 @@ for continuum_ms in continuum_mses:
                          origin='contim_selfcal')
                 okfields = selfcal_field_id
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
+            with open(caltable+".fields", 'w') as fh:
+                fh.write(okfields_str)
+            okfields_list.append(okfields_str)
+
             if not dryrun:
                 clearcal(vis=selfcal_ms, addmodel=True)
                 # use gainfield so we interpolate the good solutions to the other
                 # fields
+                assert len(okfields_list) == len(cals)
                 applycal(vis=selfcal_ms,
-                         gainfield=okfields_str,
+                         gainfield=okfields_list,
                          gaintable=cals,
                          interp="linear",
                          applymode='calonly',
@@ -773,7 +779,15 @@ for continuum_ms in continuum_mses:
         # use gainfield so we interpolate the good solutions to the other
         # fields
         assert len(cals) >= selfcaliter
-        applycal(vis=selfcal_ms, gainfield=okfields_str, gaintable=cals,
+
+        okfields_list = []
+        for caltable in cals:
+            with open(caltable+".fields", 'r') as fh:
+                okfields_str = fh.read().strip()
+            okfields_list.append(okfields_str)
+        assert len(cals) == len(okfields_list)
+
+        applycal(vis=selfcal_ms, gainfield=okfields_list, gaintable=cals,
                  interp="linear", applymode='calonly', calwt=False)
 
 
