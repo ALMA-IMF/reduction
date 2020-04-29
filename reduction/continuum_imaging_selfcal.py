@@ -395,6 +395,8 @@ for continuum_ms in continuum_mses:
         logprint("(dirty, pre-) Imaging parameters are: {0}".format(dirty_impars),
                  origin='almaimf_cont_selfcal')
         if not dryrun:
+            # sanity check: this can't happen, but it was happening.
+            assert 'usemask' not in dirty_impars
             tclean(vis=selfcal_ms,
                    field=field.encode(),
                    imagename=imname,
