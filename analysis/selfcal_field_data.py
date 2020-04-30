@@ -61,6 +61,8 @@ if __name__ == "__main__":
     workingdir = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
     import glob
     from astropy.table import Table
+    import json
+    import shutil
     files = glob.glob(workingdir+"/*fields")
 
     data = []
@@ -105,5 +107,5 @@ if __name__ == "__main__":
 
                              )
 
-    wtbl.write("/bio/web/secure/adamginsburg/ALMA-IMF/selfcal_fields_table.tex",
+    ltbl.write("/bio/web/secure/adamginsburg/ALMA-IMF/selfcal_fields_table.tex",
                overwrite=True, latexdict=latexdict)
