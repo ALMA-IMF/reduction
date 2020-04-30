@@ -4,6 +4,7 @@ Assemble information on which fields were included in self-calibration
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from casatools import table
+import string
 
 tb = table()
 # G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_phase1_inf.cal.fields
@@ -26,6 +27,7 @@ def parse_fn(fn):
             'band': split[1],
             'array': '12Monly' if '12M' in split else '7M12M' if '7M12M' in split else '????',
             'selfcaliter': 'sc'+str(selfcaliter),
+            'selfcaltype': selfcal_entry.strip(string.digits),
             'bsens': 'bsens' in fn.lower(),
            }
 
@@ -74,8 +76,34 @@ if __name__ == "__main__":
     with open(f'{workingdir}/field_summary.json', 'w') as fh:
         json.dump(data_json, fh)
 
-    tbl = Table(data)['region', 'array', 'band', 'bsens', 'selfcaliter', 'fields', ]
+    tbl = Table(data)['region', 'array', 'band', 'bsens', 'selfcaliter', 'selfcaltype', 'fields', ]
     tbl.sort(keys=['region', 'array', 'band', 'bsens', 'selfcaliter', ])
-    tbl.write("fields_summary_table.ecsv")
+    tbl.write("fields_summary_table.ecsv", overwrite=True)
 
     shutil.copy("fields_summary_table.ecsv", "/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/")
+
+
+
+
+    from latex_info import (latexdict, format_float, round_to_n, rounded,
+                            rounded_arr, strip_trailing_zeros, exp_to_tex)
+
+    latexdict = latexdict.copy()
+
+
+    ltbl = tbl.copy()
+    ltbl['fields'] = [len(x) for x in tbl['fields']]
+
+    # caption needs to be *before* preamble.
+    #latexdict['caption'] = 'Continuum Source IDs and photometry'
+    latexdict['header_start'] = '\label{tab:selfcal_fields}'#\n\\footnotesize'
+    latexdict['preamble'] = '\caption{Selfcal Field Inclusion}\n\\resizebox{\\textwidth}{!}{'
+    latexdict['col_align'] = 'l'*len(ltbl.columns)
+    latexdict['tabletype'] = 'table'
+    latexdict['tablefoot'] = ("}\par\n"
+                              "Number of fields included in each self-calibrationt entry"
+
+                             )
+
+    wtbl.write("/bio/web/secure/adamginsburg/ALMA-IMF/selfcal_fields_table.tex",
+               overwrite=True, latexdict=latexdict)
