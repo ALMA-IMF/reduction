@@ -354,6 +354,7 @@ for continuum_ms in continuum_mses:
 
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
+    dirty_impars['usemask'] = 'pb' # we're not cleaning so we force the mask to pb
     # NOTE: if anything besides `maskname` and `niter` ends up with a
     # dictionary, we'll need to parse it here
 
@@ -401,7 +402,6 @@ for continuum_ms in continuum_mses:
                    phasecenter=phasecenter,
                    outframe='LSRK',
                    veltype='radio',
-                   usemask='pb',
                    interactive=False,
                    cell=cellsize,
                    imsize=imsize,
