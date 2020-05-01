@@ -929,7 +929,7 @@ for continuum_ms in continuum_mses:
             post = ia.getchunk()
             ia.close()
 
-            ia.open(imname.replace("post", "pre"))
+            ia.open(imname.replace("post", "pre")+".image.tt0")
             pre = ia.getchunk()
             ia.close()
 
