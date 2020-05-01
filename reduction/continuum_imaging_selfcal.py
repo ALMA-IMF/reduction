@@ -896,7 +896,7 @@ for continuum_ms in continuum_mses:
             exportfits(finaliterimname+".image.tt0", finaliterimname+".image.tt0.fits", overwrite=True)
             exportfits(finaliterimname+".image.tt0.pbcor", finaliterimname+".image.tt0.pbcor.fits", overwrite=True)
 
-    imname = contimagename+"_robust{0}_dirty_postselfcal".format(robust)
+    imname = contimagename+"_robust0_dirty_postselfcal"
 
     if not os.path.exists(imname+".image.tt0"):
         logprint("(dirty, post-) Imaging parameters are: {0}".format(dirty_impars),
