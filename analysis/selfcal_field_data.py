@@ -107,5 +107,5 @@ if __name__ == "__main__":
 
                              )
 
-    ltbl.write("/bio/web/secure/adamginsburg/ALMA-IMF/selfcal_fields_table.tex",
+    ltbl.write("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/selfcal_fields_table.tex",
                overwrite=True, latexdict=latexdict)
