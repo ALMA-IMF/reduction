@@ -469,9 +469,10 @@ imaging_parameters_nondefault = {
     # G327.29
     # G327.29 B3 12M selfcal
     'G327.29_B3_12M_robust0': {'threshold': {0: '1.5mJy', 1: '0.6mJy', 
-        2: '0.5mJy', 'final':'0.4mJy'},
-        'niter': {0: 1000, 1:2000, 2:5000, 'final':200000},
+        2: '0.5mJy', 3: '0.3mJy', 'final':'0.2mJy'},
+        'niter': {0: 1000, 1:2000, 2:5000, 3:10000, 'final':200000},
         'scales': [0,3,9,27],
+        'usemask': {3: 'pb', 'final':'pb'},
         },
     'G327.29_B3_12M_robust-2': {'threshold': {'final': '0.4mJy'},
         'niter': {'final': 200000},
