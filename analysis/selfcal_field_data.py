@@ -5,6 +5,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from casatools import table
 import string
+import os
 
 tb = table()
 # G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_phase1_inf.cal.fields
