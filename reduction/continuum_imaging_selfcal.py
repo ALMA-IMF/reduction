@@ -896,5 +896,36 @@ for continuum_ms in continuum_mses:
             exportfits(finaliterimname+".image.tt0", finaliterimname+".image.tt0.fits", overwrite=True)
             exportfits(finaliterimname+".image.tt0.pbcor", finaliterimname+".image.tt0.pbcor.fits", overwrite=True)
 
+    imname = contimagename+"_robust{0}_dirty_postselfcal".format(robust)
+
+    if not os.path.exists(imname+".image.tt0"):
+        logprint("(dirty, post-) Imaging parameters are: {0}".format(dirty_impars),
+                 origin='almaimf_cont_selfcal')
+        if not dryrun:
+            tclean(vis=selfcal_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   interactive=False,
+                   cell=cellsize,
+                   imsize=imsize,
+                   pbcor=True,
+                   antenna=antennae,
+                   datacolumn='corrected',
+                   **dirty_impars
+                  )
+            test_tclean_success()
+
+            ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   dirty_impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
+            ia.close()
+
     logprint("Completed band {0}".format(band),
              origin='contim_selfcal')
