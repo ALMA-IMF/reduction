@@ -19,7 +19,7 @@ os.chdir(basepath)
 import imstats
 
 
-tbl = imstats.savestats()
+tbl = imstats.savestats(basepath=basepath)
 
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
