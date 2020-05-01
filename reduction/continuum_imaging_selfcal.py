@@ -925,7 +925,19 @@ for continuum_ms in continuum_mses:
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
                                    "git_date: {0}".format(git_date)])
+
+            post = ia.getchunk()
             ia.close()
+
+            ia.open(imname.replace("post", "pre"))
+            pre = ia.getchunk()
+            ia.close()
+
+            from astropy.io import fits
+            fh = fits.open(finalitername+".image.tt0.fits")
+            fh[0].data = post-pre
+            fh.writeto(imname.replace("post", "post-pre")+".fits")
+
 
     logprint("Completed band {0}".format(band),
              origin='contim_selfcal')
