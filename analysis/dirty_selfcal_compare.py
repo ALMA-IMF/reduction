@@ -93,8 +93,9 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['mad_pre'][matchrow] = diffstats['mad_pre']
                 tbl['mad_post'][matchrow] = diffstats['mad_post']
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
-                tbl['casaversion_pre'][matchrow] = fits.getheader(pre)['ORIGIN']
-                tbl['casaversion_post'][matchrow] = fits.getheader(post)['ORIGIN']
+                if pre.endswith('fits'):
+                    tbl['casaversion_pre'][matchrow] = fits.getheader(pre)['ORIGIN']
+                    tbl['casaversion_post'][matchrow] = fits.getheader(post)['ORIGIN']
 
                 print(prefns, postfns)
             else:
