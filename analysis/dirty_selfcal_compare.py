@@ -25,7 +25,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
         for imtype in ('cleanest', 'bsens', '7m12m', ):
 
             prefns = [x for x in
-                    glob.glob(f"{basepath}/{field}*_B{band}_*preselfcal*.image.tt0")
+                    glob.glob(f"{basepath}/{field}*_B{band}_*_{imtype}_*preselfcal*.image.tt0")
                     if 'robust0_' in x]
             postfns = [fn.replace("pre","post") for fn in prefns]
 
@@ -54,6 +54,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             else:
                 print(f"No hits for {field}_B{band}_{config}")
 
+            print()
             print()
 
 #with open('prepost_dirty_stats.json', 'w') as fh:
