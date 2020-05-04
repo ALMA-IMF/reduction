@@ -31,6 +31,8 @@ tbl.add_column(Column(name='scMeanDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMedianDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='min_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='min_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='max_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='max_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_pre', data=[np.nan]*len(tbl)))
@@ -97,6 +99,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['scMedianDiff'][matchrow] = diffstats['median']
                 tbl['dr_pre'][matchrow] = diffstats['dr_pre']
                 tbl['dr_post'][matchrow] = diffstats['dr_post']
+                tbl['min_pre'][matchrow] = diffstats['min_pre']
+                tbl['min_post'][matchrow] = diffstats['min_post']
                 tbl['max_pre'][matchrow] = diffstats['max_pre']
                 tbl['max_post'][matchrow] = diffstats['max_post']
                 tbl['mad_pre'][matchrow] = diffstats['mad_pre']
