@@ -934,7 +934,7 @@ for continuum_ms in continuum_mses:
             ia.close()
 
             from astropy.io import fits
-            fh = fits.open(finalitername+".image.tt0.fits")
+            fh = fits.open(imname+".image.tt0.fits")
             fh[0].data = post-pre
             fh.writeto(imname.replace("post", "post-pre")+".fits")
 
