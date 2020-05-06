@@ -325,8 +325,8 @@ for continuum_ms in continuum_mses:
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
     for key, value in imaging_parameters.items():
-        if 'cellsize' not in imaging_parameters[key]:
-            imaging_parameters[key]['cellsize'] = cellsize
+        if 'cell' not in imaging_parameters[key]:
+            imaging_parameters[key]['cell'] = cellsize
         if 'imsize' not in imaging_parameters[key]:
             imaging_parameters[key]['imsize'] = imsize
 

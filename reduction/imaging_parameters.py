@@ -335,7 +335,7 @@ imaging_parameters_nondefault = {
                                            },
                              'scales': [0,3,9,27],
                              'imsize': [5000, 5000],
-                             'cellsize': ['0.0375arcsec', '0.0375arcsec',],
+                             'cell': ['0.0375arcsec', '0.0375arcsec',],
                             },
     'W51-E_B3_12M_robust2': {'threshold': '3mJy',
                              'scales': [0,3,9,27],
