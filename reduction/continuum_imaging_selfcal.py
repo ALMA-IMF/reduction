@@ -933,6 +933,9 @@ for continuum_ms in continuum_mses:
             pre = ia.getchunk()
             ia.close()
 
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+
             from astropy.io import fits
             fh = fits.open(imname+".image.tt0.fits")
             fh[0].data = post-pre
