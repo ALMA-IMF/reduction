@@ -44,7 +44,7 @@ def make_anim(imname, nselfcaliter=7):
     if cube.max() > cube.min():
         # ensure that vmax > vmin
         mpct = 99
-        while norm.vmax > norm.vmin:
+        while norm.vmax > norm.vmin and mpct < 99.999:
             mpct += (100-mpct)*0.05
             norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=mpct)
         im3 = ax3.imshow(cube[0].value, norm=norm)
