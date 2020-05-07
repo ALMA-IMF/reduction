@@ -41,7 +41,15 @@ def make_anim(imname, nselfcaliter=7):
     im2 = ax2.imshow(cube[0].value, norm=norm)
     cube = SpectralCube.read(f'{imname}_preselfcal.model.tt0', format='casa_image')
     norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.00)
-    im3 = ax3.imshow(cube[0].value, norm=norm)
+    if cube.max() > cube.min():
+        # ensure that vmax > vmin
+        mpct = 99
+        while norm.vmax > norm.vmin:
+            mpct += (100-mpct)*0.05
+            norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=mpct)
+        im3 = ax3.imshow(cube[0].value, norm=norm)
+    else:
+        im3 = ax3.imshow(cube[0].value)
     title = pl.suptitle("Before selfcal")
 
     def update(ii):
