@@ -331,8 +331,11 @@ imaging_parameters_nondefault = {
     'W51-E_B3_12M_robust0': {'threshold': {0: '0.15mJy', 1: '0.15mJy',
                                            2: '0.1mJy', 3: '0.09mJy',
                                            4: '0.09mJy', 5: '0.08mJy',
-                                           6: '0.07mJy'},
+                                           6: '0.07mJy',
+                                           },
                              'scales': [0,3,9,27],
+                             'imsize': [5000, 5000],
+                             'cell': ['0.0375arcsec', '0.0375arcsec',],
                             },
     'W51-E_B3_12M_robust2': {'threshold': '3mJy',
                              'scales': [0,3,9,27],
@@ -895,16 +898,12 @@ selfcal_pars['W51-E_B6_7M12M_robust0'][7] = {'solint': 'inf',
                                             }
 
 selfcal_pars['W51-E_B3_12M_robust0'][5] = copy.copy(selfcal_pars['W51-E_B3_12M_robust0'][4])
-selfcal_pars['W51-E_B3_12M_robust0'][6] = {'solint': 'inf',
-                                           'gaintype': 'T',
-                                           'calmode': 'ap',
-                                           'minsnr': 5,
-                                          }
-selfcal_pars['W51-E_B3_12M_robust0'][7] = {'solint': 'inf',
-                                           'gaintype': 'T',
-                                           'calmode': 'ap',
-                                            'minsnr': 5,
-                                          }
+selfcal_pars['W51-E_B3_12M_robust0'][6] = copy.copy(selfcal_pars['W51-E_B3_12M_robust0'][4])
+# selfcal_pars['W51-E_B3_12M_robust0'][6] = {'solint': 'inf',
+#                                            'gaintype': 'T',
+#                                            'calmode': 'ap',
+#                                            'minsnr': 5,
+#                                           }
 # W43-MM2 B6
    #12M only#
 selfcal_pars['W43-MM2_B6_12M_robust0'][1] = {'solint': 'inf',

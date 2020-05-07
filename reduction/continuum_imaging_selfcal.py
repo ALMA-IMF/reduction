@@ -324,6 +324,12 @@ for continuum_ms in continuum_mses:
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
+    for key, value in imaging_parameters.items():
+        if 'cell' not in imaging_parameters[key]:
+            imaging_parameters[key]['cell'] = cellsize
+        if 'imsize' not in imaging_parameters[key]:
+            imaging_parameters[key]['imsize'] = imsize
+
     contimagename = os.path.join(imaging_root, basename) + "_" + arrayname
     if do_bsens:
         # just a sanity check
@@ -403,8 +409,6 @@ for continuum_ms in continuum_mses:
                    outframe='LSRK',
                    veltype='radio',
                    interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
                    pbcor=True,
                    antenna=antennae,
                    datacolumn='data',
@@ -484,8 +488,6 @@ for continuum_ms in continuum_mses:
                    veltype='radio',
                    mask=maskname,
                    interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
                    antenna=antennae,
                    savemodel='modelcolumn',
                    datacolumn='data',
@@ -515,7 +517,7 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
             if not dryrun:
                 populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                      phasecenter, maskname, cellsize, imsize,
+                                      phasecenter, maskname,
                                       antennae)
         else:
             logprint("Model column was populated from pre-selfcal image.",
@@ -530,7 +532,7 @@ for continuum_ms in continuum_mses:
 
         if not dryrun:
             populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                  phasecenter, maskname, cellsize, imsize,
+                                  phasecenter, maskname,
                                   antennae)
 
         logprint("Skipped completed file {0} (dirty),"
@@ -696,8 +698,6 @@ for continuum_ms in continuum_mses:
                        veltype='radio',
                        mask=maskname,
                        interactive=False,
-                       cell=cellsize,
-                       imsize=imsize,
                        antenna=antennae,
                        savemodel='modelcolumn',
                        datacolumn='corrected', # now use corrected data
@@ -726,13 +726,13 @@ for continuum_ms in continuum_mses:
                              "Therefore, populated model column from {0}".format(imname),
                              origin='almaimf_cont_selfcal')
                     populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                          phasecenter, maskname, cellsize, imsize,
+                                          phasecenter, maskname,
                                           antennae)
 
         else:
             if not dryrun:
                 populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                      phasecenter, maskname, cellsize, imsize,
+                                      phasecenter, maskname,
                                       antennae)
 
 
@@ -875,8 +875,6 @@ for continuum_ms in continuum_mses:
                    veltype='radio',
                    mask=maskname,
                    interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
                    antenna=antennae,
                    savemodel='none',
                    datacolumn='corrected',
@@ -909,8 +907,6 @@ for continuum_ms in continuum_mses:
                    outframe='LSRK',
                    veltype='radio',
                    interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
                    pbcor=True,
                    antenna=antennae,
                    datacolumn='corrected',

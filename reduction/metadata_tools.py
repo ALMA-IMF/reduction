@@ -391,7 +391,7 @@ def test_tclean_success():
 
 
 def populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                          phasecenter, maskname, cellsize, imsize, antennae,
+                          phasecenter, maskname, antennae,
                           startmodel=''):
     # run tclean to repopulate the modelcolumn prior to gaincal
     # (force niter = 0 so we don't clean any more)
@@ -420,8 +420,6 @@ def populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                      veltype='radio',
                      mask=maskname,
                      interactive=False,
-                     cell=cellsize,
-                     imsize=imsize,
                      antenna=antennae,
                      #reffreq=reffreq,
                      startmodel=startmodel,
@@ -446,8 +444,6 @@ def populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                veltype='radio',
                mask=maskname,
                interactive=False,
-               cell=cellsize,
-               imsize=imsize,
                antenna=antennae,
                reffreq=reffreq,
                startmodel=startmodel,
