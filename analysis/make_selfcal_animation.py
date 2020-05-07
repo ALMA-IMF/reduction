@@ -55,6 +55,17 @@ def make_anim(imname, nselfcaliter=7):
     def update(ii):
 
         try:
+            if os.path.exists(f'{imname}_selfcal{ii-1}_finaliter.image.tt0'):
+                cube = SpectralCube.read(f'{imname}_selfcal{ii-1}.image.tt0', format='casa_image')
+                im1.set_data(cube[0].value)
+                cube = SpectralCube.read(f'{imname}_selfcal{ii-1}.residual.tt0', format='casa_image')
+                im2.set_data(cube[0].value)
+                cube = SpectralCube.read(f'{imname}_selfcal{ii-1}.model.tt0', format='casa_image')
+                im3.set_data(cube[0].value)
+
+                title.set_text(f"Selfcal iteration {ii-1} (final clean)")
+
+                return (im1,im2,im3), (ax1,ax2,ax3)
             if ii == 0:
                 return (im1,im2,im3), (ax1,ax2,ax3)
             else:
@@ -71,7 +82,7 @@ def make_anim(imname, nselfcaliter=7):
         except Exception as ex:
             print(ex)
 
-    anim = FuncAnimation(fig, update, frames=range(0,nselfcaliter), interval=400)
+    anim = FuncAnimation(fig, update, frames=range(0,nselfcaliter+1), interval=400)
     anim.save(f'{imname}_selfcal_anim.gif', dpi=dpi, writer='imagemagick')
 
     return anim
