@@ -100,10 +100,10 @@ imaging_parameters_nondefault = {
         "niter": {0: 1500, 1: 1500, 2: 3000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B6_0.crtf",
-            1: "mask_G008_B6_0.crtf",  #
-            2: "mask_G008_B6_1.crtf",  #
-            3: "mask_G008_B6_1.crtf",  #
-            4: "mask_G008_B6_4.crtf",  #
+            1: "mask_G008_B6_0.crtf",
+            2: "mask_G008_B6_1.crtf",
+            3: "mask_G008_B6_1.crtf",
+            4: "mask_G008_B6_4.crtf",
             "final": "mask_G008_B6_4_final.crtf",
         },
     },
@@ -119,10 +119,10 @@ imaging_parameters_nondefault = {
         "niter": {0: 1500, 1: 1500, 2: 3000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B6_0.crtf",
-            1: "mask_G008_B6_0.crtf",  #
-            2: "mask_G008_B6_1.crtf",  #
-            3: "mask_G008_B6_4.crtf",  #
-            4: "mask_G008_B6_4_final.crtf",  #
+            1: "mask_G008_B6_0.crtf",
+            2: "mask_G008_B6_1.crtf",
+            3: "mask_G008_B6_4.crtf",
+            4: "mask_G008_B6_4_final.crtf",
             "final": "mask_G008_B6_4_final.crtf",
         },
     },
@@ -138,10 +138,10 @@ imaging_parameters_nondefault = {
         "niter": {0: 700, 1: 700, 2: 2000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B3_1.crtf",
-            1: "mask_G008_B3_2.crtf",  #
+            1: "mask_G008_B3_2.crtf",
             2: "mask_G008_B3_3.crtf",  # #
-            3: "mask_G008_B3_3.crtf",  #
-            4: "mask_G008_B3_3.crtf",  #
+            3: "mask_G008_B3_3.crtf",
+            4: "mask_G008_B3_3.crtf",
             "final": "mask_G008_B3_4.crtf",
         },
     },
@@ -157,10 +157,10 @@ imaging_parameters_nondefault = {
         "niter": {0: 1000, 1: 1000, 2: 2000, 3: 5000, 4: 25000, 5: 50000},
         "maskname": {
             0: "mask_G008_B3_7M12M_0.crtf",
-            1: "mask_G008_B3_7M12M_1.crtf",  #
-            2: "mask_G008_B3_7M12M_2.crtf",  #
-            3: "mask_G008_B3_7M12M_3.crtf",  #
-            4: "mask_G008_B3_7M12M_4.crtf",  #
+            1: "mask_G008_B3_7M12M_1.crtf",
+            2: "mask_G008_B3_7M12M_2.crtf",
+            3: "mask_G008_B3_7M12M_3.crtf",
+            4: "mask_G008_B3_7M12M_4.crtf",
             "final": "mask_G008_B3_7M12M_4.crtf",
         },
     },
@@ -176,155 +176,11 @@ imaging_parameters_nondefault = {
         "niter": {0: 700, 1: 700, 2: 2000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B3_1.crtf",
-            1: "mask_G008_B3_2.crtf",  #
-            2: "mask_G008_B3_2.crtf",  #
-            3: "mask_G008_B3_2.crtf",  #
-            4: "mask_G008_B3_2.crtf",  #
+            1: "mask_G008_B3_2.crtf",
+            2: "mask_G008_B3_2.crtf",
+            3: "mask_G008_B3_2.crtf",
+            4: "mask_G008_B3_2.crtf",
             "final": "mask_G008_B3_final_bsens.crtf",
-        },
-    },
-    # G351.77
-    "G351.77_B6_7M12M_robust0": {
-        "threshold": {0: "4.0mJy", 1: "0.75mJy", 2: "0.50mJy", 3: "0.25mJy"},
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000},
-        "maskname": {
-            0: "G351.77_B6_7M12M_robust-2.crtf",
-            1: "G351.77_B6_7M12M_robust-2.crtf",
-            2: "G351.77_B6_7M12M_robust-2.crtf",
-            3: "G351.77_B6_7M12M_robust-2.crtf",
-        },
-    },
-    "G351.77_B6_7M12M_robust2": {
-        "threshold": {0: "4.0mJy", 1: "0.75mJy", 2: "0.50mJy", 3: "0.25mJy"},
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000},
-        "maskname": {
-            0: "G351.77_B6_7M12M_robust-2.crtf",
-            1: "G351.77_B6_7M12M_robust-2.crtf",
-            2: "G351.77_B6_7M12M_robust-2.crtf",
-            3: "G351.77_B6_7M12M_robust-2.crtf",
-        },
-    },
-    "G351.77_B6_7M12M_robust-2": {
-        "threshold": {0: "4.0mJy", 1: "0.75mJy", 2: "0.50mJy", 3: "0.25mJy"},
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000},
-        "maskname": {
-            0: "G351.77_B6_7M12M_robust-2.crtf",
-            1: "G351.77_B6_7M12M_robust-2.crtf",
-            2: "G351.77_B6_7M12M_robust-2.crtf",
-            3: "G351.77_B6_7M12M_robust-2.crtf",
-        },
-    },
-    # rms:6e-4
-    "G351.77_B6_12M_robust0": {
-        "threshold": {
-            0: "12e-4Jy",
-            1: "12e-4Jy",
-            2: "12e-4Jy",
-            3: "12e-4Jy",
-            4: "12e-4Jy",
-        },
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "maskname": {
-            0: "G351.77_B6_12M_robust2.crtf",
-            1: "G351.77_B6_12M_robust2.crtf",
-            2: "G351.77_B6_12M_robust2.crtf",
-            3: "G351.77_B6_12M_robust2.crtf",
-            4: "G351.77_B6_12M_robust2.crtf",
-        },
-    },
-    # rms: 5e-4
-    "G351.77_B6_12M_robust2": {
-        "threshold": {
-            0: "10e-4Jy",
-            1: "10e-4Jy",
-            2: "10e-4Jy",
-            3: "10e-4Jy",
-            4: "10e-4Jy",
-        },
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "maskname": {
-            0: "G351.77_B6_12M_robust2.crtf",
-            1: "G351.77_B6_12M_robust2.crtf",
-            2: "G351.77_B6_12M_robust2.crtf",
-            3: "G351.77_B6_12M_robust2.crtf",
-            4: "G351.77_B6_12M_robust2.crtf",
-        },
-    },
-    # rms: 7.2e-4
-    "G351.77_B6_12M_robust-2": {
-        "threshold": {
-            0: "14.4e-4Jy",
-            1: "14.4e-4Jy",
-            2: "14.4e-4Jy",
-            3: "14.4e-4Jy",
-            4: "14.4e-4Jy",
-        },
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "maskname": {
-            0: "G351.77_B6_12M_robust-2.crtf",
-            1: "G351.77_B6_12M_robust-2.crtf",
-            2: "G351.77_B6_12M_robust-2.crtf",
-            3: "G351.77_B6_12M_robust-2.crtf",
-            4: "G351.77_B6_12M_robust-2.crtf",
-        },
-    },
-    "G351.77_B3_12M_robust-2": {
-        "threshold": {0: "8e-4Jy", 1: "8e-4Jy", 2: "8e-4Jy", 3: "8e-4Jy", 4: "8e-4Jy"},
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "maskname": {
-            0: "G351.77_B3_12M_robust2.crtf",
-            1: "G351.77_B3_12M_robust2.crtf",
-            2: "G351.77_B3_12M_robust2.crtf",
-            3: "G351.77_B3_12M_robust2.crtf",
-            4: "G351.77_B3_12M_robust2.crtf",
-        },
-    },
-    # rms: 2.7e-4
-    "G351.77_B3_12M_robust2": {
-        "threshold": {
-            0: "5.4e-4Jy",
-            1: "5.4e-4Jy",
-            2: "5.4e-4Jy",
-            3: "5.4e-4Jy",
-            4: "5.4e-4Jy",
-        },
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "maskname": {
-            0: "G351.77_B3_12M_robust2.crtf",
-            1: "G351.77_B3_12M_robust2.crtf",
-            2: "G351.77_B3_12M_robust2.crtf",
-            3: "G351.77_B3_12M_robust2.crtf",
-            4: "G351.77_B3_12M_robust2.crtf",
-        },
-    },
-    "G351.77_B3_12M_robust0": {
-        "threshold": {0: "7e-4Jy", 1: "7e-4Jy", 2: "7e-4Jy", 3: "7e-4Jy", 4: "7e-4Jy"},
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "maskname": {
-            0: "G351.77_B3_12M_robust2.crtf",
-            1: "G351.77_B3_12M_robust2.crtf",
-            2: "G351.77_B3_12M_robust2.crtf",
-            3: "G351.77_B3_12M_robust2.crtf",
-            4: "G351.77_B3_12M_robust2.crtf",
-        },
-    },
-    "G010.62_B3_12M_robust0": {
-        "threshold": {
-            0: "10mJy",
-            1: "5mJy",
-            2: "2.5 mJy",
-            3: "0.8mJy",
-            4: "0.2mJy",
-            5: "0.14mJy",
-        },
-        "niter": {0: 700, 1: 700, 2: 2000, 3: 5000, 4: 10000, 5: 15000},
-        "maskname": {
-            0: "G010.62_55arcsecCircle.crtf",
-            1: "G010_ds9_15mJy.crtf",  #
-            2: "G010_ds9_15mJy.crtf",  #
-            3: "G010_ds9_1mJy.crtf",  #
-            4: "G010_ds9_0.5mJy.crtf",  #
-            5: "G010_ds9_0.3mJy.crtf",
         },
     },
     "G010.62_B3_7M12M_robust0": {
@@ -339,30 +195,11 @@ imaging_parameters_nondefault = {
         "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 15000, 5: 15000},
         "maskname": {
             0: "G010.62_55arcsecCircle.crtf",
-            1: "G010_ds9_15mJy.crtf",  #
-            2: "G010_ds9_15mJy.crtf",  #
-            3: "G010_ds9_1mJy.crtf",  #
-            4: "G010_ds9_0.5mJy.crtf",  #
+            1: "G010_ds9_15mJy.crtf",
+            2: "G010_ds9_15mJy.crtf",
+            3: "G010_ds9_1mJy.crtf",
+            4: "G010_ds9_0.5mJy.crtf",
             5: "G010_ds9_0.3mJy.crtf",
-        },
-    },
-    "G010.62_B6_12M_robust0": {
-        "threshold": {
-            0: "10mJy",
-            1: "5mJy",
-            2: "2.5 mJy",
-            3: "0.8mJy",
-            4: "0.35mJy",
-            5: "0.2mJy",
-        },
-        "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 15000, 5: 15000},
-        "maskname": {
-            0: "G010.62_bigPoly.crtf",
-            1: "G010_ds9_B6_20mJy.crtf",  #
-            2: "G010_ds9_B6_5mJy.crtf",  #
-            3: "G010_ds9_B6_1mJy.crtf",  #
-            4: "G010_ds9_B6_05mJy.crtf",  #
-            5: "G010.62_B6_03mJy.mask",
         },
     },
     ##### G333.60 #####
@@ -517,18 +354,6 @@ imaging_parameters_nondefault = {
         "niter": 70000,
         "maskname": "mask_G333_B6_7m12m_final.crtf",
         "scales": [0, 3, 9, 27],
-    },
-    #####  #####
-    "G012.80_B3_12M_robust0": {
-        "threshold": {
-            0: "10.0mJy",
-            1: "10mJy",
-            2: "5mJy",
-            3: "3mJy",
-            4: "1mJy",
-            5: "0.25mJy",
-        },
-        "niter": {0: 500, 1: 100, 2: 1000, 3: 3000, 4: 5000, 5: 7000},
     },
     "G012.80_B3_7M12M_robust0": {
         "threshold": {
@@ -1052,17 +877,6 @@ imaging_parameters_nondefault = {
     },
     "G327.29_B6_7M12M_robust2": {"threshold": {5: "1.0mJy"}, "niter": {5: 20000}},
     "G327.29_B6_7M12M_robust-2": {"threshold": {5: "1.0mJy"}, "niter": {5: 20000}},
-    "G010.62_B3_7M12M_robust0": {
-        "threshold": {0: "7mJy", 1: "3mJy", 2: "1.5 mJy", 3: "0.7mJy", 4: "0.35mJy"},
-        "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000},
-        "maskname": {
-            0: "G010.62_centralBox_50_30.reg",
-            1: "G010.62_B3_50mJy.crtf",  #
-            2: "G010.62_B3_15mJy.crtf",  #
-            3: "G010.62_B3_05mJy.crtf",  #
-            4: "G010.62_B3_03mJy.crtf",  #
-        },
-    },
     "G010.62_B3_12M_robust0": {
         "threshold": {
             0: "10mJy",
@@ -1075,10 +889,10 @@ imaging_parameters_nondefault = {
         "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000},
         "maskname": {
             0: "G010.62_centralBox_50_30.crtf",
-            1: "G010.62_B3_50mJy.crtf",  #
-            2: "G010.62_B3_15mJy.crtf",  #
-            3: "G010.62_B3_05mJy.crtf",  #
-            4: "G010.62_B3_03mJy.crtf",  #
+            1: "G010.62_B3_50mJy.crtf",
+            2: "G010.62_B3_15mJy.crtf",
+            3: "G010.62_B3_05mJy.crtf",
+            4: "G010.62_B3_03mJy.crtf",
             5: "G010.62_B3_01mJy.crtf",
         },
     },
@@ -1095,9 +909,9 @@ imaging_parameters_nondefault = {
         "maskname": {
             0: "G010.62_centralBox_50_30.crtf",
             1: "G010.62_B3_50mJy.crtf",  # Using Band 3 masks for the moment
-            2: "G010.62_B3_15mJy.crtf",  #
-            3: "G010.62_B3_05mJy.crtf",  #
-            4: "G010.62_B3_03mJy.crtf",  #
+            2: "G010.62_B3_15mJy.crtf",
+            3: "G010.62_B3_05mJy.crtf",
+            4: "G010.62_B3_03mJy.crtf",
             5: "G010.62_B3_01mJy.crtf",
         },
     },
@@ -1777,7 +1591,6 @@ selfcal_pars["W43-MM3_B3_7M12M_robust0"][4] = {
     "calmode": "p",
 }
 
-##### G333.60 ######
 # B3 12M CLEANEST CONTINUUM #
 selfcal_pars["G333.60_B3_12M_robust0"][1] = {
     "solint": "inf",
@@ -1896,8 +1709,6 @@ selfcal_pars["G333.60_B6_7M12M_robust0"][5] = {
     "combine": "spw",
     "solnorm": True,
 }
-
-#####  ######
 
 selfcal_pars["G353.41_B6_12M_robust0"][5] = {
     "solint": "inf",
