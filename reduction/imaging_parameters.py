@@ -1475,7 +1475,7 @@ line_imaging_parameters = {"{0}_{1}_{2}_robust{3}{4}".format(field, band, array,
                             'usemask': 'auto-multithresh',
                             'threshold': '5sigma',
                             'interactive': False,
-                            'pblimit': 0.2,
+                            'pblimit': 0.0,
                             'nterms': 1
                            }
                            for field in allfields
