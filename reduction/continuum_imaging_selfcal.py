@@ -73,8 +73,6 @@ or if you want to totally start over:
     # and remove the .cal files in the parent directory
     rm -r W51-E_B3_*cal
 
-"""
-"""
 MASKING
 =======
 There are two ways to specify masks:
@@ -326,6 +324,12 @@ for continuum_ms in continuum_mses:
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
+    for key, value in imaging_parameters.items():
+        if 'cell' not in imaging_parameters[key]:
+            imaging_parameters[key]['cell'] = cellsize
+        if 'imsize' not in imaging_parameters[key]:
+            imaging_parameters[key]['imsize'] = imsize
+
     contimagename = os.path.join(imaging_root, basename) + "_" + arrayname
     if do_bsens:
         # just a sanity check
@@ -356,6 +360,7 @@ for continuum_ms in continuum_mses:
 
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
+    dirty_impars['usemask'] = 'pb' # we're not cleaning so we force the mask to pb
     # NOTE: if anything besides `maskname` and `niter` ends up with a
     # dictionary, we'll need to parse it here
 
@@ -375,17 +380,21 @@ for continuum_ms in continuum_mses:
                      "{iternumber: maskname}.  Self calibration iterations "
                      "will not work until this is changed.",
                      origin='almaimf_cont_selfcal')
-        else:
+        elif 0 in dirty_impars['maskname']:
             maskname = dirty_impars['maskname'][0]
         del dirty_impars['maskname']
-        if '/' not in maskname and not os.path.exists(maskname):
+        if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if not os.path.exists(maskname) and maskname != '':
+        if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             # maskname = '' is if you explicitly want no mask or a pbmask
             raise IOError("Mask {0} not found".format(maskname))
 
+    # remove any parameters that are dictionaries; we don't want them for the dirty imaging
+    for key, val in dirty_impars.items():
+        if isinstance(val, dict):
+            del dirty_impars[key]
 
     imname = contimagename+"_robust{0}_dirty_preselfcal".format(robust)
 
@@ -399,10 +408,7 @@ for continuum_ms in continuum_mses:
                    phasecenter=phasecenter,
                    outframe='LSRK',
                    veltype='radio',
-                   usemask='pb',
                    interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
                    pbcor=True,
                    antenna=antennae,
                    datacolumn='data',
@@ -451,19 +457,22 @@ for continuum_ms in continuum_mses:
                      "{iternumber: maskname}.  Self calibration iterations "
                      "will not work until this is changed.",
                      origin='almaimf_cont_selfcal')
-        else:
+        elif 0 in impars_thisiter['maskname']:
             maskname = impars_thisiter['maskname'][0]
         del impars_thisiter['maskname']
-        if '/' not in maskname and not os.path.exists(maskname):
+        if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if not os.path.exists(maskname):
+        if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             raise IOError("Mask {0} not found".format(maskname))
 
     for key, val in impars_thisiter.items():
-        if isinstance(val, dict):
+        if isinstance(val, dict) and 0 in val:
             impars_thisiter[key] = val[0]
+        elif isinstance(val, dict):
+            # remove entries that are unspecified
+            del impars_thisiter[key]
 
     if not os.path.exists(imname+".image.tt0"):
         if maskname:
@@ -479,8 +488,6 @@ for continuum_ms in continuum_mses:
                    veltype='radio',
                    mask=maskname,
                    interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
                    antenna=antennae,
                    savemodel='modelcolumn',
                    datacolumn='data',
@@ -491,7 +498,7 @@ for continuum_ms in continuum_mses:
             ia.open(imname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
-                                   impars.items()])
+                                   impars_thisiter.items()])
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
                                    "git_date: {0}".format(git_date)])
@@ -510,7 +517,7 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
             if not dryrun:
                 populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                      phasecenter, maskname, cellsize, imsize,
+                                      phasecenter, maskname,
                                       antennae)
         else:
             logprint("Model column was populated from pre-selfcal image.",
@@ -525,7 +532,7 @@ for continuum_ms in continuum_mses:
 
         if not dryrun:
             populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                  phasecenter, maskname, cellsize, imsize,
+                                  phasecenter, maskname,
                                   antennae)
 
         logprint("Skipped completed file {0} (dirty),"
@@ -561,6 +568,7 @@ for continuum_ms in continuum_mses:
 
     # BEGIN SELFCAL HERE
 
+    okfields_list = []
     cals = []
 
     for selfcaliter in selfcalpars.keys():
@@ -597,17 +605,20 @@ for continuum_ms in continuum_mses:
                          origin="contim_selfcal"
                         )
             del impars_thisiter['maskname']
-        if '/' not in maskname and not os.path.exists(maskname):
+        if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
             maskname = os.path.join(almaimf_rootdir,
                                     'clean_regions',
                                     maskname)
-        if not os.path.exists(maskname):
+        if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             raise IOError("Mask {0} not found".format(maskname))
 
         # grab any iteration-specific values of the self-cal parameter
         for key, val in impars_thisiter.items():
-            if isinstance(val, dict):
+            if isinstance(val, dict) and selfcaliter in val:
                 impars_thisiter[key] = val[selfcaliter]
+            elif isinstance(val, dict):
+                # remove entries that are unspecified
+                del impars_thisiter[key]
 
 
         # start from previous model to save time
@@ -651,12 +662,17 @@ for continuum_ms in continuum_mses:
                          origin='contim_selfcal')
                 okfields = selfcal_field_id
             okfields_str = ",".join(["{0}".format(x) for x in okfields])
+            with open(caltable+".fields", 'w') as fh:
+                fh.write(okfields_str)
+            okfields_list.append(okfields_str)
+
             if not dryrun:
                 clearcal(vis=selfcal_ms, addmodel=True)
                 # use gainfield so we interpolate the good solutions to the other
                 # fields
+                assert len(okfields_list) == len(cals)
                 applycal(vis=selfcal_ms,
-                         gainfield=okfields_str,
+                         gainfield=okfields_list,
                          gaintable=cals,
                          interp="linear",
                          applymode='calonly',
@@ -682,8 +698,6 @@ for continuum_ms in continuum_mses:
                        veltype='radio',
                        mask=maskname,
                        interactive=False,
-                       cell=cellsize,
-                       imsize=imsize,
                        antenna=antennae,
                        savemodel='modelcolumn',
                        datacolumn='corrected', # now use corrected data
@@ -712,13 +726,13 @@ for continuum_ms in continuum_mses:
                              "Therefore, populated model column from {0}".format(imname),
                              origin='almaimf_cont_selfcal')
                     populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                          phasecenter, maskname, cellsize, imsize,
+                                          phasecenter, maskname,
                                           antennae)
 
         else:
             if not dryrun:
                 populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                      phasecenter, maskname, cellsize, imsize,
+                                      phasecenter, maskname,
                                       antennae)
 
 
@@ -765,7 +779,15 @@ for continuum_ms in continuum_mses:
         # use gainfield so we interpolate the good solutions to the other
         # fields
         assert len(cals) >= selfcaliter
-        applycal(vis=selfcal_ms, gainfield=okfields_str, gaintable=cals,
+
+        okfields_list = []
+        for caltable in cals:
+            with open(caltable+".fields", 'r') as fh:
+                okfields_str = fh.read().strip()
+            okfields_list.append(okfields_str)
+        assert len(cals) == len(okfields_list)
+
+        applycal(vis=selfcal_ms, gainfield=okfields_list, gaintable=cals,
                  interp="linear", applymode='calonly', calwt=False)
 
 
@@ -793,11 +815,11 @@ for continuum_ms in continuum_mses:
                 else:
                     maskname = impars_finaliter['maskname'][selfcaliter]
             del impars_finaliter['maskname']
-            if '/' not in maskname and not os.path.exists(maskname):
+            if 'maskname' in locals() and '/' not in maskname and not os.path.exists(maskname) and maskname != '':
                 maskname = os.path.join(almaimf_rootdir,
                                         'clean_regions',
                                         maskname)
-            if not os.path.exists(maskname) and maskname != '':
+            if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
                 raise IOError("Mask {0} not found".format(maskname))
 
 
@@ -842,6 +864,8 @@ for continuum_ms in continuum_mses:
             modelname = [contimagename+"_robust0_selfcal{0}.model.tt0".format(selfcaliter),
                          contimagename+"_robust0_selfcal{0}.model.tt1".format(selfcaliter)]
         if not dryrun:
+            logprint("Final imaging parameters are: {0} for image name {1}".format(impars_finaliter, finaliterimname),
+                     origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
                    field=field.encode(),
                    imagename=finaliterimname,
@@ -851,8 +875,6 @@ for continuum_ms in continuum_mses:
                    veltype='radio',
                    mask=maskname,
                    interactive=False,
-                   cell=cellsize,
-                   imsize=imsize,
                    antenna=antennae,
                    savemodel='none',
                    datacolumn='corrected',
@@ -863,7 +885,7 @@ for continuum_ms in continuum_mses:
             ia.open(finaliterimname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
-                                   impars.items()])
+                                   impars_finaliter.items()])
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
                                    "git_date: {0}".format(git_date)])
@@ -871,6 +893,50 @@ for continuum_ms in continuum_mses:
             # overwrite=True because these could already exist
             exportfits(finaliterimname+".image.tt0", finaliterimname+".image.tt0.fits", overwrite=True)
             exportfits(finaliterimname+".image.tt0.pbcor", finaliterimname+".image.tt0.pbcor.fits", overwrite=True)
+
+    imname = contimagename+"_robust0_dirty_postselfcal"
+
+    if not os.path.exists(imname+".image.tt0"):
+        logprint("(dirty, post-) Imaging parameters are: {0}".format(dirty_impars),
+                 origin='almaimf_cont_selfcal')
+        if not dryrun:
+            tclean(vis=selfcal_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   interactive=False,
+                   pbcor=True,
+                   antenna=antennae,
+                   datacolumn='corrected',
+                   **dirty_impars
+                  )
+            test_tclean_success()
+
+            ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   dirty_impars.items()])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
+
+            post = ia.getchunk()
+            ia.close()
+
+            ia.open(imname.replace("post", "pre")+".image.tt0")
+            pre = ia.getchunk()
+            ia.close()
+
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+
+            from astropy.io import fits
+            fh = fits.open(imname+".image.tt0.fits")
+            fh[0].data = post-pre
+            fh.writeto(imname.replace("post", "post-pre")+".fits")
+
 
     logprint("Completed band {0}".format(band),
              origin='contim_selfcal')

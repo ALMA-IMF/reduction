@@ -11,12 +11,16 @@ from compare_images import make_comparison_image
 
 print("{4:14s}{0:>15s} {1:>15s} {2:>15s} {3:>15s} {5:>15s} {6:>15s}".format("bsens_sum", "bsens_mad",  "clean_sum",  "clean_mad", "field & band", "diff_sum", "diff_mad"))
 
-for fn in glob.glob("*/*/bsens/*.image.tt0.pbcor.fits"):
+basepath = "/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/"
+
+for fn in glob.glob(f"{basepath}/*/*/bsens/*.image.tt0.pbcor.fits"):
     pl.clf()
     bsens = fn
     clean = fn.replace("_bsens","").replace("/bsens/","/cleanest/")
     #print(os.path.exists(bsens), os.path.exists(clean))
     field = fn.split("_uid")[0].split("/")[-1]
+
+    filepath = fn.split("bsens")[0]
 
     bsens_fh = fits.open(bsens)
     try:
@@ -40,11 +44,13 @@ for fn in glob.glob("*/*/bsens/*.image.tt0.pbcor.fits"):
               f"{diff[np.isfinite(diff)].sum():15.3f} {mad_std(diff, ignore_nan=True):15.5f} "
              )
         try:
-            make_comparison_image(bsens, clean)
+            make_comparison_image(clean, bsens, title1='cleanest', title2='bsens')
         except Exception as ex:
             if "operands could not be broadcast together with shapes" in str(ex):
                 print("Shapes: ",bsens_fh[0].data.shape, clean_fh[0].data.shape)
             print(ex)
-        pl.savefig(f"comparisons/{field}_12M_bsens_vs_cleanest_comparison.png", bbox_inches='tight', dpi=200)
+        if not os.path.exists(f'{filepath}/comparisons/'):
+            os.mkdir(f'{filepath}/comparisons/')
+        pl.savefig(f"{filepath}/comparisons/{field}_12M_bsens_vs_cleanest_comparison.png", bbox_inches='tight', dpi=200)
     else:
         print(f"Skipping {bsens} because there was a shape mismatch.")

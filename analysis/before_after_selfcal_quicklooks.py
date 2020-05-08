@@ -86,6 +86,8 @@ def make_comparison_image(preselfcal, postselfcal):
                  'mad': mad_std(diff, ignore_nan=True),
                  'dr_pre': np.nanmax(data_pre) / mad_std(data_pre, ignore_nan=True),
                  'dr_post': np.nanmax(data_post) / mad_std(data_post, ignore_nan=True),
+                 'min_pre': np.nanmin(data_pre),
+                 'min_post': np.nanmin(data_post),
                  'max_pre': np.nanmax(data_pre),
                  'max_post': np.nanmax(data_post),
                  'mad_pre': mad_std(data_pre, ignore_nan=True),

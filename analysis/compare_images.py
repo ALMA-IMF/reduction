@@ -51,7 +51,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     ax1.set_title(title1)
     ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none', cmap=cm)
     ax2.set_title(title2)
-    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none', cmap=cm)
+    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none', cmap=cm)
     ax3.set_title(f"{title2} - {title1}")
 
     for ax in (ax1,ax2,ax3):
@@ -59,5 +59,8 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
         ax.set_yticks([])
 
     pl.subplots_adjust(wspace=0.0)
+
+    cbax = fig.add_axes([0.91,0.25,0.03,0.50])
+    fig.colorbar(cax=cbax, mappable=im)
 
     return ax1,ax2,ax3,fig

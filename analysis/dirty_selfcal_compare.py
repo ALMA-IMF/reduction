@@ -13,13 +13,14 @@ import pylab as pl
 from before_after_selfcal_quicklooks import make_comparison_image, get_selfcal_number
 
 cwd = os.getcwd()
-basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020'
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 os.chdir(basepath)
+prepostpath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/comparisons/prepost/'
+febpath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/'
 
 import imstats
 
-
-tbl = imstats.savestats(basepath=basepath)
+tbl = imstats.savestats(basepath=febpath)
 
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
@@ -39,52 +40,38 @@ tbl.add_column(Column(name='mad_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
+allstats = []
+
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
 #for field in ("G333.60",):
     for band in (3,6):
         for imtype in ('cleanest', 'bsens', '7m12m', ):
 
-            # for not all-in-the-same-place stuff
-            fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*selfcal[0-9]*.image.tt0*.fits")
-                   if 'robust0_' in x]
+            prefns = [x for x in
+                    glob.glob(f"{basepath}/{field}*_B{band}_*_{imtype}_*preselfcal*.image.tt0")
+                    if 'robust0_' in x]
+            postfns = [fn.replace("pre","post") for fn in prefns]
 
             config = '7M12M' if '7m' in imtype else '12M'
 
-
-            if any(fns):
-                selfcal_nums = [get_selfcal_number(fn) for fn in fns]
-
-                last_selfcal = max(selfcal_nums)
-
-                postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x if 'diff' not in x][0]
-
-                preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
-                if "_finaliter" in preselfcal_name:
-                    preselfcal_name = preselfcal_name.replace("_finaliter","")
-                if not os.path.exists(preselfcal_name) and '_v0.1' in preselfcal_name:
-                    preselfcal_name = preselfcal_name.replace("_v0.1", "")
-                if not os.path.exists(preselfcal_name):
-                    print(f"No preselfcal file called {preselfcal_name} found, using alternatives")
-                    # try alternate naming scheme
-                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","")
-                    if "_finaliter" in preselfcal_name:
-                        preselfcal_name = preselfcal_name.replace("_finaliter","")
-                if "_selfcal" in preselfcal_name:
-                    raise ValueError("?!?!?!")
+            for pre, post in zip(prefns, postfns):
+                print(pre, post)
 
                 try:
                     with warnings.catch_warnings():
                         warnings.filterwarnings('ignore')
-                        ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name, postselfcal_name)
-                    if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
-                        os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
-                    pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                        ax1, ax2, ax3, fig, diffstats = make_comparison_image(pre,
+                                post)
+                    pl.savefig(f"{prepostpath}/{field}_B{band}_{config}_post-pre_dirty_comparison.png",
+                            bbox_inches='tight')
                 except IndexError:
                     raise
                 except Exception as ex:
-                    log.error(f"Failure for pre={preselfcal_name} post={postselfcal_name}")
+                    log.error(f"Failure for pre={pre} post={post}")
                     log.error((field, band, config, imtype, ex))
                     continue
+
+                allstats.append(diffstats)
 
                 matchrow = ((tbl['region'] == field) &
                             (tbl['band'] == f'B{band}') &
@@ -99,21 +86,22 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['scMedianDiff'][matchrow] = diffstats['median']
                 tbl['dr_pre'][matchrow] = diffstats['dr_pre']
                 tbl['dr_post'][matchrow] = diffstats['dr_post']
-                tbl['min_pre'][matchrow] = diffstats['min_pre']
-                tbl['min_post'][matchrow] = diffstats['min_post']
                 tbl['max_pre'][matchrow] = diffstats['max_pre']
                 tbl['max_post'][matchrow] = diffstats['max_post']
+                tbl['min_pre'][matchrow] = diffstats['min_pre']
+                tbl['min_post'][matchrow] = diffstats['min_post']
                 tbl['mad_pre'][matchrow] = diffstats['mad_pre']
                 tbl['mad_post'][matchrow] = diffstats['mad_post']
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
-                tbl['casaversion_pre'][matchrow] = fits.getheader(preselfcal_name)['ORIGIN']
-                tbl['casaversion_post'][matchrow] = fits.getheader(postselfcal_name)['ORIGIN']
+                if pre.endswith('fits'):
+                    tbl['casaversion_pre'][matchrow] = fits.getheader(pre)['ORIGIN']
+                    tbl['casaversion_post'][matchrow] = fits.getheader(post)['ORIGIN']
 
-                print(fns)
-                print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
+                print(prefns, postfns)
             else:
                 print(f"No hits for {field}_B{band}_{config}")
 
+            print()
             print()
 
 
@@ -122,16 +110,18 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc.ecsv',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc_dirty.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc_dirty.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc.tex',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc_dirty.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc.js.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc_dirty.js.html',
           #formats=formats,
           format='jsviewer')
+
+
 
 os.chdir(cwd)

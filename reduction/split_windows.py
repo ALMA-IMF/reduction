@@ -175,10 +175,14 @@ logprint("Completed metadata assembly")
 # extract the fields from the metadata
 all_fields = set(str(x) for x in metadata['B3']) | set(str(x) for x in metadata['B6'])
 
+logprint("all_fields include: {0}".format(all_fields))
+
 if os.getenv('FIELD_ID'):
     fields = all_fields & {os.getenv('FIELD_ID')}
 else:
     fields = all_fields
+
+logprint("Splitting fields {0}".format(fields))
 
 to_image = {}
 
