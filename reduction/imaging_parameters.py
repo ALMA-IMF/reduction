@@ -73,7 +73,7 @@ imaging_parameters_nondefault = {
                                              1:'mask_G008_B6_0.crtf', # 
                                              2:'mask_G008_B6_1.crtf', # 
                                              3:'mask_G008_B6_4.crtf', # 
-                                             4:'mask_G008_B6_4_final.crtf', # 
+                                             4:'mask_G008_B6_4.crtf', # 
                                             'final':'mask_G008_B6_4_final.crtf' }
                        },
 
@@ -105,8 +105,8 @@ imaging_parameters_nondefault = {
                                  'maskname':{0:'mask_G008_B3_1.crtf',
                                              1:'mask_G008_B3_2.crtf', # 
                                              2:'mask_G008_B3_3.crtf', # #
-                                             3:'mask_G008_B3_4.crtf', # 
-                                            4:'mask_G008_B3_4.crtf', # 
+                                             3:'mask_G008_B3_3.crtf', # 
+                                            4:'mask_G008_B3_3.crtf', # 
                                             'final':'mask_G008_B3_4.crtf' }
                        },
 
