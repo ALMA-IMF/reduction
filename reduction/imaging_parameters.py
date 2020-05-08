@@ -67,7 +67,7 @@ for key in imaging_parameters:
 
 imaging_parameters_nondefault = {
 #G008.67
-'G008.67_B6_12M_robust0': {'threshold': {0:'6.0mJy', 1: '5.0mJy', 2: '4.0mJy', 3:'3.5mJy', 4:'2.9mJy',5:'0.75mJy'},
+'G008.67_B6_12M_robust0': {'threshold': {0:'6.5mJy', 1: '5.5mJy', 2: '4.5mJy', 3:'3.5mJy', 4:'2.9mJy',5:'0.75mJy'},
                                  'niter':{0:1500, 1:1500, 2: 3000, 3: 5000, 4: 50000, 5:50000},
                                  'maskname':{0:'mask_G008_B6_0.crtf',
                                              1:'mask_G008_B6_0.crtf', # 
@@ -100,7 +100,7 @@ imaging_parameters_nondefault = {
                        },
 
 
-'G008.67_B3_12M_robust0': {'threshold': {0:'2.0mJy', 1: '1.5mJy', 2: '1.0mJy', 3:'1.0mJy', 4:'0.7mJy',5:'0.3mJy'},
+'G008.67_B3_12M_robust0': {'threshold': {0:'2.5mJy', 1: '2.0mJy', 2: '1.5mJy', 3:'1.0mJy', 4:'0.7mJy',5:'0.3mJy'},
                                  'niter':{0:700, 1:700, 2: 2000, 3: 5000, 4: 50000, 5:50000},
                                  'maskname':{0:'mask_G008_B3_1.crtf',
                                              1:'mask_G008_B3_2.crtf', # 
