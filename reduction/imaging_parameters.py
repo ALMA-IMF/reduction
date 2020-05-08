@@ -459,12 +459,14 @@ imaging_parameters_nondefault = {
                                'maskname': {'final':''},
                                'usemask': {'final':'pb'},
                               },
-    'W43-MM2_B3_7M12M_robust0': {'threshold': {0: '0.5mJy', 1: '1.0mJy', 2: '0.5mJy', 3: '0.2mJy', 4: '0.08mJy'},
-                                 'niter': {0: 9000, 1: 10000, 2: 12000, 3: 15000, 4: 20000},
-                                 'scales': {0: [0,3,9,27], 1: [0,3,9,27], 2: [0,3,9,27], 3: [0,3,9,27], 4: [0,3,9,27], 'final': [0,9,27,81,162]},
-                                 'maskname': {'final':''},
-                                 'usemask': {'final':'pb'},
-                                },
+
+    'W43-MM2_B3_7M12M_robust0': {'threshold': {0: '0.5mJy', 1: '1.0mJy', 2: '0.5mJy', 3: '0.2mJy', 4: '0.08mJy', 'final': '0.06mJy'},
+                               'niter': {0: 9000, 1: 10000, 2: 12000, 3: 15000, 4: 20000, 5: 25000},
+                               'scales': {0: [0,3,9,27], 1: [0,3,9,27], 2: [0,3,9,27], 3: [0,3,9,27], 4: [0,3,9,27], 'final': [0,9,27,81,162]},
+                               'maskname': {'final':''},
+                               'usemask': {'final':'pb'},
+    
+
        #W43-MM3 B3
     'W43-MM3_B3_12M_robust0': {'threshold': {0: '1.0mJy', 1: '0.75mJy', 2: '0.15mJy', 3: '0.1mJy', 4: '0.1mJy', 'final': '0.11mJy'},
                                'niter': {0: 1000, 1: 6000, 2: 12000, 3: 15000, 4: 15000, 'final': 24000},
