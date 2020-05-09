@@ -33,6 +33,10 @@ would be the parameters used for non-bsens and for bsens data, respectively.
 If you have ONLY a non-bsens parameter key (you do not have a _bsens set
 of parameters), the bsens selfcal & imaging will use the same as the non-bsens.
 
+CONTRIBUTOR NOTE:
+    This file is to be formatted with python's "black" formatter:
+
+        black -t py27 -l 120 imaging_parameters.py
 """
 import copy
 
