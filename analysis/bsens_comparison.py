@@ -129,4 +129,4 @@ tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest
           #formats=formats,
           format='jsviewer')
 
-os.chdir(cwdcleanest
+os.chdir(cwd)
