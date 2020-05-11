@@ -2,6 +2,7 @@ from spectral_cube import SpectralCube
 import os
 import pylab as pl
 from astropy import visualization
+from astropy import units as u
 from astropy import wcs
 from matplotlib.animation import FuncAnimation
 import warnings
@@ -36,7 +37,6 @@ def make_anim(imname, nselfcaliter=7):
 
 
     cube = SpectralCube.read(f'{imname}_preselfcal.image.tt0', format='casa_image')
-    P
     beam = cube.beam
     pixscale = wcs.utils.proj_plane_pixel_scales(cube.wcs.celestial).mean()*u.deg
     pixarea = wcs.utils.proj_plane_pixel_area(cube.wcs.celestial)*u.deg**2
