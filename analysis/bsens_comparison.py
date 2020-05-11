@@ -45,8 +45,11 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
 
             fns = glob.glob(f"{basepath}/{field}/{band}/bsens/*_{config}_*final*.image.tt0.pbcor.fits")
-            if len(fns) > 0:
-                raise ValueError("DOH")
+            if len(fns) > 1:
+                raise ValueError("Too many matches!")
+            elif len(fns) == 0:
+                continue
+                raise ValueError("No matches!")
             fn = fns[0]
 
             pl.clf()
