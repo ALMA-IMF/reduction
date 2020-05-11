@@ -43,23 +43,24 @@ def make_anim(imname, nselfcaliter=7):
     ppbeam = (beam.sr / pixarea).decompose()
     kernel = beam.as_kernel(pixscale)
 
-    norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.00)
-    im1 = ax1.imshow(cube[0].value, norm=norm)
+    norm1 = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.00)
+    im1 = ax1.imshow(cube[0].value, norm=norm1)
     cube = SpectralCube.read(f'{imname}_preselfcal.residual.tt0', format='casa_image')
-    norm = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.95)
-    im2 = ax2.imshow(cube[0].value, norm=norm)
+    norm2 = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.95)
+    im2 = ax2.imshow(cube[0].value, norm=norm2)
     cube = SpectralCube.read(f'{imname}_preselfcal.model.tt0', format='casa_image')
     data = convolve_fft(cube[0].value, kernel) * ppbeam
-    norm = visualization.simple_norm(data=data, stretch='asinh', min_percent=1, max_percent=99.00)
-    if data.max() > data.min():
-        # ensure that vmax > vmin
-        mpct = 99
-        while norm.vmax > norm.vmin and mpct < 99.999:
-            mpct += (100-mpct)*0.05
-            norm = visualization.simple_norm(data=data, stretch='asinh', min_percent=1, max_percent=mpct)
-        im3 = ax3.imshow(data, norm=norm)
-    else:
-        im3 = ax3.imshow(data)
+    im3 = ax3.imshow(data, norm=norm1)
+    # norm = visualization.simple_norm(data=data, stretch='asinh', min_percent=1, max_percent=99.00)
+    # if data.max() > data.min():
+    #     # ensure that vmax > vmin
+    #     mpct = 99
+    #     while norm.vmax > norm.vmin and mpct < 99.999:
+    #         mpct += (100-mpct)*0.05
+    #         norm = visualization.simple_norm(data=data, stretch='asinh', min_percent=1, max_percent=mpct)
+    #     im3 = ax3.imshow(data, norm=norm)
+    # else:
+    #     im3 = ax3.imshow(data)
     title = pl.suptitle("Before selfcal")
 
     def update(ii):
