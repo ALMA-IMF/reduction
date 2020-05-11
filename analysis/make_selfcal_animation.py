@@ -49,7 +49,7 @@ def make_anim(imname, nselfcaliter=7):
     norm2 = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.95)
     im2 = ax2.imshow(cube[0].value, norm=norm2)
     cube = SpectralCube.read(f'{imname}_preselfcal.model.tt0', format='casa_image')
-    data = convolve_fft(cube[0].value, kernel) * ppbeam
+    data = convolve_fft(cube[0].value, kernel, allow_huge=True) * ppbeam
     im3 = ax3.imshow(data, norm=norm1)
     # norm = visualization.simple_norm(data=data, stretch='asinh', min_percent=1, max_percent=99.00)
     # if data.max() > data.min():
@@ -73,7 +73,7 @@ def make_anim(imname, nselfcaliter=7):
                 im2.set_data(cube[0].value)
                 cube = SpectralCube.read(f'{imname}_selfcal{ii-1}.model.tt0', format='casa_image')
                 # assume the beam doesn't change size
-                data = convolve_fft(cube[0].value, kernel) * ppbeam
+                data = convolve_fft(cube[0].value, kernel, allow_huge=True) * ppbeam
                 im3.set_data(data)
 
                 title.set_text(f"Selfcal iteration {ii-1} (final clean)")
@@ -88,7 +88,7 @@ def make_anim(imname, nselfcaliter=7):
                 im2.set_data(cube[0].value)
                 cube = SpectralCube.read(f'{imname}_selfcal{ii}.model.tt0', format='casa_image')
                 # assume the beam doesn't change size
-                data = convolve_fft(cube[0].value, kernel) * ppbeam
+                data = convolve_fft(cube[0].value, kernel, allow_huge=True) * ppbeam
                 im3.set_data(data)
 
                 title.set_text(f"Selfcal iteration {ii}")
