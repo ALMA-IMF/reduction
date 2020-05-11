@@ -10,7 +10,7 @@ from astropy.stats import mad_std
 from astropy import log
 import pylab as pl
 
-from compare_images import make_comparison_image, get_selfcal_number
+from compare_images import make_comparison_image
 
 cwd = os.getcwd()
 basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020'
