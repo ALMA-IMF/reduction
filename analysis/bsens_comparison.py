@@ -48,6 +48,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             if len(fns) > 1:
                 raise ValueError("Too many matches!")
             elif len(fns) == 0:
+                log.error(f"No matches to field={field} band={band} config={config}")
                 continue
                 raise ValueError("No matches!")
             fn = fns[0]
@@ -64,6 +65,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             try:
                 clean_fh = fits.open(cleanest)
             except Exception as ex:
+                log.error(f"Failed to open 'cleanest' image {cleanest}")
                 print(ex)
                 continue
 
