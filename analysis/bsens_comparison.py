@@ -56,7 +56,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             bsens = fn
             cleanest = fn.replace("_bsens","").replace("/bsens/","/cleanest/")
             #print(os.path.exists(bsens), os.path.exists(clean))
-            field = fn.split("_uid")[0].split("/")[-1]
+            #field = fn.split("_uid")[0].split("/")[-1]
 
             filepath = fn.split("bsens")[0]
 
