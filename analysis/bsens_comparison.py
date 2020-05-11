@@ -1,56 +1,129 @@
-import pylab as pl
 import numpy as np
+import warnings
 import glob
 import os
 from astropy.io import fits
-from astropy.stats import mad_std
 from astropy import visualization
+from astropy.table import Table, Column
 from spectral_cube import SpectralCube
+from astropy.stats import mad_std
+from astropy import log
+import pylab as pl
 
-from compare_images import make_comparison_image
+from before_after_selfcal_quicklooks import make_comparison_image, get_selfcal_number
 
-print("{4:14s}{0:>15s} {1:>15s} {2:>15s} {3:>15s} {5:>15s} {6:>15s}".format("bsens_sum", "bsens_mad",  "clean_sum",  "clean_mad", "field & band", "diff_sum", "diff_mad"))
+cwd = os.getcwd()
+basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020'
+os.chdir(basepath)
 
-basepath = "/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/"
+import imstats
 
-for fn in glob.glob(f"{basepath}/*/*/bsens/*.image.tt0.pbcor.fits"):
-    pl.clf()
-    bsens = fn
-    clean = fn.replace("_bsens","").replace("/bsens/","/cleanest/")
-    #print(os.path.exists(bsens), os.path.exists(clean))
-    field = fn.split("_uid")[0].split("/")[-1]
 
-    filepath = fn.split("bsens")[0]
+tbl = imstats.savestats(basepath=basepath)
 
-    bsens_fh = fits.open(bsens)
-    try:
-        clean_fh = fits.open(clean)
-    except Exception as ex:
-        print(ex)
-        continue
+#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
+tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
+tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
+tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMeanDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='scMedianDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='dr_bsens', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='dr_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='min_bsens', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='min_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='max_bsens', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='max_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_bsens', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
-    if (bsens_fh[0].data.shape == clean_fh[0].data.shape):
-        bsd = bsens_fh[0].data
-        cld = clean_fh[0].data
-        diff = bsd-cld
-        bsens_fh[0].data = diff
-        try:
-            bsens_fh.writeto(fn.replace("_bsens_reclean", "_bsens_minus_clean_reclean"), overwrite=False)
-        except Exception as ex:
-            print(ex)
-        print(f"{field:14s}"
-              f"{bsd[np.isfinite(bsd)].sum():15.3f} {mad_std(bsd, ignore_nan=True):15.5f} "
-              f"{cld[np.isfinite(cld)].sum():15.3f} {mad_std(cld, ignore_nan=True):15.5f} "
-              f"{diff[np.isfinite(diff)].sum():15.3f} {mad_std(diff, ignore_nan=True):15.5f} "
-             )
-        try:
-            make_comparison_image(clean, bsens, title1='cleanest', title2='bsens')
-        except Exception as ex:
-            if "operands could not be broadcast together with shapes" in str(ex):
-                print("Shapes: ",bsens_fh[0].data.shape, clean_fh[0].data.shape)
-            print(ex)
-        if not os.path.exists(f'{filepath}/comparisons/'):
-            os.mkdir(f'{filepath}/comparisons/')
-        pl.savefig(f"{filepath}/comparisons/{field}_12M_bsens_vs_cleanest_comparison.png", bbox_inches='tight', dpi=200)
-    else:
-        print(f"Skipping {bsens} because there was a shape mismatch.")
+for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+    for band in (3,6):
+        for config in ("12M",): # "7M12M"):
+
+
+            fns = glob.glob(f"{basepath}/{field}/{band}/bsens/*_{config}_*final*.image.tt0.pbcor.fits")
+            if len(fns) > 0:
+                raise ValueError("DOH")
+            fn = fns[0]
+
+            pl.clf()
+            bsens = fn
+            cleanest = fn.replace("_bsens","").replace("/bsens/","/cleanest/")
+            #print(os.path.exists(bsens), os.path.exists(clean))
+            field = fn.split("_uid")[0].split("/")[-1]
+
+            filepath = fn.split("bsens")[0]
+
+            bsens_fh = fits.open(bsens)
+            try:
+                clean_fh = fits.open(cleanest)
+            except Exception as ex:
+                print(ex)
+                continue
+
+            try:
+                with warnings.catch_warnings():
+                    warnings.filterwarnings('ignore')
+                    ax1, ax2, ax3, fig, diffstats = make_comparison_image(bsens, cleanest,
+                                                                          title1='cleanest',
+                                                                          title2='bsens')
+                if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
+                    os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
+                pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.png",
+                           bbox_inches='tight', dpi=200)
+            except IndexError:
+                raise
+            except Exception as ex:
+                log.error(f"Failure for bsens={bsens_name} cleanest={cleanest_name}")
+                log.error((field, band, config, ex))
+                continue
+
+            matchrow = ((tbl['region'] == field) &
+                        (tbl['band'] == f'B{band}') &
+                        (tbl['array'] == ('12Monly' if config == '12M' else config)) &
+                        (tbl['robust'] == 'r0.0')
+                       )
+            tbl['scMaxDiff'][matchrow] = diffstats['max']
+            tbl['scMinDiff'][matchrow] = diffstats['min']
+            tbl['scMADDiff'][matchrow] = diffstats['mad']
+            tbl['scMeanDiff'][matchrow] = diffstats['mean']
+            tbl['scMedianDiff'][matchrow] = diffstats['median']
+            tbl['dr_bsens'][matchrow] = diffstats['dr_bsens']
+            tbl['dr_cleanest'][matchrow] = diffstats['dr_cleanest']
+            tbl['min_bsens'][matchrow] = diffstats['min_bsens']
+            tbl['min_cleanest'][matchrow] = diffstats['min_cleanest']
+            tbl['max_bsens'][matchrow] = diffstats['max_bsens']
+            tbl['max_cleanest'][matchrow] = diffstats['max_cleanest']
+            tbl['mad_bsens'][matchrow] = diffstats['mad_bsens']
+            tbl['mad_cleanest'][matchrow] = diffstats['mad_cleanest']
+            tbl['dr_improvement'][matchrow] = diffstats['dr_cleanest']/diffstats['dr_bsens']
+            tbl['casaversion_bsens'][matchrow] = fits.getheader(bsens_name)['ORIGIN']
+            tbl['casaversion_cleanest'][matchrow] = fits.getheader(cleanest_name)['ORIGIN']
+
+            print(fns)
+            print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
+
+            print()
+
+
+formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
+           'scMaxDiff': lambda x: f'{x:0.6g}',
+           'BeamVsReq': lambda x: f'{x:0.2f}',
+          }
+
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.ecsv',
+          overwrite=True)
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.html',
+          formats=formats,
+          format='ascii.html', overwrite=True)
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.tex',
+          formats=formats,
+          overwrite=True)
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.js.html',
+          #formats=formats,
+          format='jsviewer')
+
+os.chdir(cwd)
