@@ -46,6 +46,7 @@ def make_comparison_image(preselfcal, postselfcal):
     fig.clf()
 
     minv = np.nanpercentile(data_pre, 0.05)
+    minv = -0.003
     maxv = np.nanpercentile(data_pre, 99.5)
     if np.abs(minv) > maxv:
         minv = -maxv

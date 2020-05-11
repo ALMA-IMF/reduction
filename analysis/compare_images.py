@@ -61,7 +61,22 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     pl.subplots_adjust(wspace=0.0)
 
-    cbax = fig.add_axes([0.91,0.25,0.03,0.50])
+    cbax = fig.add_axes([0.91,0.18,0.03,0.64])
     fig.colorbar(cax=cbax, mappable=im)
 
-    return ax1,ax2,ax3,fig
+    diffstats = {'mean': np.nanmean(diff),
+                 'max': np.nanmax(diff),
+                 'min': np.nanmin(diff),
+                 'median': np.nanmedian(diff),
+                 'mad': mad_std(diff, ignore_nan=True),
+                 'dr_pre': np.nanmax(data_pre) / mad_std(data_pre, ignore_nan=True),
+                 'dr_post': np.nanmax(data_post) / mad_std(data_post, ignore_nan=True),
+                 'min_pre': np.nanmin(data_pre),
+                 'min_post': np.nanmin(data_post),
+                 'max_pre': np.nanmax(data_pre),
+                 'max_post': np.nanmax(data_post),
+                 'mad_pre': mad_std(data_pre, ignore_nan=True),
+                 'mad_post':  mad_std(data_post, ignore_nan=True),
+                }
+
+    return ax1,ax2,ax3,fig,diff
