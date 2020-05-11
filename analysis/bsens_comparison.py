@@ -73,16 +73,18 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     ax1, ax2, ax3, fig, diffstats = make_comparison_image(bsens, cleanest,
                                                                           title1='cleanest',
                                                                           title2='bsens')
-                if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
-                    os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
-                pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.png",
-                           bbox_inches='tight', dpi=200)
             except IndexError:
                 raise
             except Exception as ex:
                 log.error(f"Failure for bsens={bsens} cleanest={cleanest}")
                 log.error((field, band, config, ex))
+                raise
                 continue
+
+            if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
+                os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
+            pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.png",
+                       bbox_inches='tight', dpi=200)
 
             matchrow = ((tbl['region'] == field) &
                         (tbl['band'] == f'B{band}') &
@@ -103,8 +105,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             tbl['mad_bsens'][matchrow] = diffstats['mad_bsens']
             tbl['mad_cleanest'][matchrow] = diffstats['mad_cleanest']
             tbl['dr_improvement'][matchrow] = diffstats['dr_cleanest']/diffstats['dr_bsens']
-            tbl['casaversion_bsens'][matchrow] = fits.getheader(bsense)['ORIGIN']
-            tbl['casaversion_cleanest'][matchrow] = fits.getheader(cleanest_name)['ORIGIN']
+            tbl['casaversion_bsens'][matchrow] = fits.getheader(bsens)['ORIGIN']
+            tbl['casaversion_cleanest'][matchrow] = fits.getheader(cleanest)['ORIGIN']
 
             print(fns)
             print(f"{field}_B{band}: matched {matchrow.sum()} rows")
