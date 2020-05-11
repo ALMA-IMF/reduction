@@ -24,11 +24,11 @@ tbl = imstats.savestats(basepath=basepath)
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
-tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
-tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
-tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
-tbl.add_column(Column(name='scMeanDiff', data=[np.nan]*len(tbl)))
-tbl.add_column(Column(name='scMedianDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='contselMaxDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='contselMinDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='contselMADDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='contselMeanDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='contselMedianDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_cleanest', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='min_bsens', data=[np.nan]*len(tbl)))
@@ -89,11 +89,11 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                         (tbl['array'] == ('12Monly' if config == '12M' else config)) &
                         (tbl['robust'] == 'r0.0')
                        )
-            tbl['scMaxDiff'][matchrow] = diffstats['max']
-            tbl['scMinDiff'][matchrow] = diffstats['min']
-            tbl['scMADDiff'][matchrow] = diffstats['mad']
-            tbl['scMeanDiff'][matchrow] = diffstats['mean']
-            tbl['scMedianDiff'][matchrow] = diffstats['median']
+            tbl['contselMaxDiff'][matchrow] = diffstats['max']
+            tbl['contselMinDiff'][matchrow] = diffstats['min']
+            tbl['contselMADDiff'][matchrow] = diffstats['mad']
+            tbl['contselMeanDiff'][matchrow] = diffstats['mean']
+            tbl['contselMedianDiff'][matchrow] = diffstats['median']
             tbl['dr_bsens'][matchrow] = diffstats['dr_bsens']
             tbl['dr_cleanest'][matchrow] = diffstats['dr_cleanest']
             tbl['min_bsens'][matchrow] = diffstats['min_bsens']
@@ -113,7 +113,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
 
 formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
-           'scMaxDiff': lambda x: f'{x:0.6g}',
+           'contselMaxDiff': lambda x: f'{x:0.6g}',
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
@@ -121,7 +121,7 @@ tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest
           overwrite=True)
 tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.html',
           formats=formats,
-          format='ascii.html', overwrite=True)
+          format='acontselii.html', overwrite=True)
 tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.tex',
           formats=formats,
           overwrite=True)
