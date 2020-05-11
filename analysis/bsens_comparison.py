@@ -44,7 +44,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
         for config in ("12M",): # "7M12M"):
 
 
-            fns = glob.glob(f"{basepath}/{field}/{band}/bsens/*_{config}_*final*.image.tt0.pbcor.fits")
+            fns = glob.glob(f"{basepath}/{field}/B{band}/bsens/*_{config}_robust0*final*.image.tt0.pbcor.fits")
             if len(fns) > 1:
                 raise ValueError("Too many matches!")
             elif len(fns) == 0:
@@ -80,7 +80,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             except IndexError:
                 raise
             except Exception as ex:
-                log.error(f"Failure for bsens={bsens_name} cleanest={cleanest_name}")
+                log.error(f"Failure for bsens={bsens} cleanest={cleanest}")
                 log.error((field, band, config, ex))
                 continue
 
@@ -103,11 +103,11 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             tbl['mad_bsens'][matchrow] = diffstats['mad_bsens']
             tbl['mad_cleanest'][matchrow] = diffstats['mad_cleanest']
             tbl['dr_improvement'][matchrow] = diffstats['dr_cleanest']/diffstats['dr_bsens']
-            tbl['casaversion_bsens'][matchrow] = fits.getheader(bsens_name)['ORIGIN']
+            tbl['casaversion_bsens'][matchrow] = fits.getheader(bsense)['ORIGIN']
             tbl['casaversion_cleanest'][matchrow] = fits.getheader(cleanest_name)['ORIGIN']
 
             print(fns)
-            print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
+            print(f"{field}_B{band}: matched {matchrow.sum()} rows")
 
             print()
 
@@ -121,7 +121,7 @@ tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest
           overwrite=True)
 tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.html',
           formats=formats,
-          format='acontselii.html', overwrite=True)
+          format='ascii.html', overwrite=True)
 tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.tex',
           formats=formats,
           overwrite=True)
@@ -129,4 +129,4 @@ tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest
           #formats=formats,
           format='jsviewer')
 
-os.chdir(cwd)
+os.chdir(cwdcleanest
