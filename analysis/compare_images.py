@@ -1,5 +1,6 @@
 from spectral_cube import SpectralCube
 from astropy import visualization
+from astropy.stats import mad_std
 import pylab as pl
 import numpy as np
 
@@ -79,4 +80,4 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
                  'mad_post':  mad_std(data_post, ignore_nan=True),
                 }
 
-    return ax1,ax2,ax3,fig,diff
+    return ax1,ax2,ax3,fig,diffstats
