@@ -32,7 +32,6 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     fig.clf()
 
     minv = np.nanpercentile(data_pre, 0.05)
-    minv = -0.003
     maxv = np.nanpercentile(data_pre, 99.5)
 
     norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
