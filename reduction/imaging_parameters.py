@@ -340,6 +340,8 @@ imaging_parameters_nondefault = {
         "maskname": {7: "", 8: "", "final": ""},
         "usemask": {7: "pb", 8: "pb", "final": "pb"},
         "scales": [0, 3, 9, 27],
+        'imsize': [5000, 5000],
+        'cell': ['0.0375arcsec', '0.0375arcsec',],
     },
     "W51-E_B3_12M_robust2": {"threshold": "3mJy", "scales": [0, 3, 9, 27],},
     "W51-E_B3_12M_robust-2": {"threshold": "1mJy", "scales": [0, 3, 9],},
@@ -1024,6 +1026,7 @@ selfcal_pars["W51-E_B6_7M12M_robust0"][7] = {
 selfcal_pars["W51-E_B3_12M_robust0"][5] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4])
 selfcal_pars["W51-E_B3_12M_robust0"][6] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4])
 selfcal_pars["W51-E_B3_12M_robust0"][7] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4])
+selfcal_pars["W51-E_B3_12M_robust0"][8] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4]) # copy, then overwrite
 selfcal_pars["W51-E_B3_12M_robust0"][8] = {
     "solint": "inf",
     "gaintype": "T",
