@@ -875,17 +875,17 @@ selfcal_pars["W43-MM2_B6_12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM2_B6_12M_robust0"][2] = {
-    "solint": "1200",
+    "solint": "1200s",
     "gaintype": "G",
     "calmode": "p",
 }
 selfcal_pars["W43-MM2_B6_12M_robust0"][3] = {
-    "solint": "600",
+    "solint": "600s",
     "gaintype": "G",
     "calmode": "p",
 }
 selfcal_pars["W43-MM2_B6_12M_robust0"][4] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "G",
     "calmode": "p",
 }
@@ -901,7 +901,7 @@ selfcal_pars["W43-MM2_B6_7M12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM2_B6_7M12M_robust0"][2] = {
-    "solint": "500",
+    "solint": "500s",
     "gaintype": "G",
     "calmode": "p",
 }
@@ -924,17 +924,17 @@ selfcal_pars["W43-MM3_B6_12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM3_B6_12M_robust0"][2] = {
-    "solint": "1200",
+    "solint": "1200s",
     "gaintype": "G",
     "calmode": "p",
 }
 selfcal_pars["W43-MM3_B6_12M_robust0"][3] = {
-    "solint": "600",
+    "solint": "600s",
     "gaintype": "G",
     "calmode": "p",
 }
 selfcal_pars["W43-MM3_B6_12M_robust0"][4] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "G",
     "calmode": "p",
 }
@@ -950,7 +950,7 @@ selfcal_pars["W43-MM3_B6_7M12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM3_B6_7M12M_robust0"][2] = {
-    "solint": "500",
+    "solint": "500s",
     "gaintype": "G",
     "calmode": "p",
 }
@@ -968,12 +968,12 @@ selfcal_pars["W43-MM3_B6_7M12M_robust0"][4] = {
 # W43-MM1 B3
 # 12M only
 selfcal_pars["W43-MM1_B3_12M_robust0"][1] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "G",
     "calmode": "p",
 }
 selfcal_pars["W43-MM1_B3_12M_robust0"][2] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -995,7 +995,7 @@ selfcal_pars["W43-MM2_B3_12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM2_B3_12M_robust0"][2] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -1016,7 +1016,7 @@ selfcal_pars["W43-MM2_B3_7M12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM2_B3_7M12M_robust0"][2] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -1039,12 +1039,12 @@ selfcal_pars["W43-MM3_B3_12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM3_B3_12M_robust0"][2] = {
-    "solint": "600",
+    "solint": "600s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["W43-MM3_B3_12M_robust0"][3] = {
-    "solint": "200",
+    "solint": "200s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -1060,7 +1060,7 @@ selfcal_pars["W43-MM3_B3_7M12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["W43-MM3_B3_7M12M_robust0"][2] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -1513,7 +1513,7 @@ selfcal_pars["G351.77_B6_7M12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["G351.77_B6_7M12M_robust0"][2] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "minsnr": 3,
     "calmode": "p",
@@ -1530,6 +1530,11 @@ selfcal_pars["G351.77_B6_7M12M_robust0"][4] = {
     "minsnr": 3,
     "calmode": "p",
 }
+
+selfcal_pars["G328.25_B6_7M_robust0"][1] = {"solint": "inf", "gaintype": "T", "minsnr": 3, "calmode": "p"}
+selfcal_pars["G328.25_B6_7M_robust0"][2] = {"solint": "inf", "gaintype": "T", "minsnr": 3, "calmode": "p"}
+selfcal_pars["G328.25_B6_7M_robust0"][3] = {"solint": "100s", "gaintype": "T", "minsnr": 3, "calmode": "p"}
+selfcal_pars["G328.25_B6_7M_robust0"][4] = {"solint": "60s", "gaintype": "T", "minsnr": 3, "calmode": "p"}
 
 # This works by selecting the central field for self-calibration
 selfcal_pars["G328.25_B3_7M12M_robust0"][1] = {
@@ -1604,7 +1609,7 @@ selfcal_pars["G328.25_B6_12M_robust0"][1] = {
 }
 selfcal_pars["G328.25_B6_12M_robust0"][2] = {
     "gaintype": "T",
-    "solint": "300",
+    "solint": "300s",
     "combine": "scan",
     "calmode": "p",
 }
@@ -1630,7 +1635,7 @@ selfcal_pars["G328.25_B6_7M12M_robust0"][1] = {
 }
 selfcal_pars["G328.25_B6_7M12M_robust0"][2] = {
     "gaintype": "T",
-    "solint": "300",
+    "solint": "300s",
     "combine": "scan",
     "calmode": "p",
 }
@@ -1688,22 +1693,22 @@ selfcal_pars["G008.67_B6_12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0"][2] = {
-    "solint": "1200",
+    "solint": "1200s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0"][3] = {
-    "solint": "600",
+    "solint": "600s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0"][4] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0"][5] = {
-    "solint": "200",
+    "solint": "200s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -1715,22 +1720,22 @@ selfcal_pars["G008.67_B3_12M_robust0"][1] = {
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0"][2] = {
-    "solint": "1200",
+    "solint": "1200s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0"][3] = {
-    "solint": "600",
+    "solint": "600s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0"][4] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0"][5] = {
-    "solint": "200",
+    "solint": "200s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -1742,22 +1747,22 @@ selfcal_pars["G008.67_B6_12M_robust0_bsens"][1] = {
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0_bsens"][2] = {
-    "solint": "1200",
+    "solint": "1200s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0_bsens"][3] = {
-    "solint": "600",
+    "solint": "600s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0_bsens"][4] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B6_12M_robust0_bsens"][5] = {
-    "solint": "200",
+    "solint": "200s",
     "gaintype": "T",
     "calmode": "p",
 }
@@ -1769,22 +1774,22 @@ selfcal_pars["G008.67_B3_12M_robust0_bsens"][1] = {
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0_bsens"][2] = {
-    "solint": "1200",
+    "solint": "1200s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0_bsens"][3] = {
-    "solint": "600",
+    "solint": "600s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0_bsens"][4] = {
-    "solint": "300",
+    "solint": "300s",
     "gaintype": "T",
     "calmode": "p",
 }
 selfcal_pars["G008.67_B3_12M_robust0_bsens"][5] = {
-    "solint": "200",
+    "solint": "200s",
     "gaintype": "T",
     "calmode": "p",
 }
