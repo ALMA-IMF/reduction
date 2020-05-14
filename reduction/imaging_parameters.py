@@ -820,340 +820,96 @@ for ii in range(5, 8):
         "minsnr": 5,
         "combine": "",  # do not combine across scans, only within
     }
-selfcal_pars["W51-IRS2_B6_12M_robust0"][8] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "minsnr": 5,
-}
+selfcal_pars["W51-IRS2_B6_12M_robust0"][8] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "minsnr": 5}
 
 
-selfcal_pars["W51-E_B6_12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "minsnr": 5,
-}
-selfcal_pars["W51-E_B6_12M_robust0"][6] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "minsnr": 5,
-}
+selfcal_pars["W51-E_B6_12M_robust0"][5] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "minsnr": 5}
+selfcal_pars["W51-E_B6_12M_robust0"][6] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "minsnr": 5}
 
 selfcal_pars["W51-E_B6_7M12M_robust0"][5] = copy.copy(
     selfcal_pars["W51-E_B6_7M12M_robust0"][4]
 )  # one extra phase iteration
-selfcal_pars["W51-E_B6_7M12M_robust0"][6] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "minsnr": 5,
-}
-selfcal_pars["W51-E_B6_7M12M_robust0"][7] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "minsnr": 5,
-}
+selfcal_pars["W51-E_B6_7M12M_robust0"][6] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "minsnr": 5}
+selfcal_pars["W51-E_B6_7M12M_robust0"][7] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "minsnr": 5}
 
 selfcal_pars["W51-E_B3_12M_robust0"][5] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4])
 selfcal_pars["W51-E_B3_12M_robust0"][6] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4])
 selfcal_pars["W51-E_B3_12M_robust0"][7] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4])
 selfcal_pars["W51-E_B3_12M_robust0"][8] = copy.copy(selfcal_pars["W51-E_B3_12M_robust0"][4])  # copy, then overwrite
-selfcal_pars["W51-E_B3_12M_robust0"][8] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "minsnr": 5,
-}
+selfcal_pars["W51-E_B3_12M_robust0"][8] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "minsnr": 5}
 # W43-MM2 B6
 # 12M only#
-selfcal_pars["W43-MM2_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B6_12M_robust0"][2] = {
-    "solint": "1200s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B6_12M_robust0"][3] = {
-    "solint": "600s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B6_12M_robust0"][4] = {
-    "solint": "300s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B6_12M_robust0"][5] = {
-    "solint": "int",
-    "gaintype": "G",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM2_B6_12M_robust0"][1] = {"solint": "inf", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM2_B6_12M_robust0"][2] = {"solint": "1200s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM2_B6_12M_robust0"][3] = {"solint": "600s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM2_B6_12M_robust0"][4] = {"solint": "300s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM2_B6_12M_robust0"][5] = {"solint": "int", "gaintype": "G", "calmode": "p"}
 # 7m12m
-selfcal_pars["W43-MM2_B6_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B6_7M12M_robust0"][2] = {
-    "solint": "500s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B6_7M12M_robust0"][3] = {
-    "solint": "int",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B6_7M12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "G",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM2_B6_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM2_B6_7M12M_robust0"][2] = {"solint": "500s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM2_B6_7M12M_robust0"][3] = {"solint": "int", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM2_B6_7M12M_robust0"][4] = {"solint": "int", "gaintype": "G", "calmode": "p"}
 
 # W43-MM3 B6
 # 12M only
-selfcal_pars["W43-MM3_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B6_12M_robust0"][2] = {
-    "solint": "1200s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B6_12M_robust0"][3] = {
-    "solint": "600s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B6_12M_robust0"][4] = {
-    "solint": "300s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B6_12M_robust0"][5] = {
-    "solint": "int",
-    "gaintype": "G",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM3_B6_12M_robust0"][1] = {"solint": "inf", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM3_B6_12M_robust0"][2] = {"solint": "1200s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM3_B6_12M_robust0"][3] = {"solint": "600s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM3_B6_12M_robust0"][4] = {"solint": "300s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM3_B6_12M_robust0"][5] = {"solint": "int", "gaintype": "G", "calmode": "p"}
 # 7m12m
-selfcal_pars["W43-MM3_B6_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B6_7M12M_robust0"][2] = {
-    "solint": "500s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B6_7M12M_robust0"][3] = {
-    "solint": "int",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B6_7M12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "G",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM3_B6_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM3_B6_7M12M_robust0"][2] = {"solint": "500s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM3_B6_7M12M_robust0"][3] = {"solint": "int", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM3_B6_7M12M_robust0"][4] = {"solint": "int", "gaintype": "G", "calmode": "p"}
 
 # W43-MM1 B3
 # 12M only
-selfcal_pars["W43-MM1_B3_12M_robust0"][1] = {
-    "solint": "300s",
-    "gaintype": "G",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM1_B3_12M_robust0"][2] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM1_B3_12M_robust0"][3] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM1_B3_12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM1_B3_12M_robust0"][1] = {"solint": "300s", "gaintype": "G", "calmode": "p"}
+selfcal_pars["W43-MM1_B3_12M_robust0"][2] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM1_B3_12M_robust0"][3] = {"solint": "int", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM1_B3_12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p"}
 # W43-MM2 B3
 # 12M only
-selfcal_pars["W43-MM2_B3_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B3_12M_robust0"][2] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B3_12M_robust0"][3] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B3_12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM2_B3_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM2_B3_12M_robust0"][2] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM2_B3_12M_robust0"][3] = {"solint": "int", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM2_B3_12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p"}
 # 7m12m
-selfcal_pars["W43-MM2_B3_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B3_7M12M_robust0"][2] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B3_7M12M_robust0"][3] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM2_B3_7M12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM2_B3_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM2_B3_7M12M_robust0"][2] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM2_B3_7M12M_robust0"][3] = {"solint": "int", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM2_B3_7M12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p"}
 
 # W43-MM3 B3
 # 12M only
-selfcal_pars["W43-MM3_B3_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B3_12M_robust0"][2] = {
-    "solint": "600s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B3_12M_robust0"][3] = {
-    "solint": "200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B3_12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM3_B3_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM3_B3_12M_robust0"][2] = {"solint": "600s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM3_B3_12M_robust0"][3] = {"solint": "200s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM3_B3_12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p"}
 # 7m12m
-selfcal_pars["W43-MM3_B3_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B3_7M12M_robust0"][2] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B3_7M12M_robust0"][3] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["W43-MM3_B3_7M12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["W43-MM3_B3_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM3_B3_7M12M_robust0"][2] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM3_B3_7M12M_robust0"][3] = {"solint": "int", "gaintype": "T", "calmode": "p"}
+selfcal_pars["W43-MM3_B3_7M12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p"}
 
 # B3 12M CLEANEST CONTINUUM #
-selfcal_pars["G333.60_B3_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_12M_robust0"][2] = {
-    "solint": "15s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_12M_robust0"][3] = {
-    "solint": "5s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "solnorm": True,
-}
+selfcal_pars["G333.60_B3_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_12M_robust0"][2] = {"solint": "15s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_12M_robust0"][3] = {"solint": "5s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_12M_robust0"][5] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "solnorm": True}
 # B3 7M12M CLEANEST CONTINUUM #
-selfcal_pars["G333.60_B3_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_7M12M_robust0"][2] = {
-    "solint": "15s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_7M12M_robust0"][3] = {
-    "solint": "5s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_7M12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G333.60_B3_7M12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "ap",
-    "solnorm": True,
-}
+selfcal_pars["G333.60_B3_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_7M12M_robust0"][2] = {"solint": "15s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_7M12M_robust0"][3] = {"solint": "5s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_7M12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G333.60_B3_7M12M_robust0"][5] = {"solint": "inf", "gaintype": "T", "calmode": "ap", "solnorm": True}
 # B6 12M CLEANEST CONTINUUM #
-selfcal_pars["G333.60_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
-selfcal_pars["G333.60_B6_12M_robust0"][2] = {
-    "solint": "15s",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
-selfcal_pars["G333.60_B6_12M_robust0"][3] = {
-    "solint": "5s",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
-selfcal_pars["G333.60_B6_12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
+selfcal_pars["G333.60_B6_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p", "combine": "spw"}
+selfcal_pars["G333.60_B6_12M_robust0"][2] = {"solint": "15s", "gaintype": "T", "calmode": "p", "combine": "spw"}
+selfcal_pars["G333.60_B6_12M_robust0"][3] = {"solint": "5s", "gaintype": "T", "calmode": "p", "combine": "spw"}
+selfcal_pars["G333.60_B6_12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p", "combine": "spw"}
 selfcal_pars["G333.60_B6_12M_robust0"][5] = {
     "solint": "inf",
     "gaintype": "T",
@@ -1162,30 +918,10 @@ selfcal_pars["G333.60_B6_12M_robust0"][5] = {
     "solnorm": True,
 }
 # B6 7M12M CLEANEST CONTINUUM #
-selfcal_pars["G333.60_B6_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
-selfcal_pars["G333.60_B6_7M12M_robust0"][2] = {
-    "solint": "15s",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
-selfcal_pars["G333.60_B6_7M12M_robust0"][3] = {
-    "solint": "5s",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
-selfcal_pars["G333.60_B6_7M12M_robust0"][4] = {
-    "solint": "int",
-    "gaintype": "T",
-    "calmode": "p",
-    "combine": "spw",
-}
+selfcal_pars["G333.60_B6_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p", "combine": "spw"}
+selfcal_pars["G333.60_B6_7M12M_robust0"][2] = {"solint": "15s", "gaintype": "T", "calmode": "p", "combine": "spw"}
+selfcal_pars["G333.60_B6_7M12M_robust0"][3] = {"solint": "5s", "gaintype": "T", "calmode": "p", "combine": "spw"}
+selfcal_pars["G333.60_B6_7M12M_robust0"][4] = {"solint": "int", "gaintype": "T", "calmode": "p", "combine": "spw"}
 selfcal_pars["G333.60_B6_7M12M_robust0"][5] = {
     "solint": "inf",
     "gaintype": "T",
@@ -1194,46 +930,14 @@ selfcal_pars["G333.60_B6_7M12M_robust0"][5] = {
     "solnorm": True,
 }
 
-selfcal_pars["G353.41_B6_12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
-selfcal_pars["G353.41_B6_12M_robust0"][6] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
-selfcal_pars["G353.41_B3_12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
-selfcal_pars["G353.41_B3_12M_robust0"][6] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
-selfcal_pars["G353.41_B6_7M12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
-selfcal_pars["G353.41_B6_7M12M_robust0"][6] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
-selfcal_pars["G353.41_B3_7M12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
-selfcal_pars["G353.41_B3_7M12M_robust0"][6] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "ap",
-}
+selfcal_pars["G353.41_B6_12M_robust0"][5] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
+selfcal_pars["G353.41_B6_12M_robust0"][6] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
+selfcal_pars["G353.41_B3_12M_robust0"][5] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
+selfcal_pars["G353.41_B3_12M_robust0"][6] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
+selfcal_pars["G353.41_B6_7M12M_robust0"][5] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
+selfcal_pars["G353.41_B6_7M12M_robust0"][6] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
+selfcal_pars["G353.41_B3_7M12M_robust0"][5] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
+selfcal_pars["G353.41_B3_7M12M_robust0"][6] = {"solint": "inf", "gaintype": "G", "calmode": "ap"}
 selfcal_pars["G338.93_B3_12M_robust0"][1] = {
     "solint": "inf",
     "gaintype": "T",
@@ -1260,12 +964,7 @@ selfcal_pars["G338.93_B3_12M_robust0_bsens"][1] = {
 del selfcal_pars["G338.93_B3_12M_robust0_bsens"][2]
 del selfcal_pars["G338.93_B3_12M_robust0_bsens"][3]
 del selfcal_pars["G338.93_B3_12M_robust0_bsens"][4]
-selfcal_pars["G338.93_B3_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-    "solnorm": True,
-}
+selfcal_pars["G338.93_B3_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p", "solnorm": True}
 selfcal_pars["G338.93_B3_7M12M_robust0"][2] = {
     "solint": "60s",
     "gaintype": "T",
@@ -1278,258 +977,68 @@ del selfcal_pars["G338.93_B3_7M12M_robust0"][4]
 
 # G327.29
 # B3 12M
-selfcal_pars["G327.29_B3_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B3_12M_robust0"][2] = {
-    "solint": "60s",
-    "gaintype": "T",
-    "calmode": "p",
-    "solnorm": True,
-}
+selfcal_pars["G327.29_B3_12M_robust0"][1] = {"solint": "inf", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B3_12M_robust0"][2] = {"solint": "60s", "gaintype": "T", "calmode": "p", "solnorm": True}
 del selfcal_pars["G327.29_B3_12M_robust0"][3]
 del selfcal_pars["G327.29_B3_12M_robust0"][4]
 # B3 7M12M
-selfcal_pars["G327.29_B3_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-    "solnorm": True,
-}
+selfcal_pars["G327.29_B3_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p", "solnorm": True}
 del selfcal_pars["G327.29_B3_7M12M_robust0"][2]
 del selfcal_pars["G327.29_B3_7M12M_robust0"][3]
 del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
 # B6 12M
-selfcal_pars["G327.29_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_12M_robust0"][2] = {
-    "solint": "60s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_12M_robust0"][3] = {
-    "solint": "20s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_12M_robust0"][4] = {
-    "solint": "10s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_12M_robust0"][5] = {
-    "solint": "5s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
+selfcal_pars["G327.29_B6_12M_robust0"][1] = {"solint": "inf", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_12M_robust0"][2] = {"solint": "60s", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_12M_robust0"][3] = {"solint": "20s", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_12M_robust0"][4] = {"solint": "10s", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_12M_robust0"][5] = {"solint": "5s", "gaintype": "G", "calmode": "p", "solnorm": True}
 # B6 7M12M
-selfcal_pars["G327.29_B6_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_7M12M_robust0"][2] = {
-    "solint": "60s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_7M12M_robust0"][3] = {
-    "solint": "20s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_7M12M_robust0"][4] = {
-    "solint": "10s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G327.29_B6_7M12M_robust0"][5] = {
-    "solint": "5s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
+selfcal_pars["G327.29_B6_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_7M12M_robust0"][2] = {"solint": "60s", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_7M12M_robust0"][3] = {"solint": "20s", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_7M12M_robust0"][4] = {"solint": "10s", "gaintype": "G", "calmode": "p", "solnorm": True}
+selfcal_pars["G327.29_B6_7M12M_robust0"][5] = {"solint": "5s", "gaintype": "G", "calmode": "p", "solnorm": True}
 
 
-selfcal_pars["G012.80_B3_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-    "minsnr": 5,
-}
+selfcal_pars["G012.80_B3_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p", "minsnr": 5}
 
-selfcal_pars["G012.80_B3_12M_robust0"][2] = {
-    "solint": "1200s",
-    "gaintype": "T",
-    "calmode": "p",
-    "minsnr": 5,
-}
+selfcal_pars["G012.80_B3_12M_robust0"][2] = {"solint": "1200s", "gaintype": "T", "calmode": "p", "minsnr": 5}
 
-selfcal_pars["G012.80_B3_12M_robust0"][3] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-    "minsnr": 5,
-}
+selfcal_pars["G012.80_B3_12M_robust0"][3] = {"solint": "300s", "gaintype": "T", "calmode": "p", "minsnr": 5}
 
 
-selfcal_pars["G012.80_B3_12M_robust0"][4] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-    "minsnr": 5,
-}
+selfcal_pars["G012.80_B3_12M_robust0"][4] = {"solint": "300s", "gaintype": "T", "calmode": "p", "minsnr": 5}
 
 
-selfcal_pars["G012.80_B3_12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "a",
-    "minsnr": 5,
-}
+selfcal_pars["G012.80_B3_12M_robust0"][5] = {"solint": "inf", "gaintype": "T", "calmode": "a", "minsnr": 5}
 
 # G351.77
-selfcal_pars["G351.77_B3_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B3_12M_robust0"][2] = {
-    "solint": "90s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B3_12M_robust0"][3] = {
-    "solint": "60s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B3_12M_robust0"][4] = {
-    "solint": "30s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
+selfcal_pars["G351.77_B3_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B3_12M_robust0"][2] = {"solint": "90s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B3_12M_robust0"][3] = {"solint": "60s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B3_12M_robust0"][4] = {"solint": "30s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
 
-selfcal_pars["G351.77_B3_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B3_7M12M_robust0"][2] = {
-    "solint": "90s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B3_7M12M_robust0"][3] = {
-    "solint": "60s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B3_7M12M_robust0"][4] = {
-    "solint": "30s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
+selfcal_pars["G351.77_B3_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B3_7M12M_robust0"][2] = {"solint": "90s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B3_7M12M_robust0"][3] = {"solint": "60s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B3_7M12M_robust0"][4] = {"solint": "30s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
 
 
-selfcal_pars["G351.77_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B6_12M_robust0"][2] = {
-    "solint": "150s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B6_12M_robust0"][3] = {
-    "solint": "60s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B6_12M_robust0"][4] = {
-    "solint": "30s",
-    "gaintype": "T",
-    "minsnr": 2,
-    "calmode": "p",
-}
+selfcal_pars["G351.77_B6_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B6_12M_robust0"][2] = {"solint": "150s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B6_12M_robust0"][3] = {"solint": "60s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
+selfcal_pars["G351.77_B6_12M_robust0"][4] = {"solint": "30s", "gaintype": "T", "minsnr": 2, "calmode": "p"}
 
-selfcal_pars["G351.77_B6_7M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B6_7M_robust0"][2] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}  # int
-selfcal_pars["G351.77_B6_7M_robust0"][3] = {
-    "solint": "100s",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B6_7M_robust0"][4] = {
-    "solint": "60s",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}
+selfcal_pars["G351.77_B6_7M_robust0"][1] = {"solint": "inf", "gaintype": "T", "minsnr": 3, "calmode": "p"}
+selfcal_pars["G351.77_B6_7M_robust0"][2] = {"solint": "inf", "gaintype": "T", "minsnr": 3, "calmode": "p"}  # int
+selfcal_pars["G351.77_B6_7M_robust0"][3] = {"solint": "100s", "gaintype": "T", "minsnr": 3, "calmode": "p"}
+selfcal_pars["G351.77_B6_7M_robust0"][4] = {"solint": "60s", "gaintype": "T", "minsnr": 3, "calmode": "p"}
 
 
-selfcal_pars["G351.77_B6_7M12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B6_7M12M_robust0"][2] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}  # int
-selfcal_pars["G351.77_B6_7M12M_robust0"][3] = {
-    "solint": "150s",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}
-selfcal_pars["G351.77_B6_7M12M_robust0"][4] = {
-    "solint": "60s",
-    "gaintype": "T",
-    "minsnr": 3,
-    "calmode": "p",
-}
+selfcal_pars["G351.77_B6_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "minsnr": 3, "calmode": "p"}
+selfcal_pars["G351.77_B6_7M12M_robust0"][2] = {"solint": "300s", "gaintype": "T", "minsnr": 3, "calmode": "p"}  # int
+selfcal_pars["G351.77_B6_7M12M_robust0"][3] = {"solint": "150s", "gaintype": "T", "minsnr": 3, "calmode": "p"}
+selfcal_pars["G351.77_B6_7M12M_robust0"][4] = {"solint": "60s", "gaintype": "T", "minsnr": 3, "calmode": "p"}
 
 selfcal_pars["G328.25_B6_7M_robust0"][1] = {"solint": "inf", "gaintype": "T", "minsnr": 3, "calmode": "p"}
 selfcal_pars["G328.25_B6_7M_robust0"][2] = {"solint": "inf", "gaintype": "T", "minsnr": 3, "calmode": "p"}
@@ -1544,7 +1053,7 @@ selfcal_pars["G328.25_B3_7M12M_robust0"][1] = {
     "refant": "DV01",
     "calmode": "p",
     "minsnr": 2,
-    "minblperant": 3,  # ,'field':'9'
+    "minblperant": 3,
 }
 
 selfcal_pars["G328.25_B3_7M12M_robust0"][2] = {
@@ -1565,7 +1074,7 @@ selfcal_pars["G328.25_B3_12M_robust0"][1] = {
     "refant": "DV01",
     "calmode": "p",
     "minsnr": 2,
-    "minblperant": 3,  # ,'field':'9'
+    "minblperant": 3,
 }
 
 selfcal_pars["G328.25_B3_12M_robust0"][2] = {
@@ -1575,7 +1084,7 @@ selfcal_pars["G328.25_B3_12M_robust0"][2] = {
     "refant": "DV01",
     "calmode": "p",
     "minsnr": 2,
-    "minblperant": 3,  # ,'field':'9'
+    "minblperant": 3,
 }
 
 
@@ -1586,7 +1095,7 @@ selfcal_pars["G328.25_B3_12M_robust0"][3] = {
     "refant": "DV01",
     "calmode": "p",
     "minsnr": 2,
-    "minblperant": 3,  # ,'field':'9',
+    "minblperant": 3,
 }
 
 selfcal_pars["G328.25_B3_12M_robust0"][4] = {
@@ -1596,203 +1105,56 @@ selfcal_pars["G328.25_B3_12M_robust0"][4] = {
     "refant": "DV01",
     "calmode": "p",
     "minsnr": 2,
-    "minblperant": 3,  # ,'field':'9',
+    "minblperant": 3,
 }
 
 
 # G328.25 B6
-selfcal_pars["G328.25_B6_12M_robust0"][1] = {
-    "gaintype": "T",
-    "solint": "inf",
-    "combine": "scan",
-    "calmode": "p",
-}
-selfcal_pars["G328.25_B6_12M_robust0"][2] = {
-    "gaintype": "T",
-    "solint": "300s",
-    "combine": "scan",
-    "calmode": "p",
-}
-selfcal_pars["G328.25_B6_12M_robust0"][3] = {
-    "gaintype": "T",
-    "solint": "90s",
-    "combine": "scan",
-    "calmode": "p",
-}
-selfcal_pars["G328.25_B6_12M_robust0"][4] = {
-    "gaintype": "T",
-    "solint": "60s",
-    "combine": "scan",
-    "calmode": "p",
-}
+selfcal_pars["G328.25_B6_12M_robust0"][1] = {"gaintype": "T", "solint": "inf", "combine": "scan", "calmode": "p"}
+selfcal_pars["G328.25_B6_12M_robust0"][2] = {"gaintype": "T", "solint": "300s", "combine": "scan", "calmode": "p"}
+selfcal_pars["G328.25_B6_12M_robust0"][3] = {"gaintype": "T", "solint": "90s", "combine": "scan", "calmode": "p"}
+selfcal_pars["G328.25_B6_12M_robust0"][4] = {"gaintype": "T", "solint": "60s", "combine": "scan", "calmode": "p"}
 # selfcal_pars['G328.25_B6_12M_robust0'][5] = {'gaintype': 'T','solint': '30s','combine':'scan','calmode': 'p'}
 
-selfcal_pars["G328.25_B6_7M12M_robust0"][1] = {
-    "gaintype": "T",
-    "solint": "inf",
-    "combine": "scan",
-    "calmode": "p",
-}
-selfcal_pars["G328.25_B6_7M12M_robust0"][2] = {
-    "gaintype": "T",
-    "solint": "300s",
-    "combine": "scan",
-    "calmode": "p",
-}
-selfcal_pars["G328.25_B6_7M12M_robust0"][3] = {
-    "gaintype": "T",
-    "solint": "90s",
-    "combine": "scan",
-    "calmode": "p",
-}
-selfcal_pars["G328.25_B6_7M12M_robust0"][4] = {
-    "gaintype": "T",
-    "solint": "60s",
-    "combine": "scan",
-    "calmode": "p",
-}
-# selfcal_pars['G328.25_B6_12M_robust0'][5] = {'gaintype': 'T','solint': '30s','combine':'scan','calmode': 'p'}
+selfcal_pars["G328.25_B6_7M12M_robust0"][1] = {"gaintype": "T", "solint": "inf", "combine": "scan", "calmode": "p"}
+selfcal_pars["G328.25_B6_7M12M_robust0"][2] = {"gaintype": "T", "solint": "300s", "combine": "scan", "calmode": "p"}
+selfcal_pars["G328.25_B6_7M12M_robust0"][3] = {"gaintype": "T", "solint": "200s", "combine": "scan", "calmode": "p"}
+selfcal_pars["G328.25_B6_7M12M_robust0"][4] = {"gaintype": "T", "solint": "90s", "combine": "scan", "calmode": "p"}
 
-
-selfcal_pars["G012.80_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-    "minsnr": 5,
-}
-selfcal_pars["G012.80_B6_12M_robust0"][2] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-    "minsnr": 5,
-}
-selfcal_pars["G012.80_B6_12M_robust0"][3] = {
-    "solint": "1200s",
-    "gaintype": "G",
-    "calmode": "p",
-    "minsnr": 5,
-}
-selfcal_pars["G012.80_B6_12M_robust0"][4] = {
-    "solint": "600s",
-    "gaintype": "G",
-    "calmode": "p",
-    "minsnr": 4,
-}
-selfcal_pars["G012.80_B6_12M_robust0"][5] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "a",
-    "minsnr": 5,
-}
+selfcal_pars["G012.80_B6_12M_robust0"][1] = {"gaintype": "G", "solint": "inf", "calmode": "p", "minsnr": 5}
+selfcal_pars["G012.80_B6_12M_robust0"][2] = {"solint": "inf", "gaintype": "G", "calmode": "p", "minsnr": 5}
+selfcal_pars["G012.80_B6_12M_robust0"][3] = {"solint": "1200s", "gaintype": "G", "calmode": "p", "minsnr": 5}
+selfcal_pars["G012.80_B6_12M_robust0"][4] = {"solint": "600s", "gaintype": "G", "calmode": "p", "minsnr": 4}
+selfcal_pars["G012.80_B6_12M_robust0"][5] = {"solint": "inf", "gaintype": "G", "calmode": "a", "minsnr": 5}
 
 # G008 cleanest#
 
-selfcal_pars["G008.67_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0"][2] = {
-    "solint": "1200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0"][3] = {
-    "solint": "600s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0"][4] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0"][5] = {
-    "solint": "200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["G008.67_B6_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0"][2] = {"solint": "1200s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0"][3] = {"solint": "600s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0"][4] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0"][5] = {"solint": "200s", "gaintype": "T", "calmode": "p"}
 
 
-selfcal_pars["G008.67_B3_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0"][2] = {
-    "solint": "1200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0"][3] = {
-    "solint": "600s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0"][4] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0"][5] = {
-    "solint": "200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["G008.67_B3_12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0"][2] = {"solint": "1200s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0"][3] = {"solint": "600s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0"][4] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0"][5] = {"solint": "200s", "gaintype": "T", "calmode": "p"}
 
 
-selfcal_pars["G008.67_B6_12M_robust0_bsens"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0_bsens"][2] = {
-    "solint": "1200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0_bsens"][3] = {
-    "solint": "600s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0_bsens"][4] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B6_12M_robust0_bsens"][5] = {
-    "solint": "200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["G008.67_B6_12M_robust0_bsens"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0_bsens"][2] = {"solint": "1200s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0_bsens"][3] = {"solint": "600s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0_bsens"][4] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B6_12M_robust0_bsens"][5] = {"solint": "200s", "gaintype": "T", "calmode": "p"}
 
 
-selfcal_pars["G008.67_B3_12M_robust0_bsens"][1] = {
-    "solint": "inf",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0_bsens"][2] = {
-    "solint": "1200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0_bsens"][3] = {
-    "solint": "600s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0_bsens"][4] = {
-    "solint": "300s",
-    "gaintype": "T",
-    "calmode": "p",
-}
-selfcal_pars["G008.67_B3_12M_robust0_bsens"][5] = {
-    "solint": "200s",
-    "gaintype": "T",
-    "calmode": "p",
-}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][2] = {"solint": "1200s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][3] = {"solint": "600s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][4] = {"solint": "300s", "gaintype": "T", "calmode": "p"}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][5] = {"solint": "200s", "gaintype": "T", "calmode": "p"}
 
 
 line_imaging_parameters = {
