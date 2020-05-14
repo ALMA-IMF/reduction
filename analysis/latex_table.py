@@ -98,6 +98,8 @@ latexdict['tablefoot'] = ("}\par\n"
 
                          )
 
+wtbl.sort('Region')
+
 wtbl.write("../datapaper/selfcal_summary.tex", formats=formats,
            overwrite=True, latexdict=latexdict)
 
