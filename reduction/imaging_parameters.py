@@ -341,6 +341,7 @@ imaging_parameters_nondefault = {
         "usemask": {7: "pb", 8: "pb", "final": "pb"},
         "scales": [0, 3, 9, 27],
         'imsize': [5000, 5000],
+        # CONSIDER: 'pblimit': 0.05, # this might help with cleaning IRS2 at the edge of the field
         'cell': ['0.0375arcsec', '0.0375arcsec',],
     },
     "W51-E_B3_12M_robust2": {"threshold": "3mJy", "scales": [0, 3, 9, 27],},
