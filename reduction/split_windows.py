@@ -36,7 +36,7 @@ You can set the following environmental variables for this script:
 cont.dat files
 --------------
 By default, the ALMA-pipeline-derived cont.dat file will be used.  However, you
-can specify an override by creating a file "{field}.{band}.cont.dat"
+can specify an override by creating a file "{field}.{band}.cont.dat" in the
 ALMAIMF_ROOTDIR directory.  For example, if you wanted to override the cont.dat
 file for field "ORION" in band 9, you would create a file called
 ORION.B9.cont.dat. Note that the names are case sensitive.

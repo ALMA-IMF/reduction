@@ -16,7 +16,7 @@ with open('metadata_sc.ecsv', 'w') as fh:
 tbl = Table.read('metadata_sc.ecsv')
 
 # downselect
-keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor'])
+keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor']) & (~tbl['bsens'])
 
 
 wtbl = tbl[keep]
