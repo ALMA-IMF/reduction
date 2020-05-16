@@ -846,6 +846,7 @@ for continuum_ms in continuum_mses:
 
         for key, val in impars_finaliter.items():
             if isinstance(val, dict):
+                logprint("dictionary being updated from: {0}".format(val))  # DEBUG
                 impars_finaliter[key] = val['final'] if 'final' in val else val[selfcaliter]
 
         finaliterimname = contimagename+"_robust{0}_selfcal{1}_finaliter".format(robust,
