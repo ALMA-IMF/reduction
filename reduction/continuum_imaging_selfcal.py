@@ -670,6 +670,8 @@ for continuum_ms in continuum_mses:
                 clearcal(vis=selfcal_ms, addmodel=True)
                 # use gainfield so we interpolate the good solutions to the other
                 # fields
+                logprint("Using okfield_list = {0} matched with cals {1}".format(okfields_list, cals),
+                         origin='contim_selfcal')
                 assert len(okfields_list) == len(cals)
                 applycal(vis=selfcal_ms,
                          gainfield=okfields_list,
