@@ -734,6 +734,7 @@ for continuum_ms in continuum_mses:
                                           antennae)
 
         else:
+            okfields_list.append(okfields_str)
             if not dryrun:
                 populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                       phasecenter, maskname,
