@@ -734,6 +734,8 @@ for continuum_ms in continuum_mses:
                                           antennae)
 
         else:
+            with open(caltable+".fields", 'r') as fh:
+                okfields_str = fh.read()
             okfields_list.append(okfields_str)
             if not dryrun:
                 populate_model_column(imname, selfcal_ms, field, impars_thisiter,
