@@ -29,12 +29,15 @@ tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMeanDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMedianDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='shape', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='min_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='min_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='max_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='max_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='sum_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='sum_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
@@ -103,6 +106,9 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['min_post'][matchrow] = diffstats['min_post']
                 tbl['max_pre'][matchrow] = diffstats['max_pre']
                 tbl['max_post'][matchrow] = diffstats['max_post']
+                tbl['sum_pre'][matchrow] = diffstats['sum_pre']
+                tbl['sum_post'][matchrow] = diffstats['sum_post']
+                tbl['shape'][matchrow] = diffstats['shape']
                 tbl['mad_pre'][matchrow] = diffstats['mad_pre']
                 tbl['mad_post'][matchrow] = diffstats['mad_post']
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
