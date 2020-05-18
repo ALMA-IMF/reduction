@@ -8,6 +8,8 @@ from astropy.table import Table, Column
 from spectral_cube import SpectralCube
 from astropy.stats import mad_std
 from astropy import log
+from astropy import units as u
+from astropy import wcs
 import pylab as pl
 
 
@@ -37,6 +39,13 @@ def make_comparison_image(preselfcal, postselfcal):
     except Exception as ex:
         log.error(preselfcal, postselfcal, cube_pre.shape, cube_post.shape)
         raise ex
+
+    ww = cube_post.wcs
+    beam = cube_post.beam
+    pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
+    ppbeam = (beam.sr / pixscale).decompose()
+    assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+    ppbeam = ppbeam.value
 
     fits.PrimaryHDU(data=diff,
                     header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits",
@@ -93,6 +102,7 @@ def make_comparison_image(preselfcal, postselfcal):
                  'sum_pre': np.nansum(data_pre),
                  'sum_post': np.nansum(data_post),
                  'shape': data_post.shape[0],
+                 'ppbeam': ppbeam,
                  'mad_pre': mad_std(data_pre, ignore_nan=True),
                  'mad_post':  mad_std(data_post, ignore_nan=True),
                 }

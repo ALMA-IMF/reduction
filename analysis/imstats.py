@@ -3,6 +3,7 @@ import warnings
 import json
 from astropy.table import Table,Column
 from astropy import units as u
+from astropy import wcs
 from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
@@ -26,6 +27,14 @@ def imstats(fn):
 
     mad = mad_std(data, ignore_nan=True)
     peak = np.nanmax(data)
+    imsum = np.nansum(data)
+
+    ww = wcs.WCS(fh[0].header)
+    pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
+    ppbeam = (bm.sr / pixscale).decompose()
+    assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+    ppbeam = ppbeam.value
+
 
     return {'beam': bm.to_header_keywords(),
             'bmaj': bm.major.to(u.arcsec).value,
@@ -33,7 +42,10 @@ def imstats(fn):
             'bpa': bm.pa.value,
             'mad': mad,
             'peak': peak,
-            'peak/mad': peak/mad,
+            'peak/mad': peak / mad,
+            'ppbeam': ppbeam,
+            'sum': imsum,
+            'fluxsum': imsum / ppbeam,
            }
 
 def parse_fn(fn):

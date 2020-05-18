@@ -1,8 +1,11 @@
 from spectral_cube import SpectralCube
 from astropy import visualization
 from astropy.stats import mad_std
+from astropy import units as u
 import pylab as pl
 import numpy as np
+import radio_beam
+from astropy import wcs
 
 
 def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest'):
@@ -27,6 +30,13 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     except Exception as ex:
         print(filename1, filename2, cube_pre.shape, cube_post.shape)
         raise ex
+
+    ww = cube_post.wcs
+    beam = cube_post.beam
+    pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
+    ppbeam = (beam.sr / pixscale).decompose()
+    assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+    ppbeam = ppbeam.value
 
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
@@ -67,6 +77,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     diffstats = {'mean': np.nanmean(diff),
                  'max': np.nanmax(diff),
                  'shape': diff.shape[0],
+                 'ppbeam': ppbeam,
                  'sum': np.nansum(diff),
                  'min': np.nanmin(diff),
                  'median': np.nanmedian(diff),

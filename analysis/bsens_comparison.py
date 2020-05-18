@@ -30,6 +30,7 @@ tbl.add_column(Column(name='contselMADDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='contselMeanDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='contselMedianDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='shape', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='ppbeam', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_cleanest', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='sum_bsens', data=[np.nan]*len(tbl)))
@@ -110,6 +111,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             tbl['sum_bsens'][matchrow] = diffstats['sum_pre']
             tbl['sum_cleanest'][matchrow] = diffstats['sum_post']
             tbl['shape'][matchrow] = diffstats['shape']
+            tbl['ppbeam'][matchrow] = diffstats['ppbeam']
             tbl['mad_bsens'][matchrow] = diffstats['mad_pre']
             tbl['mad_cleanest'][matchrow] = diffstats['mad_post']
             tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
