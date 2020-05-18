@@ -66,6 +66,8 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     diffstats = {'mean': np.nanmean(diff),
                  'max': np.nanmax(diff),
+                 'shape': diff.shape[0],
+                 'sum': np.nansum(diff),
                  'min': np.nanmin(diff),
                  'median': np.nanmedian(diff),
                  'mad': mad_std(diff, ignore_nan=True),
@@ -75,6 +77,8 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
                  'min_post': np.nanmin(data_post),
                  'max_pre': np.nanmax(data_pre),
                  'max_post': np.nanmax(data_post),
+                 'sum_pre': np.nansum(data_pre),
+                 'sum_post': np.nansum(data_post),
                  'mad_pre': mad_std(data_pre, ignore_nan=True),
                  'mad_post':  mad_std(data_post, ignore_nan=True),
                 }
