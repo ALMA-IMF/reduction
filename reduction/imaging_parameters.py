@@ -305,13 +305,14 @@ imaging_parameters_nondefault = {
     'G338.93_B3_12M_robust-2': {'threshold': {'final': '0.30mJy'},
         'niter': {'final': 200000}},
     # G338.93 B3 12M bsens
-    'G338.93_B3_12M_robust0_bsens': {'threshold': {0:'0.34mJy'},
-        'niter':{0:2000}
+    'G338.93_B3_12M_robust0_bsens': {'threshold': {0:'0.34mJy', 1:'0.25mJy',
+        2:'0.15mJy', 3:'0.12mJy', 'final':'0.1mJy'},
+        'niter':{0:2000, 1:2000, 2:5000, 3:8000, 'final':200000}
         },
     'G338.93_B3_12M_robust2_bsens': {'threshold': {'final': '0.10mJy'},
-        'niter': {'final': 0}},
+        'niter': {'final': 200000}},
     'G338.93_B3_12M_robust-2_bsens': {'threshold': {'final': '0.30mJy'},
-        'niter': {'final': 0}},
+        'niter': {'final': 200000}},
     # G338.93 B3 7M12M
     'G338.93_B3_7M12M_robust0': {'threshold': {0: '0.5mJy', 1:'0.4mJy',
             2:'0.2mJy', 'final':'0.1mJy'},
@@ -1143,8 +1144,18 @@ selfcal_pars['G338.93_B3_12M_robust0_bsens'][1] = {'solint': 'inf',
                                             'solnorm': True,
                                             'combine':'scan'
                                           }
-del selfcal_pars['G338.93_B3_12M_robust0_bsens'][2]
-del selfcal_pars['G338.93_B3_12M_robust0_bsens'][3]
+selfcal_pars['G338.93_B3_12M_robust0_bsens'][2] = {'solint': '60s',
+                                            'gaintype': 'T',
+                                            'calmode': 'p',
+                                            'solnorm': True,
+                                            'combine': 'scan'
+                                            }
+selfcal_pars['G338.93_B3_12M_robust0_bsens'][3] = {'solint': 'inf',
+                                            'gaintype': 'T',
+                                            'calmode': 'ap',
+                                            'solnorm': True,
+                                            'combine': 'scan'
+                                            }
 del selfcal_pars['G338.93_B3_12M_robust0_bsens'][4]
 selfcal_pars['G338.93_B3_7M12M_robust0'][1] = {'solint': 'inf',
                                             'gaintype': 'T',

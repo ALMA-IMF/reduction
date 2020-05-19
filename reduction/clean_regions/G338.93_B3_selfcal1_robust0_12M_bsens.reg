@@ -1,0 +1,8 @@
+# Region file format: DS9 version 4.1
+# Filename: /home/myso/share/almaimf/G338/band3/imaging_results/G338.93_B3_uid___A001_X1296_X15b_continuum_merged_bsens_12M_robust0_preselfcal.image.tt0
+global color=green dash=0 dashlist=8 3 delete=1 edit=1 fixed=0 font="helvetica 10 normal roman" highlite=1 include=1 move=1 select=1 source=1 width=1
+fk5
+ellipse(-109.850433,-45.692948,3.42",2.14",0) # text={0.25mJy}
+ellipse(-109.859170,-45.693931,13.67",9.30",0) # text={0.25mJy}
+ellipse(-109.859170,-45.701794,8.25",7.49",0) # text={0.25mJy}
+ellipse(-109.862214,-45.703946,4.12",2.55",0) # text={0.25mJy}
