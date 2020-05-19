@@ -682,8 +682,9 @@ for continuum_ms in continuum_mses:
                          applymode='calonly',
                          calwt=False)
 
-            # do not run the clean if no mask exists
-            assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
+            if maskname:
+                # do not run the clean if no mask exists
+                assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
 
             # do this even if the output file exists: we need to populate the
             # modelcolumn
