@@ -9,14 +9,14 @@ from latex_info import (latexdict, format_float, round_to_n, rounded,
 latexdict = latexdict.copy()
 
 result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_sc.ecsv',
-             auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
+                      auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
 with open('metadata_sc.ecsv', 'w') as fh:
     fh.write(result.text)
 
 tbl = Table.read('metadata_sc.ecsv')
 
 # downselect
-keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor'])
+keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor']) & (~tbl['bsens'])
 
 
 wtbl = tbl[keep]
@@ -97,6 +97,8 @@ latexdict['tablefoot'] = ("}\par\n"
                           "Description"
 
                          )
+
+wtbl.sort('Region')
 
 wtbl.write("../datapaper/selfcal_summary.tex", formats=formats,
            overwrite=True, latexdict=latexdict)

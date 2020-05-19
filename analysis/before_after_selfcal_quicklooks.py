@@ -8,6 +8,8 @@ from astropy.table import Table, Column
 from spectral_cube import SpectralCube
 from astropy.stats import mad_std
 from astropy import log
+from astropy import units as u
+from astropy import wcs
 import pylab as pl
 
 
@@ -38,6 +40,13 @@ def make_comparison_image(preselfcal, postselfcal):
         log.error(preselfcal, postselfcal, cube_pre.shape, cube_post.shape)
         raise ex
 
+    ww = cube_post.wcs
+    beam = cube_post.beam
+    pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
+    ppbeam = (beam.sr / pixscale).decompose()
+    assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+    ppbeam = ppbeam.value
+
     fits.PrimaryHDU(data=diff,
                     header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits",
                                                      overwrite=True)
@@ -47,6 +56,8 @@ def make_comparison_image(preselfcal, postselfcal):
 
     minv = np.nanpercentile(data_pre, 0.05)
     maxv = np.nanpercentile(data_pre, 99.5)
+    if np.abs(minv) > maxv:
+        minv = -maxv
 
     norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
                                      #min_percent=0.05, max_percent=99.995,)
@@ -64,7 +75,7 @@ def make_comparison_image(preselfcal, postselfcal):
     ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none',
                cmap='gray')
     ax2.set_title("postselfcal")
-    ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none',
+    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none',
                cmap='gray')
     ax3.set_title("post-pre")
 
@@ -74,6 +85,9 @@ def make_comparison_image(preselfcal, postselfcal):
 
     pl.subplots_adjust(wspace=0.0)
 
+    cbax = fig.add_axes([0.91,0.18,0.03,0.64])
+    fig.colorbar(cax=cbax, mappable=im)
+
     diffstats = {'mean': np.nanmean(diff),
                  'max': np.nanmax(diff),
                  'min': np.nanmin(diff),
@@ -81,8 +95,14 @@ def make_comparison_image(preselfcal, postselfcal):
                  'mad': mad_std(diff, ignore_nan=True),
                  'dr_pre': np.nanmax(data_pre) / mad_std(data_pre, ignore_nan=True),
                  'dr_post': np.nanmax(data_post) / mad_std(data_post, ignore_nan=True),
+                 'min_pre': np.nanmin(data_pre),
+                 'min_post': np.nanmin(data_post),
                  'max_pre': np.nanmax(data_pre),
                  'max_post': np.nanmax(data_post),
+                 'sum_pre': np.nansum(data_pre),
+                 'sum_post': np.nansum(data_post),
+                 'shape': data_post.shape[0],
+                 'ppbeam': ppbeam,
                  'mad_pre': mad_std(data_pre, ignore_nan=True),
                  'mad_post':  mad_std(data_post, ignore_nan=True),
                 }
