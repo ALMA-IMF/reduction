@@ -10,7 +10,9 @@ from astropy.stats import mad_std
 from astropy import log
 import pylab as pl
 
-from before_after_selfcal_quicklooks import make_comparison_image, get_selfcal_number
+from compare_images import make_comparison_image
+
+from before_after_selfcal_quicklooks import get_selfcal_number
 
 cwd = os.getcwd()
 basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020'
@@ -79,7 +81,12 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 try:
                     with warnings.catch_warnings():
                         warnings.filterwarnings('ignore')
-                        ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name, postselfcal_name)
+                        ax1, ax2, ax3, fig, diffstats =
+                        make_comparison_image(preselfcal_name,
+                                              postselfcal_name,
+                                              title1='Preselfcal',
+                                              title2='Postselfcal',
+                                              writediff=True)
                     if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
                         os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
                     pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')

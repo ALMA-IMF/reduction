@@ -4,7 +4,7 @@ from astropy.stats import mad_std
 from astropy import units as u
 import pylab as pl
 import numpy as np
-import radio_beam
+from astropy.io import fits
 from astropy import wcs
 
 
@@ -40,7 +40,8 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     if writediff:
         fits.PrimaryHDU(data=diff,
-                        header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits",
+                        header=cube_post.header).writeto(filename2.split(".fits")[0]
+                                                         + ".preselfcal-diff.fits",
                                                          overwrite=True)
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
@@ -64,10 +65,13 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     ax3 = pl.subplot(1,3,3)
     for ax in (ax1,ax2,ax3):
         ax.cla()
+
     ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none', cmap=cm)
     ax1.set_title(title1)
+
     ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none', cmap=cm)
     ax2.set_title(title2)
+
     im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none', cmap=cm)
     ax3.set_title(f"{title2} - {title1}")
 
