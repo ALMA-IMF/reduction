@@ -944,7 +944,7 @@ for continuum_ms in continuum_mses:
             from astropy.io import fits
             fh = fits.open(imname+".image.tt0.fits")
             fh[0].data = post-pre
-            fh.writeto(imname.replace("post", "post-pre")+".fits")
+            fh.writeto(imname.replace("post", "post-pre")+".fits", overwrite=True)
 
 
     logprint("Completed band {0}".format(band),

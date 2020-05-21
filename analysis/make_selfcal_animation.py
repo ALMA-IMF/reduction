@@ -17,7 +17,7 @@ pl.rcParams['ytick.color'] = 'w'
 pl.rcParams['xtick.color'] = 'w'
 
 
-def make_anim(imname, nselfcaliter=7):
+def make_anim(imname, nselfcaliter=8):
     # base imname: W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0
 
     fig, (ax1, ax2, ax3) = pl.subplots(ncols=3, figsize=(18,6))
