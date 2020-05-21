@@ -13,6 +13,7 @@ from astropy import wcs
 import pylab as pl
 
 
+from compare_images import make_comparison_images
 
 def get_selfcal_number(fn):
     numberstring = fn.split("selfcal")[1][0]
