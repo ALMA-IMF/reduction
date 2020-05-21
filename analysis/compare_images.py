@@ -8,14 +8,14 @@ import radio_beam
 from astropy import wcs
 
 
-def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest'):
+def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False):
     #fh_pre = fits.open()
     #fh_post = fits.open()
     cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image')
     cube_post = SpectralCube.read(filename2, format='fits' if 'fits' in filename2 else 'casa_image')
     cube_pre = cube_pre.with_mask(cube_pre != 0*cube_pre.unit)
     cube_post = cube_post.with_mask(cube_post != 0*cube_post.unit)
-    slices = cube_pre.subcube_slices_from_mask(cube_pre.mask,
+    slices = cube_pre.subcube_slices_from_mask(cube_pre.mask & cube_post.mask,
                                                spatial_only=True)[1:]
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
@@ -38,11 +38,17 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
     ppbeam = ppbeam.value
 
+    if writediff:
+        fits.PrimaryHDU(data=diff,
+                        header=cube_post.header).writeto(postselfcal+".preselfcal-diff.fits",
+                                                         overwrite=True)
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
 
     minv = np.nanpercentile(data_pre, 0.05)
     maxv = np.nanpercentile(data_pre, 99.5)
+    if np.abs(minv) > maxv:
+        minv = -maxv
 
     norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
                                      #min_percent=0.05, max_percent=99.995,)
@@ -50,7 +56,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if norm.vmax < 0.001:
         norm.vmax = 0.001
 
-    cm = pl.matplotlib.cm.viridis
+    cm = pl.matplotlib.cm.gray
     cm.set_bad('white', 0)
 
     ax1 = pl.subplot(1,3,1)
@@ -94,4 +100,4 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
                  'mad_post':  mad_std(data_post, ignore_nan=True),
                 }
 
-    return ax1,ax2,ax3,fig,diffstats
+    return ax1, ax2, ax3, fig, diffstats
