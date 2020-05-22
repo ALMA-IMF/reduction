@@ -38,7 +38,7 @@ for fn in filelist:
     fh2 = fits.open(autoname)
 
     if (fh1[0].data.shape == fh2[0].data.shape):
-        make_comparison_image(fn, autoname, title1='Delivered', title2='Auto')
+        make_comparison_image(fn, autoname, title1='Delivered', title2='Auto', allow_reproj=True)
         pl.savefig(f"{basepath}/comparisons/auto_vs_not_{basename.replace('.fits','')}.png", bbox_inches='tight', dpi=200)
     else:
         print(f"Skipping {fn} because there was a shape mismatch.")

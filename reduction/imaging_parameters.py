@@ -314,28 +314,16 @@ imaging_parameters_nondefault = {
     },
     "G338.93_B3_12M_robust0": {
         "threshold": {0: "0.36mJy", 1: "0.30mJy", 2: "0.15mJy", "final": "0.1mJy"},
-        "niter": {0: 2000, 1: 2000, 2: 5000, "final": 200000}
+        "niter": {0: 2000, 1: 2000, 2: 5000, "final": 200000},
     },
-    "G338.93_B3_12M_robust2": {
-        "threshold": {"final": "0.10mJy"}, 
-        "niter": {"final": 200000}
-    },
-    "G338.93_B3_12M_robust-2": {
-        "threshold": {"final": "0.30mJy"}, 
-        "niter": {"final": 200000}
-    },
+    "G338.93_B3_12M_robust2": {"threshold": {"final": "0.10mJy"}, "niter": {"final": 200000}},
+    "G338.93_B3_12M_robust-2": {"threshold": {"final": "0.30mJy"}, "niter": {"final": 200000}},
     "G338.93_B3_12M_robust0_bsens": {
-        "threshold": {0: "0.34mJy", 1: '0.25mJy', 2: '0.15mJy', 3: '0.12mJy', 'final':'0.1mJy'}, 
-        "niter": {0: 2000, 1: 2000, 2: 5000, 3: 8000, 'final': 200000}
+        "threshold": {0: "0.34mJy", 1: "0.25mJy", 2: "0.15mJy", 3: "0.12mJy", "final": "0.1mJy"},
+        "niter": {0: 2000, 1: 2000, 2: 5000, 3: 8000, "final": 200000},
     },
-    "G338.93_B3_12M_robust2_bsens": {
-        "threshold": {"final": "0.10mJy"}, 
-        "niter": {"final": 200000}
-    },
-    "G338.93_B3_12M_robust-2_bsens": {
-        "threshold": {"final": "0.30mJy"}, 
-        "niter": {"final": 200000}
-    },
+    "G338.93_B3_12M_robust2_bsens": {"threshold": {"final": "0.10mJy"}, "niter": {"final": 200000}},
+    "G338.93_B3_12M_robust-2_bsens": {"threshold": {"final": "0.30mJy"}, "niter": {"final": 200000}},
     "G338.93_B3_7M12M_robust0": {
         "threshold": {0: "0.5mJy", 1: "0.4mJy", 2: "0.2mJy", "final": "0.1mJy"},
         "niter": {0: 2000, 1: 5000, 2: 8000, "final": 200000},
@@ -348,15 +336,7 @@ imaging_parameters_nondefault = {
         "scales": [0, 3, 9, 27],
     },
     "W51-E_B3_12M_robust0": {
-        "threshold": {
-            0: "0.15mJy",
-            1: "0.15mJy",
-            2: "0.1mJy",
-            3: "0.09mJy",
-            4: "0.09mJy",
-            5: "0.08mJy",
-            6: "0.07mJy",
-        },
+        "threshold": {0: "0.15mJy", 1: "0.15mJy", 2: "0.1mJy", 3: "0.09mJy", 4: "0.09mJy", 5: "0.08mJy", 6: "0.07mJy",},
         "scales": [0, 3, 9, 27],
         "imsize": [5000, 5000],
         "cell": ["0.0375arcsec", "0.0375arcsec"],
@@ -365,8 +345,8 @@ imaging_parameters_nondefault = {
     "W51-E_B3_12M_robust-2": {"threshold": "1mJy", "scales": [0, 3, 9]},
     "W51-E_B6_7M12M_robust0": {"threshold": "3mJy", "scales": [0, 3, 9, 27]},
     "W51-E_B3_7M12M_robust0": {
-        "threshold": "1mJy",
-        "scales": [0, 3, 9, 27],
+        "threshold": {0: "5mJy", 1: "3mJy", 2: "1mJy", 3: "1mJy"},
+        "scales": {0: [9, 27], 1: [3, 9, 27], 2: [0, 3, 9, 27], 3: [0, 3, 9, 27],},
         "cell": ["0.0375arcsec", "0.0375arcsec"],
         "imsize": [5000, 5000],
     },
@@ -527,18 +507,10 @@ imaging_parameters_nondefault = {
     "G327.29_B3_12M_robust0": {
         "threshold": {0: "1.5mJy", 1: "0.6mJy", 2: "0.5mJy", "final": "0.4mJy"},
         "niter": {0: 1000, 1: 2000, 2: 5000, "final": 200000},
-        "scales": [0, 3, 9, 27]
+        "scales": [0, 3, 9, 27],
     },
-    "G327.29_B3_12M_robust-2": {
-        "threshold": {"final": "0.4mJy"}, 
-        "niter": {"final": 200000}, 
-        "scales": [0, 3, 9, 27]
-    },
-    "G327.29_B3_12M_robust2": {
-        "threshold": {"final": "0.4mJy"}, 
-        "niter": {"final": 200000}, 
-        "scales": [0, 3, 9, 27]
-    },
+    "G327.29_B3_12M_robust-2": {"threshold": {"final": "0.4mJy"}, "niter": {"final": 200000}, "scales": [0, 3, 9, 27]},
+    "G327.29_B3_12M_robust2": {"threshold": {"final": "0.4mJy"}, "niter": {"final": 200000}, "scales": [0, 3, 9, 27]},
     "G327.29_B3_7M12M_robust0": {
         "threshold": {0: "2.0mJy", 1: "1.8mJy", "final": "1.5mJy"},
         "niter": {0: 5000, 1: 5000, "final": 200000},
@@ -549,11 +521,7 @@ imaging_parameters_nondefault = {
         "niter": {"final": 200000},
         "scales": [0, 3, 9, 27],
     },
-    "G327.29_B3_7M12M_robust2": {
-        "threshold": {"final": "0.5mJy"}, 
-        "niter": {"final": 100000}, 
-        "scales": [0, 3, 9, 27]
-    },
+    "G327.29_B3_7M12M_robust2": {"threshold": {"final": "0.5mJy"}, "niter": {"final": 100000}, "scales": [0, 3, 9, 27]},
     "G327.29_B6_12M_robust0": {
         "threshold": {0: "2.0mJy", 1: "1.5mJy", 2: "1.0mJy", 3: "1.0mJy", 4: "0.8mJy", 5: "0.5mJy", "final": "0.5mJy"},
         "niter": {0: 1000, 1: 1000, 2: 5000, 3: 8000, 4: 10000, 5: 10000, "final": 20000},
@@ -991,27 +959,22 @@ selfcal_pars["G338.93_B3_12M_robust0_bsens"][1] = {
     "solnorm": True,
     "combine": "scan",
 }
-selfcal_pars['G338.93_B3_12M_robust0_bsens'][2] = {
-    'solint': '60s',
-    'gaintype': 'T',
-    'calmode': 'p',
-    'solnorm': True,
-    'combine': 'scan'
+selfcal_pars["G338.93_B3_12M_robust0_bsens"][2] = {
+    "solint": "60s",
+    "gaintype": "T",
+    "calmode": "p",
+    "solnorm": True,
+    "combine": "scan",
 }
-selfcal_pars['G338.93_B3_12M_robust0_bsens'][3] = {
-    'solint': 'inf',
-    'gaintype': 'T',
-    'calmode': 'ap',
-    'solnorm': True,
-    'combine': 'scan'
+selfcal_pars["G338.93_B3_12M_robust0_bsens"][3] = {
+    "solint": "inf",
+    "gaintype": "T",
+    "calmode": "ap",
+    "solnorm": True,
+    "combine": "scan",
 }
 del selfcal_pars["G338.93_B3_12M_robust0_bsens"][4]
-selfcal_pars["G338.93_B3_7M12M_robust0"][1] = {
-    "solint": "inf", 
-    "gaintype": "T", 
-    "calmode": "p", 
-    "solnorm": True
-}
+selfcal_pars["G338.93_B3_7M12M_robust0"][1] = {"solint": "inf", "gaintype": "T", "calmode": "p", "solnorm": True}
 selfcal_pars["G338.93_B3_7M12M_robust0"][2] = {
     "solint": "60s",
     "gaintype": "T",

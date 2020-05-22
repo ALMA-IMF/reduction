@@ -115,16 +115,40 @@ class MyEncoder(json.JSONEncoder):
         else:
             return super(MyEncoder, self).default(obj)
 
-def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
-    base_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true"
-    form_url_dict = {#"868884739":"{reviewer}",
-                     "639517087": "{field}",
-                     "400258516": "{band}",
-                     "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
-                     "312922422": "{array}",
-                     "678487127": "{robust}",
-                     #"1301985958": "{comment}",
-                    }
+def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_,
+                                 base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true"):
+
+    if '1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug' in base_form_url:
+        #entry.868884739: reviwername
+        #entry.1301985958: comment
+        #entry.457220938.other_option_response: goodenoughforrelease
+        #entry.457220938: __other_option__
+        #entry.639517087: field
+        #entry.400258516: 3
+        #entry.841871158: selfcaliter
+        #entry.312922422: 12M
+        #entry.678487127: -2
+        #fvv: 1
+        #draftResponse: [null,null,"6280405489446951000"]
+        #pageHistory: 0
+        #fbzx: 6280405489446951000
+        form_url_dict = {#"868884739":"{reviewer}",
+                         "639517087": "{field}",
+                         "400258516": "{band}",
+                         "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
+                         "312922422": "{array}",
+                         "678487127": "{robust}",
+                         #"1301985958": "{comment}",
+                        }
+    elif '1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug' in base_form_url:
+        form_url_dict = {#"868884739":"{reviewer}",
+                         "639517087": "{field}",
+                         "400258516": "{band}",
+                         "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
+                         "312922422": "{array}",
+                         "678487127": "{robust}",
+                         #"1301985958": "{comment}",
+                        }
     form_url = base_form_url + "".join(f'&entry.{key}={value}' for key,value in form_url_dict.items())
 
     template = """
@@ -168,7 +192,8 @@ def get_selfcal_number(fn):
     except:
         return 0
 
-def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
+def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/",
+                        base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true"):
     import glob
     from diagnostic_images import load_images, show as show_images
     from astropy import visualization
@@ -281,6 +306,7 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                                      savepath=savepath,
                                      prev=prev,
                                      next_=next_,
+                                     base_form_url=base_form_url
                                     )
         metadata['outname'] = outname
         metadata['suffix'] = suffix
@@ -424,11 +450,11 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     tbl.add_column(Column(name='SensVsReq', data=tbl['mad']*1e3/tbl['Req_Sens']))
     tbl.add_column(Column(name='BeamVsReq', data=(tbl['bmaj']*tbl['bmin'])**0.5/tbl['Req_Res']))
 
-    tbl.write(f'{basepath}/metadata.ecsv', overwrite=True)
-    tbl.write(f'{basepath}/metadata.html',
+    tbl.write(f'{basepath}/tables/metadata.ecsv', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata.html',
               format='ascii.html', overwrite=True)
-    tbl.write(f'{basepath}/metadata.tex', overwrite=True)
-    tbl.write(f'{basepath}/metadata.js.html',
+    tbl.write(f'{basepath}/tables/metadata.tex', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata.js.html',
               format='jsviewer')
 
     return tbl
@@ -436,7 +462,10 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
 if __name__ == "__main__":
     import socket
     if 'ufhpc' in socket.gethostname():
-        for basepath in ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
-                         "/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
+        for basepath,formid in (("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/", "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                                ("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/", "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                                ("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")):
+
+            base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
             tbl = savestats(basepath=basepath)
-            make_analysis_forms(basepath=basepath)
+            make_analysis_forms(basepath=basepath, base_form_url=base_form_url)

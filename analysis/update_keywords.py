@@ -1,6 +1,6 @@
 from astropy.io import fits
 
-keywords = ["niter", "deconvolver", "scales", "pblimit", "weighting", "specmode", "nterms", "threshold", "robust", "gridder", "git_version", "git_date",]
+KEYWORDS = ["niter", "deconvolver", "scales", "pblimit", "weighting", "specmode", "nterms", "threshold", "robust", "gridder", "git_version", "git_date",]
 
 def has_history(filename):
 
@@ -15,7 +15,7 @@ def has_history(filename):
 
     for row in history:
         key = row.split(": ")[0]
-        if key in keywords:
+        if key in KEYWORDS:
             OK = OK | {key}
 
     if len(OK) > 2:
@@ -33,10 +33,12 @@ def update_header_from_history(filename):
 
     for row in header['HISTORY']:
         key = row.split(": ")[0]
-        if key in keywords:
+        if key in KEYWORDS:
             value = row.split(key+": ")[1]
-            header[key[:8]] = value
             update_keywords[key[:8]] = value
+
+    for key,value in update_keywords.items():
+        header[key] = value
 
     fh.flush()
     fh.close()
@@ -79,3 +81,7 @@ if __name__ == "__main__":
                     fullpath = os.path.join(root, ".".join([basename, suffix]))
                     if os.path.exists(fullpath):
                         update_header_from_keywords(fullpath, keywords)
+
+
+                if 'W51-E/B3/bsens' in fullpath:
+                    print(fullpath, basename, keywords)
