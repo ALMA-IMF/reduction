@@ -8,11 +8,17 @@ from astropy.io import fits
 from astropy import wcs
 
 
-def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False):
+def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False):
     #fh_pre = fits.open()
     #fh_post = fits.open()
     cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image')
     cube_post = SpectralCube.read(filename2, format='fits' if 'fits' in filename2 else 'casa_image')
+
+    if allow_reproj:
+        if cube_pre.shape != cube_post.shape:
+            cube_post = cube_post.reproject(cube_pre.header)
+
+
     cube_pre = cube_pre.with_mask(cube_pre != 0*cube_pre.unit)
     cube_post = cube_post.with_mask(cube_post != 0*cube_post.unit)
     slices = cube_pre.subcube_slices_from_mask(cube_pre.mask & cube_post.mask,
@@ -45,6 +51,12 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
                                                          overwrite=True)
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
+
+    if fig.get_figheight() != 6:
+        fig.set_figheight(6)
+    if fig.get_figwidth() != 14:
+        fig.set_figwidth(14)
+
 
     minv = np.nanpercentile(data_pre, 0.05)
     maxv = np.nanpercentile(data_pre, 99.5)
@@ -84,14 +96,21 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     cbax = fig.add_axes([0.91,0.18,0.03,0.64])
     fig.colorbar(cax=cbax, mappable=im)
 
+    mad_pre = mad_std(data_pre, ignore_nan=True)
+    mad_post = mad_std(data_post, ignore_nan=True)
+
+    mad_diff = mad_std(diff, ignore_nan=True)
+    diffmask = np.abs(diff) > 3*mad_diff
+
     diffstats = {'mean': np.nanmean(diff),
                  'max': np.nanmax(diff),
                  'shape': diff.shape[0],
                  'ppbeam': ppbeam,
                  'sum': np.nansum(diff),
+                 'masksum': diff[diffmask].sum(),
                  'min': np.nanmin(diff),
                  'median': np.nanmedian(diff),
-                 'mad': mad_std(diff, ignore_nan=True),
+                 'mad': mad_diff,
                  'dr_pre': np.nanmax(data_pre) / mad_std(data_pre, ignore_nan=True),
                  'dr_post': np.nanmax(data_post) / mad_std(data_post, ignore_nan=True),
                  'min_pre': np.nanmin(data_pre),
@@ -100,8 +119,10 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
                  'max_post': np.nanmax(data_post),
                  'sum_pre': np.nansum(data_pre),
                  'sum_post': np.nansum(data_post),
-                 'mad_pre': mad_std(data_pre, ignore_nan=True),
-                 'mad_post':  mad_std(data_post, ignore_nan=True),
+                 'masksum_pre': (data_pre[data_pre > mad_pre*3]).sum(),
+                 'masksum_post': (data_post[data_post > mad_post*3]).sum(),
+                 'mad_pre': mad_pre,
+                 'mad_post':  mad_post,
                 }
 
     return ax1, ax2, ax3, fig, diffstats

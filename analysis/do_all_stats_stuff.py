@@ -11,6 +11,8 @@ runpy.run_path('before_after_selfcal_quicklooks_October31_2019_release.py', run_
 pl.close('all')
 runpy.run_path('dirty_selfcal_compare.py', run_name="__main__")
 pl.close('all')
+runpy.run_path('7m12m_comparison.py', run_name="__main__")
+pl.close('all')
 runpy.run_path('bsens_comparison.py', run_name="__main__")
 pl.close('all')
 # done by before_after_* above runpy.run_path('imstats.py', run_name="__main__")

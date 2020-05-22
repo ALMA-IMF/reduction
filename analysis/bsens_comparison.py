@@ -29,12 +29,16 @@ tbl.add_column(Column(name='contselMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='contselMADDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='contselMeanDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='contselMedianDiff', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='contselSumDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='shape', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='ppbeam', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='masksum_bsens', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='masksum_cleanest', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='sum_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='sum_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='sum_diff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='min_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='min_cleanest', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='max_bsens', data=[np.nan]*len(tbl)))
@@ -75,8 +79,11 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
 
             fig = pl.figure(1, figsize=(14,6))
-            assert fig.get_figheight() == 14
-            assert fig.get_figwidth() == 6
+
+            if fig.get_figheight() != 6:
+                fig.set_figheight(6)
+            if fig.get_figwidth() != 14:
+                fig.set_figwidth(14)
 
             try:
                 with warnings.catch_warnings():
@@ -108,6 +115,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             tbl['contselMADDiff'][matchrow] = diffstats['mad']
             tbl['contselMeanDiff'][matchrow] = diffstats['mean']
             tbl['contselMedianDiff'][matchrow] = diffstats['median']
+            tbl['contselSumDiff'][matchrow] = diffstats['sum']
             tbl['dr_bsens'][matchrow] = diffstats['dr_pre']
             tbl['dr_cleanest'][matchrow] = diffstats['dr_post']
             tbl['min_bsens'][matchrow] = diffstats['min_pre']
@@ -116,6 +124,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             tbl['max_cleanest'][matchrow] = diffstats['max_post']
             tbl['sum_bsens'][matchrow] = diffstats['sum_pre']
             tbl['sum_cleanest'][matchrow] = diffstats['sum_post']
+            tbl['masksum_bsens'][matchrow] = diffstats['masksum_pre']
+            tbl['masksum_cleanest'][matchrow] = diffstats['masksum_post']
             tbl['shape'][matchrow] = diffstats['shape']
             tbl['ppbeam'][matchrow] = diffstats['ppbeam']
             tbl['mad_bsens'][matchrow] = diffstats['mad_pre']
