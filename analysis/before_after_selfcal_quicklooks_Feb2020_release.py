@@ -79,8 +79,11 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     raise ValueError("?!?!?!")
 
                 fig = pl.figure(1, figsize=(14,6))
-                assert fig.get_figheight() == 14
-                assert fig.get_figwidth() == 6
+                if fig.get_figheight() != 6:
+                    fig.set_figheight(6)
+                if fig.get_figwidth() != 14:
+                    fig.set_figwidth(14)
+
 
 
                 try:

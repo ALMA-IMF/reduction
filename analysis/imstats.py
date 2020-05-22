@@ -65,7 +65,10 @@ def parse_fn(fn):
             robust_entry = entry
 
 
-    selfcaliter = int(selfcal_entry.split('selfcal')[-1])
+    if selfcal_entry == 'postselfcal':
+        selfcaliter = 'Last'
+    else:
+        selfcaliter = int(selfcal_entry.split('selfcal')[-1])
     robust = float(robust_entry.split('robust')[-1])
 
     return {'region': split[0],
