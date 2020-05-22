@@ -140,7 +140,7 @@ def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_,
                          "678487127": "{robust}",
                          #"1301985958": "{comment}",
                         }
-    elif '1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug' in base_form_url:
+    elif '1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2' in base_form_url:
         form_url_dict = {#"868884739":"{reviewer}",
                          "639517087": "{field}",
                          "400258516": "{band}",
@@ -207,8 +207,9 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         pass
 
 
+
     filedict = {(field, band, config, robust, selfcal):
-        glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
+        glob.glob(f"{field}/B{band}/{imtype}{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
                 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
                 for band in (3,6)
                 #for config in ('7M12M', '12M')
@@ -216,6 +217,7 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                 #for robust in (-2, 0, 2)
                 for robust in (0,)
                 for selfcal in ("",) + tuple(range(0,9))
+                for imtype in (('',) if 'October31' in basepath else ('cleanest/', 'bsens/'))
                }
     badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
     print(f"Bad files: {badfiledict}")
@@ -461,11 +463,15 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
 
 if __name__ == "__main__":
     import socket
+    cwd = os.getcwd()
     if 'ufhpc' in socket.gethostname():
         for basepath,formid in (("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/", "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                                ("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/", "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                                ("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")):
+                                #("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/", "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                                #("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
+                               ):
 
+            os.chdir(basepath)
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
-            tbl = savestats(basepath=basepath)
             make_analysis_forms(basepath=basepath, base_form_url=base_form_url)
+            # done a million times elsewhere? tbl = savestats(basepath=basepath)
+    os.chdir(cwd)
