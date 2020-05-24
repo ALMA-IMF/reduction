@@ -145,15 +145,15 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.ecsv',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_bsens_cleanest.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_bsens_cleanest.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.tex',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_bsens_cleanest.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata_bsens_cleanest.js.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_bsens_cleanest.js.html',
           #formats=formats,
           format='jsviewer')
 

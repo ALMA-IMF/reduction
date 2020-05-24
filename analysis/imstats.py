@@ -7,6 +7,7 @@ from astropy import wcs
 from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
+import regions
 import os
 import glob
 
@@ -18,7 +19,7 @@ def get_requested_sens():
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
 
-def imstats(fn):
+def imstats(fn, reg=None):
     fh = fits.open(fn)
 
     bm = Beam.from_fits_header(fh[0].header)
@@ -36,7 +37,7 @@ def imstats(fn):
     ppbeam = ppbeam.value
 
 
-    return {'beam': bm.to_header_keywords(),
+    meta = {'beam': bm.to_header_keywords(),
             'bmaj': bm.major.to(u.arcsec).value,
             'bmin': bm.minor.to(u.arcsec).value,
             'bpa': bm.pa.value,
@@ -47,6 +48,22 @@ def imstats(fn):
             'sum': imsum,
             'fluxsum': imsum / ppbeam,
            }
+
+    if reg is not None:
+        reglist = regions.read_ds9(reg)
+        data = fh[0].data.squeeze()
+        fullmask = np.zeros(data.shape, dtype='bool')
+        for reg in reglist:
+
+            preg = reg.to_pixel(ww.celestial)
+            msk = preg.to_mask()
+            mimg = msk.to_reg()
+            fullmask |= mimg
+
+        meta['mad_sample'] = mad_std(data[fullmask], ignore_nan=True)
+        meta['std_sample'] = np.nanstd(data[fullmask])
+
+    return meta
 
 def parse_fn(fn):
 
@@ -88,6 +105,8 @@ def assemble_stats(globstr, ditch_suffix=None):
     allstats = []
 
     for fn in ProgressBar(glob.glob(globstr)):
+        if fn.endswith('diff.fits'):
+            continue
         if fn.count('.fits') > 1:
             # these are diff images, or something like that
             continue
@@ -98,10 +117,22 @@ def assemble_stats(globstr, ditch_suffix=None):
         else:
             meta = parse_fn(fn)
         meta['filename'] = fn
-        stats = imstats(fn)
+        stats = imstats(fn, reg=get_noise_region(meta['region'], meta['band']))
         allstats.append({'meta': meta, 'stats': stats})
 
     return allstats
+
+
+def get_noise_region(field, band):
+    basepath = os.path.dirname(__file__)
+    noisepath = os.path.join(basepath, 'noise_estimation_regions')
+    assert os.path.exists(noisepath)
+
+    regfn = f"{noisepath}/{field}_{band}_noise_sampling.reg"
+
+    if os.path.exists(regfn):
+        return regfn
+
 
 class MyEncoder(json.JSONEncoder):
     "https://stackoverflow.com/a/27050186/814354"
@@ -193,7 +224,9 @@ def get_selfcal_number(fn):
         return 0
 
 def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/",
-                        base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true"):
+                        base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true",
+                        dontskip_noresid=False
+                       ):
     import glob
     from diagnostic_images import load_images, show as show_images
     from astropy import visualization
@@ -242,6 +275,8 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
 
         image = fn
         basename,suffix = image.split(".image.tt0")
+        if 'diff' in suffix:
+            continue
         outname = basename.split("/")[-1]
 
         if prev == outname+".html":
@@ -283,14 +318,16 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         # (this call inplace-modifies logn, according to the docs)
         if 'residual' in imgs:
             norm(imgs['residual'][imgs['residual'] == imgs['residual']])
+            imnames_toplot = ('mask', 'model', 'image', 'residual')
+        elif 'image' in imgs and dontskip_noresid:
+            imnames_toplot = ('image', 'mask',)
+            norm(imgs['image'][imgs['image'] == imgs['image']])
         else:
-            print(f"Skipped {fn} because no residual was found.  imgs.keys={imgs.keys()}")
+            print(f"Skipped {fn} because no image OR residual was found.  imgs.keys={imgs.keys()}")
             continue
-        #elif 'image' in imgs:
-        #    norm(imgs['image'][imgs['image'] == imgs['image']])
         pl.close(1)
         pl.figure(1, figsize=(14,6))
-        show_images(imgs, norm=norm, imnames_toplot=('mask', 'model', 'image', 'residual'))
+        show_images(imgs, norm=norm, imnames_toplot=imnames_toplot)
 
         pl.savefig(f"{savepath}/{outname}.png",
                    dpi=150,
@@ -320,6 +357,8 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
 
     #make_rand_html(savepath)
     make_index(savepath, flist)
+
+    return flist
 
 def make_index(savepath, flist):
     css = """
@@ -423,7 +462,7 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     else:
         # extra layer: bsens, cleanest, etc
         stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
-    with open(f'{basepath}/metadata.json', 'w') as fh:
+    with open(f'{basepath}/tables/metadata.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
     requested = get_requested_sens()
@@ -465,13 +504,16 @@ if __name__ == "__main__":
     import socket
     cwd = os.getcwd()
     if 'ufhpc' in socket.gethostname():
-        for basepath,formid in (("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/", "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                                #("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/", "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                                #("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
-                               ):
+        for basepath,formid in (
+                ("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/",
+                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
+                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+               #("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
+               ):
 
             os.chdir(basepath)
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
-            make_analysis_forms(basepath=basepath, base_form_url=base_form_url)
+            flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2020' in basepath)
             # done a million times elsewhere? tbl = savestats(basepath=basepath)
     os.chdir(cwd)

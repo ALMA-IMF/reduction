@@ -13,12 +13,15 @@ def load_images(basename, suffix=None, crop=True):
 
     sfx = '.fits' if '.fits' in suffix else ''
 
+    kws = {'basename': basename,
+           'suffix': suffix}
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        cubes = {imn: SpectralCube.read('{basename}.{imn}.tt0{suffix}'.format(**locals()),
+        cubes = {imn: SpectralCube.read('{basename}.{imn}.tt0{suffix}'.format(imn=imn, **kws),
                                         format='fits' if 'fits' in sfx else 'casa_image')
                  for imn in imnames
-                 if os.path.exists('{basename}.{imn}.tt0{suffix}'.format(**locals()))
+                 if os.path.exists('{basename}.{imn}.tt0{suffix}'.format(imn=imn, **kws))
                 }
 
 
@@ -30,8 +33,8 @@ def load_images(basename, suffix=None, crop=True):
         if cubes[key].spectral_axis.unit != cubes['image'].spectral_axis.unit:
             cubes[key] = cubes[key].with_spectral_unit(cubes['image'].spectral_axis.unit)
 
-    if os.path.exists('{basename}.pb.tt0{suffix}'.format(**locals())):
-        pb = SpectralCube.read('{basename}.pb.tt0{suffix}'.format(**locals()),
+    if os.path.exists('{basename}.pb.tt0{suffix}'.format(**kws)):
+        pb = SpectralCube.read('{basename}.pb.tt0{suffix}'.format(**kws),
                                format='fits' if 'fits' in suffix else 'casa_image')
 
         # pb can have a bad CD in its wcs, but that CD is totally
@@ -77,7 +80,7 @@ def load_images(basename, suffix=None, crop=True):
 
 
     try:
-        casamask = SpectralCube.read('{basename}.mask{suffix}'.format(**locals()),
+        casamask = SpectralCube.read('{basename}.mask{suffix}'.format(**kws),
                                      format='fits' if 'fits' in suffix else 'casa_image')
         cubes['mask'] = casamask
         if include_mask is not None:
@@ -102,6 +105,7 @@ asinhn = visualization.ImageNormalize(stretch=visualization.AsinhStretch())
 
 def show(imgs, zoom=None, clear=True, norm=asinhn,
          imnames_toplot=('mask', 'model', 'image', 'residual'),
+         cmap='gray_r',
          **kwargs):
 
     if clear:
@@ -135,7 +139,7 @@ def show(imgs, zoom=None, clear=True, norm=asinhn,
         view = tuple(view)
 
         ax.imshow(imgs[imn].value[view], origin='lower', interpolation='none',
-                  norm=norm, **kwargs)
+                  norm=norm, cmap=cmap, **kwargs)
 
         if imn == 'model' and 'mask' in imgs:
             ax.contour(imgs['mask'].value[view], levels=[0.5], colors=['w'],
