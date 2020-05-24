@@ -2,11 +2,13 @@ import numpy as np
 from astropy.table import Table
 
 tbl_selfcal = Table.read('metadata_sc.ecsv')
-keep_selfcal = (tbl_selfcal['suffix'] == 'finaliter') & (tbl_selfcal['robust'] == 'r0.0') & (tbl_selfcal['pbcor']) & (~tbl_selfcal['bsens'])
+bad = np.array(['diff' in x for x in tbl_selfcal['filename']])
+keep_selfcal = (tbl_selfcal['suffix'] == 'finaliter') & (tbl_selfcal['robust'] == 'r0.0') & (tbl_selfcal['pbcor']) & (~tbl_selfcal['bsens']) & (~bad)
 wtbl_selfcal = tbl_selfcal[keep_selfcal]
 
 tbl_bsens = Table.read('metadata_bsens_cleanest.ecsv')
-keep_bsens = (tbl_bsens['suffix'] == 'finaliter') & (tbl_bsens['robust'] == 'r0.0') & (tbl_bsens['pbcor']) & (tbl_bsens['bsens'])
+bad = np.array(['diff' in x for x in tbl_bsens['filename']])
+keep_bsens = (tbl_bsens['suffix'] == 'finaliter') & (tbl_bsens['robust'] == 'r0.0') & (tbl_bsens['pbcor']) & (tbl_bsens['bsens']) & (~bad)
 wtbl_bsens = tbl_bsens[keep_bsens]
 
 
@@ -69,6 +71,7 @@ pl.savefig("../datapaper/figures/bsens_flux_change.png", bbox_inches='tight')
 
 
 
+# THIS IS NONSENSE!!!
 fig3 = pl.figure(3, figsize=(10,5))
 fig3.clf()
 ax1 = pl.subplot(1,2,1)
@@ -101,8 +104,12 @@ fig1.clf()
 ax1 = pl.subplot(1,2,1)
 ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3style)
 ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style)
-ax1.annotate('W51-E', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-E')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]))
-#ax1.annotate('G012.80', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'G012.80')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'G012.80')]))
+ax1.annotate('W51-E', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-E')],
+                       wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]))
+ax1.annotate('W51-IRS2', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')],
+                          wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
+#ax1.annotate('G010.62', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'G010.62')],
+#                         wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]))
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.set_xlabel("Sum [Jy]")
 ax1.set_ylabel("Sensitivity / Requested Sensitivity")
@@ -112,7 +119,8 @@ ax2.plot(wtbl_selfcal['max_post'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3st
 ax2.plot(wtbl_selfcal['max_post'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style, label='B6')
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
 ax2.annotate('W51-E', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-E')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]))
-#ax2.annotate('G012.80', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'G012.80')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'G012.80')]))
+ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
+ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
 ax2.set_ylabel("Sensitivity / Requested Sensitivity")
 pl.legend(loc='best')
@@ -170,3 +178,64 @@ pl.legend(loc='best')
 
 pl.savefig("../datapaper/figures/dynamic_range.pdf", bbox_inches='tight')
 pl.savefig("../datapaper/figures/dynamic_range.png", bbox_inches='tight')
+
+
+
+
+
+b3bs = wtbl_bsens['band'] == 'B3'
+b6bs = wtbl_bsens['band'] == 'B6'
+
+fig7 = pl.figure(7, figsize=(10,5))
+fig7.clf()
+ax1 = pl.subplot(1,2,1)
+ax1.plot(wtbl_bsens['sum_bsens'][b3bs]/wtbl_bsens['ppbeam'][b3bs], wtbl_bsens['SensVsReq'][b3bs], **b3style)
+ax1.plot(wtbl_bsens['sum_bsens'][b6bs]/wtbl_bsens['ppbeam'][b6bs], wtbl_bsens['SensVsReq'][b6bs], **b6style)
+ax1.annotate('W51-E', (wtbl_bsens['sum_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-E')]/wtbl_bsens['ppbeam'][b3bs & (wtbl_bsens['region'] == 'W51-E')],
+                       wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-E')]))
+ax1.annotate('W51-IRS2', (wtbl_bsens['sum_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')]/wtbl_bsens['ppbeam'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')],
+                          wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')]))
+#ax1.annotate('G010.62', (wtbl_bsens['sum_bsens'][b3bs & (wtbl_bsens['region'] == 'G010.62')]/wtbl_bsens['ppbeam'][b3bs & (wtbl_bsens['region'] == 'G010.62')],
+#                         wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'G010.62')]))
+ax1.plot(ax1.get_xlim(), [1,1], 'k--')
+ax1.set_xlabel("Sum [Jy]")
+ax1.set_ylabel("Sensitivity / Requested Sensitivity")
+
+ax2 = pl.subplot(1,2,2)
+ax2.plot(wtbl_bsens['max_bsens'][b3bs], wtbl_bsens['SensVsReq'][b3bs], **b3style, label='B3')
+ax2.plot(wtbl_bsens['max_bsens'][b6bs], wtbl_bsens['SensVsReq'][b6bs], **b6style, label='B6')
+ax2.plot(ax2.get_xlim(), [1,1], 'k--')
+ax2.annotate('W51-E', (wtbl_bsens['max_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-E')], wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-E')]))
+ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')], wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')]))
+ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b6bs & (wtbl_bsens['region'] == 'W51-IRS2')], wtbl_bsens['SensVsReq'][b6bs & (wtbl_bsens['region'] == 'W51-IRS2')]))
+ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
+ax2.set_ylabel("Sensitivity / Requested Sensitivity")
+pl.legend(loc='best')
+
+pl.savefig("../datapaper/figures/noise_excess_bsens.pdf", bbox_inches='tight')
+pl.savefig("../datapaper/figures/noise_excess_bsens.png", bbox_inches='tight')
+
+
+
+
+fig8 = pl.figure(8, figsize=(10,5))
+fig8.clf()
+ax1 = pl.subplot(1,2,1)
+ax1.hist(wtbl_bsens['SensVsReq'][b3bs], bins=np.linspace(0.8, 10, 10), alpha=0.5)
+ax1.hist(wtbl_selfcal['SensVsReq'][b3sc], bins=np.linspace(0.8, 10, 10), alpha=0.5)
+ax1.set_xlabel("Sensitivity / Requested Sensitivity")
+ax1.set_title("B3")
+
+ax2 = pl.subplot(1,2,2)
+ax2.hist(wtbl_bsens['SensVsReq'][b6bs], bins=np.linspace(0.8, 7, 15), alpha=0.5, label='BSENS')
+ax2.hist(wtbl_selfcal['SensVsReq'][b6sc], bins=np.linspace(0.8, 7, 15), alpha=0.5, label='Cleanest')
+ax2.set_xlabel("Sensitivity / Requested Sensitivity")
+ax2.set_title("B6")
+pl.legend(loc='best')
+
+
+pl.savefig("../datapaper/figures/noise_excess_bsens_vs_selfcal.pdf", bbox_inches='tight')
+pl.savefig("../datapaper/figures/noise_excess_bsens_vs_selfcal.png", bbox_inches='tight')
+
+
+

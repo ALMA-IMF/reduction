@@ -57,8 +57,7 @@ def imstats(fn, reg=None):
 
             preg = reg.to_pixel(ww.celestial)
             msk = preg.to_mask()
-            mimg = msk.to_reg()
-            fullmask |= mimg
+            fullmask[msk.bbox.slices] = msk.data.astype('bool')
 
         meta['mad_sample'] = mad_std(data[fullmask], ignore_nan=True)
         meta['std_sample'] = np.nanstd(data[fullmask])
@@ -124,7 +123,8 @@ def assemble_stats(globstr, ditch_suffix=None):
 
 
 def get_noise_region(field, band):
-    basepath = os.path.dirname(__file__)
+    # one directory up is "reduction"
+    basepath = os.path.dirname(__file__) + "/../reduction/"
     noisepath = os.path.join(basepath, 'noise_estimation_regions')
     assert os.path.exists(noisepath)
 
@@ -469,7 +469,8 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
                  'bsens', 'pbcor', 'filename']
-    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
+    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
+                  'std_sample', 'peak/mad']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
 
@@ -481,7 +482,7 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
             print(f"Skipped {entry['meta']['region']}")
             continue
         rows += [[entry['meta'][key] for key in meta_keys] +
-                 [entry['stats'][key] for key in stats_keys] +
+                 [entry['stats'][key] if key in entry['stats'] else np.nan for key in stats_keys] +
                  [requested_this[key][0] for key in req_keys if band in key]
                 ]
 
