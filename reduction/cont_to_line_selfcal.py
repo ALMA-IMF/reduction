@@ -3,7 +3,11 @@
 
 ######## USER PARAMETERS ################
 # caltables is a list of strings with  the names of the continuum selfcal tables in the order to be applied. 
-caltables = ['G333.60_B3__continuum_merged_12M_phase1_inf.cal','G333.60_B3__continuum_merged_12M_phase2_15s.cal','G333.60_B3__continuum_merged_12M_phase3_5s.cal','G333.60_B3__continuum_merged_12M_phase4_int.cal','G333.60_B3__continuum_merged_12M_amp5_inf.cal']
+caltables = ['G333.60_B3__continuum_merged_12M_phase1_inf.cal',
+'G333.60_B3__continuum_merged_12M_phase2_15s.cal',
+'G333.60_B3__continuum_merged_12M_phase3_5s.cal',
+'G333.60_B3__continuum_merged_12M_phase4_int.cal',
+'G333.60_B3__continuum_merged_12M_amp5_inf.cal']
 
 # vis_presc is a list of strings with the names of the line ms output from split_windows.py
 vis_presc = ['uid___A002_Xc8ed16_X5c3d_G333.60_B3_spw1.split.contsub','uid___A002_Xcd07af_X41d5_G333.60_B3_spw1.split.contsub']
@@ -83,5 +87,4 @@ for element in range(len(vis_presc)):
 	print('Applying calibration table to '+vis_presc[element]+'.selfcal')
 	applycal(vis=vis_presc[element]+'.selfcal',field='',spw='0',spwmap=[[0],[0],[0],[0],[0]],gaintable=line_caltables[element],interp='',calwt=False,applymode='calonly')
 	
-
 
