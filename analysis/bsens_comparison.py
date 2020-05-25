@@ -19,9 +19,9 @@ os.chdir(basepath)
 import imstats
 
 
-tbl = imstats.savestats(basepath=basepath)
+#tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='contselMaxDiff', data=[np.nan]*len(tbl)))
@@ -45,6 +45,10 @@ tbl.add_column(Column(name='max_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='max_cleanest', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_sample_bsens', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_sample_cleanest', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='std_sample_bsens', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='std_sample_cleanest', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
@@ -130,6 +134,10 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             tbl['ppbeam'][matchrow] = diffstats['ppbeam']
             tbl['mad_bsens'][matchrow] = diffstats['mad_pre']
             tbl['mad_cleanest'][matchrow] = diffstats['mad_post']
+            tbl['mad_sample_bsens'][matchrow] = diffstats['mad_sample_pre']
+            tbl['mad_sample_cleanest'][matchrow] = diffstats['mad_sample_post']
+            tbl['std_sample_bsens'][matchrow] = diffstats['mad_sample_pre']
+            tbl['std_sample_cleanest'][matchrow] = diffstats['mad_sample_post']
             tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
             tbl['casaversion_bsens'][matchrow] = fits.getheader(bsens)['ORIGIN']
             tbl['casaversion_cleanest'][matchrow] = fits.getheader(cleanest)['ORIGIN']

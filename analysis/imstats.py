@@ -10,6 +10,8 @@ from radio_beam import Beam
 import regions
 import os
 import glob
+from functools import reduce
+import operator
 
 
 def get_requested_sens():
@@ -52,15 +54,13 @@ def imstats(fn, reg=None):
     if reg is not None:
         reglist = regions.read_ds9(reg)
         data = fh[0].data.squeeze()
-        fullmask = np.zeros(data.shape, dtype='bool')
-        for reg in reglist:
+        composite_region = reduce(operator.or_, reglist)
+        preg = composite_region.to_pixel(ww.celestial)
+        msk = preg.to_mask()
+        cutout_pixels = msk.cutout(data)[msk.data.astype('bool')]
 
-            preg = reg.to_pixel(ww.celestial)
-            msk = preg.to_mask()
-            fullmask[msk.bbox.slices] = msk.data.astype('bool')
-
-        meta['mad_sample'] = mad_std(data[fullmask], ignore_nan=True)
-        meta['std_sample'] = np.nanstd(data[fullmask])
+        meta['mad_sample'] = mad_std(cutout_pixels, ignore_nan=True)
+        meta['std_sample'] = np.nanstd(cutout_pixels)
 
     return meta
 
@@ -516,5 +516,5 @@ if __name__ == "__main__":
             os.chdir(basepath)
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
             flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2020' in basepath)
-            # done a million times elsewhere? tbl = savestats(basepath=basepath)
+            tbl = savestats(basepath=basepath)
     os.chdir(cwd)

@@ -6,6 +6,10 @@ import pylab as pl
 import numpy as np
 from astropy.io import fits
 from astropy import wcs
+from imstats import get_noise_region, parse_fn
+import regions
+import operator
+from functools import reduce
 
 
 def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False):
@@ -96,6 +100,27 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     cbax = fig.add_axes([0.91,0.18,0.03,0.64])
     fig.colorbar(cax=cbax, mappable=im)
 
+    meta = parse_fn(filename1)
+
+    reg = get_noise_region(meta['region'], meta['band'])
+
+    if reg is not None:
+        reglist = regions.read_ds9(reg)
+        composite_region = reduce(operator.or_, reglist)
+        preg = composite_region.to_pixel(cube_pre.wcs.celestial)
+        msk = preg.to_mask()
+
+        cutout_pixels = msk.cutout(data_pre)[msk.data.astype('bool')]
+
+        mad_sample_pre = mad_std(cutout_pixels, ignore_nan=True)
+        std_sample_pre = np.nanstd(cutout_pixels)
+
+        cutout_pixels = msk.cutout(data_post)[msk.data.astype('bool')]
+
+        mad_sample_post = mad_std(cutout_pixels, ignore_nan=True)
+        std_sample_post = np.nanstd(cutout_pixels)
+
+
     mad_pre = mad_std(data_pre, ignore_nan=True)
     mad_post = mad_std(data_post, ignore_nan=True)
 
@@ -123,6 +148,10 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
                  'masksum_post': (data_post[data_post > mad_post*3]).sum(),
                  'mad_pre': mad_pre,
                  'mad_post':  mad_post,
+                 'mad_sample_pre': mad_sample_pre,
+                 'mad_sample_post': mad_sample_post,
+                 'std_sample_pre': std_sample_pre,
+                 'std_sample_post': std_sample_post,
                 }
 
     return ax1, ax2, ax3, fig, diffstats

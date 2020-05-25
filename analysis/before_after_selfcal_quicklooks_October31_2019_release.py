@@ -18,9 +18,9 @@ os.chdir('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release')
 import imstats
 
 
-tbl = imstats.savestats()
+#tbl = imstats.savestats()
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata.ecsv')
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
@@ -112,15 +112,15 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.ecsv',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.tex',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/metadata_sc.js.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.js.html',
           #formats=formats,
           format='jsviewer')
 

@@ -9,6 +9,7 @@ from spectral_cube import SpectralCube
 from astropy.stats import mad_std
 from astropy import log
 import pylab as pl
+import subprocess
 
 from compare_images import make_comparison_image
 
@@ -21,9 +22,9 @@ os.chdir(basepath)
 import imstats
 
 
-tbl = imstats.savestats(basepath=basepath)
+# tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
@@ -43,6 +44,10 @@ tbl.add_column(Column(name='sum_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='sum_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_sample_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='mad_sample_post', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='std_sample_pre', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='std_sample_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
@@ -127,6 +132,10 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['ppbeam'][matchrow] = diffstats['ppbeam']
                 tbl['mad_pre'][matchrow] = diffstats['mad_pre']
                 tbl['mad_post'][matchrow] = diffstats['mad_post']
+                tbl['mad_sample_pre'][matchrow] = diffstats['mad_sample_pre']
+                tbl['mad_sample_post'][matchrow] = diffstats['mad_sample_post']
+                tbl['std_sample_pre'][matchrow] = diffstats['std_sample_pre']
+                tbl['std_sample_post'][matchrow] = diffstats['std_sample_post']
                 tbl['dr_improvement'][matchrow] = diffstats['dr_post']/diffstats['dr_pre']
                 tbl['casaversion_pre'][matchrow] = fits.getheader(preselfcal_name)['ORIGIN']
                 tbl['casaversion_post'][matchrow] = fits.getheader(postselfcal_name)['ORIGIN']
