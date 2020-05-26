@@ -12,11 +12,14 @@ import os
 import glob
 from functools import reduce
 import operator
+import re
 
 
 def get_requested_sens():
     # use this file's path
     requested_fn = os.path.join(os.path.dirname(__file__), 'requested.txt')
+    if not os.path.exists(requested_fn):
+        requested_fn = '/orange/adamginsburg/ALMA_IMF/reduction/analysis/requested.txt'
     from astropy.io import ascii
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
@@ -73,7 +76,8 @@ def parse_fn(fn):
     selfcal_entry = 'selfcal0'
     for entry in split:
         if 'selfcal' in entry and 'pre' not in entry:
-            selfcal_entry = entry
+            #selfcal_entry = entry
+            selfcal_entry = re.compile(".(image|residual|model).tt0(.pbcor)?(.fits)?").sub("", selfcal_entry)
 
     robust_entry = 'robust999'
     for entry in split:
@@ -124,9 +128,13 @@ def assemble_stats(globstr, ditch_suffix=None):
 
 def get_noise_region(field, band):
     # one directory up is "reduction"
-    basepath = os.path.dirname(__file__) + "/../reduction/"
-    noisepath = os.path.join(basepath, 'noise_estimation_regions')
-    assert os.path.exists(noisepath)
+    try:
+        basepath = os.path.dirname(__file__) + "/../reduction/"
+        noisepath = os.path.join(basepath, 'noise_estimation_regions')
+        assert os.path.exists(noisepath)
+    except AssertionError:
+        noisepath = '/orange/adamginsburg/ALMA_IMF/reduction/reduction/noise_estimation_regions'
+
 
     regfn = f"{noisepath}/{field}_{band}_noise_sampling.reg"
 
@@ -397,9 +405,10 @@ def make_index(savepath, flist):
         for metadata in flist:
             filename = metadata['outname']+".html"
             meta_str = (f"{metadata['field']}_{metadata['band']}" +
-                        (f"_selfcal{metadata['selfcal']}"
-                         if isinstance(metadata['selfcal'], int) else
-                         "_preselfcal") +
+                        f"_selfcal{metadata['selfcal']}"
+                        # no preselfcal in quicklooks now... not sure what this is going to do
+                         #if isinstance(metadata['selfcal'], int) else
+                         #"_preselfcal") +
                         f"_{metadata['array']}_robust{metadata['robust']} "
                         f"{' finaliter' if metadata['finaliter'] else ''}"
                         f"{metadata['suffix']}")

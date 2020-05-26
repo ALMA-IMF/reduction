@@ -148,10 +148,17 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
                  'masksum_post': (data_post[data_post > mad_post*3]).sum(),
                  'mad_pre': mad_pre,
                  'mad_post':  mad_post,
-                 'mad_sample_pre': mad_sample_pre,
-                 'mad_sample_post': mad_sample_post,
-                 'std_sample_pre': std_sample_pre,
-                 'std_sample_post': std_sample_post,
+                 'mad_sample_pre': np.nan,
+                 'mad_sample_post': np.nan,
+                 'std_sample_pre': np.nan,
+                 'std_sample_post': np.nan,
                 }
+    if reg is not None:
+        diffstats.update({
+             'mad_sample_pre': mad_sample_pre,
+             'mad_sample_post': mad_sample_post,
+             'std_sample_pre': std_sample_pre,
+             'std_sample_post': std_sample_post,
+        })
 
     return ax1, ax2, ax3, fig, diffstats

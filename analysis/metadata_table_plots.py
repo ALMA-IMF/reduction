@@ -75,16 +75,16 @@ pl.savefig("../datapaper/figures/bsens_flux_change.png", bbox_inches='tight')
 fig3 = pl.figure(3, figsize=(10,5))
 fig3.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.plot(wtbl_bsens['sum_cleanest'][b3]/wtbl_bsens['ppbeam'][b3], wtbl_bsens['mad_bsens'][b3]/wtbl_bsens['mad_cleanest'][b3], **b3style)
-ax1.plot(wtbl_bsens['sum_cleanest'][b6]/wtbl_bsens['ppbeam'][b6], wtbl_bsens['mad_bsens'][b6]/wtbl_bsens['mad_cleanest'][b6], **b6style)
+ax1.plot(wtbl_bsens['sum_cleanest'][b3]/wtbl_bsens['ppbeam'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style)
+ax1.plot(wtbl_bsens['sum_cleanest'][b6]/wtbl_bsens['ppbeam'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style)
 #ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
 ax1.set_xlabel("Sum (cleanest) [Jy]")
 ax1.set_ylabel("MAD (bsens) / MAD (cleanest)")
 #ax1.add_patch(pl.Rectangle((-0.05,0.2), width=26, height=0.7, facecolor='r', alpha=0.25))
 
 ax2 = pl.subplot(1,2,2)
-ax2.plot(wtbl_bsens['max_cleanest'][b3], wtbl_bsens['mad_bsens'][b3]/wtbl_bsens['mad_cleanest'][b3], **b3style, label='B3')
-ax2.plot(wtbl_bsens['max_cleanest'][b6], wtbl_bsens['mad_bsens'][b6]/wtbl_bsens['mad_cleanest'][b6], **b6style, label='B6')
+ax2.plot(wtbl_bsens['max_cleanest'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style, label='B3')
+ax2.plot(wtbl_bsens['max_cleanest'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style, label='B6')
 #ax2.plot(np.linspace(0, 1), np.linspace(0, 1)*0.17 + 1, 'k--', zorder=-5, alpha=0.5)
 ax2.set_xlabel("Peak (cleanest)")
 ax2.set_ylabel("MAD (bsens) / MAD (cleanest)")
@@ -98,6 +98,7 @@ pl.savefig("../datapaper/figures/bsens_rms_change.png", bbox_inches='tight')
 
 b3sc = wtbl_selfcal['band'] == 'B3'
 b6sc = wtbl_selfcal['band'] == 'B6'
+wtbl_selfcal['SensVsReq'] = wtbl_selfcal['mad_sample_post'] / wtbl_selfcal['Req_Sens'] * 1000
 
 fig1 = pl.figure(4, figsize=(10,5))
 fig1.clf()
@@ -106,8 +107,8 @@ ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], wtbl_selfc
 ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style)
 ax1.annotate('W51-E', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-E')],
                        wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]))
-ax1.annotate('W51-IRS2', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')],
-                          wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
+#ax1.annotate('W51-IRS2', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')],
+#                          wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 #ax1.annotate('G010.62', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'G010.62')],
 #                         wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]))
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
@@ -119,7 +120,7 @@ ax2.plot(wtbl_selfcal['max_post'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3st
 ax2.plot(wtbl_selfcal['max_post'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style, label='B6')
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
 ax2.annotate('W51-E', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-E')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]))
-ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
+#ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
 ax2.set_ylabel("Sensitivity / Requested Sensitivity")
@@ -137,18 +138,18 @@ b6sc = wtbl_selfcal['band'] == 'B6'
 fig5 = pl.figure(5, figsize=(10,5))
 fig5.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], wtbl_selfcal['BeamVsReq'][b3sc], **b3style)
-ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], wtbl_selfcal['BeamVsReq'][b6sc], **b6style)
+ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], **b3style)
+ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], **b6style)
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.set_xlabel("Sum [Jy]")
-ax1.set_ylabel("Request Beam Major Axis / Recovered Beam Major Axis")
+ax1.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
 
 ax2 = pl.subplot(1,2,2)
-ax2.plot(wtbl_selfcal['max_post'][b3sc], wtbl_selfcal['BeamVsReq'][b3sc], **b3style, label='B3')
-ax2.plot(wtbl_selfcal['max_post'][b6sc], wtbl_selfcal['BeamVsReq'][b6sc], **b6style, label='B6')
+ax2.plot(wtbl_selfcal['max_post'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], **b3style, label='B3')
+ax2.plot(wtbl_selfcal['max_post'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], **b6style, label='B6')
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
-ax2.set_ylabel("Request Beam Major Axis / Recovered Beam Major Axis")
+ax2.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
 pl.legend(loc='best')
 
 pl.savefig("../datapaper/figures/beam_size_comparison.pdf", bbox_inches='tight')
@@ -185,6 +186,7 @@ pl.savefig("../datapaper/figures/dynamic_range.png", bbox_inches='tight')
 
 b3bs = wtbl_bsens['band'] == 'B3'
 b6bs = wtbl_bsens['band'] == 'B6'
+wtbl_bsens['SensVsReq'] = wtbl_bsens['mad_sample_bsens'] / wtbl_bsens['Req_Sens'] * 1000
 
 fig7 = pl.figure(7, figsize=(10,5))
 fig7.clf()
