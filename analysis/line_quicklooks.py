@@ -6,6 +6,7 @@ import pylab as pl
 
 
 import os
+import time
 import numpy as np
 from astropy.io import fits
 from astropy import units as u
@@ -30,7 +31,15 @@ default_lines = {'n2hp': '93.173700GHz',
 
 suffix = '.image'
 
-for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+global then
+then = time.time()
+def dt():
+    global then
+    now = time.time()
+    print(f"Elapsed: {now-then}")
+    then = now
+
+for field in "G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77".split():
     for band in (3,6):
         for config in ('7M12M', '12M'):
             for line in default_lines:
@@ -59,6 +68,9 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     mcube.use_dask_scheduler('threads', num_workers=8)
                     mcube.beam_threshold = 1
 
+                    print(mcube)
+
+                    dt(); print("Spatial mad_std")
                     pl.clf()
                     stdspec = mcube.mad_std(axis=(1,2))#, how='slice')
                     stdspec.write("collapse/stdspec/{0}".format(fn.replace(suffix, "_std_spec.fits")), overwrite=True)
@@ -69,33 +81,38 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     else:
                         threshold = 0.1
 
+                    dt(); print("Thresholding")
                     mcube = mcube.with_mask((stdspec < threshold*cube.unit)[:,None,None])
 
                     beam = mcube.beam if hasattr(mcube, 'beam') else mcube.average_beams(1)
                     cfrq = mcube.with_spectral_unit(u.GHz).spectral_axis.mean()
 
                     pl.clf()
+                    dt(); print("Moment 0")
                     mom0 = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment0(axis=0)
                     mom0_Kkms = (mom0*u.beam*u.s/u.km).to(u.K,
-                         u.brightness_temperature(beam_area=beam,
-                                                  frequency=cfrq))*u.km/u.s
+                                                          u.brightness_temperature(beam_area=beam,
+                                                                                   frequency=cfrq))*u.km/u.s
                     mom0_Kkms.write('collapse/moment0/{0}'.format(fn.replace(suffix,"_mom0_Kkms.fits")),
                                     overwrite=True)
                     mom0_Kkms.quicklook('collapse/moment0/pngs/{0}'.format(fn.replace(suffix,"_mom0_Kkms.png")))
 
                     pl.clf()
+                    dt(); print("Moment 1")
                     mom1 = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment1(axis=0)
                     mom1.write('collapse/moment1/{0}'.format(fn.replace(suffix,"_mom1_kms.fits")),
                                overwrite=True)
                     mom1.quicklook('collapse/moment1/pngs/{0}'.format(fn.replace(suffix,"_mom1_kms.png")))
 
                     pl.clf()
+                    dt(); print("Moment 2")
                     mom2 = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio').linewidth_fwhm()
                     mom2.write('collapse/moment2/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms.fits")),
                                overwrite=True)
                     mom2.quicklook('collapse/moment2/pngs/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms.png")))
 
                     pl.clf()
+                    dt(); print("Spatial max (peak spectrum)")
                     mxspec = mcube.max(axis=(1,2))#, how='slice')
                     mxspec.write("collapse/maxspec/{0}".format(fn.replace(suffix, "_max_spec.fits")), overwrite=True)
                     mxspec.quicklook("collapse/maxspec/pngs/{0}".format(fn.replace(suffix, "_max_spec.png")))
@@ -104,6 +121,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                         mxmodspec.write("collapse/maxspec/{0}".format(fn.replace(suffix, "_max_model_spec.fits")), overwrite=True)
                         mxmodspec.quicklook("collapse/maxspec/pngs/{0}".format(fn.replace(suffix, "_max_model_spec.png")))
 
+                    dt(); print("Peak intensity")
                     mx = mcube.max(axis=0)#, how='slice')
                     mx_K = (mx*u.beam).to(u.K, u.brightness_temperature(beam_area=beam,
                                                                         frequency=cfrq))
@@ -116,6 +134,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                     sn_mask = mxspec / stdspec > 5
                     if any(sn_mask):
+                        dt(); print("Masked peak intensity")
                         mcube_sn = mcube.with_mask(sn_mask[:,None,None])
                         mx_masked = mcube_sn.max(axis=0)#, how='slice')
                         mx_masked_K = (mx_masked*u.beam).to(u.K,
@@ -127,6 +146,30 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                         mx_masked.write('collapse/max/{0}'.format(fn.replace(suffix,"_max_masked.fits")),
                                         overwrite=True)
                         mx_masked.quicklook('collapse/max/pngs/{0}'.format(fn.replace(suffix,"_max_masked.png")))
+
+                        pl.clf()
+                        dt(); print("Masked moment 0")
+                        mom0 = mcube_sn.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment0(axis=0)
+                        mom0_Kkms = (mom0*u.beam*u.s/u.km).to(u.K,
+                                                              u.brightness_temperature(beam_area=beam,
+                                                                                       frequency=cfrq))*u.km/u.s
+                        mom0_Kkms.write('collapse/moment0/{0}'.format(fn.replace(suffix,"_mom0_Kkms_masked.fits")),
+                                        overwrite=True)
+                        mom0_Kkms.quicklook('collapse/moment0/pngs/{0}'.format(fn.replace(suffix,"_mom0_Kkms_masked.png")))
+
+                        pl.clf()
+                        dt(); print("Masked moment 1")
+                        mom1 = mcube_sn.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment1(axis=0)
+                        mom1.write('collapse/moment1/{0}'.format(fn.replace(suffix,"_mom1_kms_masked.fits")),
+                                   overwrite=True)
+                        mom1.quicklook('collapse/moment1/pngs/{0}'.format(fn.replace(suffix,"_mom1_kms_masked.png")))
+
+                        pl.clf()
+                        dt(); print("Masked moment 2")
+                        mom2 = mcube_sn.with_spectral_unit(u.km/u.s, velocity_convention='radio').linewidth_fwhm()
+                        mom2.write('collapse/moment2/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms_masked.fits")),
+                                   overwrite=True)
+                        mom2.quicklook('collapse/moment2/pngs/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms_masked.png")))
 
                     argmax = mcube.argmax(axis=0)#, how='ray')
                     hdu = mx.hdu
@@ -151,28 +194,9 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     mn_K.quicklook('collapse/min/pngs/{0}'.format(fn.replace(suffix,"_min_K.png")))
 
 
-                    pl.clf()
-                    mom0 = mcube_sn.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment0(axis=0)
-                    mom0_Kkms = (mom0*u.beam*u.s/u.km).to(u.K,
-                                                          u.brightness_temperature(beam_area=beam,
-                                                                                   frequency=cfrq))*u.km/u.s
-                    mom0_Kkms.write('collapse/moment0/{0}'.format(fn.replace(suffix,"_mom0_Kkms_masked.fits")),
-                                    overwrite=True)
-                    mom0_Kkms.quicklook('collapse/moment0/pngs/{0}'.format(fn.replace(suffix,"_mom0_Kkms_masked.png")))
-
-                    pl.clf()
-                    mom1 = mcube_sn.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment1(axis=0)
-                    mom1.write('collapse/moment1/{0}'.format(fn.replace(suffix,"_mom1_kms_masked.fits")),
-                               overwrite=True)
-                    mom1.quicklook('collapse/moment1/pngs/{0}'.format(fn.replace(suffix,"_mom1_kms_masked.png")))
-
-                    pl.clf()
-                    mom2 = mcube_sn.with_spectral_unit(u.km/u.s, velocity_convention='radio').linewidth_fwhm()
-                    mom2.write('collapse/moment2/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms_masked.fits")),
-                               overwrite=True)
-                    mom2.quicklook('collapse/moment2/pngs/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms_masked.png")))
 
                     for pct in (25,50,75):
+                        dt(); print(f"{pct}th Percentile")
                         #pctmap = mcube.percentile(pct, axis=0, iterate_rays=True)
                         pctmap = mcube.percentile(pct, axis=0)
                         pctmap_K = (pctmap*u.beam).to(u.K,
