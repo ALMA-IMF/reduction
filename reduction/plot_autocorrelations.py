@@ -5,12 +5,14 @@ from astropy import log
 from casatools import table, msmetadata
 
 tb = table()
+spwtb = table()
 msmd = msmetadata()
 
 def plot_autocorrelations(msname, **kwargs):
 
     msmd.open(msname)
     tb.open(msname)
+    spwtb.open(msname+"/SPECTRAL_WINDOW")
 
     fields = msmd.fieldnames()
 
@@ -20,7 +22,8 @@ def plot_autocorrelations(msname, **kwargs):
         pl.clf()
         fig = pl.figure(1)
 
-        spws = msmd.spwsforfield(fieldnum)
+        #spws = msmd.spwsforfield(fieldnum)
+        spws = np.unique(tb.getcol('DATA_DESC_ID'))
 
         spws = [spw for spw in spws
                 if len(msmd.chanfreqs(spw)) > 400]
@@ -37,7 +40,8 @@ def plot_autocorrelations(msname, **kwargs):
 
         ind = 0
         for spw in spws:
-            frq = msmd.chanfreqs(spw)
+            # does not work: frq = msmd.chanfreqs(spw)
+            frq = (spwtb.getcol('CHAN_FREQ', startrow=spw, nrow=1)).squeeze()
             if len(frq) < 100:
                 continue
 
@@ -48,8 +52,9 @@ def plot_autocorrelations(msname, **kwargs):
             avgspec = dat.mean(axis=2) # axis=2 is polarization
 
             if frq.size != avgspec.shape[1]:
-                raise ValueError(f"spectrum shape = {dat.shape}, frq.shape = {frq.shape}")
-                continue
+                #raise ValueError(f"spectrum shape = {dat.shape}, frq.shape = {frq.shape}")
+                #continue
+                frq = np.arange(avgspec.shape[1])*1e9
 
             ax = subplots[ind]
             ax.plot(frq/1e9, avgspec.T)
@@ -59,14 +64,15 @@ def plot_autocorrelations(msname, **kwargs):
 
             ind += 1
 
-        fig.suptitle(fieldname)
+        fig.suptitle(f"field={fieldname} {fieldnum}")
 
         basename = os.path.basename(msname)
-        fig.savefig(f"{basename}_{fieldname}.png")
+        fig.savefig(f"{basename}_{fieldname}_{fieldnum}_autocorrs.png")
 
     tb.close()
     msmd.close()
     stb.close()
+    spwtb.close()
 
 
 if __name__ == "__main__":
