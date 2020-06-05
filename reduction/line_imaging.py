@@ -29,11 +29,11 @@ import numpy as np
 import astropy.units as u
 from astropy import constants
 try:
-    from tasks import tclean, uvcontsub, impbcor
+    from tasks import tclean, uvcontsub, impbcor, concat
     from taskinit import casalog
 except ImportError:
     # futureproofing: CASA 6 imports this way
-    from casatasks import tclean, uvcontsub, impbcor
+    from casatasks import tclean, uvcontsub, impbcor, concat
     from casatasks import casalog
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
@@ -225,7 +225,15 @@ for band in band_list:
             impars['imsize'] = imsize
             impars['cell'] = cellsize
             impars['phasecenter'] = phasecenter
-            impars['field'] = [field.encode()]*len(vis)
+            impars['field'] = [field.encode()]
+
+
+            # concatenate MSes prior to imaging
+            basename = os.path.basename(lineimagename)
+            basepath = os.path.basepath(vis[0])
+            concatvis = os.path.join(basepath, basename+".concat.ms")
+            if not os.path.exists(concatvis):
+                concat(vis=vis, concatvis=concatvis)
 
 
             # start with cube imaging
@@ -246,7 +254,7 @@ for band in band_list:
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
-                tclean(vis=vis,
+                tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
@@ -319,7 +327,7 @@ for band in band_list:
 
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
-                tclean(vis=vis,
+                tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
@@ -354,17 +362,16 @@ for band in band_list:
             cont_freq_selection = parse_contdotdat(contfile)
             logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
 
-            for vv in vis:
-                if not os.path.exists(vv+".contsub"):
-                    new_freq_selection = freq_selection_overlap(vv,
-                                                                cont_freq_selection)
-                    uvcontsub(vis=vv,
-                              fitspw=new_freq_selection,
-                              excludechans=False, # fit the regions in fitspw
-                              combine='spw', # redundant since we're working on single spw's
-                              solint='int',
-                              fitorder=1,
-                              want_cont=False)
+            if not os.path.exists(concatvis+".contsub"):
+                new_freq_selection = freq_selection_overlap(vv,
+                                                            cont_freq_selection)
+                uvcontsub(vis=concatvis,
+                          fitspw=new_freq_selection,
+                          excludechans=False, # fit the regions in fitspw
+                          combine='spw', # redundant since we're working on single spw's
+                          solint='int',
+                          fitorder=1,
+                          want_cont=False)
 
             # if there is already a residual, check if it has met the target threshold
             continue_imaging = False
@@ -396,7 +403,7 @@ for band in band_list:
                 impars['imsize'] = imsize
                 impars['cell'] = cellsize
                 impars['phasecenter'] = phasecenter
-                impars['field'] = [field.encode()]*len(vis)
+                impars['field'] = [field.encode()]
 
                 if 'local_impars' in locals():
                     impars.update(local_impars)
@@ -404,7 +411,7 @@ for band in band_list:
 
                 logprint("Continuum imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
-                tclean(vis=[vv+".contsub" for vv in vis],
+                tclean(vis=concatvis+".contsub",
                        imagename=lineimagename+".contsub",
                        restoringbeam='',
                        **impars
@@ -423,7 +430,7 @@ for band in band_list:
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
 
-            logprint("Completed {0}".format(vis), origin='almaimf_line_imaging')
+            logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
 
 
 logprint("Completed line_imaging.py run", origin='almaimf_line_imaging')
