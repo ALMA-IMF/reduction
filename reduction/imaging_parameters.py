@@ -1169,22 +1169,28 @@ selfcal_pars["G008.67_B3_12M_robust0_bsens"][5] = {"solint": "200s", "gaintype":
 
 line_imaging_parameters = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
-        "niter": 100000,  # start with a light cleaning...
+        "niter": 5000000,  # start with a light cleaning...
+        "threshold": "8sigma",
         "robust": robust,
         "weighting": "briggs",
-        "scales": [0, 3, 9, 27, 81],
+        "deconvolver": "hogbom",
+        #"scales": [0, 3, 9, 27, 81],
+        #"nterms": 1,
         "gridder": "mosaic",
         "specmode": "cube",
-        "deconvolver": "multiscale",
         "outframe": "LSRK",
         "veltype": "radio",
-        "sidelobethreshold": 2.0,
-        "noisethreshold": 5.0,
         "usemask": "auto-multithresh",
-        "threshold": "5sigma",
+        "sidelobethreshold": 2.0,
+        "noisethreshold": 4.2,
+        "lownoisethreshold": 1.5,
+        "minbeamfrac": 0.3,
+        "negativethreshold": 15, 
+        "pblimit": 0.,
+        "pbmask": 0.2,
+        "pbcor": True,
+        "perchanweightdensity": False,
         "interactive": False,
-        "pblimit": 0.0,
-        "nterms": 1,
     }
     for field in allfields
     for band in ("B3", "B6")
