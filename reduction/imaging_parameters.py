@@ -1185,7 +1185,7 @@ line_imaging_parameters = {
         "noisethreshold": 4.2,
         "lownoisethreshold": 1.5,
         "minbeamfrac": 0.3,
-        "negativethreshold": 15, 
+        "negativethreshold": 15.,
         "pblimit": 0.,
         "pbmask": 0.2,
         "pbcor": True,
