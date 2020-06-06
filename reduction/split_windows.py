@@ -268,8 +268,13 @@ for band in bands:
             logprint("Skipping {0}:{1} because it has no metadata"
                      .format(band, field))
             continue
+        else:
+            logprint("Processing continuum for {0}:{1} because it has metadata"
+                     .format(band, field))
 
         mymd = metadata[band][field]
+
+        logprint("Metadata for {0}:{1} is {2}".format(band, field, metadata))
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
