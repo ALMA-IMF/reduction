@@ -39,7 +39,7 @@ def dt():
     print(f"Elapsed: {now-then}")
     then = now
 
-for field in "G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77".split():
+for field in "W51-IRS2 G012.80 W43-MM2 G333.60 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1 G010.62".split():
     for band in (3,6):
         for config in ('7M12M', '12M'):
             for line in default_lines:
@@ -71,6 +71,7 @@ for field in "G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W
                     print(mcube)
 
                     dt(); print("Spatial mad_std")
+                    pl.close('all')
                     pl.clf()
                     stdspec = mcube.mad_std(axis=(1,2))#, how='slice')
                     stdspec.write("collapse/stdspec/{0}".format(fn.replace(suffix, "_std_spec.fits")), overwrite=True)
@@ -89,7 +90,8 @@ for field in "G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W
 
                     pl.clf()
                     dt(); print("Moment 0")
-                    mom0 = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment0(axis=0)
+                    mvcube = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+                    mom0 = mvcube.moment0(axis=0)
                     mom0_Kkms = (mom0*u.beam*u.s/u.km).to(u.K,
                                                           u.brightness_temperature(beam_area=beam,
                                                                                    frequency=cfrq))*u.km/u.s
@@ -99,14 +101,14 @@ for field in "G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W
 
                     pl.clf()
                     dt(); print("Moment 1")
-                    mom1 = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio').moment1(axis=0)
+                    mom1 = mvcube.moment1(axis=0)
                     mom1.write('collapse/moment1/{0}'.format(fn.replace(suffix,"_mom1_kms.fits")),
                                overwrite=True)
                     mom1.quicklook('collapse/moment1/pngs/{0}'.format(fn.replace(suffix,"_mom1_kms.png")))
 
                     pl.clf()
                     dt(); print("Moment 2")
-                    mom2 = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio').linewidth_fwhm()
+                    mom2 = mvcube.linewidth_fwhm()
                     mom2.write('collapse/moment2/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms.fits")),
                                overwrite=True)
                     mom2.quicklook('collapse/moment2/pngs/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms.png")))
@@ -207,3 +209,9 @@ for field in "G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W
                         pctmap_K.quicklook('collapse/percentile/pngs/{0}'.format(fn.replace(suffix,"_{0}pct_K.png".format(pct))))
 
                     pl.close('all')
+
+
+"""
+Files that have resulted in m/s parsing failures:
+    ['G012.80_B3_spw0_7M12M_n2hp.contsub.image']
+"""
