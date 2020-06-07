@@ -69,9 +69,29 @@ pl.savefig("../datapaper/figures/bsens_flux_change.pdf", bbox_inches='tight')
 pl.savefig("../datapaper/figures/bsens_flux_change.png", bbox_inches='tight')
 
 
+b3bs = wtbl_bsens['band'] == 'B3'
+b6bs = wtbl_bsens['band'] == 'B6'
+
+fig9 = pl.figure(9, figsize=(10,5))
+fig9.clf()
+fig9.suptitle("DIAGNOSTIC - everywhere vs sampled mad")
+ax1 = pl.subplot(1,2,1)
+ax1.set_title("BSENS")
+ax1.plot(wtbl_bsens['mad_bsens'][b3bs], wtbl_bsens['mad_sample_bsens'][b3bs], **b3style)
+ax1.plot(wtbl_bsens['mad_bsens'][b6bs], wtbl_bsens['mad_sample_bsens'][b6bs], **b6style)
+ax1.plot([0,0.001], [0, 0.001], 'k--')
+ax1.set_xlabel("MAD everywhere")
+ax1.set_ylabel("MAD sampleregion")
+
+ax2 = pl.subplot(1,2,2)
+ax2.set_title("cleanest")
+ax2.plot(wtbl_bsens['mad_cleanest'][b3bs], wtbl_bsens['mad_sample_cleanest'][b3bs], **b3style)
+ax2.plot(wtbl_bsens['mad_cleanest'][b6bs], wtbl_bsens['mad_sample_cleanest'][b6bs], **b6style)
+ax2.set_xlabel("MAD everywhere")
+ax2.set_ylabel("MAD sampleregion")
+ax2.plot([0,0.001], [0, 0.001], 'k--')
 
 
-# THIS IS NONSENSE!!!
 fig3 = pl.figure(3, figsize=(10,5))
 fig3.clf()
 ax1 = pl.subplot(1,2,1)
@@ -223,14 +243,14 @@ pl.savefig("../datapaper/figures/noise_excess_bsens.png", bbox_inches='tight')
 fig8 = pl.figure(8, figsize=(10,5))
 fig8.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.hist(wtbl_bsens['SensVsReq'][b3bs], bins=np.linspace(0.8, 10, 10), alpha=0.5)
-ax1.hist(wtbl_selfcal['SensVsReq'][b3sc], bins=np.linspace(0.8, 10, 10), alpha=0.5)
+ax1.hist(wtbl_bsens['SensVsReq'][b3bs], bins=np.linspace(0.8, 9, 10), alpha=0.5)
+ax1.hist(wtbl_selfcal['SensVsReq'][b3sc], bins=np.linspace(0.8, 9, 10), alpha=0.5)
 ax1.set_xlabel("Sensitivity / Requested Sensitivity")
 ax1.set_title("B3")
 
 ax2 = pl.subplot(1,2,2)
-ax2.hist(wtbl_bsens['SensVsReq'][b6bs], bins=np.linspace(0.8, 7, 15), alpha=0.5, label='BSENS')
-ax2.hist(wtbl_selfcal['SensVsReq'][b6sc], bins=np.linspace(0.8, 7, 15), alpha=0.5, label='Cleanest')
+ax2.hist(wtbl_bsens['SensVsReq'][b6bs], bins=np.linspace(0.6, 3, 10), alpha=0.5, label='BSENS')
+ax2.hist(wtbl_selfcal['SensVsReq'][b6sc], bins=np.linspace(0.6, 3, 10), alpha=0.5, label='Cleanest')
 ax2.set_xlabel("Sensitivity / Requested Sensitivity")
 ax2.set_title("B6")
 pl.legend(loc='best')

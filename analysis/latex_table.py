@@ -22,6 +22,7 @@ keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor'
 wtbl = tbl[keep]
 
 
+print(len(wtbl))
 print(wtbl)
 
 wtbl['selfcaliter'] = Column(data=[int(x[2:]) for x in wtbl['selfcaliter']])

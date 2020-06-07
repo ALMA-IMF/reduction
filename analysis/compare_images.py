@@ -6,6 +6,7 @@ import pylab as pl
 import numpy as np
 from astropy.io import fits
 from astropy import wcs
+from astropy import log
 from imstats import get_noise_region, parse_fn
 import regions
 import operator
@@ -19,7 +20,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     cube_post = SpectralCube.read(filename2, format='fits' if 'fits' in filename2 else 'casa_image').with_spectral_unit(cube_pre.spectral_axis.unit)
 
     if allow_reproj:
-        if cube_pre.shape != cube_post.shape:
+        if cube_pre.shape != cube_post.shape or cube_post.wcs != cube_pre.wcs:
             cube_post = cube_post.reproject(cube_pre.header)
 
 
@@ -27,10 +28,15 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     cube_post = cube_post.with_mask(cube_post != 0*cube_post.unit)
     slices = cube_pre.subcube_slices_from_mask(cube_pre.mask & cube_post.mask,
                                                spatial_only=True)[1:]
+
+    # make the cubes match the data; needed for later WCS cutouts
+    cube_pre = cube_pre[:, slices[0], slices[1]]
+    cube_post = cube_post[:, slices[0], slices[1]]
+
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
-    data_pre = cube_pre[0].value[slices]
-    data_post = cube_post[0].value[slices]
+    data_pre = cube_pre[0].value
+    data_post = cube_post[0].value
 
     data_pre[np.abs(data_pre) < 1e-7] = np.nan
     data_post[np.abs(data_post) < 1e-7] = np.nan
@@ -110,15 +116,23 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
         preg = composite_region.to_pixel(cube_pre.wcs.celestial)
         msk = preg.to_mask()
 
-        cutout_pixels = msk.cutout(data_pre)[msk.data.astype('bool')]
+        cutout_pixels_pre = msk.cutout(data_pre, fill_value=np.nan)[msk.data.astype('bool')]
 
-        mad_sample_pre = mad_std(cutout_pixels, ignore_nan=True)
-        std_sample_pre = np.nanstd(cutout_pixels)
+        mad_sample_pre = mad_std(cutout_pixels_pre, ignore_nan=True)
+        std_sample_pre = np.nanstd(cutout_pixels_pre)
 
-        cutout_pixels = msk.cutout(data_post)[msk.data.astype('bool')]
+        cutout_pixels_post = msk.cutout(data_post, fill_value=np.nan)[msk.data.astype('bool')]
 
-        mad_sample_post = mad_std(cutout_pixels, ignore_nan=True)
-        std_sample_post = np.nanstd(cutout_pixels)
+        mad_sample_post = mad_std(cutout_pixels_post, ignore_nan=True)
+        std_sample_post = np.nanstd(cutout_pixels_post)
+
+        if np.any(np.isnan(mad_sample_pre)):
+            log.warning("mad_sample_pre contains some NaN values")
+        if np.any(np.isnan(mad_sample_post)):
+            log.warning("mad_sample_post contains some NaN values")
+
+        if not np.isfinite(mad_sample_pre):
+            raise ValueError
 
 
     mad_pre = mad_std(data_pre, ignore_nan=True)

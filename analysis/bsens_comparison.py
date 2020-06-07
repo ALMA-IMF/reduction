@@ -74,11 +74,28 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             filepath = fn.split("bsens")[0]
 
             bsens_fh = fits.open(bsens)
+
+            if not os.path.exists(cleanest):
+                ind = cleanest.find('uid')
+                cleanest_glob = cleanest[:ind] + "*" + cleanest[ind+21:]
+                cleanest_fl = glob.glob(cleanest_glob)
+                if len(cleanest_fl) > 0:
+                    cleanest = cleanest_fl[0]
+                    if len(cleanest_fl) > 1:
+                        print("WARNING: found multiple 'cleanest' matches {0}".format(cleanest_fl))
+
+                log.warn(f"Replaced 'cleanest' with {cleanest} to match {bsens}")
+
+                allow_reproj = True
+            else:
+                allow_reproj = False
+
             try:
                 clean_fh = fits.open(cleanest)
             except Exception as ex:
-                log.error(f"Failed to open 'cleanest' image {cleanest}")
+                log.error(f"Failed to open 'cleanest' image {cleanest} (check for a bsens-cleanest mismatch)")
                 print(ex)
+                #raise
                 continue
 
 
@@ -95,7 +112,9 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     ax1, ax2, ax3, fig, diffstats = make_comparison_image(filename1=cleanest,
                                                                           filename2=bsens,
                                                                           title1='cleanest',
-                                                                          title2='bsens')
+                                                                          title2='bsens',
+                                                                          allow_reproj=allow_reproj,
+                                                                         )
             except IndexError:
                 raise
             except Exception as ex:

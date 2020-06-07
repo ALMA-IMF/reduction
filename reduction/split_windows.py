@@ -274,7 +274,7 @@ for band in bands:
 
         mymd = metadata[band][field]
 
-        logprint("Metadata for {0}:{1} is {2}".format(band, field, metadata))
+        logprint("Metadata for {0}:{1} is {2}".format(band, field, mymd))
 
         for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
 
