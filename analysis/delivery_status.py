@@ -27,7 +27,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
         for imtype in ('cleanest', 'bsens', '7m12m', '7m12m_bsens'):
 
             # for not all-in-the-same-place stuff
-            fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*selfcal[0-9]*.image.tt0*.fits")
+            fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*selfcal*.image.tt0*.fits")
                    if 'robust0_' in x]
 
             config = '7M12M' if '7m' in imtype else '12M'
@@ -39,27 +39,36 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 last_selfcal = max(selfcal_nums)
 
-                if any('finaliter' in x for x in fns):
-                    postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}_finaliter' in x if 'diff' not in x][0]
-                else:
-                    postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x if 'diff' not in x][0]
+                if last_selfcal > 0:
+                    if any('finaliter' in x for x in fns):
+                        postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}_finaliter' in x if 'diff' not in x][0]
+                    else:
+                        postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x if 'diff' not in x][0]
 
-                preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
-                if "_finaliter" in preselfcal_name:
-                    preselfcal_name = preselfcal_name.replace("_finaliter","")
-                if not os.path.exists(preselfcal_name) and '_v0.1' in preselfcal_name:
-                    preselfcal_name = preselfcal_name.replace("_v0.1", "")
-                if not os.path.exists(preselfcal_name):
-                    print(f"No preselfcal file called {preselfcal_name} found, using alternatives")
-                    # try alternate naming scheme
-                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","")
+                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
                     if "_finaliter" in preselfcal_name:
                         preselfcal_name = preselfcal_name.replace("_finaliter","")
-                if "_selfcal" in preselfcal_name:
-                    raise ValueError("?!?!?!")
+                    if not os.path.exists(preselfcal_name) and '_v0.1' in preselfcal_name:
+                        preselfcal_name = preselfcal_name.replace("_v0.1", "")
+                    if not os.path.exists(preselfcal_name):
+                        print(f"No preselfcal file called {preselfcal_name} found, using alternatives")
+                        # try alternate naming scheme
+                        preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","")
+                        if "_finaliter" in preselfcal_name:
+                            preselfcal_name = preselfcal_name.replace("_finaliter","")
+                    if "_selfcal" in preselfcal_name:
+                        raise ValueError("?!?!?!")
+
+                    meta_post = parse_fn(postselfcal_name.split(".image")[0])
+                else:
+                    postselfcal_name = ''
+                    preselfcal_names = [x for x in fns if 'preselfcal' in x]
+                    if any(preselfcal_names):
+                        preselfcal_name = preselfcal_names[0]
+                    else:
+                        preselfcal_name = ''
 
                 meta_pre = parse_fn(preselfcal_name.split(".image")[0])
-                meta_post = parse_fn(postselfcal_name.split(".image")[0])
 
                 meta = meta_pre
                 meta['pre'] = os.path.exists(preselfcal_name)
@@ -115,6 +124,7 @@ for row in tbl:
         grid[imtype+band+'post'][ii] = 'X'
 
 gtbl = Table(grid)
+gtbl.sort('region')
 gtbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/delivery_grid.html',
            format='ascii.html', overwrite=True, htmldict={'css':'table, th, td, tr { border: 1px solid black; text-align: center}'})
 
