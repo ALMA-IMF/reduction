@@ -24,6 +24,8 @@ import imstats
 tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
+tbl.add_column(Column(name='bsens_fn', data=[' '*50]*len(tbl)))
+tbl.add_column(Column(name='cleanest_fn', data=[' '*50]*len(tbl)))
 tbl.add_column(Column(name='contselMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='contselMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='contselMADDiff', data=[np.nan]*len(tbl)))
@@ -49,7 +51,7 @@ tbl.add_column(Column(name='mad_sample_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='mad_sample_cleanest', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='std_sample_bsens', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='std_sample_cleanest', data=[np.nan]*len(tbl)))
-tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
+tbl.add_column(Column(name='dr_improvement_bsens', data=[np.nan]*len(tbl)))
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
     for band in (3,6):
@@ -139,6 +141,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             tbl['contselMeanDiff'][matchrow] = diffstats['mean']
             tbl['contselMedianDiff'][matchrow] = diffstats['median']
             tbl['contselSumDiff'][matchrow] = diffstats['sum']
+            tbl['bsens_fn'][matchrow] = os.path.basename(bsens)
+            tbl['cleanest_fn'][matchrow] = os.path.basename(cleanest)
             tbl['dr_bsens'][matchrow] = diffstats['dr_post']
             tbl['dr_cleanest'][matchrow] = diffstats['dr_pre']
             tbl['min_bsens'][matchrow] = diffstats['min_post']
@@ -167,7 +171,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             print()
 
 
-formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
+formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
            'contselMaxDiff': lambda x: f'{x:0.6g}',
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }

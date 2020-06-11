@@ -16,8 +16,8 @@ from functools import reduce
 def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False):
     #fh_pre = fits.open()
     #fh_post = fits.open()
-    cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image')
-    cube_post = SpectralCube.read(filename2, format='fits' if 'fits' in filename2 else 'casa_image').with_spectral_unit(cube_pre.spectral_axis.unit)
+    cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image').with_spectral_unit(u.GHz)
+    cube_post = SpectralCube.read(filename2, format='fits' if 'fits' in filename2 else 'casa_image').with_spectral_unit(u.GHz)
 
     if allow_reproj:
         if cube_pre.shape != cube_post.shape or cube_post.wcs != cube_pre.wcs:

@@ -27,6 +27,8 @@ import imstats
 tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
+tbl.add_column(Column(name='pre_fn', data=[' '*50]*len(tbl)))
+tbl.add_column(Column(name='post_fn', data=[' '*50]*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
@@ -120,6 +122,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['scMADDiff'][matchrow] = diffstats['mad']
                 tbl['scMeanDiff'][matchrow] = diffstats['mean']
                 tbl['scMedianDiff'][matchrow] = diffstats['median']
+                tbl['pre_fn'][matchrow] = os.path.basename(preselfcal_name)
+                tbl['post_fn'][matchrow] = os.path.basename(postselfcal_name)
                 tbl['dr_pre'][matchrow] = diffstats['dr_pre']
                 tbl['dr_post'][matchrow] = diffstats['dr_post']
                 tbl['min_pre'][matchrow] = diffstats['min_pre']
