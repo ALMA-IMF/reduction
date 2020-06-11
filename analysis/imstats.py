@@ -91,8 +91,11 @@ def parse_fn(fn):
         selfcaliter = int(selfcal_entry.split('selfcal')[-1])
     robust = float(robust_entry.split('robust')[-1])
 
+    muid = "_".join(split[2:3]+split[5:7])
+
     return {'region': split[0],
             'band': split[1],
+            'muid': muid,
             'array': '12Monly' if '12M' in split else '7M12M' if '7M12M' in split else '????',
             'selfcaliter': 'sc'+str(selfcaliter),
             'robust': 'r'+str(robust),

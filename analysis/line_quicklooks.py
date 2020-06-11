@@ -17,9 +17,10 @@ import glob
 from spectral_cube import SpectralCube,DaskSpectralCube
 from spectral_cube.lower_dimensional_structures import Projection
 
-from dask.diagnostics import ProgressBar
-pbar = ProgressBar()
-pbar.register()
+if os.getenv('NO_PROGRESSBAR') is None:
+    from dask.diagnostics import ProgressBar
+    pbar = ProgressBar()
+    pbar.register()
 
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
@@ -27,9 +28,15 @@ default_lines = {'n2hp': '93.173700GHz',
                  '12co': '230.538GHz',
                  'h30a': '231.900928GHz',
                  'h41a': '92.034434GHz',
+                 "c18o": "219.560358GHz",
                 }
 
 suffix = '.image'
+
+cwd = os.getcwd()
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
+os.chdir(basepath)
+print(f"Changed from {cwd} to {basepath}, now running line_quicklooks")
 
 global then
 then = time.time()
@@ -39,7 +46,7 @@ def dt():
     print(f"Elapsed: {now-then}")
     then = now
 
-for field in "W51-IRS2 G012.80 W43-MM2 G333.60 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1 G010.62".split():
+for field in "W43-MM2 G333.60 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80".split():
     for band in (3,6):
         for config in ('7M12M', '12M'):
             for line in default_lines:
@@ -47,10 +54,14 @@ for field in "W51-IRS2 G012.80 W43-MM2 G333.60 G327.29 G338.93 W51-E G353.41 G00
                     globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
                     fn = glob.glob(globblob)
                     if any(fn):
-                        print(fn)
+                        print(f"Found some matches for fn {fn}, using {fn[0]}.")
                         fn = fn[0]
                     else:
-                        print(globblob)
+                        print(f"Found no matches for glob {globblob}")
+                        continue
+
+                    if os.path.exists('collapse/min/{0}'.format(fn.replace(suffix,"_min_K.fits"))):
+                        print(f"Found completed quicklooks for {fn}, skipping.")
                         continue
 
                     modfile = fn.replace(suffix, ".model")

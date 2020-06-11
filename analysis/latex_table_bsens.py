@@ -22,6 +22,7 @@ keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor'
 wtbl = tbl[keep]
 
 
+print(len(wtbl))
 print(wtbl)
 
 wtbl['selfcaliter'] = Column(data=[int(x[2:]) for x in wtbl['selfcaliter']])
@@ -45,6 +46,7 @@ cols_to_keep = {'region':'Region',
                 'max_bsens':'$S_{peak}$(bsens)',
                 'max_cleanest':'$S_{peak}$(cleanest)',
                 'bsens_div_cleanest_max':'$S_{peak}$(bsens)/$S_{peak}$(cleanest)',
+                'Req_Sens': 'Requested $\sigma$',
                 #'dr_cleanest': "DR$_{cleanest}$",
                 #'dr_bsens': "DR$_{bsens}$",
                }
@@ -54,6 +56,7 @@ units = {'$S_{peak}(bsens)$':u.Jy.to_string(u.format.LatexInline),
          '$S_{peak}(cleanest)$':u.Jy.to_string(u.format.LatexInline),
          '$\sigma_{MAD}(bsens)$':u.mJy.to_string(u.format.LatexInline),
          '$\sigma_{MAD}(cleanest)$':u.mJy.to_string(u.format.LatexInline),
+         'Requested $\sigma$':u.mJy.to_string(u.format.LatexInline),
          #'$\sigma_{req}$':u.mJy.to_string(u.format.LatexInline),
          #r'$\theta_{req}$':u.arcsec.to_string(u.format.LatexInline),
          #r'$\theta_{maj}$':u.arcsec.to_string(u.format.LatexInline),
@@ -87,6 +90,7 @@ float_cols =  ['$\\theta_{maj}$',
  '$\\sigma_{MAD}$(bsens)',
  '$\\sigma_{MAD}$(cleanest)',
  '$\sigma_{MAD}$(bsens)/$\sigma_{MAD}$(cleanest)',
+ 'Requested $\sigma$',
  #'$\\theta_{req}$',
  #'\\sigma_{req}$',
  #'$\\sigma_{req}/\\sigma_{MAD}$',

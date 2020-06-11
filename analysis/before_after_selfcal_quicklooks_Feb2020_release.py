@@ -27,6 +27,8 @@ import imstats
 tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
+tbl.add_column(Column(name='pre_fn', data=[' '*50]*len(tbl)))
+tbl.add_column(Column(name='post_fn', data=[' '*50]*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
@@ -51,7 +53,6 @@ tbl.add_column(Column(name='std_sample_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
-#for field in ("G333.60",):
     for band in (3,6):
         for imtype in ('cleanest', 'bsens', '7m12m', ):
 
@@ -63,6 +64,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
 
             if any(fns):
+                print("Found hits for ",field, band, imtype)
                 selfcal_nums = [get_selfcal_number(fn) for fn in fns]
 
                 last_selfcal = max(selfcal_nums)
@@ -120,6 +122,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 tbl['scMADDiff'][matchrow] = diffstats['mad']
                 tbl['scMeanDiff'][matchrow] = diffstats['mean']
                 tbl['scMedianDiff'][matchrow] = diffstats['median']
+                tbl['pre_fn'][matchrow] = os.path.basename(preselfcal_name)
+                tbl['post_fn'][matchrow] = os.path.basename(postselfcal_name)
                 tbl['dr_pre'][matchrow] = diffstats['dr_pre']
                 tbl['dr_post'][matchrow] = diffstats['dr_post']
                 tbl['min_pre'][matchrow] = diffstats['min_pre']
@@ -143,7 +147,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 print(fns)
                 print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
             else:
-                print(f"No hits for {field}_B{band}_{config}")
+                print(f"No hits for {field}_B{band}_{config} imtype={imtype}")
 
             print()
 
