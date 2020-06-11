@@ -5,8 +5,11 @@ import os
 project = os.getenv('PROJECT')
 if project is None:
     raise ValueError
+else:
+    print(f"Project -> {project}")
 
 basefn = os.path.basename(project).replace(".image","")
+print(f"basefn = {basefn}")
 
 p = admit.Project(f'{basefn}.admit', dataserver=True)
 # Flow tasks.
@@ -24,3 +27,5 @@ t10 = p.addtask(admit.LineCube_AT(pad=40), [t5, t9])
 t11 = p.addtask(admit.Moment_AT(mom0clip=2.0, moments=[0, 1, 2]), [t10, t6])
 t11 = p.addtask(admit.CubeSpectrum_AT(), [t10, t11])
 p.run()
+
+print(f"Done running ADMIT for {basefn} <-> {project}")
