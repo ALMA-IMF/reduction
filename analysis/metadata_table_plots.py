@@ -3,12 +3,12 @@ from astropy.table import Table
 
 tbl_selfcal = Table.read('metadata_sc.ecsv')
 bad = np.array(['diff' in x for x in tbl_selfcal['filename']])
-keep_selfcal = (tbl_selfcal['suffix'] == 'finaliter') & (tbl_selfcal['robust'] == 'r0.0') & (tbl_selfcal['pbcor']) & (~tbl_selfcal['bsens']) & (~bad)
+keep_selfcal = (tbl_selfcal['suffix'] == 'finaliter') & (tbl_selfcal['robust'] == 'r0.0') & (~tbl_selfcal['pbcor']) & (~tbl_selfcal['bsens']) & (~bad)
 wtbl_selfcal = tbl_selfcal[keep_selfcal]
 
 tbl_bsens = Table.read('metadata_bsens_cleanest.ecsv')
 bad = np.array(['diff' in x for x in tbl_bsens['filename']])
-keep_bsens = (tbl_bsens['suffix'] == 'finaliter') & (tbl_bsens['robust'] == 'r0.0') & (tbl_bsens['pbcor']) & (tbl_bsens['bsens']) & (~bad)
+keep_bsens = (tbl_bsens['suffix'] == 'finaliter') & (tbl_bsens['robust'] == 'r0.0') & (~tbl_bsens['pbcor']) & (tbl_bsens['bsens']) & (~bad)
 wtbl_bsens = tbl_bsens[keep_bsens]
 
 
@@ -243,14 +243,14 @@ pl.savefig("../datapaper/figures/noise_excess_bsens.png", bbox_inches='tight')
 fig8 = pl.figure(8, figsize=(10,5))
 fig8.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.hist(wtbl_bsens['SensVsReq'][b3bs], bins=np.linspace(0.55, 5.5, 10), alpha=0.5)
-ax1.hist(wtbl_selfcal['SensVsReq'][b3sc], bins=np.linspace(0.55, 5.5, 10), alpha=0.5)
+ax1.hist(wtbl_bsens['SensVsReq'][b3bs], bins=np.linspace(0.45, 4.5, 10), alpha=0.5)
+ax1.hist(wtbl_selfcal['SensVsReq'][b3sc], bins=np.linspace(0.45, 4.5, 10), alpha=0.5)
 ax1.set_xlabel("Sensitivity / Requested Sensitivity")
 ax1.set_title("B3")
 
 ax2 = pl.subplot(1,2,2)
-ax2.hist(wtbl_bsens['SensVsReq'][b6bs], bins=np.linspace(0.6, 3, 10), alpha=0.5, label='BSENS')
-ax2.hist(wtbl_selfcal['SensVsReq'][b6sc], bins=np.linspace(0.6, 3, 10), alpha=0.5, label='Cleanest')
+ax2.hist(wtbl_bsens['SensVsReq'][b6bs], bins=np.linspace(0.45, 2, 10), alpha=0.5, label='BSENS')
+ax2.hist(wtbl_selfcal['SensVsReq'][b6sc], bins=np.linspace(0.6, 2, 10), alpha=0.5, label='Cleanest')
 ax2.set_xlabel("Sensitivity / Requested Sensitivity")
 ax2.set_title("B6")
 pl.legend(loc='best')

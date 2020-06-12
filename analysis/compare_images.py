@@ -19,6 +19,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image').with_spectral_unit(u.GHz)
     cube_post = SpectralCube.read(filename2, format='fits' if 'fits' in filename2 else 'casa_image').with_spectral_unit(u.GHz)
 
+    if 'pbcor' in filename1:
+        assert 'pbcor' in filename2
+    if 'pbcor' in filename2:
+        assert 'pbcor' in filename1
+
     if allow_reproj:
         if cube_pre.shape != cube_post.shape or cube_post.wcs != cube_pre.wcs:
             cube_post = cube_post.reproject(cube_pre.header)
@@ -113,6 +118,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if reg is not None:
         reglist = regions.read_ds9(reg)
         composite_region = reduce(operator.or_, reglist)
+
         preg = composite_region.to_pixel(cube_pre.wcs.celestial)
         msk = preg.to_mask()
 
@@ -121,15 +127,24 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
         mad_sample_pre = mad_std(cutout_pixels_pre, ignore_nan=True)
         std_sample_pre = np.nanstd(cutout_pixels_pre)
 
+        preg = composite_region.to_pixel(cube_post.wcs.celestial)
+        msk = preg.to_mask()
         cutout_pixels_post = msk.cutout(data_post, fill_value=np.nan)[msk.data.astype('bool')]
 
         mad_sample_post = mad_std(cutout_pixels_post, ignore_nan=True)
         std_sample_post = np.nanstd(cutout_pixels_post)
 
+
         if np.any(np.isnan(mad_sample_pre)):
             log.warning("mad_sample_pre contains some NaN values")
         if np.any(np.isnan(mad_sample_post)):
             log.warning("mad_sample_post contains some NaN values")
+
+        if len(cutout_pixels_post) != len(cutout_pixels_pre):
+            log.warning("cutout pixels are different size in pre vs post")
+        if cube_pre.wcs.celestial != cube_post.wcs.celestial:
+            log.warning("post and pre have different celestial WCSes")
+            
 
         if not np.isfinite(mad_sample_pre):
             raise ValueError
