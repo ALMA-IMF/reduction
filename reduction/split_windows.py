@@ -494,4 +494,4 @@ with open('cont_metadata.json', 'w') as fh:
     json.dump(cont_to_merge, fh)
 
 with open('contdatfiles.json', 'w') as fh:
-    json.dump(contdatfiles, fh)
+    json.dump(contdat_files, fh)
