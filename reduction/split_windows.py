@@ -140,9 +140,6 @@ for dirpath, dirnames, filenames in os.walk('.'):
                 msmd.close()
                 continue
 
-            if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
-                contdat_files[(field, band)] = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
-
             spws = msmd.spwsforfield(field)
             targetspws = msmd.spwsforintent('OBSERVE_TARGET*')
             # this is how DOSPLIT in scriptForPI decides to split
@@ -157,6 +154,11 @@ for dirpath, dirnames, filenames in os.walk('.'):
                                          'vis': [fn],
                                          'spws': [spws],
                                         }
+
+            if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
+                contdatpath = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
+                contdat_files[(field, band)] = contdatpath
+                metadata[band][field]['cont.dat'] = contdatpath
 
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:
@@ -490,3 +492,6 @@ with open('continuum_mses_unconcat.txt', 'w') as fh:
 
 with open('cont_metadata.json', 'w') as fh:
     json.dump(cont_to_merge, fh)
+
+with open('contdatfiles.json', 'w') as fh:
+    json.dump(contdatfiles, fh)
