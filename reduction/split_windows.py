@@ -157,7 +157,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
                 contdatpath = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
-                contdat_files[(field, band)] = contdatpath
+                contdat_files[field + band] = contdatpath
                 metadata[band][field]['cont.dat'] = contdatpath
 
             # touch the filename
@@ -296,8 +296,8 @@ for band in bands:
             if not os.path.exists(contfile):
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
                          .format(path, band, field))
-                if (band, field) in contdat_files:
-                    contfile = contdat_files[(band, field)]
+                if field + band in contdat_files:
+                    contfile = contdat_files[field + band]
                     logprint("No cont.dat file: Using {0} instead.".format(contfile))
                 else:
                     logprint("No cont.dat file: Skipping.")
