@@ -230,7 +230,7 @@ for band in band_list:
 
             # concatenate MSes prior to imaging
             basename = os.path.basename(lineimagename)
-            basepath = os.path.basepath(vis[0])
+            basepath = os.path.basename(vis[0])
             concatvis = os.path.join(basepath, basename+".concat.ms")
             if not os.path.exists(concatvis):
                 concat(vis=vis, concatvis=concatvis)
