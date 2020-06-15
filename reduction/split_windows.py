@@ -105,7 +105,8 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
             logprint("Collecting metadata for {0} in {1}".format(fn, dirpath))
 
-            msmd.open(os.path.join(dirpath, fn))
+            filename = os.path.join(dirpath, fn)
+            msmd.open(filename)
 
             antnames = msmd.antennanames()
             fieldnames = np.array(msmd.fieldnames())
@@ -158,7 +159,16 @@ for dirpath, dirnames, filenames in os.walk('.'):
             if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
                 contdatpath = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
                 contdat_files[field + band] = contdatpath
-                metadata[band][field]['cont.dat'] = contdatpath
+
+                tb.open(filename+"/ANTENNA")
+                positions = tb.getcol('POSITION')
+                tb.close()
+                baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
+                key = int(max(baseline_lengths))
+                if 'cont.dat' in metadata[band][field]:
+                    metadata[band][field]['cont.dat'] = {key: contdatpath}
+                else:
+                    metadata[band][field]['cont.dat'][key] = contdatpath
 
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:
@@ -297,6 +307,7 @@ for band in bands:
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
                          .format(path, band, field))
                 if field + band in contdat_files:
+                    raise ValueError("Going to use a different cont.dat for this config?")
                     contfile = contdat_files[field + band]
                     logprint("No cont.dat file: Using {0} instead.".format(contfile))
                 else:
