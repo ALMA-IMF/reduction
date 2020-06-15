@@ -58,8 +58,11 @@ def imstats(fn, reg=None):
         reglist = regions.read_ds9(reg)
         data = fh[0].data.squeeze()
         composite_region = reduce(operator.or_, reglist)
-        preg = composite_region.to_pixel(ww.celestial)
-        msk = preg.to_mask()
+        if hasattr(composite_region, 'to_mask'):
+            msk = composite_region.to_mask()
+        else:
+            preg = composite_region.to_pixel(ww.celestial)
+            msk = preg.to_mask()
         cutout_pixels = msk.cutout(data)[msk.data.astype('bool')]
 
         meta['mad_sample'] = mad_std(cutout_pixels, ignore_nan=True)

@@ -89,7 +89,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     stdspec.quicklook("collapse/stdspec/pngs/{0}".format(fn.replace(suffix, "_std_spec.png")))
 
                     if np.nanmin(stdspec) > 0.1*cube.unit:
-                        threshold = np.nanpercentile(stdspec, 90)
+                        threshold = np.nanpercentile(stdspec, 90).value
                     else:
                         threshold = 0.1
 
