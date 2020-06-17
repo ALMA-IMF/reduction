@@ -30,6 +30,23 @@ lines_to_overplot = {
     #"ch3ccn": "92.26144GHz",
     #"ch3cch": "102.547983GHz",
 }
+field_vlsr = {
+    "W51-E": "55km/s",
+    "W51-IRS2": "55km/s",
+    "G010.62": "-2km/s",
+    "G353.41": "-18km/s",
+    "W43-MM1": "97km/s",
+    "W43-MM2": "97km/s",
+    "W43-MM3": "97km/s",
+    "G337.92": "-40km/s",
+    "G338.93": "-62km/s",
+    "G328.25": "-43km/s",
+    "G327.29": "-45km/s",
+    "G333.60": "-47km/s",
+    "G008.67": "37.60km/s",
+    "G012.80": "37.00km/s",
+    "G351.77": "-3.00km/s",
+}
 
 frequency_coverage = {
     'B3': {
@@ -67,6 +84,9 @@ fields_and_numbers = list(enumerate(fields))
 
 included_bw = {}
 
+lb_threshold = {3: 1000,
+                6: 501,}
+
 for fignum,band in enumerate((3,6)):
     bandname = f'B{band}'
     pl.close(fignum)
@@ -99,10 +119,10 @@ for fignum,band in enumerate((3,6)):
 
             muids = set(metadata[bandname][field]['muid'])
             baseline_lengths = list(map(int, metadata[bandname][field]['cont.dat']))
-            muid_to_bl = {muid: list(map(int, [key for key, contnm in metadata[bandname][field]['cont.dat'].items()  if muid in contnm])) for muid in muids}
+            muid_to_bl = {muid: list(map(int, [key for key, contnm in metadata[bandname][field]['cont.dat'].items() if muid in contnm])) for muid in muids}
             muid_configs = {muid: '7M' if any(x < 100 for x in muid_to_bl[muid])
-                            else '12Mshort' if any(x < 1000 for x in muid_to_bl[muid])
-                            else '12Mlong' if any(x > 1000 for x in muid_to_bl[muid])
+                            else '12Mshort' if any(x < lb_threshold[band] for x in muid_to_bl[muid])
+                            else '12Mlong' if any(x > lb_threshold[band] for x in muid_to_bl[muid])
                             else None
                             for muid in muid_to_bl
                            }
@@ -120,6 +140,8 @@ for fignum,band in enumerate((3,6)):
                 config = muid_configs[muid]
                 configid = configmap[config]
 
+                frqmask[fieldnum*nconfigs + configid, :] = 2
+
                 for frqline in contdat.split(";"):
                     fsplit = frqline.split("~")
                     f2 = u.Quantity(fsplit[1])
@@ -129,7 +151,6 @@ for fignum,band in enumerate((3,6)):
 
                     sel = (frqarr > f1) & (frqarr < f2)
                     frqmask[fieldnum*nconfigs + configid, sel] = 1
-                    frqmask[fieldnum*nconfigs + configid, ~sel] = 2
 
                 frqmasks[spw] = frqmask
 
@@ -158,14 +179,23 @@ for fignum,band in enumerate((3,6)):
         if spwn % 2 == 1:
             ax.xaxis.set_ticks_position('top')
 
-        ax.imshow(frqmask, extent=[minfrq, maxfrq, nfields, 0],
-                  interpolation='none', cmap='gray')
-        ax.set_aspect((maxfrq-minfrq)*2 / (nfields))
+        ax.imshow(frqmask, extent=[minfrq, maxfrq, nfields*nconfigs, 0],
+                  interpolation='none', cmap='gnuplot')
+        ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
+
+        xmin, xmax = ax.get_xlim()
+        ax.hlines(np.arange(nfields)*3, xmin, xmax, color='w', linestyle='-')
 
         for linename,linefrq in lines_to_overplot.items():
-            linefrq = u.Quantity(linefrq).to(u.GHz).value
-            if (minfrq < linefrq) & (maxfrq > linefrq):
-                ax.vlines(linefrq, 0, nfields, color='r')
+            linefrq = u.Quantity(linefrq).to(u.GHz)
+            linefrqval = linefrq.value
+            if (minfrq < linefrqval) & (maxfrq > linefrqval):
+                for fieldnum,field in fields_and_numbers:
+                    vlsr = u.Quantity(field_vlsr[field])
+                    shifted_frq = vlsr.to(u.GHz, u.doppler_radio(linefrq)).value
+                    if (minfrq < shifted_frq) & (maxfrq > shifted_frq):
+                        ax.vlines(shifted_frq, fieldnum*nconfigs,
+                                  (fieldnum+1)*nconfigs, color='b')
 
 
     pl.tight_layout()
@@ -174,13 +204,13 @@ for fignum,band in enumerate((3,6)):
     pl.savefig(f"continuum_selection_regions_band{band}.png", bbox_inches='tight')
     pl.savefig(f"continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
 
-print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
-print(included_bw)
+#print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
+#print(included_bw)
 
 included_bw_byband = {band: {field: {config: sum(x[config] for x in included_bw[band][field].values())}
                              for field in fields if field in included_bw[band][0]}
                       for band in (3,6)}
-print(included_bw_byband)
+#print(included_bw_byband)
 total_bw = {band: sum(entry[1]-entry[0] for entry in flist.values()) for band,flist in frequency_coverage.items()}
 
 bandfrac = {band: {field: included_bw_byband[band][field]/total_bw[f"B{band}"] for field in included_bw_byband[band]} for band in (3,6)}
