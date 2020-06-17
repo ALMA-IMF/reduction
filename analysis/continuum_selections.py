@@ -3,6 +3,7 @@ import numpy as np
 import json
 from pathlib import Path
 from astropy import units as u
+from astropy import log
 
 
 # copy-pasted from parse_contdotdat
@@ -52,6 +53,13 @@ frequency_coverage = {
 basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L')
 with open(basepath / 'contdatfiles.json', 'r') as fh:
     contdatfiles = json.load(fh)
+with open(basepath / 'metadata.json', 'r') as fh:
+    metadata = json.load(fh)
+
+configmap = {'7M': 0,
+             '12Mshort': 1,
+             '12Mlong': 2}
+nconfigs = len(configmap)
 
 fields = sorted("G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split())
 nfields = len(fields)
@@ -60,20 +68,21 @@ fields_and_numbers = list(enumerate(fields))
 included_bw = {}
 
 for fignum,band in enumerate((3,6)):
+    bandname = f'B{band}'
     pl.close(fignum)
     pl.figure(fignum, figsize=(12,6))
 
 
     frqmasks = {}
 
-    fcov = frequency_coverage[f'B{band}']
+    fcov = frequency_coverage[bandname]
 
     nspw = len(fcov)
 
     included_bw[band] = {}
 
     for spwn,(spw,(minfrq, maxfrq, nfrqs)) in enumerate(fcov.items()):
-        frqmask = np.zeros([nfields, nfrqs], dtype='bool')
+        frqmask = np.zeros([nfields * nconfigs, nfrqs], dtype='int8')
 
         included_bw[band][spw] = {}
 
@@ -81,40 +90,65 @@ for fignum,band in enumerate((3,6)):
             frqarr = np.linspace(minfrq, maxfrq, nfrqs)*u.GHz
             dnu = (maxfrq-minfrq)/nfrqs
 
-            if f'{field}B{band}' not in contdatfiles:
+            included_bw[band][spw][field] = {config: None for config in configmap}
+
+            if field not in metadata[bandname]:
+            #if f'{field}B{band}' not in contdatfiles:
                 print(f"Skipping field {field} band {band} for lack of contdotdat.")
                 continue
 
-            contdat = parse_contdotdat(contdatfiles[f'{field}B{band}'])
+            muids = set(metadata[bandname][field]['muid'])
+            baseline_lengths = list(map(int, metadata[bandname][field]['cont.dat']))
+            muid_to_bl = {muid: list(map(int, [key for key, contnm in metadata[bandname][field]['cont.dat'].items()  if muid in contnm])) for muid in muids}
+            muid_configs = {muid: '7M' if any(x < 100 for x in muid_to_bl[muid])
+                            else '12Mshort' if any(x < 1000 for x in muid_to_bl[muid])
+                            else '12Mlong' if any(x > 1000 for x in muid_to_bl[muid])
+                            else None
+                            for muid in muid_to_bl
+                           }
+            print(band, field, muid_configs)
 
-            for frqline in contdat.split(";"):
-                fsplit = frqline.split("~")
-                f2 = u.Quantity(fsplit[1])
-                f1 = u.Quantity(float(fsplit[0]), f2.unit)
+            for muid in muids:
+                cdid = f'{field}B{band}{muid}'
+                if cdid not in contdatfiles:
+                    log.error(f"Missing {cdid}  {field} B{band} {muid}")
+                    for config in range(nconfigs):
+                        included_bw[band][spw][field][config] = np.nan
+                    continue
 
-                assert f1 < f2
+                contdat = parse_contdotdat(contdatfiles[cdid])
+                config = muid_configs[muid]
+                configid = configmap[config]
 
-                sel = (frqarr > f1) & (frqarr < f2)
-                frqmask[fieldnum, sel] = True
+                for frqline in contdat.split(";"):
+                    fsplit = frqline.split("~")
+                    f2 = u.Quantity(fsplit[1])
+                    f1 = u.Quantity(float(fsplit[0]), f2.unit)
 
-            frqmasks[spw] = frqmask
+                    assert f1 < f2
 
-            included_bw[band][spw][field] = (~frqmask[fieldnum,:]).sum() * dnu
+                    sel = (frqarr > f1) & (frqarr < f2)
+                    frqmask[fieldnum*nconfigs + configid, sel] = 1
+                    frqmask[fieldnum*nconfigs + configid, ~sel] = 2
+
+                frqmasks[spw] = frqmask
+
+                included_bw[band][spw][field][config] = (~frqmask[fieldnum*nconfigs+configid,:]).sum() * dnu
 
 
         assert frqmask.sum() > 0
 
-        if band == 6:
-            # W41-MM1 B6 doesn't exist
-            assert not np.any(frqmask[10,:])
+        #if band == 6:
+        #    # W41-MM1 B6 doesn't exist
+        #    assert not np.any(frqmask[10,:])
 
         ax = pl.subplot(1, nspw, spwn+1)
         #print(ax,spwn)
-        yticklocs = (np.arange(nfields) + np.arange(1, nfields+1))/2.
+        yticklocs = (np.arange(nfields*nconfigs) + np.arange(1, nfields*nconfigs+1))/2.
         tick_maps = list(zip(yticklocs, fields))
         #print(tick_maps)
         if spwn == 0:
-            ax.set_yticks(yticklocs)
+            ax.set_yticks(yticklocs[nconfigs//2::nconfigs])
             ax.set_yticklabels(fields)
         else:
             ax.set_yticks([])
@@ -143,7 +177,7 @@ for fignum,band in enumerate((3,6)):
 print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
 print(included_bw)
 
-included_bw_byband = {band: {field: sum(x[field] for x in included_bw[band].values())
+included_bw_byband = {band: {field: {config: sum(x[config] for x in included_bw[band][field].values())}
                              for field in fields if field in included_bw[band][0]}
                       for band in (3,6)}
 print(included_bw_byband)

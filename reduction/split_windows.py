@@ -146,29 +146,34 @@ for dirpath, dirnames, filenames in os.walk('.'):
             # this is how DOSPLIT in scriptForPI decides to split
             spws = [int(ss) for ss in spws if (ss in targetspws) and (msmd.nchan(ss) > 4)]
 
+            # muid is 1 level above calibrated
+            muid = dirpath.split("/")[-2]
+
             if field in metadata[band]:
                 metadata[band][field]['path'].append(os.path.abspath(dirpath)),
                 metadata[band][field]['vis'].append(fn)
                 metadata[band][field]['spws'].append(spws)
+                metadata[band][field]['muid'].append(muid)
             else:
                 metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                          'vis': [fn],
                                          'spws': [spws],
+                                         'muid': [muid],
                                         }
 
             if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
                 contdatpath = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
-                contdat_files[field + band] = contdatpath
+                contdat_files[field + band + muid] = contdatpath
 
                 tb.open(filename+"/ANTENNA")
                 positions = tb.getcol('POSITION')
                 tb.close()
                 baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
-                key = int(max(baseline_lengths))
+                key = int(np.max(baseline_lengths))
                 if 'cont.dat' in metadata[band][field]:
-                    metadata[band][field]['cont.dat'] = {key: contdatpath}
-                else:
                     metadata[band][field]['cont.dat'][key] = contdatpath
+                else:
+                    metadata[band][field]['cont.dat'] = {key: contdatpath}
 
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:
@@ -181,6 +186,9 @@ for dirpath, dirnames, filenames in os.walk('.'):
 
 with open('metadata.json', 'w') as fh:
     json.dump(metadata, fh)
+
+with open('contdatfiles.json', 'w') as fh:
+    json.dump(contdat_files, fh)
 
 logprint("Completed metadata assembly")
 
@@ -288,7 +296,7 @@ for band in bands:
 
         logprint("Metadata for {0}:{1} is {2}".format(band, field, mymd))
 
-        for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
+        for path, vis, spws, muid in zip(mymd['path'], mymd['vis'], mymd['spws'], mymd['muid']):
 
             contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
                                     "{field}.{band}.cont.dat".format(field=field, band=band))
@@ -306,14 +314,16 @@ for band in bands:
             if not os.path.exists(contfile):
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
                          .format(path, band, field))
-                if field + band in contdat_files:
-                    raise ValueError("Going to use a different cont.dat for this config?")
-                    contfile = contdat_files[field + band]
+                if field + band + muid in contdat_files:
+                    #raise ValueError("Going to use a different cont.dat for this config?")
+                    contfile = contdat_files[field + band + muid]
                     logprint("No cont.dat file: Using {0} instead.".format(contfile))
                 else:
                     logprint("No cont.dat file: Skipping.")
                     continue
             cont_channel_selection = parse_contdotdat(contfile)
+            mymd['cont.dat_file'] = contfile
+            contdat_files[field + band + muid] = contdatpath
 
             visfile = os.path.join(path, vis)
             contvis = os.path.join(path, "continuum_"+vis+".cont")
@@ -504,5 +514,8 @@ with open('continuum_mses_unconcat.txt', 'w') as fh:
 with open('cont_metadata.json', 'w') as fh:
     json.dump(cont_to_merge, fh)
 
-with open('contdatfiles.json', 'w') as fh:
+with open('metadata_updated.json', 'w') as fh:
+    json.dump(metadata, fh)
+
+with open('contdatfiles_updated.json', 'w') as fh:
     json.dump(contdat_files, fh)
