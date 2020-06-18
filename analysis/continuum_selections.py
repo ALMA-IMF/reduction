@@ -3,6 +3,7 @@ import numpy as np
 import json
 from pathlib import Path
 from astropy import units as u
+from astropy import constants
 from astropy import log
 
 
@@ -48,16 +49,23 @@ field_vlsr = {
     "G351.77": "-3.00km/s",
 }
 
+vlsrs = u.Quantity(list(map(u.Quantity, field_vlsr.values())))
+vmin = vlsrs.min()
+vmax = vlsrs.max()
+zmin = 1-(vmax/constants.c).decompose()
+zmax = 1+np.abs(vmin/constants.c).decompose()
+dzm = 1+((vmax-vmin)/constants.c).decompose()
+
 frequency_coverage = {
     'B3': {
-           1: (93.0931359128077, 93.21807487765145, 2048),
-           0: (91.6824842830137, 92.6819960017637, 2048),
+           1: (93.0931359128077, 93.21807487765145,    2048),
+           0: (91.6824842830137, 92.6819960017637,     2048),
            2: (102.08163478365731, 103.08114650240731, 2048),
            3: (104.48007228365731, 105.47958400240731, 2048),
           },
     'B6': {
-        0: (216.058164552243, 216.2924174819305, 1920),
-        1: (217.008115724118, 217.242246583493, 960),
+        0: (216.058164552243,   216.2924174819305,  1920),
+        1: (217.008115724118,   217.242246583493,   960),
         2: (218.08794227907555, 218.32219520876305, 1920),
         3: (219.47637001345055, 219.59343544313805, 960),
         4: (219.86137977907555, 219.97832313845055, 480),
@@ -72,6 +80,14 @@ with open(basepath / 'contdatfiles.json', 'r') as fh:
     contdatfiles = json.load(fh)
 with open(basepath / 'metadata.json', 'r') as fh:
     metadata = json.load(fh)
+
+
+frange = {band: np.array((np.min([np.array(metadata[band][field]['freqs']).min(axis=0) for field in metadata[band]], axis=0)[:,0],
+                          np.max([np.array(metadata[band][field]['freqs']).max(axis=0) for field in metadata[band]], axis=0)[:,1])).T/1e9
+          for band in metadata}
+sorted_inds = {band: np.argsort(frange[band][:,0]) for band in frange}
+frequency_coverage = {band: {ind: tuple(frange[band][ind,:]) + (int(frequency_coverage[band][ind][2] * (frange[band][ind,1]-frange[band][ind,0])/(frequency_coverage[band][ind][1]-frequency_coverage[band][ind][0])),) for ind in sorted_inds[band]} for band in frange}
+
 
 configmap = {'7M': 0,
              '12Mshort': 1,
@@ -129,6 +145,7 @@ for fignum,band in enumerate((3,6)):
             print(band, field, muid_configs)
 
             for muid in muids:
+
                 cdid = f'{field}B{band}{muid}'
                 if cdid not in contdatfiles:
                     log.error(f"Missing {cdid}  {field} B{band} {muid}")
@@ -140,7 +157,14 @@ for fignum,band in enumerate((3,6)):
                 config = muid_configs[muid]
                 configid = configmap[config]
 
-                frqmask[fieldnum*nconfigs + configid, :] = 2
+                muid_ind = metadata[bandname][field]['muid'].index(muid)
+                frqrange_covered_perspw = metadata[bandname][field]['freqs'][muid_ind]*u.Hz
+                for freq_ind,(fmin,fmax) in enumerate(frqrange_covered_perspw):
+                    if fmax > frqarr[nfrqs//2] > fmin:
+                        break
+                covered_freqs = (frqarr > fmin) & (frqarr < fmax)
+
+                frqmask[fieldnum*nconfigs + configid, covered_freqs] = 2
 
                 for frqline in contdat.split(";"):
                     fsplit = frqline.split("~")

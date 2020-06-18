@@ -149,15 +149,20 @@ for dirpath, dirnames, filenames in os.walk('.'):
             # muid is 1 level above calibrated
             muid = dirpath.split("/")[-2]
 
+            frqs = [msmd.chanfreqs(spw) for spw in spws]
+            frqslims = [(frq.min(), frq.max()) for frq in frqs]
+
             if field in metadata[band]:
                 metadata[band][field]['path'].append(os.path.abspath(dirpath)),
                 metadata[band][field]['vis'].append(fn)
                 metadata[band][field]['spws'].append(spws)
+                metadata[band][field]['freqs'].append(frqslims)
                 metadata[band][field]['muid'].append(muid)
             else:
                 metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                          'vis': [fn],
                                          'spws': [spws],
+                                         'freqs': [frqslims],
                                          'muid': [muid],
                                         }
 

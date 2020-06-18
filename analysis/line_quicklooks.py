@@ -22,6 +22,20 @@ if os.getenv('NO_PROGRESSBAR') is None:
     pbar = ProgressBar()
     pbar.register()
 
+nthreads = 1
+scheduler = 'serial'
+
+if os.getenv('DASK_THREADS') is not None:
+    try:
+        nthreads = int(os.getenv('DASK_THREADS'))
+        if nthreads > 1:
+            scheduler = 'threads'
+        else:
+            scheduler = 'serial'
+    except (TypeError,ValueError):
+        nthreads = 1
+        scheduler = 'serial'
+
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
                  'h2co303': '218.222195GHz',
@@ -72,11 +86,11 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     rest_value = u.Quantity(default_lines[line])
 
                     cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
-                    cube.use_dask_scheduler('threads', num_workers=8)
+                    cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     cube.beam_threshold = 1
                     #cube.allow_huge_operations = True
                     mcube = cube.mask_out_bad_beams(0.1)
-                    mcube.use_dask_scheduler('threads', num_workers=8)
+                    mcube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     mcube.beam_threshold = 1
 
                     print(mcube)
