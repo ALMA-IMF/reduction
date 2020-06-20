@@ -1239,7 +1239,7 @@ default_lines = {
     "h30a": "231.900928GHz",
     "h41a": "92.034434GHz",
     "c18o": "219.560358GHz",
-    "ch3ccn": "92.26144GHz",
+    "ch3cn": "92.26144GHz",
     "ch3cch": "102.547983GHz",
 }
 field_vlsr = {

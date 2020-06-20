@@ -42,6 +42,7 @@ file for field "ORION" in band 9, you would create a file called
 ORION.B9.cont.dat. Note that the names are case sensitive.
 """
 import os
+import glob
 import json
 import numpy as np
 
@@ -166,6 +167,16 @@ for dirpath, dirnames, filenames in os.walk('.'):
                                          'muid': [muid],
                                         }
 
+            ran_findcont = False
+            pipescript = glob.glob("../script/*casa_pipescript.py")
+            if len(pipescript) > 0:
+                for pscr in pipescript:
+                    with open(pscr, 'r') as fh:
+                        txt = fh.read()
+                    if 'findcont' in txt:
+                        ran_findcont = True
+            ran_findcont = "ran_findcont" if ran_findcont else "did_not_run_findcont"
+
             if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
                 contdatpath = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
                 contdat_files[field + band + muid] = contdatpath
@@ -179,6 +190,12 @@ for dirpath, dirnames, filenames in os.walk('.'):
                     metadata[band][field]['cont.dat'][key] = contdatpath
                 else:
                     metadata[band][field]['cont.dat'] = {key: contdatpath}
+            else:
+                if 'cont.dat' in metadata[band][field]:
+                    metadata[band][field]['cont.dat'][key] = 'notfound_'+ ran_findcont
+                else:
+                    metadata[band][field]['cont.dat'] = {key: 'notfound_'+ ran_findcont}
+                contdat_files[field + band + muid] = 'notfound_'+ ran_findcont
 
             # touch the filename
             with open(os.path.join(dirpath, "{0}_{1}".format(field, band)), 'w') as fh:

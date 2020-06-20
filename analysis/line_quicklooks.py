@@ -23,7 +23,7 @@ if os.getenv('NO_PROGRESSBAR') is None:
     pbar.register()
 
 nthreads = 1
-scheduler = 'serial'
+scheduler = 'synchronous'
 
 if os.getenv('DASK_THREADS') is not None:
     try:
@@ -31,10 +31,10 @@ if os.getenv('DASK_THREADS') is not None:
         if nthreads > 1:
             scheduler = 'threads'
         else:
-            scheduler = 'serial'
+            scheduler = 'synchronous'
     except (TypeError,ValueError):
         nthreads = 1
-        scheduler = 'serial'
+        scheduler = 'synchronous'
 
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',

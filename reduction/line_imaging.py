@@ -233,6 +233,10 @@ for band in band_list:
             basepath = os.path.basename(vis[0])
             concatvis = os.path.join(basepath, basename+".concat.ms")
             if not os.path.exists(concatvis):
+                logprint("Concatenating visibilities {vis} into {concatvis}"
+                         .format(vis=vis, concatvis=concatvis),
+                         origin='almaimf_line_imaging'
+                        )
                 concat(vis=vis, concatvis=concatvis)
 
 

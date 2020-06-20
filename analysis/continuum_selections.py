@@ -74,6 +74,7 @@ frequency_coverage = {
         7: (231.48238541765087, 233.35640885515087, 1920),
     }
 }
+total_bw = {band: sum(entry[1]-entry[0] for entry in flist.values()) for band,flist in frequency_coverage.items()}
 
 basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L')
 with open(basepath / 'contdatfiles.json', 'r') as fh:
@@ -106,7 +107,7 @@ lb_threshold = {3: 1000,
 for fignum,band in enumerate((3,6)):
     bandname = f'B{band}'
     pl.close(fignum)
-    pl.figure(fignum, figsize=(12,6))
+    fig = pl.figure(fignum, figsize=(12,6))
 
 
     frqmasks = {}
@@ -149,7 +150,7 @@ for fignum,band in enumerate((3,6)):
                 cdid = f'{field}B{band}{muid}'
                 if cdid not in contdatfiles:
                     log.error(f"Missing {cdid}  {field} B{band} {muid}")
-                    for config in range(nconfigs):
+                    for config in configmap:
                         included_bw[band][spw][field][config] = np.nan
                     continue
 
@@ -178,7 +179,7 @@ for fignum,band in enumerate((3,6)):
 
                 frqmasks[spw] = frqmask
 
-                included_bw[band][spw][field][config] = (~frqmask[fieldnum*nconfigs+configid,:]).sum() * dnu
+                included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 2).sum() * dnu
 
 
         assert frqmask.sum() > 0
@@ -225,16 +226,45 @@ for fignum,band in enumerate((3,6)):
     pl.tight_layout()
     pl.subplots_adjust(wspace=0.05, hspace=0)
 
+    fig.text(0.5, 0.04, 'Frequency (GHz)', ha='center')
+
     pl.savefig(f"continuum_selection_regions_band{band}.png", bbox_inches='tight')
     pl.savefig(f"continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
 
 #print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
 #print(included_bw)
 
-included_bw_byband = {band: {field: {config: sum(x[config] for x in included_bw[band][field].values())}
-                             for field in fields if field in included_bw[band][0]}
+included_bw_byband = {band:
+                      {field:
+                       {config:
+                        sum(included_bw[band][spw][field][config]
+                            for spw in included_bw[band]
+                            if included_bw[band][spw][field][config] is not None
+                           )
+                        for config in included_bw[band][0][field]
+                       }
+                       for field in fields if field in included_bw[band][0]}
                       for band in (3,6)}
 #print(included_bw_byband)
-total_bw = {band: sum(entry[1]-entry[0] for entry in flist.values()) for band,flist in frequency_coverage.items()}
 
-bandfrac = {band: {field: included_bw_byband[band][field]/total_bw[f"B{band}"] for field in included_bw_byband[band]} for band in (3,6)}
+bandfrac = {band: {field: {config: included_bw_byband[band][field][config]/total_bw[f"B{band}"] for config in included_bw_byband[band][field]} for field in included_bw_byband[band]} for band in (3,6)}
+bandfrac_tbl = np.empty([len(bandfrac) * nconfigs, nfields]) * np.nan
+for ibb, band in enumerate([3,6]):
+    for iff, field in enumerate(fields):
+        for icc, config in enumerate(bandfrac[band][field]):
+            bandfrac_tbl[ibb*nconfigs + icc, iff] = bandfrac[band][field][config]
+
+
+fig = pl.figure(2)
+fig.clf()
+ax = fig.gca()
+pl.imshow(bandfrac_tbl.T, interpolation='none', cmap='viridis')
+ax.set_xticks(list(range(6)),)
+ax.set_xticklabels(['7m-B3','12m-short-B3', '12m-long-B3', '7m-B6','12m-short-B6', '12m-long-B6'])
+pl.xticks(rotation='vertical')
+ax.set_yticks(list(range(len(fields))))
+ax.set_yticklabels(fields)
+ax.set_ylim(-0.5,len(fields)-0.5)
+pl.colorbar()
+pl.savefig("continuum_selection_fraction.png", bbox_inches='tight')
+pl.savefig("continuum_selection_fraction.pdf", bbox_inches='tight')
