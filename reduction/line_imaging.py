@@ -368,7 +368,7 @@ for band in band_list:
             logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
 
             if not os.path.exists(concatvis+".contsub"):
-                new_freq_selection = freq_selection_overlap(vv,
+                new_freq_selection = freq_selection_overlap(concatvis,
                                                             cont_freq_selection)
                 uvcontsub(vis=concatvis,
                           fitspw=new_freq_selection,
