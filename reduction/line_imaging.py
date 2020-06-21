@@ -90,6 +90,11 @@ chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 # global default: only do robust 0 for lines
 robust = 0
 
+logprint("Initializing line imaging with global parameters"
+         " exclude_7m={0}, band_list={1}, field_id={2}"
+         .format(exclude_7m, band_list, field_id),
+         origin='almaimf_line_imaging')
+
 for band in band_list:
     for field in to_image[band]:
         spwnames = tuple('spw{0}'.format(x) for x in to_image[band][field])

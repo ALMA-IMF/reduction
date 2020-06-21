@@ -339,9 +339,13 @@ for band in bands:
                 if field + band + muid in contdat_files:
                     #raise ValueError("Going to use a different cont.dat for this config?")
                     contfile = contdat_files[field + band + muid]
-                    logprint("No cont.dat file: Using {0} instead.".format(contfile))
+                    if not os.path.exists(contfile):
+                        logprint("No cont.dat file: Skipping - this file will not be included in the merged continuum.")
+                        continue
+                    else:
+                        logprint("No cont.dat file: Using {0} instead.".format(contfile))
                 else:
-                    logprint("No cont.dat file: Skipping.")
+                    logprint("No cont.dat file: Skipping - this file will not be included in the merged continuum.")
                     continue
             cont_channel_selection = parse_contdotdat(contfile)
             mymd['cont.dat_file'] = contfile
