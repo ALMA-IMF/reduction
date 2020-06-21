@@ -5,6 +5,7 @@ from pathlib import Path
 from astropy import units as u
 from astropy import constants
 from astropy import log
+from astropy.table import Table
 
 
 # copy-pasted from parse_contdotdat
@@ -101,7 +102,7 @@ fields_and_numbers = list(enumerate(fields))
 
 included_bw = {}
 
-lb_threshold = {3: 1000,
+lb_threshold = {3: 750,
                 6: 501,}
 
 for fignum,band in enumerate((3,6)):
@@ -148,14 +149,23 @@ for fignum,band in enumerate((3,6)):
             for muid in muids:
 
                 cdid = f'{field}B{band}{muid}'
+                config = muid_configs[muid]
                 if cdid not in contdatfiles:
                     log.error(f"Missing {cdid}  {field} B{band} {muid}")
-                    for config in configmap:
+                    if config is not None:
+                        included_bw[band][spw][field][config] = np.nan
+                    continue
+                if 'notfound' in contdatfiles[cdid]:
+                    log.error(f"Missing {cdid}  {field} B{band} {muid}: {contdatfiles[cdid]}")
+                    if config is not None:
                         included_bw[band][spw][field][config] = np.nan
                     continue
 
                 contdat = parse_contdotdat(contdatfiles[cdid])
-                config = muid_configs[muid]
+                if config is None:
+                    log.error(f"muid={muid} cdid={cdid}, contdat={contdatfiles[cdid]} but config={config}")
+                    continue
+
                 configid = configmap[config]
 
                 muid_ind = metadata[bandname][field]['muid'].index(muid)
@@ -181,6 +191,17 @@ for fignum,band in enumerate((3,6)):
 
                 included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 2).sum() * dnu
 
+                if muid == 'member.uid___A001_X1296_X127':
+                    assert not np.isnan(included_bw[band][spw][field][config])
+                    log.info(f"Success for muid {muid}")
+
+            if 1 in included_bw[3]:
+                if 'G012.80' in included_bw[3][1]:
+                    assert included_bw[3][1]['G012.80']['12Mlong'] is not None
+
+        # insanity checks
+        if 6 in included_bw:
+            assert not np.isnan(included_bw[6][0]['W43-MM3']['12Mshort'])
 
         assert frqmask.sum() > 0
 
@@ -249,16 +270,22 @@ included_bw_byband = {band:
 
 bandfrac = {band: {field: {config: included_bw_byband[band][field][config]/total_bw[f"B{band}"] for config in included_bw_byband[band][field]} for field in included_bw_byband[band]} for band in (3,6)}
 bandfrac_tbl = np.empty([len(bandfrac) * nconfigs, nfields]) * np.nan
+bandfrac_flat = []
 for ibb, band in enumerate([3,6]):
     for iff, field in enumerate(fields):
         for icc, config in enumerate(bandfrac[band][field]):
             bandfrac_tbl[ibb*nconfigs + icc, iff] = bandfrac[band][field][config]
+            bandfrac_flat.append({'field': field, 'band': band, 'config': config, 'bwfrac': bandfrac[band][field][config]})
+
+# sum(()) = 0, so for fields with zeros, nan 'em
+bandfrac_tbl[bandfrac_tbl==0]=np.nan
+
 
 
 fig = pl.figure(2)
 fig.clf()
 ax = fig.gca()
-pl.imshow(bandfrac_tbl.T, interpolation='none', cmap='viridis')
+pl.imshow(bandfrac_tbl.T, interpolation='none', cmap='viridis', vmin=0, vmax=1)
 ax.set_xticks(list(range(6)),)
 ax.set_xticklabels(['7m-B3','12m-short-B3', '12m-long-B3', '7m-B6','12m-short-B6', '12m-long-B6'])
 pl.xticks(rotation='vertical')
@@ -268,3 +295,7 @@ ax.set_ylim(-0.5,len(fields)-0.5)
 pl.colorbar()
 pl.savefig("continuum_selection_fraction.png", bbox_inches='tight')
 pl.savefig("continuum_selection_fraction.pdf", bbox_inches='tight')
+
+
+bandfrac_table = Table(bandfrac_flat)
+#print(bandfrac_table)

@@ -177,8 +177,15 @@ for dirpath, dirnames, filenames in os.walk('.'):
                         ran_findcont = True
             ran_findcont = "ran_findcont" if ran_findcont else "did_not_run_findcont"
 
-            if os.path.exists(os.path.join(dirpath, '../calibration/cont.dat')):
-                contdatpath = os.path.realpath(os.path.join(dirpath, '../calibration/cont.dat'))
+            contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                    "{field}.{band}.cont.dat".format(field=field, band=band))
+            if os.path.exists(contfile):
+                logprint("##### Found manually-created cont.dat file {0}".format(contfile))
+            else:
+                contfile = os.path.join(dirpath, '../calibration/cont.dat')
+
+            if os.path.exists(contfile):
+                contdatpath = os.path.realpath(contfile)
                 contdat_files[field + band + muid] = contdatpath
 
                 tb.open(filename+"/ANTENNA")
