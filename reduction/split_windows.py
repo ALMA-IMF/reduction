@@ -197,6 +197,11 @@ for sg in science_goals:
                                 else '12Mshort' if max_bl < lb_threshold[band]
                                 else '12Mlong')
 
+                if 'muid_configs' in metadata[band][field]:
+                    metadata[band][field]['muid_configs'][array_config] = muid
+                else:
+                    metadata[band][field]['muid_configs'] = {array_config: muid}
+
                 contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
                                         "{field}.{band}.{array}.cont.dat".format(field=field, band=band, array=array_config.lower()))
                 if os.path.exists(contfile):
@@ -576,3 +581,5 @@ with open('metadata_updated.json', 'w') as fh:
 
 with open('contdatfiles_updated.json', 'w') as fh:
     json.dump(contdat_files, fh)
+
+logprint("Completed split_windows")

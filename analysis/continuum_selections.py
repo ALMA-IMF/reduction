@@ -144,6 +144,7 @@ for fignum,band in enumerate((3,6)):
                             else None
                             for muid in muid_to_bl
                            }
+            muid_configs.update({val:key for key,val in metadata[bandname][field]['muid_configs'].items()})
             print(band, field, muid_configs)
 
             for muid in muids:
