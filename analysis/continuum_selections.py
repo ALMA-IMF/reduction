@@ -103,7 +103,7 @@ fields_and_numbers = list(enumerate(fields))
 included_bw = {}
 
 lb_threshold = {3: 750,
-                6: 501,}
+                6: 780,}
 
 for fignum,band in enumerate((3,6)):
     bandname = f'B{band}'
@@ -182,6 +182,8 @@ for fignum,band in enumerate((3,6)):
                     f2 = u.Quantity(fsplit[1])
                     f1 = u.Quantity(float(fsplit[0]), f2.unit)
 
+                    if f1 == f2:
+                        continue
                     assert f1 < f2
 
                     sel = (frqarr > f1) & (frqarr < f2)
