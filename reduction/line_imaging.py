@@ -236,8 +236,10 @@ for band in band_list:
             # concatenate MSes prior to imaging
             basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
 
-            basepath = os.path.split(os.path.dirname(vis[0]))[0]
+            basepath = os.path.dirname(vis[0])
+            assert os.path.split(basepath)[-1] == 'calibrated'
             concatvis = os.path.join(basepath, basename+".concat.ms")
+            assert 'calibrated' in concatvis
             if not os.path.exists(concatvis):
                 logprint("Concatenating visibilities {vis} into {concatvis}"
                          .format(vis=vis, concatvis=concatvis),
