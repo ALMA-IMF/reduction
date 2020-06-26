@@ -220,7 +220,7 @@ for band in band_list:
                 local_impars['chanchunks'] = int(chanchunks)
 
                 local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
-                                       / u.Quantity(local_impars['width'])).value)
+                                            / u.Quantity(local_impars['width'])).value)
                 if local_impars['nchan'] < local_impars['chanchunks']:
                     local_impars['chanchunks'] = local_impars['nchan']
                 impars.update(local_impars)
@@ -314,6 +314,7 @@ for band in band_list:
             ia.close()
 
             continue_imaging = False
+            nsigma = None
             if 'threshold' in impars:
                 if 'sigma' in impars['threshold']:
                     nsigma = int(impars['threshold'].strip('sigma'))
@@ -351,6 +352,8 @@ for band in band_list:
                     ia.sethistory(origin='almaimf_line_imaging',
                                   history=["{0}: {1}".format(key, val) for key, val in
                                            impars.items()])
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["nsigma: {0}".format(nsigma)])
                     ia.sethistory(origin='almaimf_line_imaging',
                                   history=["git_version: {0}".format(git_version),
                                            "git_date: {0}".format(git_date)])
@@ -438,6 +441,8 @@ for band in band_list:
                     ia.sethistory(origin='almaimf_line_imaging',
                                   history=["{0}: {1}".format(key, val) for key, val in
                                            impars.items()])
+                    ia.sethistory(origin='almaimf_line_imaging',
+                                  history=["nsigma: {0}".format(nsigma)])
                     ia.sethistory(origin='almaimf_line_imaging',
                                   history=["git_version: {0}".format(git_version),
                                            "git_date: {0}".format(git_date)])

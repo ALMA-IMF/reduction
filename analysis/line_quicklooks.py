@@ -43,6 +43,8 @@ default_lines = {'n2hp': '93.173700GHz',
                  'h30a': '231.900928GHz',
                  'h41a': '92.034434GHz',
                  "c18o": "219.560358GHz",
+                 "ch3cn": "92.26144GHz",
+                 "ch3cch": "102.547983GHz",
                 }
 
 suffix = '.image'
@@ -81,6 +83,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     modfile = fn.replace(suffix, ".model")
                     if os.path.exists(modfile):
                         modcube = SpectralCube.read(modfile, format='casa_image', use_dask=True)
+                        modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         modcube.beam_threshold=100000
 
                     rest_value = u.Quantity(default_lines[line])
