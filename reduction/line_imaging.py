@@ -313,6 +313,12 @@ for band in band_list:
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
             ia.close()
 
+            if rms >= 1:
+                raise ValueError("RMS was {0} - that's absurd.".format(rms))
+            if rms > 0.01:
+                logprint("The RMS found was pretty high: {0}".format(rms),
+                         origin='almaimf_line_imaging')
+
             continue_imaging = False
             nsigma = None
             if 'threshold' in impars:

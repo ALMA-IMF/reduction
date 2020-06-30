@@ -53,8 +53,8 @@ if cores > 1:
 
 print(f"Using {nthreads} threads with the {scheduler} scheduler")
 
-spws = {3: range(4),
-        6: range(7),}
+spws = {3: list(range(4)),
+        6: list(range(7)),}
 
 suffix = '.image'
 
