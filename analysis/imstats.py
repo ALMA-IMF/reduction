@@ -14,6 +14,9 @@ from functools import reduce
 import operator
 import re
 
+warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning, append=True)
+
+
 
 def get_requested_sens():
     # use this file's path
@@ -80,7 +83,7 @@ def parse_fn(fn):
     for entry in split:
         if 'selfcal' in entry and 'pre' not in entry:
             #selfcal_entry = entry
-            selfcal_entry = re.compile(".(image|residual|model).tt0(.pbcor)?(.fits)?").sub("", selfcal_entry)
+            selfcal_entry = re.compile(".(image|residual|model).tt0(.pbcor)?(.fits)?").sub("", entry)
 
     robust_entry = 'robust999'
     for entry in split:
@@ -93,6 +96,10 @@ def parse_fn(fn):
     else:
         selfcaliter = int(selfcal_entry.split('selfcal')[-1])
     robust = float(robust_entry.split('robust')[-1])
+
+    # sanity check: I was getting a lot of sc0's
+    if 'finaliter' in fn:
+        assert selfcaliter != 0
 
     muid = "_".join(split[2:3]+split[5:7])
 
@@ -529,7 +536,7 @@ if __name__ == "__main__":
                ):
 
             os.chdir(basepath)
+            tbl = savestats(basepath=basepath)
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
             flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2020' in basepath)
-            tbl = savestats(basepath=basepath)
     os.chdir(cwd)

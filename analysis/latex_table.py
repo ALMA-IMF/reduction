@@ -93,7 +93,7 @@ wtbl.write('selfcal_summary.ecsv', format='ascii.ecsv', overwrite=True)
 latexdict['header_start'] = '\label{tab:selfcal}'#\n\\footnotesize'
 latexdict['preamble'] = '\caption{Selfcal Summary}\n\\resizebox{\\textwidth}{!}{'
 latexdict['col_align'] = 'l'*len(wtbl.columns)
-latexdict['tabletype'] = 'table'
+latexdict['tabletype'] = 'table*'
 latexdict['tablefoot'] = ("}\par\n"
                           "Description"
 
