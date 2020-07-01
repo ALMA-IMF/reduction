@@ -150,7 +150,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
             log.warning("cutout pixels are different size in pre vs post")
         if cube_pre.wcs.celestial != cube_post.wcs.celestial:
             log.warning("post and pre have different celestial WCSes")
-            
+
 
         if not np.isfinite(mad_sample_pre):
             raise ValueError

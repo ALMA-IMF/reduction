@@ -102,9 +102,9 @@ if __name__ == "__main__":
     latexdict['header_start'] = '\label{tab:selfcal_fields}'#\n\\footnotesize'
     latexdict['preamble'] = '\caption{Selfcal Field Inclusion}\n\\resizebox{\\textwidth}{!}{'
     latexdict['col_align'] = 'l'*len(ltbl.columns)
-    latexdict['tabletype'] = 'table'
+    latexdict['tabletype'] = 'table*'
     latexdict['tablefoot'] = ("}\par\n"
-                              "Number of fields included in each self-calibrationt entry"
+                              "Number of fields included in each self-calibration entry"
 
                              )
 
