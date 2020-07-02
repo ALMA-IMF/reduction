@@ -104,6 +104,8 @@ ax2.set_ylabel("MAD sampleregion")
 ax2.plot([0,0.001], [0, 0.001], 'k--')
 
 
+# bsens_rms_change:
+# How much does the RMS noise improve going from cleanest (denominator) to bsens (numerator)?
 fig3 = pl.figure(3, figsize=(15,5))
 fig3.clf()
 ax1 = pl.subplot(1,3,1)

@@ -177,6 +177,8 @@ for fignum,band in enumerate((3,6)):
                         break
                 covered_freqs = (frqarr > fmin) & (frqarr < fmax)
 
+                # 2 = all covered frequencies
+                # 1 = continuum frequencies
                 frqmask[fieldnum*nconfigs + configid, covered_freqs] = 2
 
                 for frqline in contdat.split(";"):
@@ -193,7 +195,9 @@ for fignum,band in enumerate((3,6)):
 
                 frqmasks[spw] = frqmask
 
-                included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 2).sum() * dnu
+                # 1 = included
+                # 2 = covered
+                included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 1).sum() * dnu
 
                 if muid == 'member.uid___A001_X1296_X127':
                     assert not np.isnan(included_bw[band][spw][field][config])
@@ -229,6 +233,10 @@ for fignum,band in enumerate((3,6)):
         if spwn % 2 == 1:
             ax.xaxis.set_ticks_position('top')
 
+        # gnuplot: 
+        # black -> zero
+        # red -> 1 (included)
+        # yellow -> 2 (covered, not-continuum)
         ax.imshow(frqmask, extent=[minfrq, maxfrq, nfields*nconfigs, 0],
                   interpolation='none', cmap='gnuplot')
         ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
@@ -296,7 +304,8 @@ pl.xticks(rotation='vertical')
 ax.set_yticks(list(range(len(fields))))
 ax.set_yticklabels(fields)
 ax.set_ylim(-0.5,len(fields)-0.5)
-pl.colorbar()
+cb = pl.colorbar()
+cb.set_label("Fraction of bandwidth in 'cleanest' continuum")
 pl.savefig("continuum_selection_fraction.png", bbox_inches='tight')
 pl.savefig("continuum_selection_fraction.pdf", bbox_inches='tight')
 
