@@ -6,6 +6,7 @@ from astropy import units as u
 from astropy import constants
 from astropy import log
 from astropy.table import Table
+from pathlib import Path
 
 
 # copy-pasted from parse_contdotdat
@@ -302,3 +303,12 @@ pl.savefig("continuum_selection_fraction.pdf", bbox_inches='tight')
 
 bandfrac_table = Table(bandfrac_flat)
 #print(bandfrac_table)
+
+bandfrac_table.write
+
+tbldir = Path('/bio/web/secure/adamginsburg/ALMA-IMF/tables')
+bandfrac_table.write(tbldir / 'bandpass_fraction.ecsv', overwrite=True)
+bandfrac_table.write(tbldir / 'bandpass_fraction.ipac', format='ascii.ipac', overwrite=True)
+bandfrac_table.write(tbldir / 'bandpass_fraction.html', format='ascii.html', overwrite=True)
+bandfrac_table.write(tbldir / 'bandpass_fraction.tex', overwrite=True)
+bandfrac_table.write(tbldir / 'bandpass_fraction.js.html', format='jsviewer')

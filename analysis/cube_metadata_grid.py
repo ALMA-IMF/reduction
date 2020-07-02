@@ -145,10 +145,12 @@ colnames = colnames_apriori+colnames_fromheader
 columns = list(map(list, zip(*rows)))
 tbl = Table(columns, names=colnames)
 print(tbl)
-tbl.write('cube_metadata.ecsv', overwrite=True)
-tbl.write('cube_metadata.ipac', format='ascii.ipac', overwrite=True)
-tbl.write('cube_metadata.html', format='ascii.html', overwrite=True)
-tbl.write('cube_metadata.tex', overwrite=True)
-tbl.write('cube_metadata.js.html', format='jsviewer')
+from pathlib import Path
+tbldir = Path('/bio/web/secure/adamginsburg/ALMA-IMF/tables')
+tbl.write(tbldir / 'cube_metadata.ecsv', overwrite=True)
+tbl.write(tbldir / 'cube_metadata.ipac', format='ascii.ipac', overwrite=True)
+tbl.write(tbldir / 'cube_metadata.html', format='ascii.html', overwrite=True)
+tbl.write(tbldir / 'cube_metadata.tex', overwrite=True)
+tbl.write(tbldir / 'cube_metadata.js.html', format='jsviewer')
 
 os.chdir(cwd)

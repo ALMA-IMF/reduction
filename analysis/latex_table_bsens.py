@@ -1,4 +1,5 @@
 from astropy.table import Table, Column
+from astropy import table
 import requests
 import keyring
 from astropy import units as u
@@ -13,7 +14,22 @@ result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/Feb20
 with open('metadata_bsens_cleanest.ecsv', 'w') as fh:
     fh.write(result.text)
 
-tbl = Table.read('metadata_bsens_cleanest.ecsv')
+
+result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/tables/bandpass_fraction.ecsv',
+                      auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
+with open('bandpass_fraction.ecsv', 'w') as fh:
+    fh.write(result.text)
+
+bp_tbl = Table.read('bandpass_fraction.ecsv')
+bp_tbl['band'] = [f'B{b}' for b in bp_tbl['band']]
+bp_tbl.rename_column('field','region')
+bp_tbl = table.join(bp_tbl.group_by('config').groups[0], bp_tbl.group_by('config').groups[1], keys=('region', 'band'))
+bp_tbl.rename_column('bwfrac_1', '12Mlong_frac')
+bp_tbl.rename_column('bwfrac_2', '12Mshort_frac')
+bp_tbl.remove_column('config_1')
+bp_tbl.remove_column('config_2')
+
+tbl = table.join(Table.read('metadata_bsens_cleanest.ecsv'), bp_tbl, keys=('region', 'band'))
 
 # downselect (need bsens=true to avoid duplication - but be wary in case you remove duplicates upstream!)
 keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor']) & (tbl['bsens'])
