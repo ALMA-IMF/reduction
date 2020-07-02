@@ -1,15 +1,27 @@
 import numpy as np
+from astropy import table
 from astropy.table import Table
 
-tbl_selfcal = Table.read('metadata_sc.ecsv')
+bp_tbl = Table.read('bandpass_fraction.ecsv')
+bp_tbl['band'] = [f'B{b}' for b in bp_tbl['band']]
+bp_tbl.rename_column('field','region')
+bp_tbl = table.join(bp_tbl.group_by('config').groups[0], bp_tbl.group_by('config').groups[1], keys=('region', 'band'))
+bp_tbl.rename_column('bwfrac_1', '12Mlong_frac')
+bp_tbl.rename_column('bwfrac_2', '12Mshort_frac')
+bp_tbl.remove_column('config_1')
+bp_tbl.remove_column('config_2')
+
+
+tbl_selfcal = table.join(Table.read('metadata_sc.ecsv'), bp_tbl, keys=('region', 'band'))
 bad = np.array(['diff' in x for x in tbl_selfcal['filename']])
 keep_selfcal = (tbl_selfcal['suffix'] == 'finaliter') & (tbl_selfcal['robust'] == 'r0.0') & (~tbl_selfcal['pbcor']) & (~tbl_selfcal['bsens']) & (~bad)
 wtbl_selfcal = tbl_selfcal[keep_selfcal]
 
-tbl_bsens = Table.read('metadata_bsens_cleanest.ecsv')
+tbl_bsens = table.join(Table.read('metadata_bsens_cleanest.ecsv'), bp_tbl, keys=('region', 'band'))
 bad = np.array(['diff' in x for x in tbl_bsens['filename']])
 keep_bsens = (tbl_bsens['suffix'] == 'finaliter') & (tbl_bsens['robust'] == 'r0.0') & (~tbl_bsens['pbcor']) & (tbl_bsens['bsens']) & (~bad)
 wtbl_bsens = tbl_bsens[keep_bsens]
+
 
 
 b3style = {'marker':'o', 'markersize':10, 'alpha':0.75, 'markeredgecolor':(0,0,0,0.1), 'linestyle':'none'}
@@ -92,9 +104,9 @@ ax2.set_ylabel("MAD sampleregion")
 ax2.plot([0,0.001], [0, 0.001], 'k--')
 
 
-fig3 = pl.figure(3, figsize=(10,5))
+fig3 = pl.figure(3, figsize=(15,5))
 fig3.clf()
-ax1 = pl.subplot(1,2,1)
+ax1 = pl.subplot(1,3,1)
 ax1.plot(wtbl_bsens['sum_cleanest'][b3]/wtbl_bsens['ppbeam'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style)
 ax1.plot(wtbl_bsens['sum_cleanest'][b6]/wtbl_bsens['ppbeam'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style)
 #ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
@@ -102,7 +114,7 @@ ax1.set_xlabel("Sum (cleanest) [Jy]")
 ax1.set_ylabel("MAD (bsens) / MAD (cleanest)")
 #ax1.add_patch(pl.Rectangle((-0.05,0.2), width=26, height=0.7, facecolor='r', alpha=0.25))
 
-ax2 = pl.subplot(1,2,2)
+ax2 = pl.subplot(1,3,2)
 ax2.plot(wtbl_bsens['max_cleanest'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style, label='B3')
 ax2.plot(wtbl_bsens['max_cleanest'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style, label='B6')
 #ax2.plot(np.linspace(0, 1), np.linspace(0, 1)*0.17 + 1, 'k--', zorder=-5, alpha=0.5)
@@ -111,9 +123,16 @@ ax2.set_ylabel("MAD (bsens) / MAD (cleanest)")
 #ax2.add_patch(pl.Rectangle((-0.05,0.4), width=0.45, height=0.55, facecolor='r', alpha=0.25))
 pl.legend(loc='best')
 
+ax3 = pl.subplot(1,3,3)
+ax3.plot(wtbl_bsens['12Mshort_frac'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style)
+ax3.plot(wtbl_bsens['12Mshort_frac'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style)
+#ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
+ax3.set_xlabel("Fraction of Bandwidth in 'cleanest'")
+ax3.set_ylabel("MAD (bsens) / MAD (cleanest)")
+#ax1.add_patch(pl.Rectangle((-0.05,0.2), width=26, height=0.7, facecolor='r', alpha=0.25))
+
 pl.savefig("../datapaper/figures/bsens_rms_change.pdf", bbox_inches='tight')
 pl.savefig("../datapaper/figures/bsens_rms_change.png", bbox_inches='tight')
-
 
 
 b3sc = wtbl_selfcal['band'] == 'B3'
