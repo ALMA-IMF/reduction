@@ -379,19 +379,31 @@ for band in band_list:
             # Different data sets are actually found to have different channel selections.
             path = os.path.split(vis[0])[0]
 
-            contfile = os.path.join(path, '../calibration/cont.dat')
+            contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                    "{field}.{band}.cont.dat".format(field=field, band=band))
+            if not os.path.exists(contfile):
+                contfile = os.path.join(path, '../calibration/cont.dat')
 
             cont_freq_selection = parse_contdotdat(contfile)
             logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
 
             if not os.path.exists(concatvis+".contsub"):
-                new_freq_selection = freq_selection_overlap(concatvis,
-                                                            cont_freq_selection)
+                # ALTERNATIVE, manual selection
+                # msmd.open(concatvis)
+                # spws = msmd.spwsforfield(field)
+                # msmd.close()
+                # new_freq_selection = ",".join([
+                #     freq_selection_overlap(ms=concatvis,
+                #                            freqsel=cont_freq_selection,
+                #                            spw=spw)
+                #     for spw in spws])
+                # Let CASA decide: All spws, here's the freqsel.  Go.
+                new_freq_selection = '*:'+cont_freq_selection
                 uvcontsub(vis=concatvis,
                           fitspw=new_freq_selection,
-                          excludechans=False, # fit the regions in fitspw
-                          combine='spw', # redundant since we're working on single spw's
-                          solint='int',
+                          excludechans=False, # fit the regions specified in fitspw
+                          combine='none', # DO NOT combine spws for continuum ID (since that implies combining 7m <-> 12m)
+                          solint='int', # fit each integration (may be noisy?)
                           fitorder=1,
                           want_cont=False)
 
