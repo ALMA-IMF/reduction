@@ -336,6 +336,10 @@ for band in band_list:
                              origin='almaimf_line_imaging')
 
                 if u.Quantity(threshold).to(u.Jy).value < stats['max']:
+                    logprint("Threshold {0} was not reached (peak residual={1}).  "
+                             "Continuing imaging.".format(threshold, stats['max']),
+                             origin='almaimf_line_imaging'
+                            )
                     # if the threshold was not reached, keep cleaning
                     continue_imaging = True
 
