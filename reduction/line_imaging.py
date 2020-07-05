@@ -57,6 +57,8 @@ if os.getenv('FIELD_ID'):
     for band in to_image:
         to_image[band] = {key:value for key, value in to_image[band].items()
                           if key == field_id}
+else:
+    field_id = 'all'
 
 
 if os.getenv('BAND_NUMBERS'):
