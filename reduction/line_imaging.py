@@ -89,6 +89,62 @@ else:
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
+
+def set_impars(impars, line_name):
+    if line_name not in ('full', ) + spwnames:
+        local_impars = {}
+        if 'width' in linpars:
+            local_impars['width'] = linpars['width']
+        else:
+            # calculate the channel width
+            chanwidths = []
+            for vv in vis:
+                msmd.open(vv)
+                count_spws = len(msmd.spwsforfield(field))
+                chanwidth = np.max([np.abs(
+                    effectiveResolutionAtFreq(vv,
+                                              spw='{0}'.format(i),
+                                              freq=u.Quantity(linpars['restfreq']).to(u.GHz),
+                                              kms=True)) for i in
+                    range(count_spws)])
+
+                # second awful check b/c Todd's script failed for some cases
+                for spw in range(count_spws):
+                    chanwidths_hz = msmd.chanwidths(int(spw))
+                    chanfreqs_hz = msmd.chanfreqs(int(spw))
+                    ckms = constants.c.to(u.km/u.s).value
+                    if any(chanwidths_hz > (chanwidth / ckms)*chanfreqs_hz):
+                        chanwidth = np.max(chanwidths_hz/chanfreqs_hz * ckms)
+                msmd.close()
+
+                chanwidths.append(chanwidth)
+
+            # chanwidth: mean? max?
+            chanwidth = np.mean(chanwidths)
+            logprint("Channel widths were {0}, mean = {1}".format(chanwidths,
+                                                                  chanwidth),
+                     origin="almaimf_line_imaging")
+            if np.any(np.array(chanwidths) - chanwidth > 1e-4):
+                raise ValueError("Varying channel widths.")
+            local_impars['width'] = '{0:.2f}km/s'.format(np.round(chanwidth, 2))
+
+        local_impars['restfreq'] = linpars['restfreq']
+        # calculate vstart
+        vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
+        local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
+        local_impars['chanchunks'] = int(chanchunks)
+
+        local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
+                                    / u.Quantity(local_impars['width'])).value)
+        if local_impars['nchan'] < local_impars['chanchunks']:
+            local_impars['chanchunks'] = local_impars['nchan']
+        impars.update(local_impars)
+    else:
+        impars['chanchunks'] = int(chanchunks)
+
+
+
+
 # global default: only do robust 0 for lines
 robust = 0
 
@@ -178,56 +234,7 @@ for band in band_list:
             pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
             impars = line_imaging_parameters[pars_key]
 
-            if line_name not in ('full', ) + spwnames:
-                local_impars = {}
-                if 'width' in linpars:
-                    local_impars['width'] = linpars['width']
-                else:
-                    # calculate the channel width
-                    chanwidths = []
-                    for vv in vis:
-                        msmd.open(vv)
-                        count_spws = len(msmd.spwsforfield(field))
-                        chanwidth = np.max([np.abs(
-                            effectiveResolutionAtFreq(vv,
-                                                      spw='{0}'.format(i),
-                                                      freq=u.Quantity(linpars['restfreq']).to(u.GHz),
-                                                      kms=True)) for i in
-                            range(count_spws)])
-
-                        # second awful check b/c Todd's script failed for some cases
-                        for spw in range(count_spws):
-                            chanwidths_hz = msmd.chanwidths(int(spw))
-                            chanfreqs_hz = msmd.chanfreqs(int(spw))
-                            ckms = constants.c.to(u.km/u.s).value
-                            if any(chanwidths_hz > (chanwidth / ckms)*chanfreqs_hz):
-                                chanwidth = np.max(chanwidths_hz/chanfreqs_hz * ckms)
-                        msmd.close()
-
-                        chanwidths.append(chanwidth)
-
-                    # chanwidth: mean? max?
-                    chanwidth = np.mean(chanwidths)
-                    logprint("Channel widths were {0}, mean = {1}".format(chanwidths,
-                                                                          chanwidth),
-                             origin="almaimf_line_imaging")
-                    if np.any(np.array(chanwidths) - chanwidth > 1e-4):
-                        raise ValueError("Varying channel widths.")
-                    local_impars['width'] = '{0:.2f}km/s'.format(np.round(chanwidth, 2))
-
-                local_impars['restfreq'] = linpars['restfreq']
-                # calculate vstart
-                vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
-                local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
-                local_impars['chanchunks'] = int(chanchunks)
-
-                local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
-                                            / u.Quantity(local_impars['width'])).value)
-                if local_impars['nchan'] < local_impars['chanchunks']:
-                    local_impars['chanchunks'] = local_impars['nchan']
-                impars.update(local_impars)
-            else:
-                impars['chanchunks'] = int(chanchunks)
+            set_impars(impars=impars, line_name=line_name)
 
             impars['imsize'] = imsize
             impars['cell'] = cellsize
@@ -440,6 +447,8 @@ for band in band_list:
 
                 pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
                 impars = line_imaging_parameters[pars_key]
+
+                set_impars(impars=impars, line_name=line_name)
 
                 impars['imsize'] = imsize
                 impars['cell'] = cellsize
