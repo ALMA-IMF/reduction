@@ -455,8 +455,6 @@ for band in band_list:
                 impars['phasecenter'] = phasecenter
                 impars['field'] = [field.encode()]
 
-                if 'local_impars' in locals():
-                    impars.update(local_impars)
                 if 'threshold' in locals():
                     impars['threshold'] = threshold
 
