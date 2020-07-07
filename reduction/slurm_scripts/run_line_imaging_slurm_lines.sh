@@ -31,6 +31,14 @@ case $QOS in
         ;;
 esac
 
+suffix_contsub = ""
+if [ -z $DO_CONTSUB ]; then
+    if [ $DO_CONTSUB == "True" ]; then
+        suffix_contsub = "_cs"
+    fi
+fi
+echo "Contsub = ${suffix_contsub}"
+
 
 MEM=32gb
 
@@ -38,7 +46,7 @@ MEM=32gb
 export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export LINE_NAME='n2hp'
-export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}
+export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
 export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
 echo ${jobid##* }
@@ -47,7 +55,7 @@ export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 for LINE_NAME in h41a ch3cn ch3cch; do
 
-    export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}
+    export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
     jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --dependency=afterok:${jobid##* } --export=ALL $CMD)
     echo ${jobid##* }
@@ -59,7 +67,7 @@ export BAND_NUMBERS=6
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 for LINE_NAME in sio h2co303 h30a 12co c18o; do
 
-    export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}
+    export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
     jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --dependency=afterok:${jobid##* } --export=ALL $CMD)
     echo ${jobid##* }

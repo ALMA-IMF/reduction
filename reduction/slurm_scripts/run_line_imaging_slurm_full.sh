@@ -39,6 +39,13 @@ else
     fi
 fi
 
+suffix_contsub = ""
+if [ -z $DO_CONTSUB ]; then
+    if [ $DO_CONTSUB == "True" ]; then
+        suffix_contsub = "_cs"
+    fi
+fi
+
 echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m}
 
 if [ $EXCLUDE_7M == "False" ]; then
@@ -51,7 +58,7 @@ jobid=""
 for SPW in {0..3}; do
     export LINE_NAME=spw${SPW}
 
-    jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW} 
+    jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub} 
 
     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 
@@ -84,7 +91,7 @@ case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92) # both B3 B6
     export MEM=96gb ;;
 esac
-echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m}
+echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub}
 
 for SPW in {0..7}; do
     export LINE_NAME=spw${SPW}
@@ -99,7 +106,7 @@ for SPW in {0..7}; do
         dependency=""
     fi
 
-    jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW} 
+    jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub}
     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 
     jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
