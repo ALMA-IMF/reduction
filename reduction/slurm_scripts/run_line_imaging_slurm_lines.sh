@@ -31,10 +31,13 @@ case $QOS in
         ;;
 esac
 
-suffix_contsub = ""
 if [ -z $DO_CONTSUB ]; then
+    suffix_contsub=""
+else
     if [ $DO_CONTSUB == "True" ]; then
-        suffix_contsub = "_cs"
+        suffix_contsub="_cs"
+    else
+        suffix_contsub=""
     fi
 fi
 echo "Contsub = ${suffix_contsub}"
