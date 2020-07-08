@@ -85,12 +85,22 @@ if os.getenv('LINE_NAME'):
 else:
     raise ValueError("line_name was not defined")
 
+if 'do_contsub' not in locals():
+    if os.getenv('DO_CONTSUB') is not None:
+        do_contsub = bool(os.getenv('DO_CONTSUB').lower() == 'true')
+    else:
+        do_contsub = False
+if do_contsub:
+    contsub_suffix = '.contsub'
+else:
+    contsub_suffix = ''
+
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
 
-def set_impars(impars, line_name):
+def set_impars(impars, line_name, vis):
     if line_name not in ('full', ) + spwnames:
         local_impars = {}
         if 'width' in linpars:
@@ -206,35 +216,15 @@ for band in band_list:
             else:
                 arrayname = '7M12M'
 
-            lineimagename = os.path.join(imaging_root,
-                                         "{0}_{1}_spw{2}_{3}_{4}".format(field,
-                                                                         band,
-                                                                         spw,
-                                                                         arrayname,
-                                                                         line_name))
-
-
-            logprint("Measurement sets are: " + str(vis),
-                     origin='almaimf_line_imaging')
-            coosys, racen, deccen = determine_phasecenter(ms=vis, field=field)
-            phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            (dra, ddec, pixscale) = list(determine_imsizes(mses=vis, field=field,
-                                                           phasecenter=(racen, deccen),
-                                                           spw=0, pixfraction_of_fwhm=1/3.,
-                                                           exclude_7m=exclude_7m,
-                                                           min_pixscale=0.1, # arcsec
-                                                          ))
-            imsize = [int(dra), int(ddec)]
-            cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
-
-            dirty_tclean_made_residual = False
 
 
             # prepare for the imaging parameters
-            pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, robust)
+            pars_key = "{0}_{1}_{2}_robust{3}{4}".format(field, band,
+                                                         arrayname, robust,
+                                                         contsub_suffix.replace(".", "_"))
             impars = line_imaging_parameters[pars_key]
 
-            set_impars(impars=impars, line_name=line_name)
+            set_impars(impars=impars, line_name=line_name, vis=vis)
 
             impars['imsize'] = imsize
             impars['cell'] = cellsize
@@ -256,8 +246,71 @@ for band in band_list:
                         )
                 concat(vis=vis, concatvis=concatvis)
 
+            if do_contsub:
+                # the cont_channel_selection is purely in frequency, so it should
+                # "just work"
+                # (there may be several cont.dats - we're just grabbing the first)
+                # Different data sets are actually found to have different channel selections.
+                path = os.path.split(vis[0])[0]
+
+                contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                        "{field}.{band}.cont.dat".format(field=field, band=band))
+                if not os.path.exists(contfile):
+                    contfile = os.path.join(path, '../calibration/cont.dat')
+
+                cont_freq_selection = parse_contdotdat(contfile)
+                logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
+
+                if not os.path.exists(concatvis+".contsub"):
+                    # ALTERNATIVE, manual selection
+                    msmd.open(concatvis)
+                    spws = msmd.spwsforfield(field)
+                    msmd.close()
+                    new_freq_selection = ",".join([
+                        freq_selection_overlap(ms=concatvis,
+                                               freqsel=cont_freq_selection,
+                                               spw=spw)
+                        for spw in spws])
+                    # Let CASA decide: All spws, here's the freqsel.  Go.
+                    # (this does not work)
+                    # new_freq_selection = '*:'+cont_freq_selection
+                    uvcontsub(vis=concatvis,
+                              fitspw=new_freq_selection,
+                              excludechans=False, # fit the regions specified in fitspw
+                              combine='none', # DO NOT combine spws for continuum ID (since that implies combining 7m <-> 12m)
+                              solint='int', # fit each integration (may be noisy?)
+                              fitorder=1,
+                              want_cont=False)
+
+                # if do_contsub, we want to use the contsub'd MS
+                concatvis = concatvis + contsub_suffix
+
+            lineimagename = os.path.join(imaging_root,
+                                         "{0}_{1}_spw{2}_{3}_{4}{5}"
+                                         .format(field, band, spw, arrayname,
+                                                 line_name, contsub_suffix))
+
+            logprint("Measurement sets are: " + str(concatvis),
+                     origin='almaimf_line_imaging')
+            coosys, racen, deccen = determine_phasecenter(ms=concatvis,
+                                                          field=field)
+            phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
+            (dra, ddec, pixscale) = list(determine_imsizes(mses=concatvis,
+                                                           field=field,
+                                                           phasecenter=(racen, deccen),
+                                                           spw='all',
+                                                           pixfraction_of_fwhm=1/3.,
+                                                           exclude_7m=exclude_7m,
+                                                           min_pixscale=0.1, # arcsec
+                                                          ))
+            imsize = [int(dra), int(ddec)]
+            cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
+
+            dirty_tclean_made_residual = False
+
 
             # start with cube imaging
+            # step 1 is dirty imaging
 
             if not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
                 if os.path.exists(lineimagename+".psf"):
@@ -311,12 +364,13 @@ for band in band_list:
                          "(warning issued /after/ dirty imaging)"
                          .format(lineimagename),
                          origin='almaimf_line_imaging')
-                # just skip the rest here - that means no contsub imaging
+                # just skip the rest here
                 continue
 
             # the threshold needs to be computed if any imaging is to be done (either contsub or not)
             # no .image file is produced, only a residual
-            logprint("Computing residual image statistics for {0}".format(lineimagename), origin='almaimf_line_imaging')
+            logprint("Computing residual image statistics for {0}".format(lineimagename),
+                     origin='almaimf_line_imaging')
             ia.open(lineimagename+".residual")
             stats = ia.statistics(robust=True)
             rms = float(stats['medabsdevmed'] * 1.482602218505602)
@@ -354,10 +408,6 @@ for band in band_list:
 
             if continue_imaging or dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
-                if 'local_impars' in locals():
-                    assert 'sigma' not in threshold
-                    local_impars['threshold'] = threshold
-
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
                 tclean(vis=concatvis,
@@ -382,107 +432,6 @@ for band in band_list:
                         pbimage=lineimagename+'.pb',
                         outfile=lineimagename+'.image.pbcor', overwrite=True)
 
-
-            # TODO: Save the desired files, maybe as FITS or maybe not?
-
-
-            # the cont_channel_selection is purely in frequency, so it should
-            # "just work"
-            # (there may be several cont.dats - we're just grabbing the first)
-            # Different data sets are actually found to have different channel selections.
-            path = os.path.split(vis[0])[0]
-
-            contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                    "{field}.{band}.cont.dat".format(field=field, band=band))
-            if not os.path.exists(contfile):
-                contfile = os.path.join(path, '../calibration/cont.dat')
-
-            cont_freq_selection = parse_contdotdat(contfile)
-            logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
-
-            if not os.path.exists(concatvis+".contsub"):
-                # ALTERNATIVE, manual selection
-                msmd.open(concatvis)
-                spws = msmd.spwsforfield(field)
-                msmd.close()
-                new_freq_selection = ",".join([
-                    freq_selection_overlap(ms=concatvis,
-                                           freqsel=cont_freq_selection,
-                                           spw=spw)
-                    for spw in spws])
-                # Let CASA decide: All spws, here's the freqsel.  Go.
-                # (this does not work)
-                # new_freq_selection = '*:'+cont_freq_selection
-                uvcontsub(vis=concatvis,
-                          fitspw=new_freq_selection,
-                          excludechans=False, # fit the regions specified in fitspw
-                          combine='none', # DO NOT combine spws for continuum ID (since that implies combining 7m <-> 12m)
-                          solint='int', # fit each integration (may be noisy?)
-                          fitorder=1,
-                          want_cont=False)
-
-            # if there is already a residual, check if it has met the target threshold
-            continue_imaging = False
-            if os.path.exists(lineimagename+".contsub.residual"):
-                logprint("Computing residual image statistics for {0}".format(lineimagename+".contsub"), origin='almaimf_line_imaging')
-                ia.open(lineimagename+".contsub.residual")
-                stats = ia.statistics(robust=True)
-                rms = float(stats['medabsdevmed'] * 1.482602218505602)
-                ia.close()
-
-                if u.Quantity(threshold).to(u.Jy).value < stats['max']:
-                    # if the threshold was not reached, keep cleaning
-                    continue_imaging = True
-
-            if os.path.exists(lineimagename+".contsub.psf") and not os.path.exists(lineimagename+".contsub.image"):
-                logprint("WARNING: The PSF for {0} contsub exists, "
-                         "but no image exists."
-                         "  This likely implies that an ongoing or incomplete "
-                         "imaging run for this file exists.  It will not be "
-                         "imaged this time; please check what is happening.  "
-                         "(warning issued after imaging, before contsub imaging)"
-                         .format(lineimagename),
-                         origin='almaimf_line_imaging')
-            elif continue_imaging or not os.path.exists(lineimagename+".contsub.image"):
-
-                pars_key = "{0}_{1}_{2}_robust{3}_contsub".format(field, band, arrayname, robust)
-                impars = line_imaging_parameters[pars_key]
-
-                set_impars(impars=impars, line_name=line_name)
-
-                impars['imsize'] = imsize
-                impars['cell'] = cellsize
-                impars['phasecenter'] = phasecenter
-                impars['field'] = [field.encode()]
-
-                if 'threshold' in locals():
-                    impars['threshold'] = threshold
-
-                if 'threshold' in impars:
-                    assert 'sigma' not in impars['threshold']
-
-                logprint("Continuum-subtracted imaging parameters are {0}".format(impars),
-                         origin='almaimf_line_imaging')
-                tclean(vis=concatvis+".contsub",
-                       imagename=lineimagename+".contsub",
-                       restoringbeam='',
-                       **impars
-                      )
-                for suffix in ('image', 'residual', 'model'):
-                    ia.open(lineimagename+".contsub."+suffix)
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["{0}: {1}".format(key, val) for key, val in
-                                           impars.items()])
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["nsigma: {0}".format(nsigma)])
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["git_version: {0}".format(git_version),
-                                           "git_date: {0}".format(git_date)])
-                    ia.close()
-
-                impbcor(imagename=lineimagename+'.image',
-                        pbimage=lineimagename+'.pb',
-                        outfile=lineimagename+'.image.pbcor', overwrite=True)
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
 
