@@ -240,15 +240,15 @@ for band in band_list:
                 # Different data sets are actually found to have different channel selections.
                 path = os.path.split(vis[0])[0]
 
-                contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                        "{field}.{band}.cont.dat".format(field=field, band=band))
-                if not os.path.exists(contfile):
-                    contfile = os.path.join(path, '../calibration/cont.dat')
-
-                cont_freq_selection = parse_contdotdat(contfile)
-                logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
 
                 if not os.path.exists(concatvis+".contsub"):
+                    contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                            "{field}.{band}.cont.dat".format(field=field, band=band))
+                    if not os.path.exists(contfile):
+                        contfile = os.path.join(path, '../calibration/cont.dat')
+
+                    cont_freq_selection = parse_contdotdat(contfile)
+                    logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
                     # ALTERNATIVE, manual selection
                     msmd.open(concatvis)
                     spws = msmd.spwsforfield(field)
