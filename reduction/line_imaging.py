@@ -218,19 +218,6 @@ for band in band_list:
 
 
 
-            # prepare for the imaging parameters
-            pars_key = "{0}_{1}_{2}_robust{3}{4}".format(field, band,
-                                                         arrayname, robust,
-                                                         contsub_suffix.replace(".", "_"))
-            impars = line_imaging_parameters[pars_key]
-
-            set_impars(impars=impars, line_name=line_name, vis=vis)
-
-            impars['imsize'] = imsize
-            impars['cell'] = cellsize
-            impars['phasecenter'] = phasecenter
-            impars['field'] = [field.encode()]
-
 
             # concatenate MSes prior to imaging
             basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
@@ -308,6 +295,19 @@ for band in band_list:
 
             dirty_tclean_made_residual = False
 
+
+            # prepare for the imaging parameters
+            pars_key = "{0}_{1}_{2}_robust{3}{4}".format(field, band,
+                                                         arrayname, robust,
+                                                         contsub_suffix.replace(".", "_"))
+            impars = line_imaging_parameters[pars_key]
+
+            set_impars(impars=impars, line_name=line_name, vis=vis)
+
+            impars['imsize'] = imsize
+            impars['cell'] = cellsize
+            impars['phasecenter'] = phasecenter
+            impars['field'] = [field.encode()]
 
             # start with cube imaging
             # step 1 is dirty imaging
