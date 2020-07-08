@@ -225,6 +225,8 @@ for band in band_list:
             basepath = os.path.dirname(vis[0])
             assert os.path.split(basepath)[-1] == 'calibrated'
             concatvis = os.path.join(basepath, basename+".concat.ms")
+            logprint("Concatvis is: " + str(concatvis),
+                     origin='almaimf_line_imaging')
             assert 'calibrated' in concatvis
             if not os.path.exists(concatvis):
                 logprint("Concatenating visibilities {vis} into {concatvis}"
@@ -242,6 +244,9 @@ for band in band_list:
 
 
                 if not os.path.exists(concatvis+".contsub"):
+                    logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
+                             origin='almaimf_line_imaging')
+
                     contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
                                             "{field}.{band}.cont.dat".format(field=field, band=band))
                     if not os.path.exists(contfile):
