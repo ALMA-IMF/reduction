@@ -85,7 +85,7 @@ if os.getenv('LINE_NAME'):
 else:
     raise ValueError("line_name was not defined")
 
-if 'do_contsub' not in locals:
+if 'do_contsub' not in locals():
     if os.getenv('DO_CONTSUB') is not None:
         do_contsub = bool(os.getenv('DO_CONTSUB').lower() == 'true')
     else:
