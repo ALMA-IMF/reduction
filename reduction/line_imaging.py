@@ -36,7 +36,7 @@ except ImportError:
     from casatasks import tclean, uvcontsub, impbcor, concat
     from casatasks import casalog
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
-from metadata_tools import determine_imsizes, determine_phasecenter, is_7m, logprint
+from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
@@ -282,14 +282,14 @@ for band in band_list:
             coosys, racen, deccen = determine_phasecenter(ms=concatvis,
                                                           field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            (dra, ddec, pixscale) = list(determine_imsizes(mses=concatvis,
-                                                           field=field,
-                                                           phasecenter=(racen, deccen),
-                                                           spw='all',
-                                                           pixfraction_of_fwhm=1/3.,
-                                                           exclude_7m=exclude_7m,
-                                                           min_pixscale=0.1, # arcsec
-                                                          ))
+            (dra, ddec, pixscale) = list(determine_imsize(ms=concatvis,
+                                                          field=field,
+                                                          phasecenter=(racen, deccen),
+                                                          spw='all',
+                                                          pixfraction_of_fwhm=1/3.,
+                                                          exclude_7m=exclude_7m,
+                                                          min_pixscale=0.1, # arcsec
+                                                         ))
             imsize = [int(dra), int(ddec)]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
