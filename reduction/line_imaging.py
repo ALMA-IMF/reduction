@@ -100,7 +100,7 @@ else:
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
 
-def set_impars(impars, line_name):
+def set_impars(impars, line_name, vis):
     if line_name not in ('full', ) + spwnames:
         local_impars = {}
         if 'width' in linpars:
@@ -216,25 +216,6 @@ for band in band_list:
             else:
                 arrayname = '7M12M'
 
-            lineimagename = os.path.join(imaging_root,
-                                         "{0}_{1}_spw{2}_{3}_{4}{5}"
-                                         .format(field, band, spw, arrayname,
-                                                 line_name, contsub_suffix))
-
-            logprint("Measurement sets are: " + str(vis),
-                     origin='almaimf_line_imaging')
-            coosys, racen, deccen = determine_phasecenter(ms=vis, field=field)
-            phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            (dra, ddec, pixscale) = list(determine_imsizes(mses=vis, field=field,
-                                                           phasecenter=(racen, deccen),
-                                                           spw=0, pixfraction_of_fwhm=1/3.,
-                                                           exclude_7m=exclude_7m,
-                                                           min_pixscale=0.1, # arcsec
-                                                          ))
-            imsize = [int(dra), int(ddec)]
-            cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
-
-            dirty_tclean_made_residual = False
 
 
             # prepare for the imaging parameters
@@ -243,7 +224,7 @@ for band in band_list:
                                                          contsub_suffix.replace(".", "_"))
             impars = line_imaging_parameters[pars_key]
 
-            set_impars(impars=impars, line_name=line_name)
+            set_impars(impars=impars, line_name=line_name, vis=vis)
 
             impars['imsize'] = imsize
             impars['cell'] = cellsize
@@ -304,6 +285,28 @@ for band in band_list:
                 # if do_contsub, we want to use the contsub'd MS
                 concatvis = concatvis + contsub_suffix
 
+            lineimagename = os.path.join(imaging_root,
+                                         "{0}_{1}_spw{2}_{3}_{4}{5}"
+                                         .format(field, band, spw, arrayname,
+                                                 line_name, contsub_suffix))
+
+            logprint("Measurement sets are: " + str(concatvis),
+                     origin='almaimf_line_imaging')
+            coosys, racen, deccen = determine_phasecenter(ms=concatvis,
+                                                          field=field)
+            phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
+            (dra, ddec, pixscale) = list(determine_imsizes(mses=concatvis,
+                                                           field=field,
+                                                           phasecenter=(racen, deccen),
+                                                           spw='all',
+                                                           pixfraction_of_fwhm=1/3.,
+                                                           exclude_7m=exclude_7m,
+                                                           min_pixscale=0.1, # arcsec
+                                                          ))
+            imsize = [int(dra), int(ddec)]
+            cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
+
+            dirty_tclean_made_residual = False
 
 
             # start with cube imaging
