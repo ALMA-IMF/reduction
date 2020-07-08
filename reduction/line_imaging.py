@@ -221,6 +221,8 @@ for band in band_list:
 
             # concatenate MSes prior to imaging
             basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
+            logprint("Basename is: " + str(basename),
+                     origin='almaimf_line_imaging')
 
             basepath = os.path.dirname(vis[0])
             assert os.path.split(basepath)[-1] == 'calibrated'
