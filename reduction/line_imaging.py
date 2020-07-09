@@ -179,6 +179,8 @@ for band in band_list:
             band = str(band)
 
             vis = list(map(str, to_image[band][field][spw]))
+
+            skip = False
             for vv in vis:
                 if not os.path.exists(vv):
                     logprint("Skipped spectral window {0} for line {1}"
