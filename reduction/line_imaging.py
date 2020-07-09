@@ -241,11 +241,11 @@ for band in band_list:
                      origin='almaimf_line_imaging')
 
             basepath = os.path.dirname(vis[0])
-            assert os.path.split(basepath)[-1] == 'calibrated'
+            assert os.path.split(basepath)[-1] == 'calibrated', "The data must be in a calibrated/ directory"
             concatvis = os.path.join(basepath, basename+".concat.ms")
             logprint("Concatvis is: " + str(concatvis),
                      origin='almaimf_line_imaging')
-            assert 'calibrated' in concatvis
+            assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
             if any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
