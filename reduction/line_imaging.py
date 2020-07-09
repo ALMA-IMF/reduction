@@ -246,7 +246,10 @@ for band in band_list:
             logprint("Concatvis is: " + str(concatvis),
                      origin='almaimf_line_imaging')
             assert 'calibrated' in concatvis
-            if not os.path.exists(concatvis):
+            if any('concat' in x for x in vis):
+                logprint("NOT concatenating vis={0}.".format(vis),
+                         origin='almaimf_line_imaging')
+            elif not os.path.exists(concatvis):
                 logprint("Concatenating visibilities {vis} into {concatvis}"
                          .format(vis=vis, concatvis=concatvis),
                          origin='almaimf_line_imaging'
