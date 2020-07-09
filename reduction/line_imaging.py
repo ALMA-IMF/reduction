@@ -179,6 +179,20 @@ for band in band_list:
             band = str(band)
 
             vis = list(map(str, to_image[band][field][spw]))
+            for vv in vis:
+                if not os.path.exists(vv):
+                    logprint("Skipped spectral window {0} for line {1}"
+                             " with frequency {2} because filename {3} "
+                             "does not exist"
+                             .format(spw, line_name, targetfreq, vv),
+                             origin='almaimf_line_imaging')
+                    skip = True
+            if skip:
+                logprint("#### WARNING #### Skipping spw {0} because one "
+                         "or more visibilities of {1} does not exist."
+                         .format(spw, vis),
+                         origin='almaimf_line_imaging')
+                continue
 
             # load in the line parameter info
             if line_name not in ('full', ) + spwnames:
