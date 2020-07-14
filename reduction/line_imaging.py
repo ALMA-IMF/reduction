@@ -456,7 +456,9 @@ for band in band_list:
 
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
-                        outfile=lineimagename+'.image.pbcor', overwrite=True)
+                        outfile=lineimagename+'.image.pbcor',
+                        cutoff=0.2,
+                        overwrite=True)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
