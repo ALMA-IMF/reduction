@@ -180,6 +180,22 @@ for band in band_list:
 
             vis = list(map(str, to_image[band][field][spw]))
 
+            skip = False
+            for vv in vis:
+                if not os.path.exists(vv):
+                    logprint("Skipped spectral window {0} for line {1}"
+                             " with frequency {2} because filename {3} "
+                             "does not exist"
+                             .format(spw, line_name, targetfreq, vv),
+                             origin='almaimf_line_imaging')
+                    skip = True
+            if skip:
+                logprint("#### WARNING #### Skipping spw {0} because one "
+                         "or more visibilities of {1} does not exist."
+                         .format(spw, vis),
+                         origin='almaimf_line_imaging')
+                continue
+
             # load in the line parameter info
             if line_name not in ('full', ) + spwnames:
                 linpars = line_parameters[field][line_name]
@@ -221,12 +237,19 @@ for band in band_list:
 
             # concatenate MSes prior to imaging
             basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
+            logprint("Basename is: " + str(basename),
+                     origin='almaimf_line_imaging')
 
             basepath = os.path.dirname(vis[0])
-            assert os.path.split(basepath)[-1] == 'calibrated'
+            assert os.path.split(basepath)[-1] == 'calibrated', "The data must be in a calibrated/ directory"
             concatvis = os.path.join(basepath, basename+".concat.ms")
-            assert 'calibrated' in concatvis
-            if not os.path.exists(concatvis):
+            logprint("Concatvis is: " + str(concatvis),
+                     origin='almaimf_line_imaging')
+            assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
+            if any('concat' in x for x in vis):
+                logprint("NOT concatenating vis={0}.".format(vis),
+                         origin='almaimf_line_imaging')
+            elif not os.path.exists(concatvis):
                 logprint("Concatenating visibilities {vis} into {concatvis}"
                          .format(vis=vis, concatvis=concatvis),
                          origin='almaimf_line_imaging'
@@ -242,6 +265,9 @@ for band in band_list:
 
 
                 if not os.path.exists(concatvis+".contsub"):
+                    logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
+                             origin='almaimf_line_imaging')
+
                     contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
                                             "{field}.{band}.cont.dat".format(field=field, band=band))
                     if not os.path.exists(contfile):
@@ -430,7 +456,9 @@ for band in band_list:
 
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',
-                        outfile=lineimagename+'.image.pbcor', overwrite=True)
+                        outfile=lineimagename+'.image.pbcor',
+                        cutoff=0.2,
+                        overwrite=True)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
