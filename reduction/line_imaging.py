@@ -298,6 +298,9 @@ for band in band_list:
                 # if do_contsub, we want to use the contsub'd MS
                 concatvis = concatvis + contsub_suffix
 
+            if 'spw' in line_name:
+                assert int(line_name.lstrip('spw')) == int(spw)
+
             lineimagename = os.path.join(imaging_root,
                                          "{0}_{1}_spw{2}_{3}_{4}{5}"
                                          .format(field, band, spw, arrayname,
