@@ -1259,6 +1259,7 @@ field_vlsr = {
     "G012.80": "37.00km/s",
     "G351.77": "-3.00km/s",
 }
+# line parameters are converted by line_imaging.py into tclean parameters
 line_parameters = {
     field: {
         line: {"restfreq": freq, "vlsr": field_vlsr[field], "cubewidth": "50km/s"}
@@ -1291,6 +1292,7 @@ line_parameters["G333.60"]["h41a"]["vlsr"] = "-44km/s"
 line_parameters["G333.60"]["h41a"]["cubewidth"] = "100km/s"
 line_parameters["G333.60"]["h41a"]["width"] = "2km/s"
 
+# line imaging parameters: all of the parameters used by tclean
 line_imaging_parameters["G333.60_B3_12M_robust0"]["niter"] = 500000
 line_imaging_parameters["G333.60_B3_12M_robust0"]["scales"] = [0, 3, 9, 27]
 line_imaging_parameters["G333.60_B3_12M_robust0_contsub"]["niter"] = 500000
@@ -1317,6 +1319,7 @@ line_parameters["W51-IRS2"]["h41a"]["cubewidth"] = "100km/s"
 
 for field in allfields:
     line_parameters[field]["12co"]["cubewidth"] = "150km/s"
+    line_parameters[field]["ch3cn"]["cubewidth"] = "150km/s" # is 150 wide enough?
 
 # use the continuum image as the startmodel for the non-contsub'd data
 # (nice idea, didn't work)
