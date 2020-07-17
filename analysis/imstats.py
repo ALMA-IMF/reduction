@@ -71,6 +71,13 @@ def imstats(fn, reg=None):
         meta['mad_sample'] = mad_std(cutout_pixels, ignore_nan=True)
         meta['std_sample'] = np.nanstd(cutout_pixels)
 
+    if fn.endswith('.image.tt0'):
+        psf_fn = fn.split(".image.tt0") + ".psf.tt0"
+    elif fn.endswith('.image')
+        psf_fn = fn.split(".image") + ".psf"
+    psf_peak = get_psf_secondpeak(psf_fn)
+    meta['psf_peak'] = psf_peak
+
     return meta
 
 def parse_fn(fn):
@@ -153,6 +160,43 @@ def get_noise_region(field, band):
 
     if os.path.exists(regfn):
         return regfn
+
+
+    
+def get_psf_secondpeak(fn, neighborhood_size=5, threshold=0.01):
+
+    from scipy import ndimage
+    from scipy.ndimage import filters
+
+    if fn.endswith('fits'):
+        data = fits.getdata(fitsfile)
+    else:
+        from casatools import image
+        ia = image()
+        ia.open(fn)
+        data = ia.getchunk()
+        ia.close()
+
+    if data.ndim > 2:
+        data = data.squeeze()
+    if data.ndim > 2:
+        data = data[0,:,:]
+
+    data_max = filters.maximum_filter(data, neighborhood_size)
+   
+    maxima = (data == data_max)
+    data_min = filters.minimum_filter(data, neighborhood_size)
+    diff = ((data_max - data_min) > threshold)
+    maxima[diff == 0] = 0
+
+    labeled, num_objects = ndimage.label(maxima)
+    slices = ndimage.find_objects(labeled)
+    pkval = [data[slc].max() for slc in slices]
+
+    secondmax = sorted(pkval)[-2]
+    return secondmax
+
+
 
 
 class MyEncoder(json.JSONEncoder):
