@@ -75,8 +75,9 @@ def imstats(fn, reg=None):
         psf_fn = fn.split(".image.tt0") + ".psf.tt0"
     elif fn.endswith('.image'):
         psf_fn = fn.split(".image") + ".psf"
-    psf_peak = get_psf_secondpeak(psf_fn)
-    meta['psf_peak'] = psf_peak
+    if 'psf_fn' in locals():
+        psf_peak = get_psf_secondpeak(psf_fn)
+        meta['psf_peak'] = psf_peak
 
     return meta
 
