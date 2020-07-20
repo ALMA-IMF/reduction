@@ -1,6 +1,8 @@
 export FIELD_ID=$1
 
 
+CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_continuum_imaging_selfcal_slurm.sh
+
 
 export ONLY_7M=False
 export EXCLUDE_7M=True
@@ -11,7 +13,6 @@ export BAND_TO_IMAGE=B6
 #jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12Mcont_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12Mcont --export=ALL $CMD)
 #echo ${jobid##* }
 
-CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/run_continuum_imaging_selfcal_slurm.sh
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_$(date +%Y-%m-%d_%H_%M_%S).log"
 jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_selfcal --export=ALL $CMD)
 echo ${jobid##* }
@@ -44,7 +45,6 @@ export BAND_TO_IMAGE=B3
 #jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12Mcont_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12Mcont --export=ALL $CMD)
 #echo ${jobid##* }
 
-CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/run_continuum_imaging_selfcal_slurm.sh
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_$(date +%Y-%m-%d_%H_%M_%S).log"
 jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_selfcal --export=ALL $CMD)
 echo ${jobid##* }
