@@ -75,9 +75,11 @@ def imstats(fn, reg=None):
         psf_fn = fn.split(".image.tt0")[0] + ".psf.tt0"
     elif fn.endswith('.image') or fn.endswith('.image.fits') or fn.endswith('.image.pbcor.fits') or fn.endswith('.image.pbcor'):
         psf_fn = fn.split(".image") + ".psf"
-    if 'psf_fn' in locals():
-        psf_secondpeak = get_psf_secondpeak(psf_fn)
-        meta['psf_secondpeak'] = psf_secondpeak
+    else:
+        raise IOError("Wrong image type passed to imstats: {fn}".format(fn=fn))
+
+    psf_secondpeak = get_psf_secondpeak(psf_fn)
+    meta['psf_secondpeak'] = psf_secondpeak
 
     return meta
 
