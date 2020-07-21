@@ -76,8 +76,8 @@ def imstats(fn, reg=None):
     elif fn.endswith('.image'):
         psf_fn = fn.split(".image") + ".psf"
     if 'psf_fn' in locals():
-        psf_peak = get_psf_secondpeak(psf_fn)
-        meta['psf_peak'] = psf_peak
+        psf_secondpeak = get_psf_secondpeak(psf_fn)
+        meta['psf_secondpeak'] = psf_secondpeak
 
     return meta
 
@@ -535,7 +535,7 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     requested = get_requested_sens()
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
-                 'bsens', 'pbcor', 'filename']
+                 'bsens', 'pbcor', 'filename', 'psf_fn', 'psf_secondpeak']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
                   'std_sample', 'peak/mad']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
