@@ -736,6 +736,9 @@ imaging_parameters_nondefault = {
             5: "G328_B6_clean_robust0.crtf",
         },
     },
+    "G328.25_B3_12M_robust0": {
+        "threshold": {0: "1mJy", 1: "0.5mJy", 2: "0.5mJy", 3: "0.4mJy", 4: "0.3mJy", 5: "0.2mJy"},
+    },
 }
 
 
