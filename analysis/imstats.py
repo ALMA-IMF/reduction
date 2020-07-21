@@ -71,9 +71,9 @@ def imstats(fn, reg=None):
         meta['mad_sample'] = mad_std(cutout_pixels, ignore_nan=True)
         meta['std_sample'] = np.nanstd(cutout_pixels)
 
-    if fn.endswith('.image.tt0'):
-        psf_fn = fn.split(".image.tt0") + ".psf.tt0"
-    elif fn.endswith('.image'):
+    if fn.endswith('.image.tt0') or fn.endswith('.image.tt0.fits') or fn.endswith('.image.tt0.pbcor.fits') or fn.endswith('.image.tt0.pbcor'):
+        psf_fn = fn.split(".image.tt0")[0] + ".psf.tt0"
+    elif fn.endswith('.image') or fn.endswith('.image.fits') or fn.endswith('.image.pbcor.fits') or fn.endswith('.image.pbcor'):
         psf_fn = fn.split(".image") + ".psf"
     if 'psf_fn' in locals():
         psf_secondpeak = get_psf_secondpeak(psf_fn)
