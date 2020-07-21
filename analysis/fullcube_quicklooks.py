@@ -120,8 +120,8 @@ for band in (6,3):
                         print("Using temporary zarrs to store cubes: ")
                         for cb,tf in zip(cubes, tfs):
                             print(f"Dumping cube {cb}\n to tempfile {tf}\n"
-                                  " with scheduler args {cb.scheduler_kwargs}\n"
-                                  " and data {cb._data}")
+                                  f" with scheduler args {cb.scheduler_kwargs}\n"
+                                  f" and data {cb._data}")
                             with dask.config.set(**cb._scheduler_kwargs):
                                 cb._data.to_zarr(tf)
                             cb._data = da.from_zarr(tf)
