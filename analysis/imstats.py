@@ -540,9 +540,9 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     requested = get_requested_sens()
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
-                 'bsens', 'pbcor', 'filename', 'psf_secondpeak']
+                 'bsens', 'pbcor', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
-                  'std_sample', 'peak/mad']
+                  'std_sample', 'peak/mad', 'psf_secondpeak']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
 
