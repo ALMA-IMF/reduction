@@ -78,8 +78,11 @@ def imstats(fn, reg=None):
     else:
         raise IOError("Wrong image type passed to imstats: {fn}".format(fn=fn))
 
-    psf_secondpeak = get_psf_secondpeak(psf_fn)
-    meta['psf_secondpeak'] = psf_secondpeak
+    if os.path.exists(psf_fn):
+        psf_secondpeak = get_psf_secondpeak(psf_fn)
+        meta['psf_secondpeak'] = psf_secondpeak
+    else:
+        meta['psf_secondpeak'] = np.nan
 
     return meta
 
@@ -537,7 +540,7 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     requested = get_requested_sens()
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
-                 'bsens', 'pbcor', 'filename', 'psf_fn', 'psf_secondpeak']
+                 'bsens', 'pbcor', 'filename', 'psf_secondpeak']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
                   'std_sample', 'peak/mad']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
