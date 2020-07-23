@@ -133,14 +133,15 @@ imaging_parameters_nondefault = {
         },
     },
     "G008.67_B3_12M_robust0_bsens": {
-        "threshold": {0: "3.5mJy", 1: "3.0mJy", 2: "2.0mJy", 3: "1.5mJy", 4: "1.0mJy", 5: "0.2mJy",},
-        "niter": {0: 700, 1: 700, 2: 2000, 3: 5000, 4: 50000, 5: 50000},
+        "threshold": {0: "3.0mJy", 1: "2.5mJy", 2: "1.5mJy", 3: "0.8mJy", 4: "0.3mJy", 5: "0.16mJy",},
+        "niter": {0: 1200, 1: 1500, 2: 3000, 3: 5000, 4: 70000, 5: 90000},
         "maskname": {
             0: "mask_G008_B3_1.crtf",
             1: "mask_G008_B3_2.crtf",
             2: "mask_G008_B3_2.crtf",
-            3: "mask_G008_B3_2.crtf",
-            4: "mask_G008_B3_2.crtf",
+            3: "mask_G008_B3_2_bsens.crtf",
+            4: "mask_G008_B3_2_bsens.crtf",
+            5: "mask_G008_B3_final_bsens.crtf",
             "final": "mask_G008_B3_final_bsens.crtf",
         },
     },
@@ -1718,6 +1719,15 @@ selfcal_pars["G328.25_B3_7M12M_robust0"][2] = {
     "minblperant": 3,
 }
 
+selfcal_pars["G328.25_B3_12M_robust0"][1] = {
+    "solint": "inf",
+    "gaintype": "T",
+    "combine": "scan",
+    "refant": "DV01",
+    "calmode": "p",
+    "minsnr": 2,
+    "minblperant": 3,
+}
 
 selfcal_pars["G328.25_B3_12M_robust0"][1] = {
     "solint": "inf",
@@ -1926,6 +1936,31 @@ selfcal_pars["G008.67_B6_12M_robust0_bsens"][5] = {
     "calmode": "p",
 }
 
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][1] = {
+    "solint": "inf",
+    "gaintype": "T",
+    "calmode": "p",
+}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][2] = {
+    "solint": "1200s",
+    "gaintype": "T",
+    "calmode": "p",
+}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][3] = {
+    "solint": "600s",
+    "gaintype": "T",
+    "calmode": "p",
+}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][4] = {
+    "solint": "300s",
+    "gaintype": "T",
+    "calmode": "p",
+}
+selfcal_pars["G008.67_B3_12M_robust0_bsens"][5] = {
+    "solint": "200s",
+    "gaintype": "T",
+    "calmode": "p",
+}
 
 selfcal_pars["G008.67_B3_12M_robust0_bsens"][1] = {
     "solint": "inf",
@@ -1953,6 +1988,43 @@ selfcal_pars["G008.67_B3_12M_robust0_bsens"][5] = {
     "calmode": "p",
 }
 
+selfcal_pars["G338.93_B6_12M_robust0"][1] = {
+    "solint": "inf",
+    "gaintype": "G",
+    "calmode": "p",
+    "solnorm": True,
+}
+selfcal_pars["G338.93_B6_12M_robust0"][2] = {
+    "solint": "60s",
+    "gaintype": "G",
+    "calmode": "p",
+    "solnorm": True,
+}
+selfcal_pars["G338.93_B6_12M_robust0"][3] = {
+    "solint": "30s",
+    "gaintype": "G",
+    "calmode": "p",
+    "solnorm": True,
+}
+selfcal_pars["G338.93_B6_12M_robust0"][4] = {
+    "solint": "20s",
+    "gaintype": "G",
+    "calmode": "p",
+    "solnorm": True,
+}
+selfcal_pars["G338.93_B6_12M_robust0"][5] = {
+    "solint": "10s",
+    "gaintype": "G",
+    "calmode": "p",
+    "solnorm": True,
+}
+selfcal_pars["G338.93_B6_12M_robust0"][6] = {
+    "solint": "5s",
+    "gaintype": "G",
+    "calmode": "p",
+    "solnorm": True,
+}
+# selfcal_pars['G338.93_B6_12M_robust0'][7] = {'solint': '60s', 'gaintype': 'G', 'calmode': 'ap', 'solnorm': True}
 
 selfcal_pars["G338.93_B6_12M_robust0"][1] = {
     "solint": "inf",
