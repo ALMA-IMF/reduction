@@ -2396,6 +2396,62 @@ selfcal_pars["G338.93_B6_12M_robust0_bsens"][6] = {
     "calmode": "p",
     "solnorm": True,
 }
+selfcal_pars["G337.92_B3_12M_robust0"][1] = {
+    "solint": "int",
+    "combine": "spw",
+    "gaintype": "T",
+    "calmode": "p",
+    "minsnr": 2,
+    "minblperant": 3,
+}
+selfcal_pars["G337.92_B3_7M12M_robust0"][1] = {
+    "solint": "inf",
+    "gaintype": "T",
+    "calmode": "p",
+    "combine": "scan",
+}
+selfcal_pars["G337.92_B3_7M12M_robust0"][2] = {
+    "solint": "int",
+    "gaintype": "T",
+    "calmode": "p",
+    "combine": "scan",
+}
+selfcal_pars["G337.92_B3_7M12M_robust0"][3] = {
+    "solint": "90s",
+    "gaintype": "T",
+    "calmode": "p",
+    "combine": "scan",
+}
+selfcal_pars["G337.92_B3_7M12M_robust0"][4] = {
+    "solint": "60s",
+    "gaintype": "T",
+    "calmode": "p",
+    "combine": "scan",
+}
+selfcal_pars["G337.92_B3_12M_robust0"][1] = {
+    "solint": "inf",
+    "combine": "scan",
+    "gaintype": "T",
+    "calmode": "p",
+}
+selfcal_pars["G337.92_B3_12M_robust0"][2] = {
+    "solint": "300s",
+    "combine": "scan",
+    "gaintype": "T",
+    "calmode": "p",
+}
+selfcal_pars["G337.92_B3_12M_robust0"][3] = {
+    "solint": "60s",
+    "combine": "scan",
+    "gaintype": "T",
+    "calmode": "p",
+}
+selfcal_pars["G337.92_B3_12M_robust0"][4] = {
+    "solint": "30s",
+    "combine": "scan",
+    "gaintype": "T",
+    "calmode": "p",
+}
 
 
 line_imaging_parameters = {
