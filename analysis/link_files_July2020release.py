@@ -39,17 +39,17 @@ with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
     with open(basepath / '../scigoals/file_tree.txt', 'w') as fh2:
 
         for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
-            if not os.path.exists(basepath / field):
-                mkdir(basepath / field)
+            if not os.path.exists(releasepath / field):
+                mkdir(releasepath / field)
             for band in (3,6):
                 bandpath = Path(f"B{band}")
-                if not os.path.exists(basepath / field / bandpath):
-                    mkdir(basepath / field / bandpath)
+                if not os.path.exists(releasepath / field / bandpath):
+                    mkdir(releasepath / field / bandpath)
                 for dirname, globstr in dirnames.items():
-                    if not os.path.exists(basepath / field / bandpath / dirname):
-                        mkdir(basepath / field / bandpath / dirname)
+                    if not os.path.exists(releasepath / field / bandpath / dirname):
+                        mkdir(releasepath / field / bandpath / dirname)
                     cwd = os.getcwd()
-                    chdir(basepath / field / bandpath / dirname)
+                    chdir(releasepath / field / bandpath / dirname)
                     globbo = str(basepath / f"{field}_B{band}*{globstr}*")
                     filelist = glob.glob(globbo)
                     #print(field, band, dirname, config, filelist)
