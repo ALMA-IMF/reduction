@@ -7,6 +7,8 @@ import runpy
 import pylab as pl
 runpy.run_path('delivery_status.py', run_name="__main__")
 runpy.run_path('imstats.py', run_name="__main__")
+runpy.run_path('before_after_selfcal_quicklooks_July2020_release.py', run_name="__main__")
+pl.close('all')
 runpy.run_path('before_after_selfcal_quicklooks_Feb2020_release.py', run_name="__main__")
 pl.close('all')
 runpy.run_path('dirty_selfcal_compare.py', run_name="__main__")
