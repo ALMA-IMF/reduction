@@ -1274,9 +1274,9 @@ selfcal_pars = selfcal_pars_default.copy()
 for key in selfcal_pars_custom:
     for iternum in selfcal_pars_custom[key]:
         if iternum in selfcal_pars[key]:
-            selfcal_pars[key].update(selfcal_pars_custom[key])
+            selfcal_pars[key][iternum].update(selfcal_pars_custom[key][iternum])
         else:
-            selfcal_pars[key] = selfcal_pars_custom[key]
+            selfcal_pars[key][iternum] = selfcal_pars_custom[key][iternum]
 
 
 line_imaging_parameters = {
