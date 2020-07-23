@@ -67,7 +67,7 @@ def dt():
     then = now
 
 
-colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'minfreq', 'maxfreq']
+colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
 colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
 
 rows = []
@@ -105,8 +105,9 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 
                     minfreq = cube.spectral_axis.min()
                     maxfreq = cube.spectral_axis.max()
+                    restfreq = cube.wcs.wcs.restfrq
 
-                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
+                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
                     rows.append(row)
 
 
@@ -141,8 +142,9 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 
                     minfreq = cube.spectral_axis.min()
                     maxfreq = cube.spectral_axis.max()
+                    restfreq = cube.wcs.wcs.restfrq
 
-                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
+                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
                     rows.append(row)
 
 from astropy.table import Table
