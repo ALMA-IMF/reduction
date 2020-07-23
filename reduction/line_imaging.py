@@ -80,6 +80,12 @@ if 'exclude_7m' not in locals():
     else:
         exclude_7m = False
 
+if 'only_7m' not in locals():
+    if os.getenv('ONLY_7M') is not None:
+        only_7m = bool(os.getenv('ONLY_7M').lower() == 'true')
+    else:
+        only_7m = False
+
 if os.getenv('LINE_NAME'):
     line_name = os.getenv('LINE_NAME').lower()
 else:
@@ -159,8 +165,8 @@ def set_impars(impars, line_name, vis):
 robust = 0
 
 logprint("Initializing line imaging with global parameters"
-         " exclude_7m={0}, band_list={1}, field_id={2}"
-         .format(exclude_7m, band_list, field_id),
+         " exclude_7m={0}, only_7m={1}, band_list={2}, field_id={3}"
+         .format(exclude_7m, only_7m, band_list, field_id),
          origin='almaimf_line_imaging')
 
 for band in band_list:
@@ -229,6 +235,9 @@ for band in band_list:
                 # don't use variable name 'ms' in python2.7!
                 vis = [ms_ for ms_ in vis if not is_7m(ms_)]
                 arrayname = '12M'
+            elif only_7m:
+                vis = [ms_ for ms_ in vis if is_7m(ms_)]
+                arrayname = '7M'
             else:
                 arrayname = '7M12M'
 
@@ -316,7 +325,9 @@ for band in band_list:
                                                           phasecenter=(racen, deccen),
                                                           spw='all',
                                                           pixfraction_of_fwhm=1/3.,
+                                                          pixfraction_of_fwhm=1/5. if only_7m else 1/3.))
                                                           exclude_7m=exclude_7m,
+                                                          only_7m=only_7m,
                                                           min_pixscale=0.1, # arcsec
                                                          ))
             imsize = [int(dra), int(ddec)]
