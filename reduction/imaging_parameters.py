@@ -2659,7 +2659,6 @@ del selfcal_pars["G327.29_B3_7M12M_robust0"][3]
 del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
 
 
-
 line_imaging_parameters = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
         "niter": 5000000,  # start with a light cleaning...
