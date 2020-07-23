@@ -1988,43 +1988,6 @@ selfcal_pars["G008.67_B3_12M_robust0_bsens"][5] = {
     "calmode": "p",
 }
 
-selfcal_pars["G338.93_B6_12M_robust0"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0"][2] = {
-    "solint": "60s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0"][3] = {
-    "solint": "30s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0"][4] = {
-    "solint": "20s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0"][5] = {
-    "solint": "10s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0"][6] = {
-    "solint": "5s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-# selfcal_pars['G338.93_B6_12M_robust0'][7] = {'solint': '60s', 'gaintype': 'G', 'calmode': 'ap', 'solnorm': True}
 
 selfcal_pars["G338.93_B6_12M_robust0"][1] = {
     "solint": "inf",
@@ -2061,52 +2024,6 @@ selfcal_pars["G338.93_B6_12M_robust0"][6] = {
     "gaintype": "G",
     "calmode": "p",
     "solnorm": True,
-}
-# selfcal_pars['G338.93_B6_12M_robust0'][7] = {'solint': '60s', 'gaintype': 'G', 'calmode': 'ap', 'solnorm': True}
-
-selfcal_pars["G338.93_B6_12M_robust0_bsens"][1] = {
-    "solint": "inf",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0_bsens"][2] = {
-    "solint": "60s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0_bsens"][3] = {
-    "solint": "30s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0_bsens"][4] = {
-    "solint": "20s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0_bsens"][5] = {
-    "solint": "10s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G338.93_B6_12M_robust0_bsens"][6] = {
-    "solint": "5s",
-    "gaintype": "G",
-    "calmode": "p",
-    "solnorm": True,
-}
-selfcal_pars["G337.92_B3_12M_robust0"][1] = {
-    "solint": "int",
-    "combine": "spw",
-    "gaintype": "T",
-    "calmode": "p",
-    "minsnr": 2,
-    "minblperant": 3,
 }
 selfcal_pars["G337.92_B3_7M12M_robust0"][1] = {
     "solint": "inf",
