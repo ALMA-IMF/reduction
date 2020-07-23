@@ -338,9 +338,10 @@ cont_mses_unconcat = []
 # split the continuum data
 cont_to_merge = {}
 for band in bands:
+    cont_to_merge[band] = {}
     for field in all_fields:
 
-        cont_to_merge[band] = {field: []}
+        cont_to_merge[band][field] = []
 
         if field not in metadata[band]:
             logprint("Skipping {0}:{1} because it has no metadata"
