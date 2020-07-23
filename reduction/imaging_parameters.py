@@ -2647,6 +2647,18 @@ for key in selfcal_pars_custom:
         else:
             selfcal_pars[key][iternum] = selfcal_pars_custom[key][iternum]
 
+del selfcal_pars["G338.93_B3_12M_robust0"][3]
+del selfcal_pars["G338.93_B3_12M_robust0"][4]
+del selfcal_pars["G338.93_B3_12M_robust0_bsens"][4]
+del selfcal_pars["G338.93_B3_7M12M_robust0"][3]
+del selfcal_pars["G338.93_B3_7M12M_robust0"][4]
+del selfcal_pars["G327.29_B3_12M_robust0"][3]
+del selfcal_pars["G327.29_B3_12M_robust0"][4]
+del selfcal_pars["G327.29_B3_7M12M_robust0"][2]
+del selfcal_pars["G327.29_B3_7M12M_robust0"][3]
+del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
+
+
 
 line_imaging_parameters = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
