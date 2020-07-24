@@ -86,10 +86,6 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                         print(f"Found no matches for glob {globblob}")
                         continue
 
-                    if os.path.exists('collapse/min/{0}'.format(fn.replace(suffix,"_min_K.fits"))):
-                        print(f"Found completed quicklooks for {fn}, skipping.")
-                        continue
-
                     ia.open(fn)
                     history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
                     ia.close()
@@ -121,10 +117,6 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                         fn = fn[0]
                     else:
                         print(f"Found no matches for glob {globblob}")
-                        continue
-
-                    if os.path.exists('collapse/min/{0}'.format(fn.replace(suffix,"_min_K.fits"))):
-                        print(f"Found completed quicklooks for {fn}, skipping.")
                         continue
 
                     ia.open(fn)
