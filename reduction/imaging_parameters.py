@@ -2665,7 +2665,7 @@ del selfcal_pars["G327.29_B3_7M12M_robust0"][3]
 del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
 
 
-line_imaging_parameters = {
+line_imaging_parameters_default = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
         "niter": 5000000,  # start with a light cleaning...
         "threshold": "8sigma",
@@ -2698,15 +2698,17 @@ line_imaging_parameters = {
     for contsub in ("", "_contsub")
 }
 
-line_imaging_parameters["G337.92_B3_12M_robust0"]["usemask"] = "auto-multithresh"
-line_imaging_parameters["G337.92_B3_12M_robust0_contsub"]["usemask"] = "auto-multithresh"
+line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
 
+line_imaging_parameters_custom = {
+    "G337.92_B3_12M_robust0": {"usemask": "auto-multithresh"},
+    "G337.92_B3_12M_robust0_contsub": {"usemask": "auto-multithresh"},
+    "G333.60_B3_12M_robust0": {"niter": 500000, "scales": [0, 3, 9, 27]},
+    "G333.60_B3_12M_robust0_contsub": {"niter": 500000, "scales": [0, 3, 9, 27]},
+}
 
-# line imaging parameters: all of the parameters used by tclean
-line_imaging_parameters["G333.60_B3_12M_robust0"]["niter"] = 500000
-line_imaging_parameters["G333.60_B3_12M_robust0"]["scales"] = [0, 3, 9, 27]
-line_imaging_parameters["G333.60_B3_12M_robust0_contsub"]["niter"] = 500000
-line_imaging_parameters["G333.60_B3_12M_robust0_contsub"]["scales"] = [0, 3, 9, 27]
+for key in line_imaging_parameters_custom:
+    line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
 
 default_lines = {
     "n2hp": "93.173700GHz",
