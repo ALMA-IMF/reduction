@@ -2701,6 +2701,13 @@ line_imaging_parameters = {
 line_imaging_parameters["G337.92_B3_12M_robust0"]["usemask"] = "auto-multithresh"
 line_imaging_parameters["G337.92_B3_12M_robust0_contsub"]["usemask"] = "auto-multithresh"
 
+
+# line imaging parameters: all of the parameters used by tclean
+line_imaging_parameters["G333.60_B3_12M_robust0"]["niter"] = 500000
+line_imaging_parameters["G333.60_B3_12M_robust0"]["scales"] = [0, 3, 9, 27]
+line_imaging_parameters["G333.60_B3_12M_robust0_contsub"]["niter"] = 500000
+line_imaging_parameters["G333.60_B3_12M_robust0_contsub"]["scales"] = [0, 3, 9, 27]
+
 default_lines = {
     "n2hp": "93.173700GHz",
     "sio": "217.104984GHz",
@@ -2730,66 +2737,101 @@ field_vlsr = {
     "G351.77": "-3.00km/s",
 }
 # line parameters are converted by line_imaging.py into tclean parameters
-line_parameters = {
+line_parameters_default = {
     field: {
         line: {"restfreq": freq, "vlsr": field_vlsr[field], "cubewidth": "50km/s"}
         for line, freq in default_lines.items()
     }
     for field in allfields
 }
-
-line_parameters["G353.41"]["n2hp"]["cubewidth"] = "32km/s"
-line_parameters["W51-E"]["n2hp"]["cubewidth"] = "60km/s"
-line_parameters["G010.62"]["n2hp"]["cubewidth"] = "60km/s"
-line_parameters["G010.62"]["h41a"]["cubewidth"] = "120km/s"
-line_parameters["G338.93"]["sio"]["cubewidth"] = "120km/s"
-line_parameters["W51-E"]["sio"]["cubewidth"] = "120km/s"
-line_parameters["W51-IRS2"]["sio"]["cubewidth"] = "120km/s"
-
-# line_parameters for H41a
-line_parameters["G008.67"]["h41a"]["vlsr"] = "44km/s"
-line_parameters["G008.67"]["h41a"]["cubewidth"] = "100km/s"
-line_parameters["G010.62"]["h41a"]["vlsr"] = "0km/s"
-line_parameters["G010.62"]["h41a"]["cubewidth"] = "100km/s"
-line_parameters["G012.80"]["h41a"]["vlsr"] = "32km/s"
-line_parameters["G012.80"]["h41a"]["cubewidth"] = "100km/s"
-line_parameters["G327.29"]["h41a"]["vlsr"] = "-42km/s"
-line_parameters["G327.29"]["h41a"]["cubewidth"] = "60km/s"
-line_parameters["G328.25"]["h41a"]["vlsr"] = "-37km/s"
-line_parameters["G328.25"]["h41a"]["cubewidth"] = "60km/s"
-
-line_parameters["G333.60"]["h41a"]["vlsr"] = "-44km/s"
-line_parameters["G333.60"]["h41a"]["cubewidth"] = "100km/s"
-line_parameters["G333.60"]["h41a"]["width"] = "2km/s"
-
-# line imaging parameters: all of the parameters used by tclean
-line_imaging_parameters["G333.60_B3_12M_robust0"]["niter"] = 500000
-line_imaging_parameters["G333.60_B3_12M_robust0"]["scales"] = [0, 3, 9, 27]
-line_imaging_parameters["G333.60_B3_12M_robust0_contsub"]["niter"] = 500000
-line_imaging_parameters["G333.60_B3_12M_robust0_contsub"]["scales"] = [0, 3, 9, 27]
-
-
-line_parameters["G337.92"]["h41a"]["vlsr"] = "-36km/s"
-line_parameters["G337.92"]["h41a"]["cubewidth"] = "80km/s"
-line_parameters["G338.93"]["h41a"]["vlsr"] = "-63km/s"
-line_parameters["G338.93"]["h41a"]["cubewidth"] = "60km/s"
-line_parameters["G353.41"]["h41a"]["vlsr"] = "-17km/s"
-line_parameters["G353.41"]["h41a"]["cubewidth"] = "80km/s"
-line_parameters["W43-MM1"]["h41a"]["vlsr"] = "100km/s"
-line_parameters["W43-MM1"]["h41a"]["cubewidth"] = "80km/s"
-line_parameters["W43-MM2"]["h41a"]["vlsr"] = "103km/s"
-line_parameters["W43-MM2"]["h41a"]["cubewidth"] = "60km/s"
-line_parameters["W43-MM3"]["h41a"]["vlsr"] = "90km/s"
-line_parameters["W43-MM3"]["h41a"]["cubewidth"] = "100km/s"
-line_parameters["W51-E"]["h41a"]["vlsr"] = "59km/s"
-line_parameters["W51-E"]["h41a"]["cubewidth"] = "100km/s"
-line_parameters["W51-IRS2"]["h41a"]["vlsr"] = "56km/s"
-line_parameters["W51-IRS2"]["h41a"]["cubewidth"] = "100km/s"
-
-
 for field in allfields:
-    line_parameters[field]["12co"]["cubewidth"] = "150km/s"
-    line_parameters[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
+    line_parameters_default[field]["12co"]["cubewidth"] = "150km/s"
+    line_parameters_default[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
+line_parameters = copy.deepcopy(line_parameters_default)
+
+line_parameters_custom = {
+    "G008.67": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "100km/s", "vlsr": "44km/s"},
+    },
+    "G010.62": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "100km/s", "vlsr": "0km/s"},
+        "n2hp": {"cubewidth": "60km/s"},
+    },
+    "G012.80": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "100km/s", "vlsr": "32km/s"},
+    },
+    "G327.29": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "60km/s", "vlsr": "-42km/s"},
+    },
+    "G328.25": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "60km/s", "vlsr": "-37km/s"},
+    },
+    "G333.60": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "100km/s", "vlsr": "-44km/s", "width": "2km/s"},
+    },
+    "G337.92": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "80km/s", "vlsr": "-36km/s"},
+    },
+    "G338.93": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "60km/s", "vlsr": "-63km/s"},
+        "sio": {"cubewidth": "120km/s"},
+    },
+    "G351.77": {"12co": {"cubewidth": "150km/s"}, "ch3cn": {"cubewidth": "150km/s"}},
+    "G353.41": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "80km/s", "vlsr": "-17km/s"},
+        "n2hp": {"cubewidth": "32km/s"},
+    },
+    "W43-MM1": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "80km/s", "vlsr": "100km/s"},
+    },
+    "W43-MM2": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "60km/s", "vlsr": "103km/s"},
+    },
+    "W43-MM3": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "100km/s", "vlsr": "90km/s"},
+    },
+    "W51-E": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "100km/s", "vlsr": "59km/s"},
+        "n2hp": {"cubewidth": "60km/s"},
+        "sio": {"cubewidth": "120km/s"},
+    },
+    "W51-IRS2": {
+        "12co": {"cubewidth": "150km/s"},
+        "ch3cn": {"cubewidth": "150km/s"},
+        "h41a": {"cubewidth": "100km/s", "vlsr": "56km/s"},
+        "sio": {"cubewidth": "120km/s"},
+    },
+}
+
+for field in line_parameters_custom:
+    for line in line_parameters_custom[field]:
+        line_parameters[field][line].update(line_parameters_custom[field][line])
 
 # use the continuum image as the startmodel for the non-contsub'd data
 # (nice idea, didn't work)
