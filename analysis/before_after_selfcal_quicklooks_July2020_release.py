@@ -16,7 +16,7 @@ from compare_images import make_comparison_image
 from before_after_selfcal_quicklooks import get_selfcal_number
 
 cwd = os.getcwd()
-basepath = '/orange/adamginsburg/ALMA-IMF/2017.1.01355.L/July2020Release/'
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/'
 os.chdir(basepath)
 
 import imstats
@@ -25,7 +25,7 @@ import imstats
 # tbl = imstats.savestats(basepath=basepath)
 
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata.ecsv')
-tbl = Table.read('/orange/adamginsburg/ALMA-IMF/2017.1.01355.L/July2020/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*100]*len(tbl)))
