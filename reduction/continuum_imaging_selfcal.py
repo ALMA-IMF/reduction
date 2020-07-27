@@ -570,11 +570,15 @@ for continuum_ms in continuum_mses:
 
     okfields_list = []
     cals = []
+    skipped_any = False
 
     for selfcaliter in selfcalpars.keys():
 
         logprint("Gaincal iteration {0}".format(selfcaliter),
                  origin='contim_selfcal')
+
+        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
+                                                              selfcaliter)
 
         # iteration #1 of phase-only self-calibration
         caltype = 'amp' if 'a' in selfcalpars[selfcaliter]['calmode'] else 'phase'
@@ -592,6 +596,7 @@ for continuum_ms in continuum_mses:
                      origin='contim_selfcal')
 
         cals.append(caltable)
+
 
         # set up the imaging parameters for this round, allowing for a flexible definition
         # with either, e.g. {'niter': 1000} or {'niter': {1:1000, 2:100000, 3:999999}} etc
@@ -621,6 +626,24 @@ for continuum_ms in continuum_mses:
                 del impars_thisiter[key]
 
 
+        if os.path.exists(imname+".image.tt0"):
+            with open(caltable+".fields", 'r') as fh:
+                okfields_str = fh.read()
+            okfields_list.append(okfields_str)
+            skipped_any = True
+            logprint("Skipped gaincal iteration {0} - already done".format(selfcaliter),
+                     origin='contim_selfcal')
+            continue
+        elif skipped_any:
+            if not dryrun:
+                imname_lastiter = contimagename+"_robust{0}_selfcal{1}".format(robust,
+                                                                               selfcaliter-1)
+                populate_model_column(imname_lastiter, selfcal_ms, field,
+                                      impars_lastiter, phasecenter, maskname,
+                                      antennae)
+
+        impars_lastiter = impars_thisiter
+
         # start from previous model to save time
         # (in principle, should converge anyway)
         if selfcaliter == 1:
@@ -630,8 +653,6 @@ for continuum_ms in continuum_mses:
             modelname = [contimagename+"_robust{0}_selfcal{1}.model.tt0".format(robust, selfcaliter-1),
                          contimagename+"_robust{0}_selfcal{1}.model.tt1".format(robust, selfcaliter-1)]
 
-        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
-                                                              selfcaliter)
 
         if not os.path.exists(imname+".image.tt0"):
 
@@ -733,14 +754,13 @@ for continuum_ms in continuum_mses:
                     populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                           phasecenter, maskname,
                                           antennae)
-
         else:
             with open(caltable+".fields", 'r') as fh:
                 okfields_str = fh.read()
             okfields_list.append(okfields_str)
             if not dryrun:
-                populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                      phasecenter, maskname,
+                populate_model_column(imname, selfcal_ms, field,
+                                      impars_thisiter, phasecenter, maskname,
                                       antennae)
 
 
