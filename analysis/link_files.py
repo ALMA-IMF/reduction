@@ -36,7 +36,7 @@ with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
                 if not os.path.exists(basepath / field / bandpath):
                     mkdir(basepath / field / bandpath)
                 for dirname, globstr in dirnames.items():
-                    for config in ("12M", "7M12M"):
+                    for config in ("12m", "7m12m"):
                         if not os.path.exists(basepath / field / bandpath / f"{dirname}_{config}"):
                             mkdir(basepath / field / bandpath / f"{dirname}_{config}")
                         cwd = os.getcwd()

@@ -168,14 +168,14 @@ def get_noise_region(field, band):
         return regfn
 
 
-    
+
 def get_psf_secondpeak(fn, neighborhood_size=5, threshold=0.01):
 
     from scipy import ndimage
     from scipy.ndimage import filters
 
     if fn.endswith('fits'):
-        data = fits.getdata(fitsfile)
+        data = fits.getdata(fn)
     else:
         from casatools import image
         ia = image()
@@ -189,7 +189,7 @@ def get_psf_secondpeak(fn, neighborhood_size=5, threshold=0.01):
         data = data[0,:,:]
 
     data_max = filters.maximum_filter(data, neighborhood_size)
-   
+
     maxima = (data == data_max)
     data_min = filters.minimum_filter(data, neighborhood_size)
     diff = ((data_max - data_min) > threshold)
@@ -199,8 +199,11 @@ def get_psf_secondpeak(fn, neighborhood_size=5, threshold=0.01):
     slices = ndimage.find_objects(labeled)
     pkval = [data[slc].max() for slc in slices]
 
-    secondmax = sorted(pkval)[-2]
-    return secondmax
+    if len(pkval) >= 2:
+        secondmax = sorted(pkval)[-2]
+        return secondmax
+    else:
+        return np.nan
 
 
 
