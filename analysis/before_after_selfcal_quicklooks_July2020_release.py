@@ -160,16 +160,22 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.ecsv',
-          overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.html',
-          formats=formats,
-          format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.tex',
-          formats=formats,
-          overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.js.html',
-          #formats=formats,
-          format='jsviewer')
+if not os.path.exists('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/'):
+    os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/')
+    os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/')
+
+for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/', basepath):
+
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.ecsv',
+              overwrite=True)
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.html',
+              formats=formats,
+              format='ascii.html', overwrite=True)
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.tex',
+              formats=formats,
+              overwrite=True)
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.js.html',
+              #formats=formats,
+              format='jsviewer')
 
 os.chdir(cwd)
