@@ -166,15 +166,15 @@ if not os.path.exists('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tab
 
 for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/', basepath):
 
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.ecsv',
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.ecsv'.format(bp=bp),
               overwrite=True)
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.html',
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.html'.format(bp=bp),
               formats=formats,
               format='ascii.html', overwrite=True)
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.tex',
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.tex'.format(bp=bp),
               formats=formats,
               overwrite=True)
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.js.html',
+    tbl.write('{bp}/July2020Release/tables/metadata_sc.js.html'.format(bp=bp),
               #formats=formats,
               format='jsviewer')
 
