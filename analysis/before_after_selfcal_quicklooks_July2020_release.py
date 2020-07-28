@@ -25,7 +25,7 @@ import imstats
 # tbl = imstats.savestats(basepath=basepath)
 
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata.ecsv')
-tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*100]*len(tbl)))
@@ -160,15 +160,15 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata_sc.ecsv',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata_sc.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata_sc.tex',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata_sc.js.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/metadata_sc.js.html',
           #formats=formats,
           format='jsviewer')
 
