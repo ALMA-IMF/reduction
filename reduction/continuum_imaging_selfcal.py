@@ -633,6 +633,7 @@ for continuum_ms in continuum_mses:
             skipped_any = True
             logprint("Skipped gaincal iteration {0} - already done".format(selfcaliter),
                      origin='contim_selfcal')
+            impars_lastiter = impars_thisiter
             continue
         elif skipped_any:
             if not dryrun:
@@ -642,7 +643,6 @@ for continuum_ms in continuum_mses:
                                       impars_lastiter, phasecenter, maskname,
                                       antennae)
 
-        impars_lastiter = impars_thisiter
 
         # start from previous model to save time
         # (in principle, should converge anyway)
