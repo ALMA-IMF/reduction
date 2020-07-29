@@ -164,7 +164,8 @@ if not os.path.exists('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tab
     os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/')
     os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/')
 
-for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/', basepath):
+for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
+           '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
 
     tbl.write('{bp}/July2020Release/tables/metadata_sc.ecsv'.format(bp=bp),
               overwrite=True)
