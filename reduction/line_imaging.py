@@ -449,8 +449,18 @@ for band in band_list:
                 # continue imaging using a threshold
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
+
+                # if we're re-running to try to get to completion, use the existing mask
+                # (this is experimental: I suspect that specifying '.mask' like this
+                # will disable automultithresh when the mask exists)
+                if os.path.exists(lineimagename+".mask"):
+                    mask = lineimagename+".mask"
+                else:
+                    mask = ""
+
                 tclean(vis=concatvis,
                        imagename=lineimagename,
+                       mask=mask,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
                        **impars
