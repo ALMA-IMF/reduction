@@ -25,6 +25,7 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
 
 import json
 import os
+import shutil
 import numpy as np
 import astropy.units as u
 from astropy import constants
@@ -450,17 +451,17 @@ for band in band_list:
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
 
-                # if we're re-running to try to get to completion, use the existing mask
-                # (this is experimental: I suspect that specifying '.mask' like this
-                # will disable automultithresh when the mask exists)
-                if os.path.exists(lineimagename+".mask"):
-                    mask = lineimagename+".mask"
-                else:
-                    mask = ""
+                # if we're re-running to try to get to completion, we must
+                # delete the mas to enable automultithresh to continue
+                # Updating to *remove* the mask instead
+                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] == "auto-multithresh":
+                    shutil.rmtree(lineimagename+".mask")
+                elif os.path.exists(lineimagename+".mask"):
+                    if 'usemask' in impars and impars['usemask'] != 'user':
+                        raise ValueError("Mask exists but not specified as user.")
 
                 tclean(vis=concatvis,
                        imagename=lineimagename,
-                       mask=mask,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
                        **impars
