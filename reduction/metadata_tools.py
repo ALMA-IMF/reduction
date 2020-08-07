@@ -324,7 +324,7 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
     return int(dra), int(ddec), pixscale
 
 def determine_imsizes(mses, field, phasecenter, **kwargs):
-    assert isinstance(mses, list)
+    assert isinstance(mses, list),"Incorrect input to determine_imsizes"
     results = [determine_imsize(ms, field, phasecenter, **kwargs) for ms in mses]
     dra, ddec, _ = np.max(results, axis=0)
     _, _, pixscale = np.min(results, axis=0)

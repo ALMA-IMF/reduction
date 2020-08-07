@@ -867,10 +867,10 @@ imaging_parameters_nondefault = {
 for key in imaging_parameters_nondefault:
     if "bsens" in key:
         check_key = "_".join(key.split("_")[:-1])
-        assert check_key in imaging_parameters
+        assert check_key in imaging_parameters, "key {0} not in impars!".format(check_key)
         imaging_parameters[key] = copy.deepcopy(imaging_parameters[check_key])
     else:
-        assert key in imaging_parameters
+        assert key in imaging_parameters, "key {0} was not in impars".format(key)
     imaging_parameters[key].update(imaging_parameters_nondefault[key])
 
 

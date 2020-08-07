@@ -319,7 +319,7 @@ for band in bands:
                                  # there is no corrected_data column because we're
                                  # splitting from split MSes
                                  datacolumn=datacolumn,
-                                )
+                                ), "Split failed 3"
 
                 if outvis in to_image[band][field][newid]:
                     raise ValueError()
@@ -515,7 +515,7 @@ for band in bands:
                              field=field,
                              outputvis=contvis_bestsens,
                              width=widths,
-                             datacolumn=datacolumn)
+                             datacolumn=datacolumn), "Split Failed 2"
 
 
         member_uid = path.split("member.")[-1].split("/")[0]
