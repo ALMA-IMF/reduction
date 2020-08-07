@@ -8,7 +8,7 @@
 
 results_path = "./imaging_results/"  # imaging_results frmo the pipeline
 contmodel_path = "./imaging_results_test_casatools/"  #Path with input and temporary continuum models
-
+contmodel = ""
 
 # Create continuum_model.image.tt0 and .tt1 regridded to the cube spatial frame, but still with 1 spectral pix
 temp_dict_cont_tt0 = imregrid(imagename=contmodel_path+"G333.60_B3__continuum_merged_12M_robust0_selfcal5_finaliter.model.tt0", template="get")
