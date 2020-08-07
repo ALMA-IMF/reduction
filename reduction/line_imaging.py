@@ -309,7 +309,8 @@ for band in band_list:
                 concatvis = concatvis + contsub_suffix
 
             if 'spw' in line_name:
-                assert int(line_name.lstrip('spw')) == int(spw)
+                if not int(line_name.lstrip('spw')) == int(spw):
+                    raise ValueError("Line name is {0}, which does not match spw number {1}".format(line_name, spw))
 
             lineimagename = os.path.join(imaging_root,
                                          "{0}_{1}_spw{2}_{3}_{4}{5}"
