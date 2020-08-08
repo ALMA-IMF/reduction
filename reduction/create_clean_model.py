@@ -9,10 +9,10 @@ from metadata_tools import logprint
 
 ia = iatool()
 
-# Notes: 
+# Notes:
 # 1) The output continuum_cube.model is what will be used as startmodel in tclean. It probably needs a better name within the pipeline framework
-# 2) robust0 cleanest model .tt0 and .tt1 are used to construct continuum_cube.model. A next level of complexity would be to use the robust 1 or 
-# robust -1 continuum images depending on the robust param of the line tclean command. 
+# 2) robust0 cleanest model .tt0 and .tt1 are used to construct continuum_cube.model. A next level of complexity would be to use the robust 1 or
+# robust -1 continuum images depending on the robust param of the line tclean command.
 
 def create_clean_model(cubeimagename, contimagename, imaging_results_path, contmodel_path=None,):
     #results_path = "./imaging_results/"  # imaging_results frmo the pipeline
@@ -63,7 +63,7 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     # From Eq. 2 of Rau & Cornwell (2011)
     # temp_dict_cont_tt0['csys']['spectral2']['wcs']
     # dict_line['csys']['spectral2']['wcs']
-    # dnu_plane: dnu with respect to cube reference freq. 
+    # dnu_plane: dnu with respect to cube reference freq.
     # dnu: dnu with respect to tt0 continuum reference
     for plane in range(dict_line['shap'][-1]):
         logprint('Calculating continuum model for plane {}'.format(plane))
@@ -78,7 +78,9 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
         line_im.putchunk(plane_pixvalues, blc=blc, replicate=False)
     line_im.close()
 
-    # Commented block is for the case where only tt0 info is used 
+    return cubeoutmodelpath
+
+    # Commented block is for the case where only tt0 info is used
     '''
     blc = [0, 0, 0, 0]
     trc = [line_im.shape()[0]-1, line_im.shape()[1]-1, 0, 0]

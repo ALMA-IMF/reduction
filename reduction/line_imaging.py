@@ -40,6 +40,7 @@ from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logpr
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
+from create_clean_model import create_clean_model
 from getversion import git_date, git_version
 msmd = msmdtool()
 ia = iatool()
@@ -347,6 +348,19 @@ for band in band_list:
             impars['cell'] = cellsize
             impars['phasecenter'] = phasecenter
             impars['field'] = [field.encode()]
+
+
+            if 'startmodel' in impars:
+                if do_contsub:
+                    raise ValueError("Pipeline is not yet set up to support a "
+                                     "startmodel for the continuum-subtracted "
+                                     "MSes")
+
+                contmodel = create_clean_model(cubeimagename=lineimagename,
+                                               contimagename=impars['startmodel'],
+                                               imaging_results_path=imaging_root)
+                impars['startmodel'] = contmodel
+
 
             # start with cube imaging
             # step 1 is dirty imaging
