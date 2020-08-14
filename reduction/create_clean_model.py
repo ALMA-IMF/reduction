@@ -4,6 +4,7 @@
 from tasks import imregrid
 from taskinit import iatool
 import shutil
+import os
 
 from metadata_tools import logprint
 
@@ -48,6 +49,8 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     imregrid(imagename=tt1name, output=tt1model, template=temp_dict_line, overwrite=True)
 
     # Use CASA tools to create a model cube from the continuum model
+    if os.path.exists(cubeoutmodelpath):
+        shutil.rmtree(cubeoutmodelpath)
     shutil.copytree(cubeinmodelpath, cubeoutmodelpath)
 
     dict_line = imregrid(imagename=cubeoutmodelpath, template="get")
