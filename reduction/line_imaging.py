@@ -32,9 +32,10 @@ from astropy import constants
 try:
     from tasks import tclean, uvcontsub, impbcor, concat
     from taskinit import casalog
+    from exportfits_cli import exportfits_cli as exportfits
 except ImportError:
     # futureproofing: CASA 6 imports this way
-    from casatasks import tclean, uvcontsub, impbcor, concat
+    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits
     from casatasks import casalog
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
@@ -102,6 +103,9 @@ if do_contsub:
     contsub_suffix = '.contsub'
 else:
     contsub_suffix = ''
+
+# TODO: make this optional
+do_exportfits = True
 
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
@@ -498,6 +502,10 @@ for band in band_list:
                         outfile=lineimagename+'.image.pbcor',
                         cutoff=0.2,
                         overwrite=True)
+
+                if do_export_fits:
+                    exportfits(imname+".image", imname+".image.fits", overwrite=True)
+                    exportfits(imname+".image.pbcor", imname+".image.pbcor.fits", overwrite=True)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
