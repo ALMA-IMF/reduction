@@ -363,18 +363,6 @@ for band in band_list:
             impars['field'] = [field.encode()]
 
 
-            if 'startmodel' in impars:
-                if do_contsub:
-                    raise ValueError("Pipeline is not yet set up to support a "
-                                     "startmodel for the continuum-subtracted "
-                                     "MSes")
-
-                contmodel = create_clean_model(cubeimagename=baselineimagename,
-                                               contimagename=impars['startmodel'],
-                                               imaging_results_path=imaging_root)
-                impars['startmodel'] = contmodel
-
-
             # start with cube imaging
             # step 1 is dirty imaging
 
@@ -391,6 +379,8 @@ for band in band_list:
                 # first iteration makes a dirty image to estimate the RMS
                 impars_dirty = impars.copy()
                 impars_dirty['niter'] = 0
+                if 'startmodel' in impars_dirty:
+                    del impars_dirty['startmodel']
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
@@ -415,9 +405,12 @@ for band in band_list:
                     # but if it does (and it appears to have done so on at
                     # least one run), we still want to clean the cube
                     dirty_tclean_made_residual = True
+
+                did_dirty_imaging = True
             elif not os.path.exists(lineimagename+".residual"):
                 raise ValueError("The residual image is required for further imaging.")
             else:
+                did_dirty_imaging = False
                 logprint("Found existing files matching {0}".format(lineimagename),
                          origin='almaimf_line_imaging'
                         )
@@ -471,6 +464,32 @@ for band in band_list:
                             )
                     # if the threshold was not reached, keep cleaning
                     continue_imaging = True
+
+
+            if 'startmodel' in impars:
+                if do_contsub:
+                    raise ValueError("Pipeline is not yet set up to support a "
+                                     "startmodel for the continuum-subtracted "
+                                     "MSes")
+
+                # remove the model image
+                # (it should be created by dirty imaging above)
+                if did_dirty_imaging and os.path.exists(lineimagename+".model"):
+                    shutil.rmtree(lineimagename+".model")
+                elif not did_dirty_imaging:
+                    raise ValueError("Found an existing .model file, but startmodel "
+                                     "was set.  The pipeline won't automatically "
+                                     "pick between these models, because the existing "
+                                     "model could be a good one.  Either remove the "
+                                     "existing model {0}, or remove startmodel."
+                                     .format(lineimagename+".model"))
+
+                contmodel = create_clean_model(cubeimagename=baselineimagename,
+                                               contimagename=impars['startmodel'],
+                                               imaging_results_path=imaging_root)
+                impars['startmodel'] = contmodel
+
+
 
             if continue_imaging or dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
