@@ -191,9 +191,9 @@ for band in band_list:
             for vv in vis:
                 if not os.path.exists(vv):
                     logprint("Skipped spectral window {0} for line {1}"
-                             " with frequency {2} because filename {3} "
+                             "because filename {2} "
                              "does not exist"
-                             .format(spw, line_name, targetfreq, vv),
+                             .format(spw, line_name, vv),
                              origin='almaimf_line_imaging')
                     skip = True
             if skip:
