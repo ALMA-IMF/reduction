@@ -104,7 +104,7 @@ else:
     contsub_suffix = ''
 
 # TODO: make this optional
-do_exportfits = True
+do_export_fits = True
 
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
@@ -163,7 +163,12 @@ def set_impars(impars, line_name, vis):
     else:
         impars['chanchunks'] = int(chanchunks)
 
-
+if exclude_7m:
+    arrayname = '12M'
+elif only_7m:
+    arrayname = '7M'
+else:
+    arrayname = '7M12M'
 
 
 # global default: only do robust 0 for lines
@@ -191,21 +196,45 @@ for band in band_list:
 
             vis = list(map(str, to_image[band][field][spw]))
 
-            skip = False
-            for vv in vis:
-                if not os.path.exists(vv):
-                    logprint("Skipped spectral window {0} for line {1}"
-                             "because filename {2} "
-                             "does not exist"
-                             .format(spw, line_name, vv),
+            # concatenate MSes prior to imaging
+            basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
+            logprint("Basename is: " + str(basename),
+                     origin='almaimf_line_imaging')
+
+            basepath = os.path.dirname(vis[0])
+            assert os.path.split(basepath)[-1] == 'calibrated', "The data must be in a calibrated/ directory"
+            concatvis = os.path.join(basepath, basename+".concat.ms")
+            logprint("Concatvis is: " + str(concatvis), origin='almaimf_line_imaging')
+            assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
+
+            if os.path.exists(concatvis):
+                # we will use concatvis for the metadata
+                vis = [concatvis]
+            else:
+                # We will skip data if there is no concatvis and the
+                # visibilities are not available but if either the concatenated
+                # or the unconcatenated visibilities are available, we continue
+                skip = False
+                for vv in vis:
+                    if not os.path.exists(vv):
+                        logprint("Skipped spectral window {0} for line {1}"
+                                 "because filename {2} "
+                                 "does not exist"
+                                 .format(spw, line_name, vv),
+                                 origin='almaimf_line_imaging')
+                        skip = True
+                if skip:
+                    logprint("#### WARNING #### Skipping spw {0} because one "
+                             "or more visibilities of {1} does not exist."
+                             .format(spw, vis),
                              origin='almaimf_line_imaging')
-                    skip = True
-            if skip:
-                logprint("#### WARNING #### Skipping spw {0} because one "
-                         "or more visibilities of {1} does not exist."
-                         .format(spw, vis),
-                         origin='almaimf_line_imaging')
-                continue
+                    continue
+
+                if exclude_7m:
+                    # don't use variable name 'ms' in python2.7!
+                    vis = [ms_ for ms_ in vis if not is_7m(ms_)]
+                elif only_7m:
+                    vis = [ms_ for ms_ in vis if is_7m(ms_)]
 
             # load in the line parameter info
             if line_name not in ('full', ) + spwnames:
@@ -236,30 +265,8 @@ for band in band_list:
                 continue
 
 
-            if exclude_7m:
-                # don't use variable name 'ms' in python2.7!
-                vis = [ms_ for ms_ in vis if not is_7m(ms_)]
-                arrayname = '12M'
-            elif only_7m:
-                vis = [ms_ for ms_ in vis if is_7m(ms_)]
-                arrayname = '7M'
-            else:
-                arrayname = '7M12M'
 
 
-
-
-            # concatenate MSes prior to imaging
-            basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
-            logprint("Basename is: " + str(basename),
-                     origin='almaimf_line_imaging')
-
-            basepath = os.path.dirname(vis[0])
-            assert os.path.split(basepath)[-1] == 'calibrated', "The data must be in a calibrated/ directory"
-            concatvis = os.path.join(basepath, basename+".concat.ms")
-            logprint("Concatvis is: " + str(concatvis),
-                     origin='almaimf_line_imaging')
-            assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
             if any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
@@ -502,8 +509,8 @@ for band in band_list:
                         overwrite=True)
 
                 if do_export_fits:
-                    exportfits(imname+".image", imname+".image.fits", overwrite=True)
-                    exportfits(imname+".image.pbcor", imname+".image.pbcor.fits", overwrite=True)
+                    exportfits(lineimagename+".image", lineimagename+".image.fits", overwrite=True)
+                    exportfits(lineimagename+".image.pbcor", lineimagename+".image.pbcor.fits", overwrite=True)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
