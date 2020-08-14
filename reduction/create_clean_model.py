@@ -37,8 +37,12 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     temp_dict_line['csys']['spectral2'] = temp_dict_cont_tt0['csys']['spectral2']
     temp_dict_line['csys']['worldreplace2'] = temp_dict_cont_tt0['csys']['worldreplace2']
 
-    tt0model = contmodel_path+"continuum_model.image.tt0"
-    tt1model = contmodel_path+"continuum_model.image.tt1"
+    tt0model = ("{contmodel_path}/{cubeimagename}_continuum_model.image.tt0"
+                .format(contmodel_path=contmodel_path,
+                        cubeimagename=cubeimagename))
+    tt1model = ("{contmodel_path}/{cubeimagename}_continuum_model.image.tt1"
+                .format(contmodel_path=contmodel_path,
+                        cubeimagename=cubeimagename))
 
     imregrid(imagename=tt0name, output=tt0model, template=temp_dict_line, overwrite=True)
     imregrid(imagename=tt1name, output=tt1model, template=temp_dict_line, overwrite=True)
