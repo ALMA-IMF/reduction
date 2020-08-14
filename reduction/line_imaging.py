@@ -317,10 +317,10 @@ for band in band_list:
                 if not int(line_name.lstrip('spw')) == int(spw):
                     raise ValueError("Line name is {0}, which does not match spw number {1}".format(line_name, spw))
 
-            lineimagename = os.path.join(imaging_root,
-                                         "{0}_{1}_spw{2}_{3}_{4}{5}"
-                                         .format(field, band, spw, arrayname,
-                                                 line_name, contsub_suffix))
+            baselineimagename = ("{0}_{1}_spw{2}_{3}_{4}{5}"
+                                 .format(field, band, spw, arrayname,
+                                         line_name, contsub_suffix))
+            lineimagename = os.path.join(imaging_root, baselineimagename)
 
             logprint("Measurement sets are: " + str(concatvis),
                      origin='almaimf_line_imaging')
@@ -362,7 +362,7 @@ for band in band_list:
                                      "startmodel for the continuum-subtracted "
                                      "MSes")
 
-                contmodel = create_clean_model(cubeimagename=lineimagename,
+                contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                contimagename=impars['startmodel'],
                                                imaging_results_path=imaging_root)
                 impars['startmodel'] = contmodel
