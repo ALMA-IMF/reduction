@@ -2709,16 +2709,10 @@ line_imaging_parameters_custom = {
         "usemask": "auto-multithresh",
         "sidelobethreshold": 1.0,
         "threshold": "5sigma",
-        "startmodel": [
-            "imaging_results/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter.model.tt0",
-            "imaging_results/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter.model.tt1",
-        ],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "W51-E_B3_12M_robust0": {
-        "startmodel": [
-            "imaging_results/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter.model.tt0",
-            "imaging_results/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter.model.tt1",
-        ],
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter",
         "threshold": "5sigma",
     },
 }
