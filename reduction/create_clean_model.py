@@ -27,13 +27,19 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     temp_dict_cont_tt0 = imregrid(imagename=tt0name, template="get")
     # not needed temp_dict_cont_tt1 = imregrid(imagename=tt1name, template="get")
 
-    cubeinmodelpath = ("{results_path}/{cubeimagename}.model"
+    # image has to exist, model should not exist!
+    # (if you ran tclean with niter=0, no model is created)
+    cubeinimagepath = ("{results_path}/{cubeimagename}.image"
                        .format(results_path=imaging_results_path,
                                cubeimagename=cubeimagename))
     cubeoutmodelpath = ("{results_path}/{cubeimagename}.contcube.model"
                         .format(results_path=imaging_results_path,
                                 cubeimagename=cubeimagename))
-    temp_dict_line = imregrid(imagename=cubeinmodelpath, template="get")
+
+    if not os.path.exists(cubeinimagepath):
+        raise IOError("Continuum startmodel file {0} does not exist".format(cubeinimagepath))
+
+    temp_dict_line = imregrid(imagename=cubeinimagepath, template="get")
     temp_dict_line['shap'][-1] = 1
     temp_dict_line['csys']['spectral2'] = temp_dict_cont_tt0['csys']['spectral2']
     temp_dict_line['csys']['worldreplace2'] = temp_dict_cont_tt0['csys']['worldreplace2']
@@ -51,7 +57,7 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     # Use CASA tools to create a model cube from the continuum model
     if os.path.exists(cubeoutmodelpath):
         shutil.rmtree(cubeoutmodelpath)
-    shutil.copytree(cubeinmodelpath, cubeoutmodelpath)
+    shutil.copytree(cubeinimagepath, cubeoutmodelpath)
 
     dict_line = imregrid(imagename=cubeoutmodelpath, template="get")
     line_im = ia.newimagefromfile(cubeoutmodelpath)
