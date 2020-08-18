@@ -1,5 +1,5 @@
 # Image whole bands
-CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/run_line_imaging_slurm.sh
+CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm.sh
 export FIELD_ID=$1
 export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
