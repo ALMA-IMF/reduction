@@ -211,6 +211,8 @@ for band in band_list:
             if os.path.exists(concatvis):
                 # we will use concatvis for the metadata
                 vis = [concatvis]
+            elif do_contsub and os.path.exists(concatvis+".contsub"):
+                vis = [concatvis]
             else:
                 # We will skip data if there is no concatvis and the
                 # visibilities are not available but if either the concatenated
@@ -272,11 +274,16 @@ for band in band_list:
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
             elif not os.path.exists(concatvis):
-                logprint("Concatenating visibilities {vis} into {concatvis}"
-                         .format(vis=vis, concatvis=concatvis),
-                         origin='almaimf_line_imaging'
-                        )
-                concat(vis=vis, concatvis=concatvis)
+                if do_contsub and os.path.exists(concatvis+".contsub"):
+                    logprint("Concatvis-contsub already exists, though non-contsub may not",
+                             origin='almaimf_line_imaging'
+                            )
+                else:
+                    logprint("Concatenating visibilities {vis} into {concatvis}"
+                             .format(vis=vis, concatvis=concatvis),
+                             origin='almaimf_line_imaging'
+                            )
+                    concat(vis=vis, concatvis=concatvis)
 
             if do_contsub:
                 # the cont_channel_selection is purely in frequency, so it should
