@@ -32,15 +32,17 @@ from astropy import constants
 try:
     from tasks import tclean, uvcontsub, impbcor, concat
     from taskinit import casalog
+    from exportfits_cli import exportfits_cli as exportfits
 except ImportError:
     # futureproofing: CASA 6 imports this way
-    from casatasks import tclean, uvcontsub, impbcor, concat
+    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits
     from casatasks import casalog
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
+from create_clean_model import create_clean_model
 from getversion import git_date, git_version
 msmd = msmdtool()
 ia = iatool()
@@ -102,6 +104,9 @@ if do_contsub:
 else:
     contsub_suffix = ''
 
+# TODO: make this optional
+do_export_fits = True
+
 # set the 'chanchunks' parameter globally.
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
@@ -159,7 +164,12 @@ def set_impars(impars, line_name, vis):
     else:
         impars['chanchunks'] = int(chanchunks)
 
-
+if exclude_7m:
+    arrayname = '12M'
+elif only_7m:
+    arrayname = '7M'
+else:
+    arrayname = '7M12M'
 
 
 # global default: only do robust 0 for lines
@@ -187,21 +197,45 @@ for band in band_list:
 
             vis = list(map(str, to_image[band][field][spw]))
 
-            skip = False
-            for vv in vis:
-                if not os.path.exists(vv):
-                    logprint("Skipped spectral window {0} for line {1}"
-                             " with frequency {2} because filename {3} "
-                             "does not exist"
-                             .format(spw, line_name, targetfreq, vv),
+            # concatenate MSes prior to imaging
+            basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
+            logprint("Basename is: " + str(basename),
+                     origin='almaimf_line_imaging')
+
+            basepath = os.path.dirname(vis[0])
+            assert os.path.split(basepath)[-1] == 'calibrated', "The data must be in a calibrated/ directory"
+            concatvis = os.path.join(basepath, basename+".concat.ms")
+            logprint("Concatvis is: " + str(concatvis), origin='almaimf_line_imaging')
+            assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
+
+            if os.path.exists(concatvis):
+                # we will use concatvis for the metadata
+                vis = [concatvis]
+            else:
+                # We will skip data if there is no concatvis and the
+                # visibilities are not available but if either the concatenated
+                # or the unconcatenated visibilities are available, we continue
+                skip = False
+                for vv in vis:
+                    if not os.path.exists(vv):
+                        logprint("Skipped spectral window {0} for line {1}"
+                                 "because filename {2} "
+                                 "does not exist"
+                                 .format(spw, line_name, vv),
+                                 origin='almaimf_line_imaging')
+                        skip = True
+                if skip:
+                    logprint("#### WARNING #### Skipping spw {0} because one "
+                             "or more visibilities of {1} does not exist."
+                             .format(spw, vis),
                              origin='almaimf_line_imaging')
-                    skip = True
-            if skip:
-                logprint("#### WARNING #### Skipping spw {0} because one "
-                         "or more visibilities of {1} does not exist."
-                         .format(spw, vis),
-                         origin='almaimf_line_imaging')
-                continue
+                    continue
+
+                if exclude_7m:
+                    # don't use variable name 'ms' in python2.7!
+                    vis = [ms_ for ms_ in vis if not is_7m(ms_)]
+                elif only_7m:
+                    vis = [ms_ for ms_ in vis if is_7m(ms_)]
 
             # load in the line parameter info
             if line_name not in ('full', ) + spwnames:
@@ -232,30 +266,8 @@ for band in band_list:
                 continue
 
 
-            if exclude_7m:
-                # don't use variable name 'ms' in python2.7!
-                vis = [ms_ for ms_ in vis if not is_7m(ms_)]
-                arrayname = '12M'
-            elif only_7m:
-                vis = [ms_ for ms_ in vis if is_7m(ms_)]
-                arrayname = '7M'
-            else:
-                arrayname = '7M12M'
 
 
-
-
-            # concatenate MSes prior to imaging
-            basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
-            logprint("Basename is: " + str(basename),
-                     origin='almaimf_line_imaging')
-
-            basepath = os.path.dirname(vis[0])
-            assert os.path.split(basepath)[-1] == 'calibrated', "The data must be in a calibrated/ directory"
-            concatvis = os.path.join(basepath, basename+".concat.ms")
-            logprint("Concatvis is: " + str(concatvis),
-                     origin='almaimf_line_imaging')
-            assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
             if any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
@@ -312,10 +324,10 @@ for band in band_list:
                 if not int(line_name.lstrip('spw')) == int(spw):
                     raise ValueError("Line name is {0}, which does not match spw number {1}".format(line_name, spw))
 
-            lineimagename = os.path.join(imaging_root,
-                                         "{0}_{1}_spw{2}_{3}_{4}{5}"
-                                         .format(field, band, spw, arrayname,
-                                                 line_name, contsub_suffix))
+            baselineimagename = ("{0}_{1}_spw{2}_{3}_{4}{5}"
+                                 .format(field, band, spw, arrayname,
+                                         line_name, contsub_suffix))
+            lineimagename = os.path.join(imaging_root, baselineimagename)
 
             logprint("Measurement sets are: " + str(concatvis),
                      origin='almaimf_line_imaging')
@@ -350,6 +362,7 @@ for band in band_list:
             impars['phasecenter'] = phasecenter
             impars['field'] = [field.encode()]
 
+
             # start with cube imaging
             # step 1 is dirty imaging
 
@@ -366,6 +379,8 @@ for band in band_list:
                 # first iteration makes a dirty image to estimate the RMS
                 impars_dirty = impars.copy()
                 impars_dirty['niter'] = 0
+                if 'startmodel' in impars_dirty:
+                    del impars_dirty['startmodel']
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
@@ -390,9 +405,12 @@ for band in band_list:
                     # but if it does (and it appears to have done so on at
                     # least one run), we still want to clean the cube
                     dirty_tclean_made_residual = True
+
+                did_dirty_imaging = True
             elif not os.path.exists(lineimagename+".residual"):
                 raise ValueError("The residual image is required for further imaging.")
             else:
+                did_dirty_imaging = False
                 logprint("Found existing files matching {0}".format(lineimagename),
                          origin='almaimf_line_imaging'
                         )
@@ -447,6 +465,35 @@ for band in band_list:
                     # if the threshold was not reached, keep cleaning
                     continue_imaging = True
 
+
+            if 'startmodel' in impars:
+                if do_contsub:
+                    raise ValueError("Pipeline is not yet set up to support a "
+                                     "startmodel for the continuum-subtracted "
+                                     "MSes")
+
+                # remove the model image
+                # (it should be created by dirty imaging above)
+                if did_dirty_imaging and os.path.exists(lineimagename+".model"):
+                    shutil.rmtree(lineimagename+".model")
+                elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
+                    raise ValueError("Found an existing .model file, but startmodel "
+                                     "was set.  The pipeline won't automatically "
+                                     "pick between these models, because the existing "
+                                     "model could be a good one.  Either remove the "
+                                     "existing model {0}, or remove startmodel."
+                                     .format(lineimagename+".model"))
+                else:
+                    # lineimagename+".model" does not exist
+                    pass # all is happy
+
+                contmodel = create_clean_model(cubeimagename=baselineimagename,
+                                               contimagename=impars['startmodel'],
+                                               imaging_results_path=imaging_root)
+                impars['startmodel'] = contmodel
+
+
+
             if continue_imaging or dirty_tclean_made_residual or not os.path.exists(lineimagename+".image"):
                 # continue imaging using a threshold
                 logprint("Imaging parameters are {0}".format(impars),
@@ -484,6 +531,10 @@ for band in band_list:
                         outfile=lineimagename+'.image.pbcor',
                         cutoff=0.2,
                         overwrite=True)
+
+                if do_export_fits:
+                    exportfits(lineimagename+".image", lineimagename+".image.fits", overwrite=True)
+                    exportfits(lineimagename+".image.pbcor", lineimagename+".image.pbcor.fits", overwrite=True)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
