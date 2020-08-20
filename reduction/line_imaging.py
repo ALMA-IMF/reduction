@@ -274,8 +274,6 @@ for band in band_list:
                 continue
 
 
-
-
             if any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
@@ -522,6 +520,10 @@ for band in band_list:
                 elif os.path.exists(lineimagename+".mask"):
                     if 'usemask' in impars and impars['usemask'] != 'user':
                         raise ValueError("Mask exists but not specified as user.")
+
+                # set by global environmental variable to auto-recognize
+                # when being run from an MPI session.
+                impars['parallel'] = parallel
 
                 # set by global environmental variable to auto-recognize
                 # when being run from an MPI session.
