@@ -288,7 +288,54 @@ imaging_parameters_nondefault = {
         "threshold": {0: "3.0mJy", 1: "2mJy", 2: "1.5mJy", 3: "1mJy", 4: "1mJy", 5: "0.25mJy",},
         "niter": {0: 0, 1: 1500, 2: 3000, 3: 5000, 4: 7000, 5: 10000},
     },
-    "G337.92_B3_12M_robust0": {"threshold": "0.25mJy", "scales": [0, 3, 9, 27]},
+    "G337.92_B3_12M_robust0": {
+        "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "4e-4Jy", 4: "2.5e-4Jy"},
+        "scales": [0, 3, 9, 27],
+        "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000},  # rms ~ 1.25e-4 Jy/b.
+        "maskname": {
+            0: "G337.92_B3_12M_robust0.crtf",
+            1: "G337.92_B3_12M_robust0.crtf",
+            2: "G337.92_B3_12M_robust0.crtf",
+            3: "G337.92_B3_12M_robust0.crtf",
+            4: "G337.92_B3_12M_robust0.crtf",
+        },
+    },
+    "G337.92_B3_12M_robust-2": {
+        "threshold": {4: "5e-4Jy"},
+        "scales": [0, 3, 9, 27],  # rms ~ 2.45e-4 Jy/b.
+        "niter": {4: 30000},
+        "maskname": {4: "G337.92_B3_12M_robust-2.crtf"},
+    },
+    "G337.92_B3_12M_robust2": {
+        "threshold": {4: "1.5e-4Jy"},  # rms ~ 7.5e-5 Jy/b
+        "scales": [0, 3, 9, 27],
+        "niter": {4: 30000},
+        "maskname": {4: "G337.92_B3_12M_full.crtf"},
+    },
+    "G337.92_B6_12M_robust0": {
+        "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "5e-4Jy", 4: "5e-4Jy"},
+        "scales": [0, 3, 9, 27],
+        "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000},
+        "maskname": {
+            0: "G337.92_B6_12M_final.crtf",
+            1: "G337.92_B6_12M_final.crtf",
+            2: "G337.92_B6_12M_final.crtf",
+            3: "G337.92_B6_12M_final.crtf",
+            4: "G337.92_B6_12M_final.crtf",
+        },
+    },
+    "G337.92_B6_12M_robust-2": {
+        "threshold": {4: "6e-4Jy"},
+        "scales": [0, 3, 9, 27],
+        "niter": {4: 30000},
+        "maskname": {4: "G337.92_B6_12M_final.crtf"},
+    },
+    "G337.92_B6_12M_robust2": {
+        "threshold": {4: "4.8e-4Jy"},
+        "scales": [0, 3, 9, 27],
+        "niter": {4: 30000},
+        "maskname": {4: "G337.92_B6_12M_final.crtf"},
+    },
     "W51-IRS2_B6_12M_robust0": {
         "threshold": {
             0: "0.3mJy",
@@ -1675,9 +1722,9 @@ selfcal_pars_custom = {
     },
     "G337.92_B6_12M_robust0": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
+        2: {"calmode": "p", "gaintype": "T", "solint": "300s", "solnorm": True},
+        3: {"calmode": "p", "gaintype": "T", "solint": "60s", "solnorm": True},
+        4: {"calmode": "p", "gaintype": "T", "solint": "30s", "solnorm": True},
     },
     "G337.92_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
