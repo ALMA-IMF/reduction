@@ -448,6 +448,7 @@ for band in band_list:
             ia.close()
 
             if rms >= 1:
+                logprint(str(stats), origin='almaimf_line_imaging_exception')
                 raise ValueError("RMS was {0} - that's absurd.".format(rms))
             if rms > 0.01:
                 logprint("The RMS found was pretty high: {0}".format(rms),
