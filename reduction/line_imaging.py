@@ -104,6 +104,12 @@ if do_contsub:
 else:
     contsub_suffix = ''
 
+# hacky approach to paralellism
+if os.getenv('MPICASA'):
+    parallel=True
+else:
+    parallel=False
+
 # TODO: make this optional
 do_export_fits = True
 
@@ -512,6 +518,10 @@ for band in band_list:
                     mask = lineimagename+".mask"
                 else:
                     mask = ""
+
+                # set by global environmental variable to auto-recognize
+                # when being run from an MPI session.
+                impars['parallel'] = parallel
 
                 tclean(vis=concatvis,
                        imagename=lineimagename,
