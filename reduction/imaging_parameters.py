@@ -2755,12 +2755,12 @@ line_imaging_parameters_custom = {
     "W51-E_B6_12M_robust0": {
         "usemask": "auto-multithresh",
         "sidelobethreshold": 1.0,
-        "threshold": "16mJy", # sigma is ~4 mJy
+        "threshold": "16mJy",  # sigma is ~4 mJy
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter",
-        "threshold": "5sigma",
+        "threshold": "4mJy",  # sigma is ~0.8 mJy
     },
 }
 
