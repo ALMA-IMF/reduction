@@ -481,29 +481,30 @@ for band in band_list:
 
             if 'startmodel' in impars:
                 if do_contsub:
-                    raise ValueError("Pipeline is not yet set up to support a "
-                                     "startmodel for the continuum-subtracted "
-                                     "MSes")
-
-                # remove the model image
-                # (it should be created by dirty imaging above)
-                if did_dirty_imaging and os.path.exists(lineimagename+".model"):
-                    shutil.rmtree(lineimagename+".model")
-                elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
-                    raise ValueError("Found an existing .model file, but startmodel "
-                                     "was set.  The pipeline won't automatically "
-                                     "pick between these models, because the existing "
-                                     "model could be a good one.  Either remove the "
-                                     "existing model {0}, or remove startmodel."
-                                     .format(lineimagename+".model"))
+                    # cannot use a startmodel for do_contsub
+                    logprint("Startmodel is being ignored because MS is continuum subtracted",
+                             origin='almaimf_line_imaging')
+                    del impars['startmodel']
                 else:
-                    # lineimagename+".model" does not exist
-                    pass # all is happy
+                    # remove the model image
+                    # (it should be created by dirty imaging above)
+                    if did_dirty_imaging and os.path.exists(lineimagename+".model"):
+                        shutil.rmtree(lineimagename+".model")
+                    elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
+                        raise ValueError("Found an existing .model file, but startmodel "
+                                         "was set.  The pipeline won't automatically "
+                                         "pick between these models, because the existing "
+                                         "model could be a good one.  Either remove the "
+                                         "existing model {0}, or remove startmodel."
+                                         .format(lineimagename+".model"))
+                    else:
+                        # lineimagename+".model" does not exist
+                        pass # all is happy
 
-                contmodel = create_clean_model(cubeimagename=baselineimagename,
-                                               contimagename=impars['startmodel'],
-                                               imaging_results_path=imaging_root)
-                impars['startmodel'] = contmodel
+                    contmodel = create_clean_model(cubeimagename=baselineimagename,
+                                                   contimagename=impars['startmodel'],
+                                                   imaging_results_path=imaging_root)
+                    impars['startmodel'] = contmodel
 
 
 
