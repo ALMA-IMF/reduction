@@ -862,52 +862,6 @@ imaging_parameters_nondefault = {
             4: "G328_B6_clean_robust0.crtf",
         },
     },
-    "G328.25_B6_7M12M_robust0": {
-        "threshold": {0: "6mJy", 1: "4mJy", 2: "4mJy", 3: "4mJy", 4: "1.5mJy"},
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "scales": [0, 3],
-        "maskname": {
-            0: "G328_B6_7M12M_iter2_n2.crtf",  # G328_B6_7M12M_iter1_n.crtf
-            1: "G328_B6_7M12M_iter2_n2.crtf",  # G328_B6_7M12M_iter2_n.crtf
-            2: "G328_B6_7M12M_iter2_n2.crtf",  # G328_B6_7M12M_iter2_n.crtf
-            3: "G328_B6_7M12M_iter4_n.crtf",
-            4: "G328_B6_clean_robust0.crtf",
-        },
-    },
-    "G328.25_B6_7M12M_robust2": {
-        "threshold": {4: "1.5mJy"},  # 5 for cleanest
-        "niter": {4: 18000},
-        "scales": [0, 3],
-        "maskname": {4: "G328_B6_clean_robust0.crtf"},
-    },
-    "G328.25_B6_7M12M_robust-2": {
-        "threshold": {4: "2mJy"},
-        "niter": {4: 18000},
-        "scales": [0, 3],
-        "maskname": {4: "G328_B6_clean_robust0.crtf"},
-    },
-    "G328.25_B6_12M_robust0": {
-        "threshold": {0: "1e-3Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy", 5: "0.5mJy",},
-        "niter": {0: 3000, 1: 3000, 2: 9000, 3: 18000, 4: 18000, 5: 18000},
-        "maskname": {
-            0: "G328_B6_clean_12M_robust0_3sigma.crtf",
-            1: "G328_B6_clean_robust0.crtf",
-            2: "G328_B6_clean_robust0.crtf",
-            3: "G328_B6_clean_robust0.crtf",
-            4: "G328_B6_clean_robust0.crtf",
-            5: "G328_B6_clean_robust0.crtf",
-        },
-    },
-    "G328.25_B6_12M_robust-2": {
-        "threshold": {5: "0.5mJy"},
-        "niter": {5: 18000},
-        "maskname": {5: "G328_B6_clean_robust0.crtf"},
-    },
-    "G328.25_B6_12M_robust2": {
-        "threshold": {5: "0.5mJy"},
-        "niter": {5: 18000},
-        "maskname": {5: "G328_B6_clean_robust0.crtf"},
-    },
 }
 
 
