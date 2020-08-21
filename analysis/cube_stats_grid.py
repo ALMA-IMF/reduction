@@ -124,7 +124,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 
                     min = cube.min()
                     max = cube.max()
-                    mad = cube.mad_std()
+                    #mad = cube.mad_std()
                     std = cube.std()
                     sum = cube.sum()
                     mean = cube.mean()
@@ -135,7 +135,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     modcube.rechunk(save_to_tmp_dir=True)
                     modmin = modcube.min()
                     modmax = modcube.max()
-                    modmad = modcube.mad_std()
+                    #modmad = modcube.mad_std()
                     modstd = modcube.std()
                     modsum = modcube.sum()
                     modmean = modcube.mean()
@@ -144,8 +144,8 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 
                     row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
                            [history[key] if key in history else '' for key in colnames_fromheader] +
-                           [min, max, mad, std, sum, mean] +
-                           [modmin, modmax, modmad, modstd, modsum, modmean])
+                           [min, max, std, sum, mean] +
+                           [modmin, modmax, modstd, modsum, modmean])
                     rows.append(row)
 
                     cache_stats_file.write(" ".join(map(str, row)) + "\n")
