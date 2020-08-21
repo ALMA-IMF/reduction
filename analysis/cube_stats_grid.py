@@ -41,6 +41,8 @@ if os.getenv('DASK_THREADS') is not None:
         nthreads = 1
         scheduler = 'synchronous'
 
+print(f"Using scheduler {scheduler} with {nthreads} threads")
+
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
                  'h2co303': '218.222195GHz',
