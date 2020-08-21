@@ -111,7 +111,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     ia.close()
 
                     cube = SpectralCube.read(fn)
-                    cube.rechunk(save_to_tmp_dir=True)
+                    cube = cube.rechunk(save_to_tmp_dir=True)
 
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
@@ -134,7 +134,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     del cube
 
                     modcube = SpectralCube.read(fn.replace(".image", ".model"))
-                    modcube.rechunk(save_to_tmp_dir=True)
+                    modcube = modcube.rechunk(save_to_tmp_dir=True)
                     modmin = modcube.min()
                     modmax = modcube.max()
                     #modmad = modcube.mad_std()
