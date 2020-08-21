@@ -1,8 +1,6 @@
 #!/bin/bash
 #SBATCH --mail-type=NONE          # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=adamginsburg@ufl.edu     # Where to send mail
-#SBATCH --ntasks=8                    # Run on a single CPU
-#SBATCH --ntasks-per-node=8
 #SBATCH --nodes=1
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
 

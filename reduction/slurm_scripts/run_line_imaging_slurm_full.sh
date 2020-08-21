@@ -4,6 +4,7 @@ export FIELD_ID=$1
 export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export MEM=64gb
+export NTASKS=16 # mem/4
 
 if [ -z $QOS ]; then
     export QOS=adamginsburg-b
@@ -85,7 +86,7 @@ for SPW in {0..3}; do
     fi
 
 
-    jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
+    jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
     echo ${jobid##* }
     #export EXCLUDE_7M=False
     #export LOGFILENAME="casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
@@ -98,6 +99,7 @@ export BAND_TO_IMAGE=B${BAND_NUMBERS}
 jobid=""
 
 export MEM=32gb
+export NTASKS=8
 
 case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92)
@@ -125,7 +127,7 @@ for SPW in {0..7}; do
     jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub}
     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 
-    jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
+    jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
     echo ${jobid##* }
     #export EXCLUDE_7M=False
     #export LOGFILENAME="casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"

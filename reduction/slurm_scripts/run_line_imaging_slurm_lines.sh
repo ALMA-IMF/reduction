@@ -3,7 +3,7 @@
 if [ $CMD ]; then
     echo $CMD
 else
-    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/run_line_imaging_slurm.sh
+    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/run_line_imaging_slurm_mpi.sh
 fi
 export FIELD_ID=$1
 if [ -z $EXCLUDE_7M ]; then
@@ -44,6 +44,7 @@ echo "Contsub = ${suffix_contsub}"
 
 
 MEM=32gb
+NTASKS=8
 
 # first one has to be done separately b/c it has no dependencies
 export BAND_NUMBERS=3
@@ -51,7 +52,7 @@ export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export LINE_NAME='n2hp'
 export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
 export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
-jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
+jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
 echo ${jobid##* }
 
 export BAND_NUMBERS=3
@@ -60,7 +61,7 @@ for LINE_NAME in h41a ch3cn ch3cch; do
 
     export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
-    jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --dependency=afterok:${jobid##* } --export=ALL $CMD)
+    jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --dependency=afterok:${jobid##* } --export=ALL $CMD)
     echo ${jobid##* }
 
 done
@@ -72,7 +73,7 @@ for LINE_NAME in sio h2co303 h30a 12co c18o; do
 
     export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
-    jobid=$(sbatch --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --dependency=afterok:${jobid##* } --export=ALL $CMD)
+    jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --dependency=afterok:${jobid##* } --export=ALL $CMD)
     echo ${jobid##* }
 
 done
