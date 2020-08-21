@@ -2,6 +2,7 @@
 #SBATCH --mail-type=NONE          # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=adamginsburg@ufl.edu     # Where to send mail
 #SBATCH --ntasks=8                    # Run on a single CPU
+#SBATCH --ntasks-per-node=8
 #SBATCH --nodes=1
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
 
@@ -53,7 +54,8 @@ echo $LOGFILENAME
 # do one band at a time to enable _disabling_ one or the other
 #export BAND_NUMBERS="3"
 echo srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
-srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+# srun --mpi=pmix_v3 
+${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 
 #export BAND_NUMBERS="6"
 #xvfb-run -d ${CASA} --nogui --nologger -c "execfile('$SCRIPT_DIR/line_imaging.py')"
