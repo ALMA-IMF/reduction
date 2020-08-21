@@ -393,6 +393,8 @@ for band in band_list:
                 if 'startmodel' in impars_dirty:
                     del impars_dirty['startmodel']
 
+                impars_dirty['parallel'] = parallel
+
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
                 tclean(vis=concatvis,
@@ -520,10 +522,6 @@ for band in band_list:
                 elif os.path.exists(lineimagename+".mask"):
                     if 'usemask' in impars and impars['usemask'] != 'user':
                         raise ValueError("Mask exists but not specified as user.")
-
-                # set by global environmental variable to auto-recognize
-                # when being run from an MPI session.
-                impars['parallel'] = parallel
 
                 # set by global environmental variable to auto-recognize
                 # when being run from an MPI session.
