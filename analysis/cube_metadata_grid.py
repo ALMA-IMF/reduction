@@ -1,5 +1,3 @@
-
-
 import glob
 from astropy.io import fits
 from astropy import visualization
