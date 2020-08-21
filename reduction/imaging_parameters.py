@@ -2752,7 +2752,7 @@ line_imaging_parameters_custom = {
     "G337.92_B3_12M_robust0_contsub": {"usemask": "auto-multithresh"},
     "G333.60_B3_12M_robust0": {"niter": 500000, "scales": [0, 3, 9, 27]},
     "G333.60_B3_12M_robust0_contsub": {"niter": 500000, "scales": [0, 3, 9, 27]},
-    "W51-E_B6_12M_robust0": {"usemask": "auto-multithresh", "sidelobethreshold": 1.0, "threshold": "5sigma"},
+    "W51-E_B6_12M_robust0": {"usemask": "auto-multithresh", "sidelobethreshold": 1.0, "threshold": "4sigma"},
 }
 
 for key in line_imaging_parameters_custom:
