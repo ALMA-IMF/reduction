@@ -215,7 +215,7 @@ for band in band_list:
             assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
 
             if do_contsub and os.path.exists(concatvis+".contsub"):
-                vis = [concatvis]
+                vis = [concatvis+".contsub"]
             elif os.path.exists(concatvis):
                 # we will use concatvis for the metadata
                 vis = [concatvis]
