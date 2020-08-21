@@ -315,8 +315,8 @@ for band in band_list:
                     new_freq_selection = ",".join([
                         freq_selection_overlap(ms=concatvis,
                                                freqsel=cont_freq_selection,
-                                               spw=spw)
-                        for spw in spws])
+                                               spw=spw_)
+                        for spw_ in spws])
                     # Let CASA decide: All spws, here's the freqsel.  Go.
                     # (this does not work)
                     # new_freq_selection = '*:'+cont_freq_selection
