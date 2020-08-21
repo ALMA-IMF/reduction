@@ -214,10 +214,10 @@ for band in band_list:
             logprint("Concatvis is: " + str(concatvis), origin='almaimf_line_imaging')
             assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
 
-            if os.path.exists(concatvis):
-                # we will use concatvis for the metadata
+            if do_contsub and os.path.exists(concatvis+".contsub"):
                 vis = [concatvis]
-            elif do_contsub and os.path.exists(concatvis+".contsub"):
+            elif os.path.exists(concatvis):
+                # we will use concatvis for the metadata
                 vis = [concatvis]
             else:
                 # We will skip data if there is no concatvis and the
