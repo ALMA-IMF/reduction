@@ -5,6 +5,7 @@ export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export MEM=64gb
 export NTASKS=16 # mem/4
+export SLURM_NTASKS=$NTASKS
 
 if [ -z $QOS ]; then
     export QOS=adamginsburg-b
@@ -100,6 +101,7 @@ jobid=""
 
 export MEM=32gb
 export NTASKS=8
+export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92)

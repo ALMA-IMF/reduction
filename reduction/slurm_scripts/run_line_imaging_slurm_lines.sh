@@ -44,7 +44,8 @@ echo "Contsub = ${suffix_contsub}"
 
 
 MEM=32gb
-NTASKS=8
+export NTASKS=8
+export SLURM_NTASKS=$NTASKS
 
 # first one has to be done separately b/c it has no dependencies
 export BAND_NUMBERS=3

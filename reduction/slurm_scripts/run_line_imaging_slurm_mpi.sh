@@ -19,6 +19,11 @@ which git
 git --version
 echo $?
 
+if [ -z $SLURM_NTASKS ]; then
+    echo "FAILURE - SLURM_NTASKS=${SLURM_NTASKS}, i.e., empty"
+    exit
+fi
+
 # MPI stuff
 # https://www.open-mpi.org/faq/?category=running#mpi-environmental-variables
 # OMPI_COMM_WORLD_SIZE - the number of processes in this process's MPI_COMM_WORLD
