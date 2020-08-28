@@ -3,7 +3,7 @@
 if [ $CMD ]; then
     echo $CMD
 else
-    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/run_line_imaging_slurm_mpi.sh
+    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm_mpi.sh
 fi
 export FIELD_ID=$1
 if [ -z $EXCLUDE_7M ]; then
