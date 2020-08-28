@@ -103,7 +103,7 @@ export NTASKS=8
 
 case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92)
-    declare -A mem_map=( ["0"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
+    declare -A mem_map=( ["0"]="64gb" ["2"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
 esac
 
 echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub}
