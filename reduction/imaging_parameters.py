@@ -2724,7 +2724,6 @@ line_imaging_parameters_custom = {
         "threshold": "4mJy",  # sigma is ~0.8 mJy
     },
     "W51-E_B3_12M_robust0_contsub": {
-        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
         "sidelobethreshold": 1.0,
         "pblimit": 0.1,
