@@ -104,6 +104,12 @@ if do_contsub:
 else:
     contsub_suffix = ''
 
+# hacky approach to paralellism
+if os.getenv('MPICASA'):
+    parallel=True
+else:
+    parallel=False
+
 # TODO: make this optional
 do_export_fits = True
 
@@ -208,7 +214,9 @@ for band in band_list:
             logprint("Concatvis is: " + str(concatvis), origin='almaimf_line_imaging')
             assert 'calibrated' in concatvis, "The concatenated visibility must be in a calibrated/ directory"
 
-            if os.path.exists(concatvis):
+            if do_contsub and os.path.exists(concatvis+".contsub"):
+                vis = [concatvis+".contsub"]
+            elif os.path.exists(concatvis):
                 # we will use concatvis for the metadata
                 vis = [concatvis]
             else:
@@ -266,17 +274,20 @@ for band in band_list:
                 continue
 
 
-
-
             if any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
             elif not os.path.exists(concatvis):
-                logprint("Concatenating visibilities {vis} into {concatvis}"
-                         .format(vis=vis, concatvis=concatvis),
-                         origin='almaimf_line_imaging'
-                        )
-                concat(vis=vis, concatvis=concatvis)
+                if do_contsub and os.path.exists(concatvis+".contsub"):
+                    logprint("Concatvis-contsub already exists, though non-contsub may not",
+                             origin='almaimf_line_imaging'
+                            )
+                else:
+                    logprint("Concatenating visibilities {vis} into {concatvis}"
+                             .format(vis=vis, concatvis=concatvis),
+                             origin='almaimf_line_imaging'
+                            )
+                    concat(vis=vis, concatvis=concatvis)
 
             if do_contsub:
                 # the cont_channel_selection is purely in frequency, so it should
@@ -304,8 +315,8 @@ for band in band_list:
                     new_freq_selection = ",".join([
                         freq_selection_overlap(ms=concatvis,
                                                freqsel=cont_freq_selection,
-                                               spw=spw)
-                        for spw in spws])
+                                               spw=spw_)
+                        for spw_ in spws])
                     # Let CASA decide: All spws, here's the freqsel.  Go.
                     # (this does not work)
                     # new_freq_selection = '*:'+cont_freq_selection
@@ -382,6 +393,8 @@ for band in band_list:
                 if 'startmodel' in impars_dirty:
                     del impars_dirty['startmodel']
 
+                impars_dirty['parallel'] = parallel
+
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
                 tclean(vis=concatvis,
@@ -436,6 +449,7 @@ for band in band_list:
             ia.close()
 
             if rms >= 1:
+                logprint(str(stats), origin='almaimf_line_imaging_exception')
                 raise ValueError("RMS was {0} - that's absurd.".format(rms))
             if rms > 0.01:
                 logprint("The RMS found was pretty high: {0}".format(rms),
@@ -468,29 +482,30 @@ for band in band_list:
 
             if 'startmodel' in impars:
                 if do_contsub:
-                    raise ValueError("Pipeline is not yet set up to support a "
-                                     "startmodel for the continuum-subtracted "
-                                     "MSes")
-
-                # remove the model image
-                # (it should be created by dirty imaging above)
-                if did_dirty_imaging and os.path.exists(lineimagename+".model"):
-                    shutil.rmtree(lineimagename+".model")
-                elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
-                    raise ValueError("Found an existing .model file, but startmodel "
-                                     "was set.  The pipeline won't automatically "
-                                     "pick between these models, because the existing "
-                                     "model could be a good one.  Either remove the "
-                                     "existing model {0}, or remove startmodel."
-                                     .format(lineimagename+".model"))
+                    # cannot use a startmodel for do_contsub
+                    logprint("Startmodel is being ignored because MS is continuum subtracted",
+                             origin='almaimf_line_imaging')
+                    del impars['startmodel']
                 else:
-                    # lineimagename+".model" does not exist
-                    pass # all is happy
+                    # remove the model image
+                    # (it should be created by dirty imaging above)
+                    if did_dirty_imaging and os.path.exists(lineimagename+".model"):
+                        shutil.rmtree(lineimagename+".model")
+                    elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
+                        raise ValueError("Found an existing .model file, but startmodel "
+                                         "was set.  The pipeline won't automatically "
+                                         "pick between these models, because the existing "
+                                         "model could be a good one.  Either remove the "
+                                         "existing model {0}, or remove startmodel."
+                                         .format(lineimagename+".model"))
+                    else:
+                        # lineimagename+".model" does not exist
+                        pass # all is happy
 
-                contmodel = create_clean_model(cubeimagename=baselineimagename,
-                                               contimagename=impars['startmodel'],
-                                               imaging_results_path=imaging_root)
-                impars['startmodel'] = contmodel
+                    contmodel = create_clean_model(cubeimagename=baselineimagename,
+                                                   contimagename=impars['startmodel'],
+                                                   imaging_results_path=imaging_root)
+                    impars['startmodel'] = contmodel
 
 
 
@@ -507,6 +522,10 @@ for band in band_list:
                 elif os.path.exists(lineimagename+".mask"):
                     if 'usemask' in impars and impars['usemask'] != 'user':
                         raise ValueError("Mask exists but not specified as user.")
+
+                # set by global environmental variable to auto-recognize
+                # when being run from an MPI session.
+                impars['parallel'] = parallel
 
                 tclean(vis=concatvis,
                        imagename=lineimagename,

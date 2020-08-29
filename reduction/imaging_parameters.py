@@ -862,52 +862,6 @@ imaging_parameters_nondefault = {
             4: "G328_B6_clean_robust0.crtf",
         },
     },
-    "G328.25_B6_7M12M_robust0": {
-        "threshold": {0: "6mJy", 1: "4mJy", 2: "4mJy", 3: "4mJy", 4: "1.5mJy"},
-        "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
-        "scales": [0, 3],
-        "maskname": {
-            0: "G328_B6_7M12M_iter2_n2.crtf",  # G328_B6_7M12M_iter1_n.crtf
-            1: "G328_B6_7M12M_iter2_n2.crtf",  # G328_B6_7M12M_iter2_n.crtf
-            2: "G328_B6_7M12M_iter2_n2.crtf",  # G328_B6_7M12M_iter2_n.crtf
-            3: "G328_B6_7M12M_iter4_n.crtf",
-            4: "G328_B6_clean_robust0.crtf",
-        },
-    },
-    "G328.25_B6_7M12M_robust2": {
-        "threshold": {4: "1.5mJy"},  # 5 for cleanest
-        "niter": {4: 18000},
-        "scales": [0, 3],
-        "maskname": {4: "G328_B6_clean_robust0.crtf"},
-    },
-    "G328.25_B6_7M12M_robust-2": {
-        "threshold": {4: "2mJy"},
-        "niter": {4: 18000},
-        "scales": [0, 3],
-        "maskname": {4: "G328_B6_clean_robust0.crtf"},
-    },
-    "G328.25_B6_12M_robust0": {
-        "threshold": {0: "1e-3Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy", 5: "0.5mJy",},
-        "niter": {0: 3000, 1: 3000, 2: 9000, 3: 18000, 4: 18000, 5: 18000},
-        "maskname": {
-            0: "G328_B6_clean_12M_robust0_3sigma.crtf",
-            1: "G328_B6_clean_robust0.crtf",
-            2: "G328_B6_clean_robust0.crtf",
-            3: "G328_B6_clean_robust0.crtf",
-            4: "G328_B6_clean_robust0.crtf",
-            5: "G328_B6_clean_robust0.crtf",
-        },
-    },
-    "G328.25_B6_12M_robust-2": {
-        "threshold": {5: "0.5mJy"},
-        "niter": {5: 18000},
-        "maskname": {5: "G328_B6_clean_robust0.crtf"},
-    },
-    "G328.25_B6_12M_robust2": {
-        "threshold": {5: "0.5mJy"},
-        "niter": {5: 18000},
-        "maskname": {5: "G328_B6_clean_robust0.crtf"},
-    },
 }
 
 
@@ -2715,7 +2669,7 @@ del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
 line_imaging_parameters_default = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
         "niter": 5000000,
-        "threshold": "5sigma",  # Aug 7, 2020: drop it back to 5-sigma
+        "threshold": "5sigma",
         "robust": robust,
         "weighting": "briggs",
         "deconvolver": "hogbom",
@@ -2727,12 +2681,15 @@ line_imaging_parameters_default = {
         "veltype": "radio",
         "usemask": "auto-multithresh",
         "sidelobethreshold": 2.0,
-        "noisethreshold": 4.2,
+        "noisethreshold": 4.0,
         "lownoisethreshold": 1.5,
-        "minbeamfrac": 0.3,
-        "negativethreshold": 15.0,
-        "pblimit": 0.0,
-        "pbmask": 0.2,
+        "minbeamfrac": 0.0,
+        "negativethreshold": 4.0,
+        "fastnoise": False,
+        "growiterations": 100,
+        "dogrowprune": False,
+        "pblimit": 0.05,
+        "pbmask": 0.1,
         "pbcor": True,
         "perchanweightdensity": False,
         "interactive": False,
@@ -2755,12 +2712,24 @@ line_imaging_parameters_custom = {
     "W51-E_B6_12M_robust0": {
         "usemask": "auto-multithresh",
         "sidelobethreshold": 1.0,
-        "threshold": "5sigma",
+        "pblimit": 0.1,
+        "threshold": "16mJy",  # sigma is ~4 mJy
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "W51-E_B6_12M_robust0_contsub": {
+        "usemask": "auto-multithresh",
+        "sidelobethreshold": 1.0,
+        "pblimit": 0.1,
+        "threshold": "16mJy",  # sigma is ~4 mJy
     },
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter",
-        "threshold": "5sigma",
+        "threshold": "4mJy",  # sigma is ~0.8 mJy
+    },
+    "W51-E_B3_12M_robust0_contsub": {
+        "threshold": "4mJy",  # sigma is ~0.8 mJy
+        "sidelobethreshold": 1.0,
+        "pblimit": 0.1,
     },
 }
 
