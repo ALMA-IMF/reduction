@@ -2720,13 +2720,13 @@ line_imaging_parameters_custom = {
         "usemask": "auto-multithresh",
         "pblimit": 0.1,
         "threshold": "12mJy",  # sigma is ~4 mJy
-        "fastnoise": "False",
-        "sidelobethreshold": 2.5,
+        "fastnoise": "False",  # force autoMT to estimate threshold only inside cleaning mask
+        "sidelobethreshold": 2.5, # along with a low noiseT parameter, force autoMT to find a threshold based on sidelobes; more appropriate for extended emission
         "noisethreshold": 1.5,
-        "lownoisethreshold": 1.3, 
-        "negativethreshold": 1.5,
-        "growiterations": 100,
-        "minpercentchange": 1.0,
+        "lownoisethreshold": 1.3, # allows to extend the masks to lower noise threshold; appropriate for cleaning extended emission
+        "negativethreshold": 1.5, # allows absorption cleaning. avoids the problem of getting too high thresholds when absorption is strong.
+        "growiterations": 100, # gives extra margin to extend mask to lower level; appropriate for extended emission
+        "minpercentchange": 1.0, # the default
     },
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter",
