@@ -118,7 +118,7 @@ do_export_fits = True
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
 
-def set_impars(impars, line_name, vis):
+def set_impars(impars, line_name, vis, spwnames=None):
     if line_name not in ('full', ) + spwnames:
         local_impars = {}
         if 'width' in linpars:
@@ -192,6 +192,8 @@ for band in band_list:
         logprint("Found spectral windows {0} in band {1}: field {2}"
                  .format(to_image[band][field].keys(), band, field),
                  origin='almaimf_line_imaging')
+        if max(int(x) for x in to_image[band][field]) > 7:
+            raise ValueError("Found invalid spw numbers; ALMA-IMF data do not include >8 spws")
         for spw in to_image[band][field]:
 
             # python 2.7 specific hack: force 'field' to be a bytestring
@@ -366,7 +368,7 @@ for band in band_list:
                                                          contsub_suffix.replace(".", "_"))
             impars = line_imaging_parameters[pars_key]
 
-            set_impars(impars=impars, line_name=line_name, vis=vis)
+            set_impars(impars=impars, line_name=line_name, vis=vis, spwnames=spwnames)
 
             impars['imsize'] = imsize
             impars['cell'] = cellsize
