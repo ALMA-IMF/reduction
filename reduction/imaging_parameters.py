@@ -2718,9 +2718,15 @@ line_imaging_parameters_custom = {
     },
     "W51-E_B6_12M_robust0_contsub": {
         "usemask": "auto-multithresh",
-        "sidelobethreshold": 1.0,
         "pblimit": 0.1,
-        "threshold": "16mJy",  # sigma is ~4 mJy
+        "threshold": "12mJy",  # sigma is ~4 mJy
+        "fastnoise": "False",
+        "sidelobethreshold": 2.5,
+        "noisethreshold": 1.5,
+        "lownoisethreshold": 1.3, 
+        "negativethreshold": 1.5,
+        "growiterations": 100,
+        "minpercentchange": 1.0,
     },
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter",
