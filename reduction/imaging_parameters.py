@@ -2731,6 +2731,7 @@ line_imaging_parameters_custom = {
         "sidelobethreshold": 1.0,
         "pblimit": 0.1,
     },
+    "W51-E_B3_12M_robust0_12co": {},  # example of how to specify per-line parameters
 }
 
 for key in line_imaging_parameters_custom:
