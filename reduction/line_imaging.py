@@ -25,6 +25,7 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
 
 import json
 import os
+import glob
 import shutil
 import numpy as np
 import astropy.units as u
@@ -494,6 +495,9 @@ for band in band_list:
                     # remove the model image
                     # (it should be created by dirty imaging above)
                     if did_dirty_imaging and os.path.exists(lineimagename+".model"):
+                        logprint("Removing {0}.model because we're using starmodel instead"
+                                 .format(lineimagename),
+                                 origin='almaimf_line_imaging')
                         shutil.rmtree(lineimagename+".model")
                     elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
                         raise ValueError("Found an existing .model file, but startmodel "
@@ -506,6 +510,14 @@ for band in band_list:
                         # lineimagename+".model" does not exist
                         pass # all is happy
 
+                    # MPI HACK
+                    # MPI appears to make .model files that can't be tracked in the usual fashion
+                    if os.path.exists(lineimagename+".workdirectory"):
+                        logprint("Removing ALL MPI-generated models in {0}.workdirectory".format(lineimagename),
+                                 origin='almaimf_line_imaging')
+                        for fn in glob.glob(lineimagename+".workdirectory/*.model"):
+                            shutil.rmtree(fn)
+
                     contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                    contimagename=impars['startmodel'],
                                                    imaging_results_path=imaging_root)
@@ -517,6 +529,10 @@ for band in band_list:
                 # continue imaging using a threshold
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
+                logprint("continue_imaging is set to be {0}".format(continue_imaging),
+                         origin='almaimf_line_imaging')
+                logprint("dirty_tclean_made_residual is set to be {0}".format(dirty_tclean_made_residual),
+                         origin='almaimf_line_imaging')
 
                 # if we're re-running to try to get to completion, we must
                 # delete the mas to enable automultithresh to continue
@@ -527,9 +543,18 @@ for band in band_list:
                     if 'usemask' in impars and impars['usemask'] != 'user':
                         raise ValueError("Mask exists but not specified as user.")
 
+                # SANITY CHECK:
+                if os.path.exists(lineimagename+".model"):
+                    logprint("Model {0}.model exists".format(lineimagename),
+                             origin='almaimf_line_imaging')
+                    if impars['startmodel']:
+                        raise ValueError("Startmodel is set to {0} but model {1} exists"
+                                         .format(impars['startmodel'], lineimagename+".model"))
+
                 # set by global environmental variable to auto-recognize
                 # when being run from an MPI session.
                 impars['parallel'] = parallel
+
 
                 tclean(vis=concatvis,
                        imagename=lineimagename,
