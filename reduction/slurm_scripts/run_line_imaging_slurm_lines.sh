@@ -42,6 +42,7 @@ else
 fi
 echo "Contsub = ${suffix_contsub}"
 
+echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
 
 MEM=32gb
 export NTASKS=8

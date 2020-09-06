@@ -1,5 +1,9 @@
 # Image whole bands
-CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm_mpi.sh
+if [ $CMD ]; then
+    echo $CMD
+else
+    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm_mpi.sh
+fi
 export FIELD_ID=$1
 export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
@@ -60,7 +64,7 @@ else
     fi
 fi
 
-echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub}
+echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
 
 if [ $EXCLUDE_7M == "False" ]; then
     if [ $suffix12m != "7M12M" ]; then
