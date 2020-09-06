@@ -707,6 +707,8 @@ for continuum_ms in continuum_mses:
                 # do not run the clean if no mask exists
                 assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
 
+            # Note Sep 6, 2020: the comment below doesn't make sense to me;
+            # we are in a block that _will not_ be executed if image.tt0 exists.
             # do this even if the output file exists: we need to populate the
             # modelcolumn
             logprint("Imaging parameters are: {0} for image name {1}".format(impars_thisiter, imname),
