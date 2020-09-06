@@ -2679,18 +2679,9 @@ line_imaging_parameters_default = {
         "specmode": "cube",
         "outframe": "LSRK",
         "veltype": "radio",
-        "usemask": "auto-multithresh",
-        "sidelobethreshold": 2.0,
-        "noisethreshold": 4.0,
-        "lownoisethreshold": 1.5,
-        "minbeamfrac": 0.0,
-        "negativethreshold": 4.0,
-        "fastnoise": False,
-        "growiterations": 100,
-        "dogrowprune": False,
+        "usemask": "pb",
         "pblimit": 0.05,
         "pbmask": 0.1,
-        "pbcor": True,
         "perchanweightdensity": False,
         "interactive": False,
     }
@@ -2710,15 +2701,11 @@ line_imaging_parameters_custom = {
     "G333.60_B3_12M_robust0": {"niter": 500000, "scales": [0, 3, 9, 27]},
     "G333.60_B3_12M_robust0_contsub": {"niter": 500000, "scales": [0, 3, 9, 27]},
     "W51-E_B6_12M_robust0": {
-        "usemask": "auto-multithresh",
-        "sidelobethreshold": 1.0,
         "pblimit": 0.1,
         "threshold": "16mJy",  # sigma is ~4 mJy
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "W51-E_B6_12M_robust0_contsub": {
-        "usemask": "auto-multithresh",
-        "sidelobethreshold": 1.0,
         "pblimit": 0.1,
         "threshold": "16mJy",  # sigma is ~4 mJy
     },
@@ -2728,7 +2715,6 @@ line_imaging_parameters_custom = {
     },
     "W51-E_B3_12M_robust0_contsub": {
         "threshold": "4mJy",  # sigma is ~0.8 mJy
-        "sidelobethreshold": 1.0,
         "pblimit": 0.1,
     },
 }
