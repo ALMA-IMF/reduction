@@ -366,7 +366,7 @@ for band in band_list:
             pars_key = "{0}_{1}_{2}_robust{3}{4}".format(field, band,
                                                          arrayname, robust,
                                                          contsub_suffix.replace(".", "_"))
-            if pars_key+"_"+line_name in line_imaging_parameters:
+            if (pars_key+"_"+line_name) in line_imaging_parameters:
                 pars_key = pars_key+"_"+line_name
             impars = line_imaging_parameters[pars_key]
 

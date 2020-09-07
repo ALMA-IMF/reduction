@@ -2735,7 +2735,10 @@ line_imaging_parameters_custom = {
 }
 
 for key in line_imaging_parameters_custom:
-    line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
+    if key in line_imaging_parameters:
+        line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
+    else:
+        line_imaging_parameters[key] = line_imaging_parameters_custom[key]
 
 default_lines = {
     "n2hp": "93.173700GHz",
