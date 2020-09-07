@@ -42,6 +42,7 @@ classes = ['RuntimeError: Error in making PSF',
            'No work directory with at least ',
            'RuntimeError: Restoration Error  : Error in copying internal T/F mask',
            'Exception from task_tclean : Restoration Error  : Error in copying internal T/F mask : Invalid Table operation: SetupNewTable',
+           'Mask exists but not specified as user.',
            'Exception Reported: Binning accounting',
           ]
 
