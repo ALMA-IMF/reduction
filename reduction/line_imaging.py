@@ -553,7 +553,7 @@ for band in band_list:
                 if os.path.exists(lineimagename+".model"):
                     logprint("Model {0}.model exists".format(lineimagename),
                              origin='almaimf_line_imaging')
-                    if impars['startmodel']:
+                    if 'startmodel' in impars and impars['startmodel']:
                         raise ValueError("Startmodel is set to {0} but model {1} exists"
                                          .format(impars['startmodel'], lineimagename+".model"))
 
