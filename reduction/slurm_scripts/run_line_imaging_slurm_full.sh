@@ -2,7 +2,7 @@
 if [ $CMD ]; then
     echo $CMD
 else
-    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm_mpi.sh
+    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm.sh
 fi
 export FIELD_ID=$1
 export BAND_NUMBERS=3
