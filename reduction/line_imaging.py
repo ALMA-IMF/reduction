@@ -408,7 +408,7 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars_dirty
                       )
-                for suffix in ('image', 'residual', 'model'):
+                for suffix in ('image', 'residual'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',
                                   history=["{0}: {1}".format(key, val) for key, val in
@@ -417,6 +417,12 @@ for band in band_list:
                                   history=["git_version: {0}".format(git_version),
                                            "git_date: {0}".format(git_date)])
                     ia.close()
+                for suffix in ("mask", "model"):
+                    bad_fn = lineimagename + "." + suffix
+                    if os.path.exists(bad_fn):
+                        logprint("Removing {0} from dirty clean".format(bad_fn),
+                                 origin='almaimf_line_imaging')
+                        shutil.rmtree(bad_fn)
 
                 if os.path.exists(lineimagename+".image"):
                     # tclean with niter=0 is not supposed to produce a .image file,
