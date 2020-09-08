@@ -171,11 +171,12 @@ def set_impars(impars, line_name, vis, spwnames=None):
     else:
         impars['chanchunks'] = int(chanchunks)
 
-    # apparently you can't have nchan % chanchunks > 0
-    cc = impars['chanchunks']
-    while impars['nchan'] % cc > 0:
-        cc -= 1
-    impars['chanchunks'] = cc
+    if 'nchan' in impars:
+        # apparently you can't have nchan % chanchunks > 0
+        cc = impars['chanchunks']
+        while impars['nchan'] % cc > 0:
+            cc -= 1
+        impars['chanchunks'] = cc
 
     return impars
 
