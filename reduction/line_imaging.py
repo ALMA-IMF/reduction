@@ -408,7 +408,7 @@ for band in band_list:
                     del impars_dirty['startmodel']
 
                 impars_dirty['parallel'] = parallel
-                impars_dirty['usemask'] = ''
+                impars_dirty['usemask'] = None
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
