@@ -578,8 +578,19 @@ for band in band_list:
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
+                       calcres=False,
                        **impars
                       )
+                # re-do the tclean once more, with niter=0, to force recalculation of the residual
+                niter = impars['niter']
+                impars['niter'] = 0
+                tclean(vis=concatvis,
+                       imagename=lineimagename,
+                       restoringbeam='',
+                       calcres=True,
+                       **impars
+                      )
+                impars['niter'] = niter
                 for suffix in ('image', 'residual', 'model'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',
