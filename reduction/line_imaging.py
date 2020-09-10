@@ -408,6 +408,7 @@ for band in band_list:
                     del impars_dirty['startmodel']
 
                 impars_dirty['parallel'] = parallel
+                impars_dirty['usemask'] = ''
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
@@ -552,7 +553,9 @@ for band in band_list:
                 # if we're re-running to try to get to completion, we must
                 # delete the mas to enable automultithresh to continue
                 # Updating to *remove* the mask instead
-                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] == "auto-multithresh":
+                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] not in ('', None):
+                    logprint("removing pre-existing mask {0}".format(lineimagename+".mask"),
+                             origin='almaimf_line_imaging')
                     shutil.rmtree(lineimagename+".mask")
                 elif os.path.exists(lineimagename+".mask"):
                     if 'usemask' in impars and impars['usemask'] != 'user':
