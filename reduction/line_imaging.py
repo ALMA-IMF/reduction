@@ -25,6 +25,7 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
 
 import json
 import os
+import glob
 import shutil
 import numpy as np
 import astropy.units as u
@@ -169,6 +170,15 @@ def set_impars(impars, line_name, vis, spwnames=None):
         impars.update(local_impars)
     else:
         impars['chanchunks'] = int(chanchunks)
+
+    if 'nchan' in impars:
+        # apparently you can't have nchan % chanchunks > 0
+        cc = impars['chanchunks']
+        while impars['nchan'] % cc > 0:
+            cc -= 1
+        impars['chanchunks'] = cc
+
+    return impars
 
 if exclude_7m:
     arrayname = '12M'
@@ -398,6 +408,7 @@ for band in band_list:
                     del impars_dirty['startmodel']
 
                 impars_dirty['parallel'] = parallel
+                impars_dirty['usemask'] = None
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
@@ -407,7 +418,7 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars_dirty
                       )
-                for suffix in ('image', 'residual', 'model'):
+                for suffix in ('image', 'residual'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',
                                   history=["{0}: {1}".format(key, val) for key, val in
@@ -416,6 +427,12 @@ for band in band_list:
                                   history=["git_version: {0}".format(git_version),
                                            "git_date: {0}".format(git_date)])
                     ia.close()
+                for suffix in ("mask", "model"):
+                    bad_fn = lineimagename + "." + suffix
+                    if os.path.exists(bad_fn):
+                        logprint("Removing {0} from dirty clean".format(bad_fn),
+                                 origin='almaimf_line_imaging')
+                        shutil.rmtree(bad_fn)
 
                 if os.path.exists(lineimagename+".image"):
                     # tclean with niter=0 is not supposed to produce a .image file,
@@ -494,6 +511,9 @@ for band in band_list:
                     # remove the model image
                     # (it should be created by dirty imaging above)
                     if did_dirty_imaging and os.path.exists(lineimagename+".model"):
+                        logprint("Removing {0}.model because we're using starmodel instead"
+                                 .format(lineimagename),
+                                 origin='almaimf_line_imaging')
                         shutil.rmtree(lineimagename+".model")
                     elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
                         raise ValueError("Found an existing .model file, but startmodel "
@@ -506,6 +526,14 @@ for band in band_list:
                         # lineimagename+".model" does not exist
                         pass # all is happy
 
+                    # MPI HACK
+                    # MPI appears to make .model files that can't be tracked in the usual fashion
+                    if os.path.exists(lineimagename+".workdirectory"):
+                        logprint("Removing ALL MPI-generated models in {0}.workdirectory".format(lineimagename),
+                                 origin='almaimf_line_imaging')
+                        for fn in glob.glob(lineimagename+".workdirectory/*.model"):
+                            shutil.rmtree(fn)
+
                     contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                    contimagename=impars['startmodel'],
                                                    imaging_results_path=imaging_root)
@@ -517,26 +545,52 @@ for band in band_list:
                 # continue imaging using a threshold
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
+                logprint("continue_imaging is set to be {0}".format(continue_imaging),
+                         origin='almaimf_line_imaging')
+                logprint("dirty_tclean_made_residual is set to be {0}".format(dirty_tclean_made_residual),
+                         origin='almaimf_line_imaging')
 
                 # if we're re-running to try to get to completion, we must
                 # delete the mas to enable automultithresh to continue
                 # Updating to *remove* the mask instead
-                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] == "auto-multithresh":
+                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] not in ('', None):
+                    logprint("removing pre-existing mask {0}".format(lineimagename+".mask"),
+                             origin='almaimf_line_imaging')
                     shutil.rmtree(lineimagename+".mask")
                 elif os.path.exists(lineimagename+".mask"):
                     if 'usemask' in impars and impars['usemask'] != 'user':
                         raise ValueError("Mask exists but not specified as user.")
 
+                # SANITY CHECK:
+                if os.path.exists(lineimagename+".model"):
+                    logprint("Model {0}.model exists".format(lineimagename),
+                             origin='almaimf_line_imaging')
+                    if 'startmodel' in impars and impars['startmodel']:
+                        raise ValueError("Startmodel is set to {0} but model {1} exists"
+                                         .format(impars['startmodel'], lineimagename+".model"))
+
                 # set by global environmental variable to auto-recognize
                 # when being run from an MPI session.
                 impars['parallel'] = parallel
+
 
                 tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
+                       calcres=False,
                        **impars
                       )
+                # re-do the tclean once more, with niter=0, to force recalculation of the residual
+                niter = impars['niter']
+                impars['niter'] = 0
+                tclean(vis=concatvis,
+                       imagename=lineimagename,
+                       restoringbeam='',
+                       calcres=True,
+                       **impars
+                      )
+                impars['niter'] = niter
                 for suffix in ('image', 'residual', 'model'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',
