@@ -2699,7 +2699,7 @@ line_imaging_parameters_custom = {
     "G337.92_B3_12M_robust0": {"usemask": "auto-multithresh"},
     "G337.92_B3_12M_robust0_contsub": {"usemask": "auto-multithresh"},
     "G337.92_B6_12M_robust0": {
-        "threshold": "31mJy",
+        "threshold": "14mJy",
         "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0": {"niter": 500000, "scales": [0, 3, 9, 27]},
