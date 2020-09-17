@@ -391,6 +391,9 @@ for band in band_list:
             if 'threshold' in impars:
                 if 'sigma' in impars['threshold']:
                     make_dirty_image = True
+            if 'startmodel' in impars:
+                # need the dirty image to populate our model
+                make_dirty_image = True
 
             # start with cube imaging
             # step 1 is dirty imaging
