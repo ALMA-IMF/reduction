@@ -2698,6 +2698,10 @@ line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
 line_imaging_parameters_custom = {
     "G337.92_B3_12M_robust0": {"usemask": "auto-multithresh"},
     "G337.92_B3_12M_robust0_contsub": {"usemask": "auto-multithresh"},
+    "G337.92_B6_12M_robust0": {
+        "threshold": "31mJy",
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
     "G333.60_B3_12M_robust0": {"niter": 500000, "scales": [0, 3, 9, 27]},
     "G333.60_B3_12M_robust0_contsub": {"niter": 500000, "scales": [0, 3, 9, 27]},
     "W51-E_B6_12M_robust0": {
@@ -2705,18 +2709,12 @@ line_imaging_parameters_custom = {
         "threshold": "16mJy",  # sigma is ~4 mJy
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
-    "W51-E_B6_12M_robust0_contsub": {
-        "pblimit": 0.1,
-        "threshold": "16mJy",  # sigma is ~4 mJy
-    },
+    "W51-E_B6_12M_robust0_contsub": {"pblimit": 0.1, "threshold": "16mJy",},  # sigma is ~4 mJy
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal4",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
     },
-    "W51-E_B3_12M_robust0_contsub": {
-        "threshold": "4mJy",  # sigma is ~0.8 mJy
-        "pblimit": 0.1,
-    },
+    "W51-E_B3_12M_robust0_contsub": {"threshold": "4mJy", "pblimit": 0.1,},  # sigma is ~0.8 mJy
     "W51-E_B3_12M_robust0_12co": {},  # example of how to specify per-line parameters
 }
 

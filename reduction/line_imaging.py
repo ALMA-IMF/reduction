@@ -387,11 +387,15 @@ for band in band_list:
             impars['phasecenter'] = phasecenter
             impars['field'] = [field.encode()]
 
+            make_dirty_image = False
+            if 'threshold' in impars:
+                if 'sigma' in impars['threshold']:
+                    make_dirty_image = True
 
             # start with cube imaging
             # step 1 is dirty imaging
 
-            if not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
+            if make_dirty_image and not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
                 if os.path.exists(lineimagename+".psf"):
                     logprint("WARNING: The PSF for {0} exists, but no image exists."
                              "  This likely implies that an ongoing or incomplete "
@@ -460,45 +464,46 @@ for band in band_list:
                 # just skip the rest here
                 continue
 
-            # the threshold needs to be computed if any imaging is to be done (either contsub or not)
-            # no .image file is produced, only a residual
-            logprint("Computing residual image statistics for {0}".format(lineimagename),
-                     origin='almaimf_line_imaging')
-            ia.open(lineimagename+".residual")
-            stats = ia.statistics(robust=True)
-            rms = float(stats['medabsdevmed'] * 1.482602218505602)
-            ia.close()
-
-            if rms >= 1:
-                logprint(str(stats), origin='almaimf_line_imaging_exception')
-                raise ValueError("RMS was {0} - that's absurd.".format(rms))
-            if rms > 0.01:
-                logprint("The RMS found was pretty high: {0}".format(rms),
+            if make_dirty_image:
+                # the threshold needs to be computed if any imaging is to be done (either contsub or not)
+                # no .image file is produced, only a residual
+                logprint("Computing residual image statistics for {0}".format(lineimagename),
                          origin='almaimf_line_imaging')
+                ia.open(lineimagename+".residual")
+                stats = ia.statistics(robust=True)
+                rms = float(stats['medabsdevmed'] * 1.482602218505602)
+                ia.close()
 
-            continue_imaging = False
-            nsigma = None
-            if 'threshold' in impars:
-                if 'sigma' in impars['threshold']:
-                    nsigma = int(impars['threshold'].strip('sigma'))
-                    threshold = "{0:0.4f}Jy".format(nsigma*rms) # 3 rms might be OK in practice
-                    logprint("Threshold used = {0} = {2}x{1}".format(threshold, rms, nsigma),
-                             origin='almaimf_line_imaging')
-                    impars['threshold'] = threshold
-                else:
-                    threshold = impars['threshold']
-                    nsigma = (u.Quantity(threshold) / rms).to(u.Jy).value
-                    logprint("Manual threshold used = {0} = {2}x{1}"
-                             .format(threshold, rms, nsigma),
+                if rms >= 1:
+                    logprint(str(stats), origin='almaimf_line_imaging_exception')
+                    raise ValueError("RMS was {0} - that's absurd.".format(rms))
+                if rms > 0.01:
+                    logprint("The RMS found was pretty high: {0}".format(rms),
                              origin='almaimf_line_imaging')
 
-                if u.Quantity(threshold).to(u.Jy).value < stats['max']:
-                    logprint("Threshold {0} was not reached (peak residual={1}).  "
-                             "Continuing imaging.".format(threshold, stats['max']),
-                             origin='almaimf_line_imaging'
-                            )
-                    # if the threshold was not reached, keep cleaning
-                    continue_imaging = True
+                continue_imaging = False
+                nsigma = None
+                if 'threshold' in impars:
+                    if 'sigma' in impars['threshold']:
+                        nsigma = int(impars['threshold'].strip('sigma'))
+                        threshold = "{0:0.4f}Jy".format(nsigma*rms) # 3 rms might be OK in practice
+                        logprint("Threshold used = {0} = {2}x{1}".format(threshold, rms, nsigma),
+                                 origin='almaimf_line_imaging')
+                        impars['threshold'] = threshold
+                    else:
+                        threshold = impars['threshold']
+                        nsigma = (u.Quantity(threshold) / rms).to(u.Jy).value
+                        logprint("Manual threshold used = {0} = {2}x{1}"
+                                 .format(threshold, rms, nsigma),
+                                 origin='almaimf_line_imaging')
+
+                    if u.Quantity(threshold).to(u.Jy).value < stats['max']:
+                        logprint("Threshold {0} was not reached (peak residual={1}).  "
+                                 "Continuing imaging.".format(threshold, stats['max']),
+                                 origin='almaimf_line_imaging'
+                                )
+                        # if the threshold was not reached, keep cleaning
+                        continue_imaging = True
 
 
             if 'startmodel' in impars:
