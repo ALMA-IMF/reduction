@@ -445,13 +445,18 @@ for band in band_list:
                     dirty_tclean_made_residual = True
 
                 did_dirty_imaging = True
-            elif not os.path.exists(lineimagename+".residual"):
+            elif make_dirty_image and not os.path.exists(lineimagename+".residual"):
                 raise ValueError("The residual image is required for further imaging.")
             else:
                 did_dirty_imaging = False
-                logprint("Found existing files matching {0}".format(lineimagename),
-                         origin='almaimf_line_imaging'
-                        )
+                if make_dirty_image:
+                    logprint("Found existing files matching {0}".format(lineimagename),
+                             origin='almaimf_line_imaging'
+                            )
+                else:
+                    logprint("Skipped dirty imaging becauase a fixed threshold is used.",
+                             origin='almaimf_line_imaging'
+                            )
 
             if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
                 logprint("WARNING: The PSF for {0} exists, but no image exists."
