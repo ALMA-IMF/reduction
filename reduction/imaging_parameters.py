@@ -2696,27 +2696,202 @@ line_imaging_parameters_default = {
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
 
 line_imaging_parameters_custom = {
-    "G337.92_B3_12M_robust0": {"usemask": "auto-multithresh"},
-    "G337.92_B3_12M_robust0_contsub": {"usemask": "auto-multithresh"},
+	"G008.67_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G008.67_B3_uid___A001_X1296_X1bf_continuum_merged_12M_robust0_selfcal5_finaliter"
+	},
+	"G008.67_B3_12M_robust0_contsub": { #Less restrictive autoMT params for mildly faint emission
+        "usemask": "auto-multithresh",
+		"noisethreshold": 3.5,
+		"sidelobethreshold": 2.0,
+		"negativethreshold": 15.0,
+		"minbeamfrac": 0.3,
+		"dogrowprune": True,
+		"threshold": "3mJy"
+	},
+	"G008.67_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter"
+	},
+	"G010.62_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G010.62_B3_uid___A001_X1296_X1e9_continuum_merged_12M_robust0_selfcal5_finaliter"
+	},
+	"G010.62_B3_12M_robust0_contsub": { #More restrictive params for bright emission
+        "usemask": "auto-multithresh",
+		"noisethreshold": 4.2,
+		"sidelobethreshold": 2.5,
+		"negativethreshold": 15.0,
+		"minbeamfrac": 0.3,
+		"dogrowprune": True,
+		"threshold": "6mJy"
+	},
+	"G010.62_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G010.62_B6_uid___A001_X1296_X1df_continuum_merged_12M_robust0_selfcal5_finaliter"
+	},
+	"G012.80_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G012.80_B3_uid___A001_X1296_X1f9_continuum_merged_12M_robust0_selfcal5_finaliter"	
+	},
+	"G012.80_B3_12M_robust0_contsub": { #More restrictive params for bright emission
+        "usemask": "auto-multithresh",
+		"noisethreshold": 4.0,
+		"sidelobethreshold": 2.5,
+		"negativethreshold": 15.0,
+		"minbeamfrac": 0.3,
+		"dogrowprune": True,
+		"threshold": "9mJy"
+	},
+	"G012.80_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter"	
+	},
+	"G327.29_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal2_finaliter"
+	},
+	"G327.29_B3_12M_robust0_contsub": { #Less restrictive params for faint, extended emission
+        "usemask": "auto-multithresh",
+		"noisethreshold": 2.0,
+		"sidelobethreshold": 2.0,
+		"negativethreshold": 15.0,
+		"minbeamfrac": 0.3,
+		"dogrowprune": True,
+		"threshold": "3mJy"
+	},
+	"G327.29_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter"
+	},
+#   Missing startmodel continuum B3 image
+#	"G328.25_B3_12M_robust0": {
+#		"threshold": "6mJy"
+#		"startmodel": ""
+#	},
+	"G328.25_B3_12M_robust0_contsub": { #Less restrictive params for marginal detection
+        "usemask": "auto-multithresh",
+		"noisethreshold": 3.0,
+		"sidelobethreshold": 2.0,
+		"negativethreshold": 15.0,
+		"minbeamfrac": 0.3,
+		"dogrowprune": True,
+		"threshold": "3mJy"
+	},
+	"G328.25_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G328.25_B6_uid___A001_X1296_X161_continuum_merged_12M_robust0_selfcal5_finaliter"
+	},
+	"G333.60_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G333.60_B3__continuum_merged_12M_robust0_selfcal5_finaliter.image"
+	},
+	"G333.60_B3_12M_robust0_contsub": { #More restrictive params for bright, extended emission
+        "usemask": "auto-multithresh",
+		"noisethreshold": 4.0,
+		"sidelobethreshold": 3.5,
+		"negativethreshold": 15.0,
+		"minbeamfrac": 0.3,
+		"dogrowprune": True,
+		"threshold": "6mJy"
+	},
+	"G333.60_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G333.60_B6__continuum_merged_12M_robust0_selfcal5_finaliter.image"
+	},
+	"G337.92_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
+	"G337.92_B3_12M_robust0_contsub": { #Less restrictive params for faint-extended emission
+        "usemask": "auto-multithresh",
+		"noisethreshold": 2.5,
+		"sidelobethreshold": 2.0,
+		"negativethreshold": 15.0,
+		"minbeamfrac": 0.3,
+		"dogrowprune": True,
+		"threshold": "2mJy"
+	},
     "G337.92_B6_12M_robust0": {
         "threshold": "14mJy",
         "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
-    "G333.60_B3_12M_robust0": {"niter": 500000, "scales": [0, 3, 9, 27]},
-    "G333.60_B3_12M_robust0_contsub": {"niter": 500000, "scales": [0, 3, 9, 27]},
+	"G338.93_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G338.93_B3_uid___A001_X1296_X15b_continuum_merged_12M_robust0_selfcal2_finaliter"
+	},
+	"G338.93_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G338.93_B6__continuum_merged_12M_robust0_selfcal6_finaliter"
+	},
+	"G351.77_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
+	"G351.77_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
+	"G353.41_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal3_finaliter"
+	},
+	"G353.41_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "G353.41_B6_uid___A001_X1296_X1cb_continuum_merged_12M_robust0_selfcal3_finaliter"
+	},
+	"W43-MM1_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "W43-MM1_B3_uid___A001_X1296_X1ad_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
+	"W43-MM2_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "W43-MM2_B3_uid___A001_X1296_X11f_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
+	"W43-MM2_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "W43-MM2_B6_uid___A001_X1296_X111_continuum_merged_12M_robust0_selfcal5_finaliter"
+	},
+	"W43-MM3_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
+	"W43-MM3_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
     "W51-E_B6_12M_robust0": {
+        "usemask": "auto-multithresh",
+        "sidelobethreshold": 1.0,
         "pblimit": 0.1,
         "threshold": "16mJy",  # sigma is ~4 mJy
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
-    "W51-E_B6_12M_robust0_contsub": {"pblimit": 0.1, "threshold": "16mJy",},  # sigma is ~4 mJy
+    "W51-E_B6_12M_robust0_contsub": {
+        "usemask": "auto-multithresh",
+        "sidelobethreshold": 1.0,
+        "pblimit": 0.1,
+        "threshold": "16mJy",  # sigma is ~4 mJy
+    },
     "W51-E_B3_12M_robust0": {
-        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal4",
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_7M_robust0_selfcal4_finaliter",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
     },
-    "W51-E_B3_12M_robust0_contsub": {"threshold": "4mJy", "pblimit": 0.1,},  # sigma is ~0.8 mJy
-    "W51-E_B3_12M_robust0_12co": {},  # example of how to specify per-line parameters
+    "W51-E_B3_12M_robust0_contsub": {
+        "threshold": "4mJy",  # sigma is ~0.8 mJy
+        "sidelobethreshold": 1.0,
+        "pblimit": 0.1,
+    },
+	"W51-IRS2_B3_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter"
+	},
+	"W51-IRS2_B6_12M_robust0": {
+		"threshold": "6mJy"
+		"startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8_finaliter"
+	},
 }
+
 
 for key in line_imaging_parameters_custom:
     if key in line_imaging_parameters:
@@ -2769,78 +2944,82 @@ line_parameters_custom = {
     "G008.67": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "100km/s", "vlsr": "44km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "44km/s", "width": "2km/s"},
     },
     "G010.62": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "100km/s", "vlsr": "0km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "0km/s", "width": "2km/s"},
         "n2hp": {"cubewidth": "60km/s"},
     },
     "G012.80": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "100km/s", "vlsr": "32km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "35km/s", "width": "2km/s"},
     },
     "G327.29": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "60km/s", "vlsr": "-42km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-40km/s", "width": "2km/s"},
     },
     "G328.25": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "60km/s", "vlsr": "-37km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-37km/s", "width": "2km/s"},
     },
     "G333.60": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "100km/s", "vlsr": "-44km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-44km/s", "width": "2km/s"},
     },
     "G337.92": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "80km/s", "vlsr": "-36km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-36km/s", "width": "2km/s"},
     },
     "G338.93": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "60km/s", "vlsr": "-63km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-63km/s", "width": "2km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
-    "G351.77": {"12co": {"cubewidth": "150km/s"}, "ch3cn": {"cubewidth": "150km/s"}},
+    "G351.77": {
+		"12co": {"cubewidth": "150km/s"}, 
+		"ch3cn": {"cubewidth": "150km/s"}
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s", "width": "2km/s"},
+	},
     "G353.41": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "80km/s", "vlsr": "-17km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-17km/s", "width": "2km/s"},
         "n2hp": {"cubewidth": "32km/s"},
     },
     "W43-MM1": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "80km/s", "vlsr": "100km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "100km/s", "width": "2km/s"},
     },
     "W43-MM2": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "60km/s", "vlsr": "103km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s", "width": "2km/s"},
     },
     "W43-MM3": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "100km/s", "vlsr": "90km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "90km/s", "width": "2km/s"},
     },
     "W51-E": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "100km/s", "vlsr": "59km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "59km/s", "width": "2km/s"},
         "n2hp": {"cubewidth": "60km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
     "W51-IRS2": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "100km/s", "vlsr": "56km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "56km/s", "width": "2km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
 }
@@ -2848,8 +3027,3 @@ line_parameters_custom = {
 for field in line_parameters_custom:
     for line in line_parameters_custom[field]:
         line_parameters[field][line].update(line_parameters_custom[field][line])
-
-# use the continuum image as the startmodel for the non-contsub'd data
-# (nice idea, didn't work)
-# line_imaging_parameters['W51-E_B6_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B6_uid___A001_X1296_X215_continuum_merged_12M_robust0_selfcal7.model.tt0'
-# line_imaging_parameters['W51-E_B3_12M_robust0']['startmodel'] = 'imaging_results/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7.model.tt0'
