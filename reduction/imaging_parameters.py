@@ -834,8 +834,8 @@ imaging_parameters_nondefault = {
         "niter": {0: 5000, 1: 9000, 2: 10000, 3: 15000, 4: 20000},
         "maskname": {
             0: "G328.25_B3_12M_clean_robust0_1stiter_3sigma.crtf",
-            1: "G328.25_B3_12M_clean_robust0_2nditer_3sigma.crtf",
-            2: "G328.25_B3_12M_clean_robust0_2nditer_3sigma.crtf",
+            1: "G328.25_B3_12M_clean_robust0_1stiter_3sigma.crtf",
+            2: "G328.25_B3_12M_clean_robust0_1stiter_3sigma.crtf",
             3: "G328.25_B3_12M.crtf",
             4: "G328.25_B3_12M.crtf",
         },
