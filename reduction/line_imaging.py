@@ -25,6 +25,7 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
 
 import json
 import os
+import glob
 import shutil
 import numpy as np
 import astropy.units as u
@@ -118,7 +119,7 @@ do_export_fits = True
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
 
-def set_impars(impars, line_name, vis):
+def set_impars(impars, line_name, vis, spwnames=None):
     if line_name not in ('full', ) + spwnames:
         local_impars = {}
         if 'width' in linpars:
@@ -170,6 +171,15 @@ def set_impars(impars, line_name, vis):
     else:
         impars['chanchunks'] = int(chanchunks)
 
+    if 'nchan' in impars:
+        # apparently you can't have nchan % chanchunks > 0
+        cc = impars['chanchunks']
+        while impars['nchan'] % cc > 0:
+            cc -= 1
+        impars['chanchunks'] = cc
+
+    return impars
+
 if exclude_7m:
     arrayname = '12M'
 elif only_7m:
@@ -192,6 +202,8 @@ for band in band_list:
         logprint("Found spectral windows {0} in band {1}: field {2}"
                  .format(to_image[band][field].keys(), band, field),
                  origin='almaimf_line_imaging')
+        if max(int(x) for x in to_image[band][field]) > 7:
+            raise ValueError("Found invalid spw numbers; ALMA-IMF data do not include >8 spws")
         for spw in to_image[band][field]:
 
             # python 2.7 specific hack: force 'field' to be a bytestring
@@ -364,20 +376,29 @@ for band in band_list:
             pars_key = "{0}_{1}_{2}_robust{3}{4}".format(field, band,
                                                          arrayname, robust,
                                                          contsub_suffix.replace(".", "_"))
+            if (pars_key+"_"+line_name) in line_imaging_parameters:
+                pars_key = pars_key+"_"+line_name
             impars = line_imaging_parameters[pars_key]
 
-            set_impars(impars=impars, line_name=line_name, vis=vis)
+            set_impars(impars=impars, line_name=line_name, vis=vis, spwnames=spwnames)
 
             impars['imsize'] = imsize
             impars['cell'] = cellsize
             impars['phasecenter'] = phasecenter
             impars['field'] = [field.encode()]
 
+            make_dirty_image = False
+            if 'threshold' in impars:
+                if 'sigma' in impars['threshold']:
+                    make_dirty_image = True
+            if 'startmodel' in impars:
+                # need the dirty image to populate our model
+                make_dirty_image = True
 
             # start with cube imaging
             # step 1 is dirty imaging
 
-            if not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
+            if make_dirty_image and not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
                 if os.path.exists(lineimagename+".psf"):
                     logprint("WARNING: The PSF for {0} exists, but no image exists."
                              "  This likely implies that an ongoing or incomplete "
@@ -394,6 +415,7 @@ for band in band_list:
                     del impars_dirty['startmodel']
 
                 impars_dirty['parallel'] = parallel
+                impars_dirty['usemask'] = None
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
@@ -403,7 +425,7 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars_dirty
                       )
-                for suffix in ('image', 'residual', 'model'):
+                for suffix in ('image', 'residual'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',
                                   history=["{0}: {1}".format(key, val) for key, val in
@@ -412,6 +434,12 @@ for band in band_list:
                                   history=["git_version: {0}".format(git_version),
                                            "git_date: {0}".format(git_date)])
                     ia.close()
+                for suffix in ("mask", "model"):
+                    bad_fn = lineimagename + "." + suffix
+                    if os.path.exists(bad_fn):
+                        logprint("Removing {0} from dirty clean".format(bad_fn),
+                                 origin='almaimf_line_imaging')
+                        shutil.rmtree(bad_fn)
 
                 if os.path.exists(lineimagename+".image"):
                     # tclean with niter=0 is not supposed to produce a .image file,
@@ -420,13 +448,18 @@ for band in band_list:
                     dirty_tclean_made_residual = True
 
                 did_dirty_imaging = True
-            elif not os.path.exists(lineimagename+".residual"):
+            elif make_dirty_image and not os.path.exists(lineimagename+".residual"):
                 raise ValueError("The residual image is required for further imaging.")
             else:
                 did_dirty_imaging = False
-                logprint("Found existing files matching {0}".format(lineimagename),
-                         origin='almaimf_line_imaging'
-                        )
+                if make_dirty_image:
+                    logprint("Found existing files matching {0}".format(lineimagename),
+                             origin='almaimf_line_imaging'
+                            )
+                else:
+                    logprint("Skipped dirty imaging becauase a fixed threshold is used.",
+                             origin='almaimf_line_imaging'
+                            )
 
             if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
                 logprint("WARNING: The PSF for {0} exists, but no image exists."
@@ -439,45 +472,46 @@ for band in band_list:
                 # just skip the rest here
                 continue
 
-            # the threshold needs to be computed if any imaging is to be done (either contsub or not)
-            # no .image file is produced, only a residual
-            logprint("Computing residual image statistics for {0}".format(lineimagename),
-                     origin='almaimf_line_imaging')
-            ia.open(lineimagename+".residual")
-            stats = ia.statistics(robust=True)
-            rms = float(stats['medabsdevmed'] * 1.482602218505602)
-            ia.close()
-
-            if rms >= 1:
-                logprint(str(stats), origin='almaimf_line_imaging_exception')
-                raise ValueError("RMS was {0} - that's absurd.".format(rms))
-            if rms > 0.01:
-                logprint("The RMS found was pretty high: {0}".format(rms),
+            if make_dirty_image:
+                # the threshold needs to be computed if any imaging is to be done (either contsub or not)
+                # no .image file is produced, only a residual
+                logprint("Computing residual image statistics for {0}".format(lineimagename),
                          origin='almaimf_line_imaging')
+                ia.open(lineimagename+".residual")
+                stats = ia.statistics(robust=True)
+                rms = float(stats['medabsdevmed'] * 1.482602218505602)
+                ia.close()
 
-            continue_imaging = False
-            nsigma = None
-            if 'threshold' in impars:
-                if 'sigma' in impars['threshold']:
-                    nsigma = int(impars['threshold'].strip('sigma'))
-                    threshold = "{0:0.4f}Jy".format(nsigma*rms) # 3 rms might be OK in practice
-                    logprint("Threshold used = {0} = {2}x{1}".format(threshold, rms, nsigma),
-                             origin='almaimf_line_imaging')
-                    impars['threshold'] = threshold
-                else:
-                    threshold = impars['threshold']
-                    nsigma = (u.Quantity(threshold) / rms).to(u.Jy).value
-                    logprint("Manual threshold used = {0} = {2}x{1}"
-                             .format(threshold, rms, nsigma),
+                if rms >= 1:
+                    logprint(str(stats), origin='almaimf_line_imaging_exception')
+                    raise ValueError("RMS was {0} - that's absurd.".format(rms))
+                if rms > 0.01:
+                    logprint("The RMS found was pretty high: {0}".format(rms),
                              origin='almaimf_line_imaging')
 
-                if u.Quantity(threshold).to(u.Jy).value < stats['max']:
-                    logprint("Threshold {0} was not reached (peak residual={1}).  "
-                             "Continuing imaging.".format(threshold, stats['max']),
-                             origin='almaimf_line_imaging'
-                            )
-                    # if the threshold was not reached, keep cleaning
-                    continue_imaging = True
+                continue_imaging = False
+                nsigma = None
+                if 'threshold' in impars:
+                    if 'sigma' in impars['threshold']:
+                        nsigma = int(impars['threshold'].strip('sigma'))
+                        threshold = "{0:0.4f}Jy".format(nsigma*rms) # 3 rms might be OK in practice
+                        logprint("Threshold used = {0} = {2}x{1}".format(threshold, rms, nsigma),
+                                 origin='almaimf_line_imaging')
+                        impars['threshold'] = threshold
+                    else:
+                        threshold = impars['threshold']
+                        nsigma = (u.Quantity(threshold) / rms).to(u.Jy).value
+                        logprint("Manual threshold used = {0} = {2}x{1}"
+                                 .format(threshold, rms, nsigma),
+                                 origin='almaimf_line_imaging')
+
+                    if u.Quantity(threshold).to(u.Jy).value < stats['max']:
+                        logprint("Threshold {0} was not reached (peak residual={1}).  "
+                                 "Continuing imaging.".format(threshold, stats['max']),
+                                 origin='almaimf_line_imaging'
+                                )
+                        # if the threshold was not reached, keep cleaning
+                        continue_imaging = True
 
 
             if 'startmodel' in impars:
@@ -490,6 +524,9 @@ for band in band_list:
                     # remove the model image
                     # (it should be created by dirty imaging above)
                     if did_dirty_imaging and os.path.exists(lineimagename+".model"):
+                        logprint("Removing {0}.model because we're using starmodel instead"
+                                 .format(lineimagename),
+                                 origin='almaimf_line_imaging')
                         shutil.rmtree(lineimagename+".model")
                     elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
                         raise ValueError("Found an existing .model file, but startmodel "
@@ -502,6 +539,14 @@ for band in band_list:
                         # lineimagename+".model" does not exist
                         pass # all is happy
 
+                    # MPI HACK
+                    # MPI appears to make .model files that can't be tracked in the usual fashion
+                    if os.path.exists(lineimagename+".workdirectory"):
+                        logprint("Removing ALL MPI-generated models in {0}.workdirectory".format(lineimagename),
+                                 origin='almaimf_line_imaging')
+                        for fn in glob.glob(lineimagename+".workdirectory/*.model"):
+                            shutil.rmtree(fn)
+
                     contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                    contimagename=impars['startmodel'],
                                                    imaging_results_path=imaging_root)
@@ -513,26 +558,52 @@ for band in band_list:
                 # continue imaging using a threshold
                 logprint("Imaging parameters are {0}".format(impars),
                          origin='almaimf_line_imaging')
+                logprint("continue_imaging is set to be {0}".format(continue_imaging),
+                         origin='almaimf_line_imaging')
+                logprint("dirty_tclean_made_residual is set to be {0}".format(dirty_tclean_made_residual),
+                         origin='almaimf_line_imaging')
 
                 # if we're re-running to try to get to completion, we must
                 # delete the mas to enable automultithresh to continue
                 # Updating to *remove* the mask instead
-                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] == "auto-multithresh":
+                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] not in ('', None):
+                    logprint("removing pre-existing mask {0}".format(lineimagename+".mask"),
+                             origin='almaimf_line_imaging')
                     shutil.rmtree(lineimagename+".mask")
                 elif os.path.exists(lineimagename+".mask"):
                     if 'usemask' in impars and impars['usemask'] != 'user':
                         raise ValueError("Mask exists but not specified as user.")
 
+                # SANITY CHECK:
+                if os.path.exists(lineimagename+".model"):
+                    logprint("Model {0}.model exists".format(lineimagename),
+                             origin='almaimf_line_imaging')
+                    if 'startmodel' in impars and impars['startmodel']:
+                        raise ValueError("Startmodel is set to {0} but model {1} exists"
+                                         .format(impars['startmodel'], lineimagename+".model"))
+
                 # set by global environmental variable to auto-recognize
                 # when being run from an MPI session.
                 impars['parallel'] = parallel
+
 
                 tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='', # do not use restoringbeam='common'
                        # it results in bad edge channels dominating the beam
+                       calcres=False,
                        **impars
                       )
+                # re-do the tclean once more, with niter=0, to force recalculation of the residual
+                niter = impars['niter']
+                impars['niter'] = 0
+                tclean(vis=concatvis,
+                       imagename=lineimagename,
+                       restoringbeam='',
+                       calcres=True,
+                       **impars
+                      )
+                impars['niter'] = niter
                 for suffix in ('image', 'residual', 'model'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',

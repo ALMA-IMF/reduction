@@ -72,7 +72,7 @@ def dt():
 
 colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
 colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
-colnames_stats = 'min max mad std sum mean'.split() + ['mod'+x for x in 'min max mad std sum mean'.split()]
+colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std sum mean'.split()]
 
 cache_stats_file = open(tbldir / "cube_stats.txt", 'w')
 
@@ -156,8 +156,15 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 cache_stats_file.close()
 
 from astropy.table import Table
-colnames = colnames_apriori+colnames_fromheader
-columns = list(map(list, zip(*rows)))
+colnames = colnames_apriori+colnames_fromheader+colnames_stats
+
+def try_qty(x):
+    try:
+        return u.Quantity(x)
+    except:
+        return list(x)
+
+columns = list(map(try_qty, zip(*rows)))
 tbl = Table(columns, names=colnames)
 print(tbl)
 tbl.write(tbldir / 'cube_stats.ecsv', overwrite=True)

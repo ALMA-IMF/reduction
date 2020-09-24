@@ -3,7 +3,7 @@
 if [ $CMD ]; then
     echo $CMD
 else
-    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm_mpi.sh
+    CMD=/orange/adamginsburg/ALMA_IMF/reduction/reduction/slurm_scripts/run_line_imaging_slurm.sh
 fi
 export FIELD_ID=$1
 if [ -z $EXCLUDE_7M ]; then
@@ -42,6 +42,7 @@ else
 fi
 echo "Contsub = ${suffix_contsub}"
 
+echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
 
 MEM=32gb
 export NTASKS=8
