@@ -109,7 +109,7 @@ for sg in science_goals:
         if dirpath.count(os.path.sep) >= 5:
             # skip over things below the sci/gro/mou/<blah>/* level
             continue
-        for fn in dirnames:
+        for fn in sorted(dirnames):
             if fn[-10:] == ".split.cal":
 
                 logprint("Collecting metadata for {0} in {1}".format(fn, dirpath))
