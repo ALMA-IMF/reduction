@@ -553,6 +553,10 @@ for band in bands:
         if os.path.exists(merged_continuum_bsens_fn):
             logprint("Skipping merged continuum bsens {0} because it's done"
                      .format(merged_continuum_bsens_fn),)
+        elif field not in fields:
+            logprint("Skipping {0} because it is not one of the "
+                     "selected fields (but its metadata is being "
+                     "collected in continuum_mses.txt)".format(merged_continuum_bsens_fn))
         else:
             logprint("Merging bsens continuum for {0} {1} into {2}"
                      .format(merged_continuum_bsens_fn, field, band),)
