@@ -290,7 +290,7 @@ imaging_parameters_nondefault = {
     },
     "G337.92_B3_12M_robust0": {
         "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "4e-4Jy", 4: "2.5e-4Jy"},
-        "scales": [0, 3, 9, 27],
+        "scales": [0, 3, 9, ],
         "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000},  # rms ~ 1.25e-4 Jy/b.
         "maskname": {
             0: "G337.92_B3_12M_robust0.crtf",
