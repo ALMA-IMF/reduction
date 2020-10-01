@@ -64,12 +64,14 @@ def clean_weight_and_image(vis, baseimagename, robusts=[-2,-1,0,1,2],
             ms.selectinit(datadescid=spw)
             data = ms.getdata(['weight','uvdist'])
             try:
-                pl.loglog(data['uvdist'], data['weight'].T, ',', alpha=0.8)
+                pl.plot(data['uvdist'], data['weight'].T, ',', alpha=0.5)
             except Exception as ex:
                 print("data weight min max: ",data['weight'].min(), data['weight'].max())
+                print("uvdist min max: ",data['uvdist'].min(), data['uvdist'].max())
                 print(ex)
             ms.close()
 
+        pl.loglog()
         pl.xlabel("UV Distance")
         pl.ylabel("Weight")
         pl.savefig(baseimagename+"."+swdatacolumn+".weight_vs_uvdist.png", bbox_inches='tight')
@@ -136,6 +138,11 @@ if __name__ == "__main__":
                     imresultspath + 'G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt1'],
     )
 
+
+    pl.figure(3).clf()
+    ax3 = pl.subplot(2,1,1)
+    ax4 = pl.subplot(2,1,2)
+
     noisebeamdata = {}
 
     for vis, baseimagename, swdatacolumns in zip(('G337.92_B3_uid___A001_X1296_X147_continuum_merged.cal.ms',
@@ -144,6 +151,8 @@ if __name__ == "__main__":
                                                   'G337.92_B3_TimeaData_continuum_merged.statwt'),
                                                  (('data', 'residual_data', 'orig'),
                                                   ('corrected', 'residual', 'orig'))):
+
+        vis_shortname = 'pipe' if 'uid' in vis else 'timea'
 
         robusts = [-1.5, -1, -0.5, -0.25, 0, 0.25, 0.5, 1, 1.5]
         try:
@@ -203,11 +212,20 @@ if __name__ == "__main__":
             ax1.plot(robusts, [rms[(swdatacolumn, robust)].value for robust in robusts], label=swdatacolumn, marker=marker)
             ax2.plot(robusts, [beams[(swdatacolumn, robust)].major.to(u.arcsec).value for robust in robusts], label=swdatacolumn, marker=marker)
 
+            ax3.plot(robusts, [rms[(swdatacolumn, robust)].value for robust in robusts], label=vis_shortname+"_"+swdatacolumn, marker=marker)
+            ax4.plot(robusts, [beams[(swdatacolumn, robust)].major.to(u.arcsec).value for robust in robusts], label=vis_shortname+"_"+swdatacolumn, marker=marker)
+
         ax2.set_xlabel("Robust Value")
         ax1.set_ylabel("Noise Estimate (Jy)")
         ax2.set_ylabel("Beam Major")
 
+        pl.figure(2)
         pl.legend(loc='best')
         pl.savefig(baseimagename+'_noise_and_beams_vs_robust.png', bbox_inches='tight')
 
         noisebeamdata[vis] = {'noise': noise, 'beams': beams}
+
+
+    pl.figure(2)
+    pl.legend(loc='best')
+    pl.savefig('compare_timea_vs_pipeline_noise_and_beams_vs_robust.png', bbox_inches='tight')
