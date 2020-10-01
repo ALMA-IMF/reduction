@@ -33,7 +33,7 @@ dirnames = {'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',
 
 basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 
-releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/')
+releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/')
 
 with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
     with open(basepath / '../scigoals/file_tree.txt', 'w') as fh2:

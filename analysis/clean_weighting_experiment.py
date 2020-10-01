@@ -56,7 +56,7 @@ def clean_weight_and_image(vis, baseimagename, robusts=[-2,-1,0,1,2],
         ss = ms.getscansummary()
         spws = set([blah for entry in ss for key in ss[entry] for blah in ss[entry][key]['SpwIds']])
         ms.close()
-        fig = pl.figure(1)
+        fig = pl.figure(4)
         fig.clf()
 
         for spw in spws:
@@ -106,6 +106,9 @@ if __name__ == "__main__":
     os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/clean_weighting_experiment_Sep2020')
 
     import shutil
+    from astropy import units as u
+    import numpy as np
+    from radio_beam import Beam
     import regions
     import pylab as pl
     pl.ion()
@@ -168,7 +171,7 @@ if __name__ == "__main__":
         noisereg = regions.read_ds9(noiseregfn)
 
         
-        fig = pl.figure(figsize=(20,10))
+        fig = pl.figure(1, figsize=(20,10))
         fig.clf()
 
         xl,xh = 1500,1650
@@ -183,6 +186,7 @@ if __name__ == "__main__":
             for jj,robust in enumerate(robusts):
                 imagename = baseimagename+".{1}.robust{0}".format(robust, swdatacolumn)
                 ax = pl.subplot(3, nrobusts, ii*nrobusts + (jj % nrobusts) + 1)
+                print(ii,jj,swdatacolumn,robust)
 
                 if os.path.exists(imagename+".image.tt0"):
                     cube = SpectralCube.read(imagename+".image.tt0", format='casa_image')
@@ -201,6 +205,10 @@ if __name__ == "__main__":
                     beams[(swdatacolumn, robust)] = beam
                     noise = cube.subcube_from_regions(noisereg).std()
                     rms[(swdatacolumn, robust)] = noise
+                else:
+                    rms[(swdatacolumn, robust)] = np.nan*u.Jy
+                    beams[(swdatacolumn, robust)] = Beam(np.nan)
+                    print("MISSING {0}".format(imagename))
         pl.savefig("{baseimagename}_robust_comparison.png".format(**locals()), bbox_inches='tight')
         print(noise)
         print(beams)
