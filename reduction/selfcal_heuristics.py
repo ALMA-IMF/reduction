@@ -41,9 +41,11 @@ def goodenough_field_solutions(tablename, minsnr=5, maxphasenoise=np.pi/4.,
     solns = tb.getcol('CPARAM')
     fields = tb.getcol('FIELD_ID')
     snr = tb.getcol('SNR')
-    if makeplot:
-        ra, dec = tb.getcol('PHASE_DIR')
     tb.close()
+    if makeplot:
+        tb.open(tablename+"/FIELD")
+        ra, dec = tb.getcol('PHASE_DIR')
+        tb.close()
 
     okfields=[]
     not_ok_fields = []

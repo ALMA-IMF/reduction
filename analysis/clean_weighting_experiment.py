@@ -142,7 +142,8 @@ if __name__ == "__main__":
     )
 
 
-    pl.figure(3).clf()
+    fig3 = pl.figure(3)
+    fig3.clf()
     ax3 = pl.subplot(2,1,1)
     ax4 = pl.subplot(2,1,2)
 
@@ -157,7 +158,7 @@ if __name__ == "__main__":
 
         vis_shortname = 'pipe' if 'uid' in vis else 'timea'
 
-        robusts = [-1.5, -1, -0.5, -0.25, 0, 0.25, 0.5, 1, 1.5]
+        robusts = [-1.5, -1, -0.5, -0.25, 0, 0.25, 0.5,]# 1, 1.5]
         try:
             clean_weight_and_image(vis=vis,
                                    baseimagename=baseimagename,
@@ -234,6 +235,9 @@ if __name__ == "__main__":
         noisebeamdata[vis] = {'noise': noise, 'beams': beams}
 
 
-    pl.figure(2)
+    pl.figure(3)
+    ax3.set_ylabel("Noise Estimate (Jy)")
+    ax4.set_ylabel("Beam Major")
+    ax4.set_xlabel("Robust Value")
     pl.legend(loc='best')
-    pl.savefig('compare_timea_vs_pipeline_noise_and_beams_vs_robust.png', bbox_inches='tight')
+    fig3.savefig('compare_timea_vs_pipeline_noise_and_beams_vs_robust.png', bbox_inches='tight')

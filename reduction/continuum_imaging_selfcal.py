@@ -657,7 +657,7 @@ for continuum_ms in continuum_mses:
         if not os.path.exists(imname+".image.tt0"):
 
             if 'minsnr' in selfcalpars[selfcaliter]:
-                minsnr = selfcalpars[selfcaliter]['minsnr']
+                minsnr = selfcalpars[selfcaliter].pop('minsnr')
             else:
                 minsnr = 5
 
