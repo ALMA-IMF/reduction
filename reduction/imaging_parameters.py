@@ -2850,7 +2850,8 @@ line_imaging_parameters_custom = {
     },
     "W43-MM2_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "W43-MM2_B6_uid___A001_X1296_X111_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # NOTE: 111/113 name ambiguous
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "W43-MM3_B3_12M_robust0": {
         "threshold": "6mJy",
