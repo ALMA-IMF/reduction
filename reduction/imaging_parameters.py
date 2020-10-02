@@ -2862,8 +2862,6 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W51-E_B6_12M_robust0": {
-        "usemask": "auto-multithresh",
-        "sidelobethreshold": 1.0,
         "pblimit": 0.1,
         "threshold": "16mJy",  # sigma is ~4 mJy
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal6_finaliter",
