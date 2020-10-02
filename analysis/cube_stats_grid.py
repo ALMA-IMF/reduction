@@ -27,8 +27,8 @@ if os.getenv('NO_PROGRESSBAR') is None:
     pbar = ProgressBar()
     pbar.register()
 
-#nthreads = 1
-#scheduler = 'synchronous'
+nthreads = 1
+scheduler = 'synchronous'
 
 if os.getenv('DASK_THREADS') is not None:
     try:
