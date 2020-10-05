@@ -878,7 +878,7 @@ for key in imaging_parameters_nondefault:
 # copy robust -2 parameters to robust -1
 # copy robust 2 parameters to robust 1
 # copy robust 0 parameters to robust 0.5, -0.5
-for key in imaging_parameters:
+for key in list(imaging_parameters.keys()):
     if "robust-2" in key:
         imaging_parameters[key.replace("robust-2", "robust-1")] = imaging_parameters[key]
     elif "robust2" in key:
