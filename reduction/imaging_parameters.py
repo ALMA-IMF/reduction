@@ -879,14 +879,13 @@ for key in imaging_parameters_nondefault:
 # copy robust 2 parameters to robust 1
 # copy robust 0 parameters to robust 0.5, -0.5
 for key in imaging_parameters:
-    if 'robust-2' in key:
-        imaging_parameters[key.replace('robust-2','robust-1')] = imaging_parameters[key]
-    elif 'robust2' in key:
-        imaging_parameters[key.replace('robust2','robust1')] = imaging_parameters[key]
-    elif 'robust0' in key:
-        imaging_parameters[key.replace('robust0','robust0.5')] = imaging_parameters[key]
-        imaging_parameters[key.replace('robust0','robust-0.5')] = imaging_parameters[key]
-
+    if "robust-2" in key:
+        imaging_parameters[key.replace("robust-2", "robust-1")] = imaging_parameters[key]
+    elif "robust2" in key:
+        imaging_parameters[key.replace("robust2", "robust1")] = imaging_parameters[key]
+    elif "robust0" in key:
+        imaging_parameters[key.replace("robust0", "robust0.5")] = imaging_parameters[key]
+        imaging_parameters[key.replace("robust0", "robust-0.5")] = imaging_parameters[key]
 
 
 """
@@ -2216,10 +2215,10 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "W43-MM2_B3_12M_robust0": {
-        1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, 'minsnr': 3},
-        2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, 'minsnr': 3},
-        3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, 'minsnr': 3},
-        4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, 'minsnr': 3},
+        1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, "minsnr": 3},
+        2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, "minsnr": 3},
+        3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, "minsnr": 3},
+        4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True, "minsnr": 3},
     },
     "W43-MM2_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
