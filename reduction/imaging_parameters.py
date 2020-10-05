@@ -875,6 +875,20 @@ for key in imaging_parameters_nondefault:
     imaging_parameters[key].update(imaging_parameters_nondefault[key])
 
 
+# copy robust -2 parameters to robust -1
+# copy robust 2 parameters to robust 1
+# copy robust 0 parameters to robust 0.5, -0.5
+for key in imaging_parameters:
+    if 'robust-2' in key:
+        imaging_parameters[key.replace('robust-2','robust-1')] = imaging_parameters[key]
+    elif 'robust2' in key:
+        imaging_parameters[key.replace('robust2','robust1')] = imaging_parameters[key]
+    elif 'robust0' in key:
+        imaging_parameters[key.replace('robust0','robust0.5')] = imaging_parameters[key]
+        imaging_parameters[key.replace('robust0','robust-0.5')] = imaging_parameters[key]
+
+
+
 """
 Self-calibration parameters are defined here
 """
