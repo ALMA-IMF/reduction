@@ -60,7 +60,7 @@ imaging_parameters = {
     for field in allfields
     for band in ("B3", "B6")
     for array in ("12M", "7M12M", "7M")
-    for robust in (-2, 0, 2)
+    for robust in (-2, 0, 2, -1, 1, -0.5, 0.5)
 }
 
 # added for 7M only data: higher threshold
