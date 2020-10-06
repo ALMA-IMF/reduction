@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 uid = filename.split(f"B{band}_")[1].split("_continuum_merged")[0]
 
                 make_robust_comparison_figures(fieldname=field,
-                                               band=f'B{band}',
+                                               bandname=f'B{band}',
                                                uidname=uid,)
 
                 chdir(cwd)
