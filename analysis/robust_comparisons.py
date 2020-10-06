@@ -84,3 +84,41 @@ def make_robust_comparison_figures(fieldname, bandname,
     pl.figure(2)
     pl.legend(loc='best')
     pl.savefig(baseimagename+'_noise_and_beams_vs_robust.png', bbox_inches='tight')
+
+if __name__ == "__main__":
+    from pathlib import Path
+    from os import symlink, chdir, mkdir
+    import glob
+    releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/')
+    basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
+
+    dirnames = {#'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',
+                #'linecubes_12m': 'spw[0-9]_12M_[a-z][!p]',
+                #'fullcubes_7m12m': 'spw[0-9]_7M12M_spw[0-9]',
+                #'linecubes_7m12m': 'spw[0-9]_7M12M_[a-z][!p]',
+                'bsens': 'bsens_12M_*.tt0',
+                'cleanest': 'merged_12M*.tt0',
+                '7m12m': 'merged_7M12M*.tt0',
+                #'7m12m_bsens': 'bsens_7M12M*.tt0',
+                #'7m': 'merged_7M_*.tt0',
+                #'7m_bsens': 'bsens_7M_*.tt0',
+               }
+
+    for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+        for band in (3,6):
+            bandpath = Path(f"B{band}")
+            for dirname, globstr in dirnames.items():
+                cwd = os.getcwd()
+                chdir(releasepath / field / bandpath / dirname)
+                globbo = str(basepath / f"{field}_B{band}*{globstr}*image.tt0")
+                filelist = glob.glob(globbo)
+
+                filename = filelist[0]
+
+                uid = filename.split(f"B{band}_")[1].split("_continuum_merged")[0]
+
+                make_robust_comparison_figures(field=field,
+                                               band=f'B{band}',
+                                               uidname=uid,)
+
+                chdir(cwd)
