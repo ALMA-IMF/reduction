@@ -881,11 +881,15 @@ for key in imaging_parameters_nondefault:
 for key in list(imaging_parameters.keys()):
     if "robust-2" in key:
         imaging_parameters[key.replace("robust-2", "robust-1")] = imaging_parameters[key]
+        imaging_parameters[key.replace("robust2", "robust-1")]['robust'] = -1
     elif "robust2" in key:
         imaging_parameters[key.replace("robust2", "robust1")] = imaging_parameters[key]
+        imaging_parameters[key.replace("robust2", "robust1")]['robust'] = 1
     elif "robust0" in key:
         imaging_parameters[key.replace("robust0", "robust0.5")] = imaging_parameters[key]
         imaging_parameters[key.replace("robust0", "robust-0.5")] = imaging_parameters[key]
+        imaging_parameters[key.replace("robust0", "robust0.5")]['robust'] = 0.5
+        imaging_parameters[key.replace("robust0", "robust-0.5")]['robust'] = -0.5
 
 
 """
