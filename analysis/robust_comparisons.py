@@ -111,12 +111,13 @@ if __name__ == "__main__":
                 globbo = str(basepath / f"{field}_B{band}*{globstr}*image.tt0")
                 filelist = glob.glob(globbo)
 
-                filename = filelist[0]
+                if len(filelist) >= 1:
+                    filename = filelist[0]
 
-                uid = filename.split(f"B{band}_")[1].split("_continuum_merged")[0]
+                    uid = filename.split(f"B{band}_")[1].split("_continuum_merged")[0]
 
-                make_robust_comparison_figures(fieldname=field,
-                                               bandname=f'B{band}',
-                                               uidname=uid,)
+                    make_robust_comparison_figures(fieldname=field,
+                                                   bandname=f'B{band}',
+                                                   uidname=uid,)
 
                 chdir(cwd)
