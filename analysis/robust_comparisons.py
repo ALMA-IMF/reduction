@@ -67,8 +67,6 @@ def make_robust_comparison_figures(fieldname, bandname,
                 beams[(array, robust)] = Beam(np.nan)
                 print("MISSING {0}".format(imagename))
     pl.savefig("{baseimagename}_robust_comparison.png".format(**locals()), bbox_inches='tight')
-    print(noise)
-    print(beams)
 
     pl.figure(2).clf()
     ax1 = pl.subplot(2,1,1)
