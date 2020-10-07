@@ -39,7 +39,6 @@ def make_robust_comparison_figures(fieldname, bandname,
         for jj,robust in enumerate(robusts):
             imagename = "{baseimagename}_{array}_robust{robust}_selfcal{selfcalnumber}{suffix}".format(**locals())
             ax = pl.subplot(len(arrays), nrobusts, ii*nrobusts + (jj % nrobusts) + 1)
-            print(ii,jj,array,robust)
 
             if os.path.exists(imagename+".image.tt0"):
                 cube = SpectralCube.read(imagename+".image.tt0", format='casa_image')
@@ -62,10 +61,11 @@ def make_robust_comparison_figures(fieldname, bandname,
                 beams[(array, robust)] = beam
                 noise = cube.subcube_from_regions(noisereg).std()
                 rms[(array, robust)] = noise
+                print("found {0}".format(imagename),ii,jj,array,robust)
             else:
                 rms[(array, robust)] = np.nan*u.Jy
                 beams[(array, robust)] = Beam(np.nan)
-                print("MISSING {0}".format(imagename))
+                print("MISSING {0}".format(imagename),ii,jj,array,robust)
     pl.savefig("{baseimagename}_robust_comparison.png".format(**locals()), bbox_inches='tight')
 
     pl.figure(2).clf()
