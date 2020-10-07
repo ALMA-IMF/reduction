@@ -879,19 +879,29 @@ for key in imaging_parameters_nondefault:
 # copy robust 2 parameters to robust 1
 # copy robust 0 parameters to robust 0.5, -0.5
 for key in list(imaging_parameters.keys()):
-    if "robust-2" in key:
+    robustnum = [x for x in key.split("_") if "robust" in x][0]
+    if "robust-2" == robustnum:
         imaging_parameters[key.replace("robust-2", "robust-1")] = imaging_parameters[key].copy()
-        imaging_parameters[key.replace("robust-2", "robust-1")]['robust'] = -1
-    elif "robust2" in key:
+        imaging_parameters[key.replace("robust-2", "robust-1")]["robust"] = -1
+    elif "robust2" == robustnum:
         imaging_parameters[key.replace("robust2", "robust1")] = imaging_parameters[key].copy()
-        imaging_parameters[key.replace("robust2", "robust1")]['robust'] = 1
-    elif "robust0" == key.split("_")[-1]:
-        if 'robust0.5' in key:
+        imaging_parameters[key.replace("robust2", "robust1")]["robust"] = 1
+    elif "robust0" == robustnum:
+        if "robust0.5" in key:
             raise ValueError("This isn't supposed to happen")
         imaging_parameters[key.replace("robust0", "robust0.5")] = imaging_parameters[key].copy()
         imaging_parameters[key.replace("robust0", "robust-0.5")] = imaging_parameters[key].copy()
-        imaging_parameters[key.replace("robust0", "robust0.5")]['robust'] = 0.5
-        imaging_parameters[key.replace("robust0", "robust-0.5")]['robust'] = -0.5
+        imaging_parameters[key.replace("robust0", "robust0.5")]["robust"] = 0.5
+        imaging_parameters[key.replace("robust0", "robust-0.5")]["robust"] = -0.5
+    elif robustnum in ("robust0.5", "robust-0.5", "robust1", "robust-1"):
+        pass
+    else:
+        raise ValueError("Surprising robust value found")
+
+for key in list(imaging_parameters.keys()):
+    robust = [x for x in key.split("_") if "robust" in x][0]
+    robustnum = float(robust[6:])
+    assert robustnum == imaging_parameters[key]["robust"]
 
 
 """
