@@ -10,7 +10,7 @@ from astropy import units as u
 
 def make_robust_comparison_figures(fieldname, bandname,
                                    uidname,
-                                   arrays=['12M', 'bsens_12M', '7M12M'],
+                                   arrays=['12M', 'bsens_12M',],# '7M12M'],
                                    selfcalnumber=4,
                                    suffix='_finaliter',
                                    robusts=[-2,-1,-0.5,0,0.5,1,2],
@@ -38,7 +38,7 @@ def make_robust_comparison_figures(fieldname, bandname,
     for ii,array in enumerate(arrays):
         for jj,robust in enumerate(robusts):
             imagename = "{baseimagename}_{array}_robust{robust}_selfcal{selfcalnumber}{suffix}".format(**locals())
-            ax = pl.subplot(3, nrobusts, ii*nrobusts + (jj % nrobusts) + 1)
+            ax = pl.subplot(len(arrays), nrobusts, ii*nrobusts + (jj % nrobusts) + 1)
             print(ii,jj,array,robust)
 
             if os.path.exists(imagename+".image.tt0"):
