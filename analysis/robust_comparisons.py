@@ -96,7 +96,7 @@ if __name__ == "__main__":
                 #'linecubes_7m12m': 'spw[0-9]_7M12M_[a-z][!p]',
                 'bsens': 'bsens_12M',
                 'cleanest': 'merged_12M',
-                '7m12m': 'merged_7M12M',
+                #'7m12m': 'merged_7M12M',
                 #'7m12m_bsens': 'bsens_7M12M*.tt0',
                 #'7m': 'merged_7M_*.tt0',
                 #'7m_bsens': 'bsens_7M_*.tt0',
