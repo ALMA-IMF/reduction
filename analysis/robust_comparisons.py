@@ -108,13 +108,13 @@ if __name__ == "__main__":
             for dirname, globstr in dirnames.items():
                 cwd = os.getcwd()
                 chdir(releasepath / field / bandpath / dirname)
-                globbo = str(basepath / f"{field}_B{band}*{globstr}*image.tt0")
+                globbo = str(basepath / f"{field}_B{band}*{globstr}*finaliter.image.tt0")
                 filelist = glob.glob(globbo)
 
                 if len(filelist) >= 1:
                     filename = filelist[0]
 
-                    selfcalnumber = int(filename.split("selfcal")[0][0])
+                    selfcalnumber = int(filename.split("selfcal")[1][0])
 
                     uid = filename.split(f"B{band}_")[1].split("_continuum_merged")[0]
 
