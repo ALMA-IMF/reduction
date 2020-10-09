@@ -602,6 +602,7 @@ for band in band_list:
                 impars['niter'] = 0
                 if 'startmodel' in impars:
                     # we definitely have a model now, so we don't want a startmodel
+                    smod = impars['startmodel']
                     impars['startmodel'] = ''
                 tclean(vis=concatvis,
                        imagename=lineimagename,
@@ -610,6 +611,7 @@ for band in band_list:
                        **impars
                       )
                 impars['niter'] = niter
+                impars['startmodel'] = smod
                 for suffix in ('image', 'residual', 'model'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',
