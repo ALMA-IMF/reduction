@@ -118,6 +118,9 @@ do_export_fits = True
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
+# default: don't continue imaging
+# (TODO: check whether we actually want to continue sometimes)
+continue_imaging = False
 
 def set_impars(impars, line_name, vis, spwnames=None):
     if line_name not in ('full', ) + spwnames:
