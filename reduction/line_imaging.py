@@ -600,6 +600,9 @@ for band in band_list:
                 # re-do the tclean once more, with niter=0, to force recalculation of the residual
                 niter = impars['niter']
                 impars['niter'] = 0
+                if 'startmodel' in impars:
+                    # we definitely have a model now, so we don't want a startmodel
+                    impars['startmodel'] = ''
                 tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='',
