@@ -38,7 +38,7 @@ except ImportError:
     # futureproofing: CASA 6 imports this way
     from casatasks import tclean, uvcontsub, impbcor, concat, exportfits
     from casatasks import casalog
-from parse_contdotdat import parse_contdotdat, freq_selection_overlap
+from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from taskinit import msmdtool, iatool, mstool
@@ -323,21 +323,26 @@ for band in band_list:
 
                     cont_freq_selection = parse_contdotdat(contfile)
                     logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
-                    # ALTERNATIVE, manual selection
+
                     msmd.open(concatvis)
                     spws = msmd.spwsforfield(field)
                     msmd.close()
-                    new_freq_selection = ",".join([
-                        freq_selection_overlap(ms=concatvis,
-                                               freqsel=cont_freq_selection,
-                                               spw=spw_)
-                        for spw_ in spws])
-                    # Let CASA decide: All spws, here's the freqsel.  Go.
-                    # (this does not work)
-                    # new_freq_selection = '*:'+cont_freq_selection
+
+                    # obtain the frequency arrays for each spectral window
+                    ms.open(concatvis)
+                    try:
+                        frqs = {spw: ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws}
+                    except TypeError:
+                        frqs = {spw: ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws}
+                    ms.close()
+
+                    # calculate the line channels from the contdatfile (which is in LSRK)
+                    # and the frequency arrays
+                    linechannels = contchannels_to_linechannels(cont_freq_selection, frqs)
+
                     uvcontsub(vis=concatvis,
-                              fitspw=new_freq_selection,
-                              excludechans=False, # fit the regions specified in fitspw
+                              fitspw=linechannels,
+                              excludechans=True, # fit the non-line channels
                               combine='none', # DO NOT combine spws for continuum ID (since that implies combining 7m <-> 12m)
                               solint='int', # fit each integration (may be noisy?)
                               fitorder=1,

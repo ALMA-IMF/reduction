@@ -3,9 +3,11 @@ import string
 try:
     from __casac__.quanta import quanta
     from taskinit import msmdtool
+    from taskinit import mstool
 except (ImportError, ModuleNotFoundError):
     from casatools import quanta
     from casatools import msmetadata as msmdtool
+    from casatools import ms as mstool
 qq = quanta()
 
 def parse_contdotdat(filepath):
@@ -90,6 +92,10 @@ def freq_selection_overlap(ms, freqsel, spw=0):
         The spectral window number, default to 0
     """
 
+    # use the default (topo or lsrk or whatever) frequency, don't cvel it,
+    # because the inputs are assumed to be in the same frame.
+    # it's important to be exact here, since we're using the fmin/fmax
+    # to fill in when one of the ends of a selection is out of range.
     msmd = msmdtool()
     msmd.open(ms)
     frequencies_in_ms = msmd.chanfreqs(spw)
@@ -109,11 +115,14 @@ def freq_selection_overlap(ms, freqsel, spw=0):
         fhi = qq.convert({'value':float(hi), 'unit':unit}, 'Hz')['value']
 
         if ((fhi < fmax) and (fhi > fmin)) and ((flo > fmin) and (flo < fmax)):
+            # if the whole thing is in range...
             new_sel.append(selstr)
         elif ((fhi < fmax) and (fhi > fmin)) and not ((flo > fmin) and (flo < fmax)):
+            # if the lower end is out of range, but the upper is in
             new_selstr = "{0}~{1}GHz".format(fmin / 1e9, fhi / 1e9)
             new_sel.append(new_selstr)
         elif (not ((fhi < fmax) and (fhi > fmin))) and ((flo > fmin) and (flo < fmax)):
+            # if the upper end is out of range, but the lower is in
             new_selstr = "{0}~{1}GHz".format(flo / 1e9, fmax / 1e9)
             new_sel.append(new_selstr)
 
