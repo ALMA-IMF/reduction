@@ -28,8 +28,11 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
 else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
+rootdir = os.environ['ALMAIMF_ROOTDIR']
+
 from metadata_tools import logprint
 
+import shutil
 import os
 
 try:
@@ -74,7 +77,21 @@ for scigoal in science_goal_dirs:
             elif os.path.exists(os.path.join(dirpath, 'calibration')):
                 os.chdir(os.path.join(dirpath, 'script'))
 
-                local_scriptforPI = os.path.basename(scriptforpi)
+                # check for custom scripts
+                sdms = glob.glob(os.path.join(dirpath, "raw/*.asdm.sdm"))
+                # reset this each loop so we can search for the custom version
+                local_scriptForPI = None
+                for sdmfn in sdms:
+                    sdm = sdmfn.split(".")[0]
+                    # custom version has to follow this precise name scheme
+                    scriptpath = ("{rootdir}/reduction/pipeline_scripts/{sdm}.ms.scriptForCalibration.py"
+                                  .format(rootdir=rootdir, sdm=sdm))
+                    if os.path.exists(scriptpath):
+                        shutil.copy(scriptpath, '.')
+                        local_scriptForPI = os.path.split(scriptpath)[-1]
+
+                if local_scriptForPI is None:
+                    local_scriptforPI = os.path.basename(scriptforpi)
 
                 logprint("Running script {0} in {1}".format(local_scriptforPI, dirpath),
                          origin='pipeline_runner')

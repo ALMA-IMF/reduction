@@ -55,7 +55,8 @@ if applyonly != True: es = aU.stuffForScienceDataReduction()
 
 
 if re.search('^5.1.1', '.'.join([str(i) for i in cu.version().tolist()[:-1]])) == None:
- sys.exit('ERROR: PLEASE USE THE SAME VERSION OF CASA THAT YOU USED FOR GENERATING THE SCRIPT: 5.1.1')
+    print("WARNING: Script is being run with a different version of CASA than it was first run.  "
+          "This is expected to be OK as Timea has tested with a few versions.")
 
 
 # CALIBRATE_AMPLI: 
