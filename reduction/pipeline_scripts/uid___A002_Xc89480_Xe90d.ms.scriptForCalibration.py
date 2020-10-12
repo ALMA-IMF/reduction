@@ -51,6 +51,9 @@ import os
 
 import casadef
 
+import __casac__
+cu = __casac__.utils.utils()
+
 if applyonly != True: es = aU.stuffForScienceDataReduction() 
 
 
