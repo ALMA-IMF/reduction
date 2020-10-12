@@ -59,6 +59,15 @@ if re.search('^5.1.1', '.'.join([str(i) for i in cu.version().tolist()[:-1]])) =
           "This is expected to be OK as Timea has tested with a few versions.")
 
 
+
+# SETUP FOR ALMA-IMF PIPELINE
+# make calibrated directory: if this already exists, we expect a crash
+os.mkdir('../calibrated')
+os.chdir('../calibrated')
+os.symlink('../uid___A002_Xc89480_Xe90d.asdm.sdm', 'uid___A002_Xc89480_Xe90d.asdm.sdm')
+
+
+
 # CALIBRATE_AMPLI: 
 # CALIBRATE_ATMOSPHERE: G337.92,J1617-5848
 # CALIBRATE_BANDPASS: J1617-5848
