@@ -58,6 +58,8 @@ zmin = 1-(vmax/constants.c).decompose()
 zmax = 1+np.abs(vmin/constants.c).decompose()
 dzm = 1+((vmax-vmin)/constants.c).decompose()
 
+
+# these are basically just notes that get overwritten below
 frequency_coverage = {
     'B3': {
            1: (93.0931359128077, 93.21807487765145,    2048),
@@ -89,7 +91,12 @@ frange = {band: np.array((np.min([np.array(metadata[band][field]['freqs']).min(a
                           np.max([np.array(metadata[band][field]['freqs']).max(axis=0) for field in metadata[band]], axis=0)[:,1])).T/1e9
           for band in metadata}
 sorted_inds = {band: np.argsort(frange[band][:,0]) for band in frange}
-frequency_coverage = {band: {ind: tuple(frange[band][ind,:]) + (int(frequency_coverage[band][ind][2] * (frange[band][ind,1]-frange[band][ind,0])/(frequency_coverage[band][ind][1]-frequency_coverage[band][ind][0])),) for ind in sorted_inds[band]} for band in frange}
+frequency_coverage = {band:
+                      {ind: tuple(frange[band][ind,:]) +
+                       (int(frequency_coverage[band][ind][2] *
+                            (frange[band][ind,1]-frange[band][ind,0]) /
+                            (frequency_coverage[band][ind][1]-frequency_coverage[band][ind][0])),)
+                       for ind in sorted_inds[band]} for band in frange}
 
 
 configmap = {'7M': 0,

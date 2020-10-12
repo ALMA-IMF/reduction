@@ -158,7 +158,14 @@ for sg in science_goals:
                 # muid is 1 level above calibrated
                 muid = dirpath.split("/")[-2]
 
-                frqs = [msmd.chanfreqs(spw) for spw in spws]
+                # need the full ms to get LSRK frequencies
+                ms.open(filename)
+                try:
+                    frqs = [ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws]
+                except TypeError:
+                    frqs = [ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws]
+                ms.close()
+
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
 
                 if field in metadata[band]:
