@@ -68,6 +68,7 @@ if re.search('^5.1.1', '.'.join([str(i) for i in cu.version().tolist()[:-1]])) =
 os.mkdir('../calibrated')
 os.chdir('../calibrated')
 os.symlink('../uid___A002_Xc89480_Xe90d.asdm.sdm', 'uid___A002_Xc89480_Xe90d.asdm.sdm')
+os.symlink('../uid___A002_Xc89480_Xe90d.asdm.sdm', 'uid___A002_Xc89480_Xe90d')
 
 
 
