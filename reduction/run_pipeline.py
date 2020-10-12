@@ -78,13 +78,13 @@ for scigoal in science_goal_dirs:
                 os.chdir(os.path.join(dirpath, 'script'))
 
                 # check for custom scripts
-                sdms = glob.glob(os.path.join(dirpath, "raw/*.asdm.sdm"))
+                sdms = glob.glob(os.path.join("../raw/*.asdm.sdm"))
                 # reset this each loop so we can search for the custom version
                 local_scriptForPI = None
                 for sdmfn in sdms:
-                    sdm = sdmfn.split(".")[0]
+                    sdm = os.path.split(sdmfn)[-1].split(".")[0]
                     # custom version has to follow this precise name scheme
-                    scriptpath = ("{rootdir}/reduction/pipeline_scripts/{sdm}.ms.scriptForCalibration.py"
+                    scriptpath = ("{rootdir}/pipeline_scripts/{sdm}.ms.scriptForCalibration.py"
                                   .format(rootdir=rootdir, sdm=sdm))
                     if os.path.exists(scriptpath):
                         shutil.copy(scriptpath, '.')
