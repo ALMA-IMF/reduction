@@ -97,8 +97,8 @@ for scigoal in science_goal_dirs:
                          origin='pipeline_runner')
 
                 result = runpy.run_path(local_scriptforPI, init_globals=globals())
-                #logprint("result = {0}".format(result),
-                #         origin='pipeline_runner')
+                logprint("result = {0}".format(result),
+                         origin='pipeline_runner')
 
                 logprint("Done running script {0} in {1}".format(local_scriptforPI, dirpath),
                          origin='pipeline_runner')
