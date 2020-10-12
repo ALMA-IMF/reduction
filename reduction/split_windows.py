@@ -202,6 +202,11 @@ for sg in science_goals:
                 else:
                     metadata[band][field]['muid_configs'] = {array_config: muid}
 
+
+                # Custom cont.dat files:
+                # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used
+                # else if
+                # <field>.<band>.cont.dat exists, it will be used.
                 contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
                                         "{field}.{band}.{array}.cont.dat".format(field=field, band=band, array=array_config.lower()))
                 if os.path.exists(contfile):
