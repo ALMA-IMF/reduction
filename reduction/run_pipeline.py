@@ -80,7 +80,7 @@ for scigoal in science_goal_dirs:
                 # check for custom scripts
                 sdms = glob.glob(os.path.join("../raw/*.asdm.sdm"))
                 # reset this each loop so we can search for the custom version
-                local_scriptForPI = None
+                local_scriptforPI = None
                 for sdmfn in sdms:
                     sdm = os.path.split(sdmfn)[-1].split(".")[0]
                     # custom version has to follow this precise name scheme
@@ -88,9 +88,9 @@ for scigoal in science_goal_dirs:
                                   .format(rootdir=rootdir, sdm=sdm))
                     if os.path.exists(scriptpath):
                         shutil.copy(scriptpath, '.')
-                        local_scriptForPI = os.path.split(scriptpath)[-1]
+                        local_scriptforPI = os.path.split(scriptpath)[-1]
 
-                if local_scriptForPI is None:
+                if local_scriptforPI is None:
                     local_scriptforPI = os.path.basename(scriptforpi)
 
                 logprint("Running script {0} in {1}".format(local_scriptforPI, dirpath),
