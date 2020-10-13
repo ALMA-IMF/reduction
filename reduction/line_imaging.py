@@ -545,12 +545,13 @@ for band in band_list:
                                  origin='almaimf_line_imaging')
                         shutil.rmtree(lineimagename+".model")
                     elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
-                        raise ValueError("Found an existing .model file, but startmodel "
-                                         "was set.  The pipeline won't automatically "
-                                         "pick between these models, because the existing "
-                                         "model could be a good one.  Either remove the "
-                                         "existing model {0}, or remove startmodel."
-                                         .format(lineimagename+".model"))
+                        logprint("Found an existing .model file, but startmodel "
+                                 "was set.  The pipeline will continue "
+                                 "assuming this is a continuation clean, and will "
+                                 "pick up with the existing model rather than "
+                                 "the specified startmodel.",
+                                 origin='almaimf_line_imaging')
+                        del impars['startmodel']
                     else:
                         # lineimagename+".model" does not exist
                         pass # all is happy
