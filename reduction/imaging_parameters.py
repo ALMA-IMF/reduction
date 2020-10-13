@@ -2713,6 +2713,7 @@ line_imaging_parameters_default = {
         "pbmask": 0.1,
         "perchanweightdensity": False,
         "interactive": False,
+        "mask_out_endchannels": 2,
     }
     for field in allfields
     for band in ("B3", "B6")

@@ -395,7 +395,14 @@ for band in band_list:
             impars['phasecenter'] = phasecenter
             impars['field'] = [field.encode()]
 
-            make_dirty_image = False
+            mask_out_endchannels = False
+            if 'mask_out_endchannels' in impars:
+                # remove this parameter
+                mask_out_endchannels = impars.pop('mask_out_endchannels')
+
+            # default Oct 13, 2020: always make dirty image
+            # so we can have a mask to work with
+            make_dirty_image = True
             if 'threshold' in impars:
                 if 'sigma' in impars['threshold']:
                     make_dirty_image = True
@@ -423,7 +430,8 @@ for band in band_list:
                     del impars_dirty['startmodel']
 
                 impars_dirty['parallel'] = parallel
-                impars_dirty['usemask'] = None
+                # use the same mask as specified for the main run
+                # impars_dirty['usemask'] = None
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
@@ -571,16 +579,33 @@ for band in band_list:
                 logprint("dirty_tclean_made_residual is set to be {0}".format(dirty_tclean_made_residual),
                          origin='almaimf_line_imaging')
 
-                # if we're re-running to try to get to completion, we must
-                # delete the mas to enable automultithresh to continue
-                # Updating to *remove* the mask instead
-                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] not in ('', None):
-                    logprint("removing pre-existing mask {0}".format(lineimagename+".mask"),
-                             origin='almaimf_line_imaging')
-                    shutil.rmtree(lineimagename+".mask")
-                elif os.path.exists(lineimagename+".mask"):
-                    if 'usemask' in impars and impars['usemask'] != 'user':
-                        raise ValueError("Mask exists but not specified as user.")
+                # Oct 13, 2020: we'll modify the mask, not remove it
+                # if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] not in ('', None):
+                #     logprint("using pre-existing mask {0}".format(lineimagename+".mask"),
+                #              origin='almaimf_line_imaging')
+                #     shutil.rmtree(lineimagename+".mask")
+                # elif os.path.exists(lineimagename+".mask"):
+                #     if 'usemask' in impars and impars['usemask'] != 'user':
+                #         raise ValueError("Mask exists but not specified as user.")
+                if os.path.exists(lineimagename+".mask"):
+                    impars['usemask'] = 'user'
+                    impars['mask'] = lineimagename+".mask"
+                    
+                    if mask_out_endchannels:
+                        ia.open(lineimagename+".mask")
+                        lowedge = ia.getchunk([0,0,0,0], [-1,-1,-1,mask_out_endchannels])
+                        lowedge[:] = 0
+                        ia.putchunk(lowedge, [0,0,0,0], [-1,-1,-1,mask_out_endchannels])
+
+                        highedge = ia.getchunk([0,0,0,-1-mask_out_endchannels],
+                                               [-1,-1,-1,-1])
+                        highedge[:] = 0
+                        ia.putchunk(highedge,
+                                    [0,0,0,-1-mask_out_endchannels],
+                                    [-1,-1,-1,-1])
+
+                        ia.close()
+
 
                 # SANITY CHECK:
                 if os.path.exists(lineimagename+".model"):
