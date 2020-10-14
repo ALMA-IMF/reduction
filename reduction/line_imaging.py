@@ -537,6 +537,7 @@ for band in band_list:
                              origin='almaimf_line_imaging')
                     del impars['startmodel']
                 else:
+                    make_continuum_startmodel = True
                     # remove the model image
                     # (it should be created by dirty imaging above)
                     if did_dirty_imaging and os.path.exists(lineimagename+".model"):
@@ -552,6 +553,7 @@ for band in band_list:
                                  "the specified startmodel.",
                                  origin='almaimf_line_imaging')
                         del impars['startmodel']
+                        make_continuum_startmodel = False
                     else:
                         # lineimagename+".model" does not exist
                         pass # all is happy
@@ -564,10 +566,11 @@ for band in band_list:
                         for fn in glob.glob(lineimagename+".workdirectory/*.model"):
                             shutil.rmtree(fn)
 
-                    contmodel = create_clean_model(cubeimagename=baselineimagename,
-                                                   contimagename=impars['startmodel'],
-                                                   imaging_results_path=imaging_root)
-                    impars['startmodel'] = contmodel
+                    if make_continuum_startmodel:
+                        contmodel = create_clean_model(cubeimagename=baselineimagename,
+                                                       contimagename=impars['startmodel'],
+                                                       imaging_results_path=imaging_root)
+                        impars['startmodel'] = contmodel
 
 
 
