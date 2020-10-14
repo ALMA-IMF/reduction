@@ -594,7 +594,7 @@ for band in band_list:
                 if os.path.exists(lineimagename+".mask"):
                     impars['usemask'] = 'user'
                     impars['mask'] = '' # the mask exists, so CASA can't be told to use it
-                    
+
                     if mask_out_endchannels:
                         ia.open(lineimagename+".mask")
                         lowedge = ia.getchunk([0,0,0,0], [-1,-1,-1,mask_out_endchannels])
