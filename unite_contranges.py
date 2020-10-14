@@ -70,29 +70,30 @@ numchans = {
 
 numspw = len(metadata[band][field]['spws'][0]) #Determine how many spws we are working with (assumes the same number across the 12ml, 12ms, and 7m configurations)
 
-for i in range(0,numspw):#for however many spws
+for spwnum in range(0,numspw):#for however many spws
 
     #Initialize fmin and fmax
     fmin = 1E14 #in Hz
     fmax = 1E0 #in Hz
     
-    #initialize spw_all
+    #initialize spw_all (we need it later)
     spw_all = np.array([]) 
-    for j in range(0,len(metadata[band][field]['spws'])): #for however many configs
+    for configid in range(0,len(metadata[band][field]['spws'])): #for however many configs
 
-        spw_all = np.append(metadata[band][field]['spws'][j][i],spw_all) #we will need this later
+        spw_all = np.append(metadata[band][field]['spws'][configid][spwnum],spw_all) #we will need this later
 
         #Set fmin and fmax based on the global min and max frequencies for a given spw across all array configs
-        if metadata[band][field]['freqs'][j][i][0] < fmin:
-            fmin = metadata[band][field]['freqs'][j][i][0]
-        if metadata[band][field]['freqs'][j][i][1] > fmax:
-            fmax = metadata[band][field]['freqs'][j][i][1]
-
+        if metadata[band][field]['freqs'][configid][spwnum][0] < fmin:
+            fmin = metadata[band][field]['freqs'][configid][spwnum][0]
+        if metadata[band][field]['freqs'][configid][spwnum][1] > fmax:
+            fmax = metadata[band][field]['freqs'][configid][spwnum][1]
     
     #Set up arrays over which we will iterate to determine combined contranges
-    spw = str(metadata[band][field]['spws'][0][i]) #find what spw we are using
+    spw = str(metadata[band][field]['spws'][0][spwnum]) #find what spw we are using
     if np.remainder(int(spw),2) == 1: #if we are using a 12m spw, switch to using a 7m spw (more channels)
         spw_forchans = str(int(spw)-9)
+    else:#if we are using a 7m spw, just keep it
+        spw_forchans = spw
     nchans = numchans[band][spw_forchans]
     chanwidth = (fmax - fmin)/(3.*nchans)
     extrachans = 20
