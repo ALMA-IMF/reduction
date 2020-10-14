@@ -2779,7 +2779,9 @@ line_imaging_parameters_custom = {
     },
     "G327.29_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal2_finaliter",
+        #"startmodel": "G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal2_finaliter",
+        # UF machine has 17d instead of 17f as of 10/14/2020 - this may change
+        "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G327.29_B3_12M_robust0_contsub": {  # Less restrictive params for faint, extended emission
         "usemask": "auto-multithresh",
@@ -2831,7 +2833,9 @@ line_imaging_parameters_custom = {
     },
     "G337.92_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
+        #"startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
+        # UF machine has 147 instead of 145 as of 10/14/2020 - this may change
+        "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G337.92_B3_12M_robust0_contsub": {  # Less restrictive params for faint-extended emission
         "usemask": "auto-multithresh",
