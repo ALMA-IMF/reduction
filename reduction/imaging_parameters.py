@@ -2123,10 +2123,10 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "W43-MM1_B3_12M_robust0": {
-        1: {"calmode": "p", "gaintype": "G", "solint": "300s", "solnorm": False},
-        2: {"calmode": "p", "gaintype": "T", "solint": "300s", "solnorm": False},
-        3: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False},
-        4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False},
+        1: {"calmode": "p", "gaintype": "G", "solint": "300s", "solnorm": False, "minsnr": 3},
+        2: {"calmode": "p", "gaintype": "T", "solint": "300s", "solnorm": False, "minsnr": 3},
+        3: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False, "minsnr": 3},
+        4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False, "minsnr": 3},
     },
     "W43-MM1_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2779,7 +2779,7 @@ line_imaging_parameters_custom = {
     },
     "G327.29_B3_12M_robust0": {
         "threshold": "6mJy",
-        #"startmodel": "G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal2_finaliter",
+        # "startmodel": "G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal2_finaliter",
         # UF machine has 17d instead of 17f as of 10/14/2020 - this may change
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
@@ -2833,7 +2833,7 @@ line_imaging_parameters_custom = {
     },
     "G337.92_B3_12M_robust0": {
         "threshold": "6mJy",
-        #"startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
+        # "startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
         # UF machine has 147 instead of 145 as of 10/14/2020 - this may change
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
