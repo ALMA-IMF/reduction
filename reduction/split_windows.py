@@ -215,11 +215,13 @@ for sg in science_goals:
                 # else if
                 # <field>.<band>.cont.dat exists, it will be used.
                 contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                        'contdat',
                                         "{field}.{band}.{array}.cont.dat".format(field=field, band=band, array=array_config.lower()))
                 if os.path.exists(contfile):
                     logprint("##### Found manually-created cont.dat file {0}".format(contfile))
                 else:
                     contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                            'contdat',
                                             "{field}.{band}.cont.dat".format(field=field, band=band))
                     if os.path.exists(contfile):
                         logprint("##### Found manually-created cont.dat file {0}".format(contfile))
@@ -370,6 +372,7 @@ for band in bands:
         for path, vis, spws, muid in zip(mymd['path'], mymd['vis'], mymd['spws'], mymd['muid']):
 
             contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                    'contdat',
                                     "{field}.{band}.cont.dat".format(field=field, band=band))
             if os.path.exists(contfile):
                 logprint("##### Found manually-created cont.dat file {0}".format(contfile))
