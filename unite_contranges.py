@@ -19,9 +19,9 @@ def merge_contdotdat(field='',band=''):
 	    metadata = json.load(fh)
 
 
-	#Set field and band name - this should be detected automatically in the final version of the script but is hardwired here for testing purposes
-	field = 'G327.29'
-	band = 'B3'
+	##Set field and band name - this should be detected automatically in the final version of the script but is hardwired here for testing purposes
+	#field = 'G327.29'
+	#band = 'B3'
 
 	#use parse_contdotdat to read the cont.dat files from their respective directories. Should be flexible enough to account for missing configurations
 	contdotdat_ranges = []
