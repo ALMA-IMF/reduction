@@ -4,7 +4,7 @@
 #continuum_selections.py in analysis code is located at:
 #in ALMA_IMF/reduction/analysis/
 
-def merge_contdotdat(field='',band=''):
+def merge_contdotdat(field,band):
 
 	import numpy as np
 	import sys
