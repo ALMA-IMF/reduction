@@ -2741,7 +2741,9 @@ line_imaging_parameters_custom = {
     },
     "G008.67_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter",
+        #"startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # UF machine has 1b9 instead of 1b7 as of 10/14/2020 - this may change
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G010.62_B3_12M_robust0": {
         "threshold": "6mJy",
