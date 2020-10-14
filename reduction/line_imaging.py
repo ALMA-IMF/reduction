@@ -593,7 +593,7 @@ for band in band_list:
                 #         raise ValueError("Mask exists but not specified as user.")
                 if os.path.exists(lineimagename+".mask"):
                     impars['usemask'] = 'user'
-                    impars['mask'] = lineimagename+".mask"
+                    impars['mask'] = '' # the mask exists, so CASA can't be told to use it
                     
                     if mask_out_endchannels:
                         ia.open(lineimagename+".mask")
