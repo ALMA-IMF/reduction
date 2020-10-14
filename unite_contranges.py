@@ -5,7 +5,9 @@
 #in ALMA_IMF/reduction/analysis/
 
 import numpy as np
-execfile('/orange/adamginsburg/atowner/ALMA_IMF/contranges/parse_contdotdat.py')
+import sys
+sys.path.append('.')
+from parse_contdotdat import parse_contdotdat
 
 #Read in metadata from .json file
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
