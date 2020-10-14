@@ -638,6 +638,8 @@ for band in band_list:
                     # we definitely have a model now, so we don't want a startmodel
                     smod = impars['startmodel']
                     impars['startmodel'] = ''
+                else:
+                    smod = ''
                 tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='',
