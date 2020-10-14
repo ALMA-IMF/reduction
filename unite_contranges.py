@@ -4,20 +4,18 @@
 #continuum_selections.py in analysis code is located at:
 #in ALMA_IMF/reduction/analysis/
 
-def merge_contdotdat(field,band):
+import numpy as np
+import sys
+sys.path.append('.')
+from parse_contdotdat import parse_contdotdat
 
-	import numpy as np
-	import sys
-	sys.path.append('.')
-	from parse_contdotdat import parse_contdotdat
+def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'):
 
 	#Read in metadata from .json file
-	basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
 	with open(basepath + '/contdatfiles.json', 'r') as fh:
 	    contdatfiles = json.load(fh)
 	with open(basepath + '/metadata.json', 'r') as fh:
 	    metadata = json.load(fh)
-
 
 	##Set field and band name - this should be detected automatically in the final version of the script but is hardwired here for testing purposes
 	#field = 'G327.29'
@@ -27,7 +25,7 @@ def merge_contdotdat(field,band):
 	contdotdat_ranges = []
 	for i,m in enumerate(metadata[band][field]['cont.dat']):
   		m = str(m)
-    	contdotdat_ranges.append(parse_contdotdat(metadata[band][field]['cont.dat'][m]))
+    		contdotdat_ranges.append(parse_contdotdat(metadata[band][field]['cont.dat'][m]))
 
 	#Open the files to which we will write the final, merged contranges, and write field name at the top
 	f_12m = open(field+'.'+band+'.12m.cont.dat','w')
@@ -78,6 +76,7 @@ def merge_contdotdat(field,band):
     
 	    #initialize spw_all (we need it later)
 	    spw_all = np.array([]) 
+		
 	    for configid in range(0,len(metadata[band][field]['spws'])): #for however many configs
 
 	        spw_all = np.append(metadata[band][field]['spws'][configid][spwnum],spw_all) #we will need this later
@@ -117,7 +116,7 @@ def merge_contdotdat(field,band):
 	            #for each pair, iterate over our full frequency range;
 	            #if a frequency falls within the range of a given pair, change contfreqs[f] from 0 to 1
 	            for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
-	                if freq > minimum and freq < (maximum+chanwidth):
+	                if freq > minimum and freq < (maximum+chanwidth/2.):
 	                    contfreqs[f] = 1.0
 
 	    #Now iterate over our full frequency range again
