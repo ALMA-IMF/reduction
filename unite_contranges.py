@@ -24,14 +24,10 @@ band = 'B3'
 #use parse_contdotdat to read the 12m-long, 12m-short, and 7m contranges into arrays from their cont.dat files
 #NOTE: This part of the script assumes there are only three cont.dat files, and they are in a specific order!
 #This should be the same across all metadata but if it is not this part of the script will need to be altered.
+contdotdat_ranges = []
 for i,m in enumerate(metadata[band][field]['cont.dat']):
     m = str(m)
-    if i==0:
-        range_12ml=parse_contdotdat(metadata[band][field]['cont.dat'][m])
-    if i==1:
-        range_12ms=parse_contdotdat(metadata[band][field]['cont.dat'][m])
-    if i==2:
-        range_7m=parse_contdotdat(metadata[band][field]['cont.dat'][m])
+    contdotdat_ranges.append(parse_contdotdat(metadata[band][field]['cont.dat'][m]))
 
 #Open the files to which we will write the final, merged contranges, and write field name at the top
 f_12m = open(field+'.'+band+'.12m.cont.dat','w')
@@ -109,7 +105,7 @@ for i in range(0,numspw):#for however many spws
     f_7m.write('SpectralWindow: %s\n' %(spw_7m))
 
     #for each of the contranges (from the three contrange.dat files)
-    for contrange in (range_12ml,range_12ms,range_7m):
+    for contrange in contdotdat_ranges:
 
         pairs = contrange.split(';') #split the contrange list into pairs
 
