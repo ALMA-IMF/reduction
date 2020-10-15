@@ -233,9 +233,10 @@ for sg in science_goals:
                     contdat_files[field + band + muid] = contdatpath
 
                     if 'cont.dat' in metadata[band][field]:
-                        metadata[band][field]['cont.dat'][max_bl] = contdatpath
+                        metadata[band][field]['cont.dat'][muid] = contdatpath
                     else:
-                        metadata[band][field]['cont.dat'] = {max_bl: contdatpath}
+                        metadata[band][field]['cont.dat'] = {muid: contdatpath}
+                        metadata[band][field]['max_bl'] = {muid: max_bl}
                 else:
                     if 'cont.dat' in metadata[band][field]:
                         if max_bl in metadata[band][field]['cont.dat']:
@@ -371,19 +372,7 @@ for band in bands:
 
         for path, vis, spws, muid in zip(mymd['path'], mymd['vis'], mymd['spws'], mymd['muid']):
 
-            contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                    'contdat',
-                                    "{field}.{band}.cont.dat".format(field=field, band=band))
-            if os.path.exists(contfile):
-                logprint("##### Found manually-created cont.dat file {0}".format(contfile))
-            else:
-                # the cont.dat file should be in the calibration/ directory in the
-                # same SB folder
-                logprint("Did not find a manually-created cont.dat file named {0}; instead using local cont.dat.".format(contfile))
-                contfile = os.path.join(path, '../calibration/cont.dat')
-                logprint("Using cont.dat file {0} for {1}:{2}".format(contfile,
-                                                                      band,
-                                                                      field))
+            contfile = mymd['cont.dat'][muid]
 
             if not os.path.exists(contfile):
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
