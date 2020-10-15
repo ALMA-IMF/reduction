@@ -2858,7 +2858,7 @@ line_imaging_parameters_custom = {
     },
     "G338.93_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G338.93_B6__continuum_merged_12M_robust0_selfcal6_finaliter",
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G351.77_B3_12M_robust0": {
         "threshold": "6mJy",
