@@ -206,8 +206,10 @@ for sg in science_goals:
 
                 if 'muid_configs' in metadata[band][field]:
                     metadata[band][field]['muid_configs'][array_config] = muid
+                    metadata[band][field]['max_bl'][muid] = max_bl
                 else:
                     metadata[band][field]['muid_configs'] = {array_config: muid}
+                    metadata[band][field]['max_bl'] = {muid: max_bl}
 
 
                 # Custom cont.dat files:
@@ -236,16 +238,17 @@ for sg in science_goals:
                         metadata[band][field]['cont.dat'][muid] = contdatpath
                     else:
                         metadata[band][field]['cont.dat'] = {muid: contdatpath}
-                        metadata[band][field]['max_bl'] = {muid: max_bl}
                 else:
                     if 'cont.dat' in metadata[band][field]:
-                        if max_bl in metadata[band][field]['cont.dat']:
-                            logprint("*** Found DUPLICATE KEY={max_bl} in cont.dat metadata for band={band} field={field}"
-                                     .format(max_bl=max_bl, band=band, field=field))
+                        if muid in metadata[band][field]['cont.dat']:
+                            logprint("*** Found DUPLICATE KEY={muid},{max_bl}"
+                                     " in cont.dat metadata for band={band} field={field}"
+                                     .format(max_bl=max_bl, muid=muid,
+                                             band=band, field=field))
                         else:
-                            metadata[band][field]['cont.dat'][max_bl] = 'notfound_'+ ran_findcont
+                            metadata[band][field]['cont.dat'][muid] = 'notfound_'+ ran_findcont
                     else:
-                        metadata[band][field]['cont.dat'] = {max_bl: 'notfound_'+ ran_findcont}
+                        metadata[band][field]['cont.dat'] = {muid: 'notfound_'+ ran_findcont}
                     contdat_files[field + band + muid] = 'notfound_'+ ran_findcont
 
                 # touch the filename

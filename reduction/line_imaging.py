@@ -41,6 +41,7 @@ except ImportError:
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
+from unite_contranges import merge_contdotdat
 from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
 from create_clean_model import create_clean_model
@@ -51,6 +52,8 @@ ms = mstool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
+with open('metadata.json', 'r') as fh:
+    metadata = json.load(fh)
 
 if os.getenv('LOGFILENAME'):
     casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
@@ -305,34 +308,15 @@ for band in band_list:
                     concat(vis=vis, concatvis=concatvis)
 
             if do_contsub:
-                # the cont_channel_selection is purely in frequency, so it should
-                # "just work"
-                # (there may be several cont.dats - we're just grabbing the first)
-                # Different data sets are actually found to have different channel selections.
-                path = os.path.split(vis[0])[0]
-
 
                 if not os.path.exists(concatvis+".contsub"):
                     logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
                              origin='almaimf_line_imaging')
 
-                    if arrayname == '12M':
-                        contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                                "contdat",
-                                                "{field}.{band}.12m.cont.dat".format(field=field, band=band))
-                    else:
-                        raise ValueError("Continuum subtraction for non-12m data "
-                                         "is not yet implemented.  We need to "
-                                         "contsub the 7m and 12m datasets "
-                                         "separately because of their differing "
-                                         "channel layout."
-                                        )
-                    if not os.path.exists(contfile):
-                        contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                                "contdat",
-                                                "{field}.{band}.cont.dat".format(field=field, band=band))
-                    if not os.path.exists(contfile):
-                        contfile = os.path.join(path, '../calibration/cont.dat')
+                    contfile12m, contfile7m = merge_contdotdat(band, field,
+                                                               basepath='.',
+                                                               datfiles=metadata[band][field]['cont.dat'].values())
+                    contfile = contfile12m
 
                     cont_freq_selection = parse_contdotdat(contfile)
                     logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
