@@ -93,7 +93,8 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                         beam = cube.beam
                     else:
                         beams = cube.beams
-                        beam = beams.smallest_beam()
+                        # use the middle-ish beam
+                        beam = beams[len(beams)//2]
 
                     spw = int(fn.split('spw')[1][0])
 
