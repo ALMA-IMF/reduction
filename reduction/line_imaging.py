@@ -41,6 +41,7 @@ except ImportError:
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
+from unite_contranges import merge_contdotdat
 from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
 from create_clean_model import create_clean_model
@@ -312,10 +313,10 @@ for band in band_list:
                     logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
                              origin='almaimf_line_imaging')
 
-                    # TEMPORARY HACK:
-                    # These next two lines should be replaced with code that merges all cont.dat's
-                    muid = list(metadata[band][field]['cont.dat'].keys())[0]
-                    contfile = metadata[band][field]['cont.dat'][muid]
+                    contfile12m, contfile7m = merge_contdotdat(band, field,
+                                                               basepath='.',
+                                                               datfiles=metadata[band][field]['cont.dat'].values())
+                    contfile = contfile12m
 
                     cont_freq_selection = parse_contdotdat(contfile)
                     logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')

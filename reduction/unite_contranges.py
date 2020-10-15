@@ -41,8 +41,10 @@ def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.0
 
         # Open the files to which we will write the final, merged contranges,
         # and write field name at the top
-        f_12m = open(field+'.'+band+'.12m.cont.dat','w')
-        f_7m = open(field+'.'+band+'.7m.cont.dat','w')
+        fn12m = field+'.'+band+'.12m.cont.dat'
+        fn7m = field+'.'+band+'.7m.cont.dat'
+        f_12m = open(fn12m,'w')
+        f_7m = open(fn7m,'w')
         f_12m.write('Field: %s\n\n' % (field))
         f_7m.write('Field: %s\n\n' % (field))
 
@@ -164,3 +166,5 @@ def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.0
         #Once you have finished iterating over all spws, close the output files
         f_12m.close()
         f_7m.close()
+
+        return fn12m, fn7m
