@@ -10,7 +10,7 @@ import sys
 sys.path.append('.')
 from parse_contdotdat import parse_contdotdat
 
-def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'):
+def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L',datfiles=['none']):
 
         #Read in metadata from .json file
         with open(basepath + '/metadata.json', 'r') as fh:
@@ -24,11 +24,20 @@ def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.0
 
         # use parse_contdotdat to read the cont.dat files from their respective
         # directories. Should be flexible enough to account for missing
-        # configurations
+        # configurations or repeated path names
         contdotdat_ranges = []
-        for i,m in enumerate(metadata[band][field]['cont.dat']):
-            m = str(m)
-            contdotdat_ranges.append(parse_contdotdat(metadata[band][field]['cont.dat'][m]))
+        if 'none' in datfiles:#If the user has not specified any custom cont.dat files, use the defaults
+            contdotdat_files = metadata[band][field]['path']
+            for i,m in enumerate(contdotdat_files):
+                singlerange = parse_contdotdat(str(m) + '/../calibration/cont.dat')
+                if singlerange not in contdotdat_ranges:
+                    contdotdat_ranges.append(parse_contdotdat(str(m) + '/../calibration/cont.dat'))
+        else:#If the user HAS specified custom cont.dat files, use those instead
+            contdotdat_files = datfiles
+            for i,m in enumerate(contdotdat_files):
+                singlerange = parse_contdotdat(str(m))
+                if singlerange not in contdotdat_ranges:
+                    contdotdat_ranges.append(parse_contdotdat(str(m)))
 
         # Open the files to which we will write the final, merged contranges,
         # and write field name at the top
@@ -120,14 +129,15 @@ def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.0
                 pairs = contrange.split(';') #split the contrange list into pairs
 
                 for p,pair in enumerate(pairs):#for each pair
-                    minimum = float(pair.split('~')[0])*1E9 #convert GHz to Hz
-                    maximum = float(pair.split('~')[1][:-3])*1E9 #convert GHz to Hz
+                    if '~' in pair: #this will prevent broken lines from being included in the search (e.g. '231.77GHz' instead of '231.75~231.77GHz')
+                        minimum = float(pair.split('~')[0])*1E9 #convert GHz to Hz
+                        maximum = float(pair.split('~')[1][:-3])*1E9 #convert GHz to Hz
 
-                    #for each pair, iterate over our full frequency range;
-                    #if a frequency falls within the range of a given pair, change contfreqs[f] from 0 to 1
-                    for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
-                        if freq > minimum and freq < (maximum+chanwidth/2.):
-                            contfreqs[f] = 1.0
+                        #for each pair, iterate over our full frequency range;
+                        #if a frequency falls within the range of a given pair, change contfreqs[f] from 0 to 1
+                        for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
+                            if freq > minimum and freq < (maximum+chanwidth):
+                                contfreqs[f] = 1.0
 
             #Now iterate over our full frequency range again
             for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
