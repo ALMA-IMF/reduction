@@ -2741,7 +2741,7 @@ line_imaging_parameters_custom = {
     },
     "G008.67_B6_12M_robust0": {
         "threshold": "6mJy",
-        #"startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # "startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1b9 instead of 1b7 as of 10/14/2020 - this may change
         "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
@@ -2874,7 +2874,9 @@ line_imaging_parameters_custom = {
     },
     "G353.41_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G353.41_B6_uid___A001_X1296_X1cb_continuum_merged_12M_robust0_selfcal3_finaliter",
+        # "startmodel": "G353.41_B6_uid___A001_X1296_X1cb_continuum_merged_12M_robust0_selfcal3_finaliter",
+        # UF machine has 1c9 selfcal6 instead of 1cb selfcal3 as of 10/15/2020 - this may change
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "W43-MM1_B3_12M_robust0": {
         "threshold": "6mJy",
