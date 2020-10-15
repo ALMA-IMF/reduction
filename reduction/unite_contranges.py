@@ -132,11 +132,12 @@ def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.0
             #Now iterate over our full frequency range again
             for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
                 freqlength = len(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth))
-
+               
                 if f > 0:#we have to start at f==1 for indexing reasons or python will yell at us
 
-                    #if contfreqs changes from 0 to 1, write the first part of the contrange
-                    if contfreqs[f] == 1 and contfreqs[f-1] == 0:
+                    #if contfreqs changes from 0 to 1, OR the first element in the array has a value of 1,
+                    #write the first part of the contrange
+                    if (contfreqs[f] == 1 and contfreqs[f-1] == 0) or (f==1 and contfreqs[f-1]==1):
                         f_12m.write('%f~' %(freq/1E9)) #convert Hz to GHz and write out
                         f_7m.write('%f~' %(freq/1E9)) #convert Hz to GHz and write out
 
