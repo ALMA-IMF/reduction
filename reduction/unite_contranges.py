@@ -27,8 +27,8 @@ def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.0
         # configurations
         contdotdat_ranges = []
         for i,m in enumerate(metadata[band][field]['cont.dat']):
-                m = str(m)
-                contdotdat_ranges.append(parse_contdotdat(metadata[band][field]['cont.dat'][m]))
+            m = str(m)
+            contdotdat_ranges.append(parse_contdotdat(metadata[band][field]['cont.dat'][m]))
 
         # Open the files to which we will write the final, merged contranges,
         # and write field name at the top
