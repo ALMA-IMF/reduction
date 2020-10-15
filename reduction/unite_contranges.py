@@ -128,16 +128,16 @@ def merge_contdotdat(field,band,basepath='/orange/adamginsburg/ALMA_IMF/2017.1.0
 
                 pairs = contrange.split(';') #split the contrange list into pairs
 
-            for p,pair in enumerate(pairs):#for each pair
-                if '~' in pair: #this will prevent broken lines from being included in the search (e.g. '231.77GHz' instead of '231.75~231.77GHz')
-                    minimum = float(pair.split('~')[0])*1E9 #convert GHz to Hz
-                    maximum = float(pair.split('~')[1][:-3])*1E9 #convert GHz to Hz
+                for p,pair in enumerate(pairs):#for each pair
+                    if '~' in pair: #this will prevent broken lines from being included in the search (e.g. '231.77GHz' instead of '231.75~231.77GHz')
+                        minimum = float(pair.split('~')[0])*1E9 #convert GHz to Hz
+                        maximum = float(pair.split('~')[1][:-3])*1E9 #convert GHz to Hz
 
-                    #for each pair, iterate over our full frequency range;
-                    #if a frequency falls within the range of a given pair, change contfreqs[f] from 0 to 1
-                    for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
-                        if freq > minimum and freq < (maximum+chanwidth):
-                            contfreqs[f] = 1.0
+                        #for each pair, iterate over our full frequency range;
+                        #if a frequency falls within the range of a given pair, change contfreqs[f] from 0 to 1
+                        for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
+                            if freq > minimum and freq < (maximum+chanwidth):
+                                contfreqs[f] = 1.0
 
             #Now iterate over our full frequency range again
             for f,freq in enumerate(np.arange(fmin-extrachans*chanwidth,fmax+extrachans*chanwidth,chanwidth)):
