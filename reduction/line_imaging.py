@@ -316,8 +316,21 @@ for band in band_list:
                     logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
                              origin='almaimf_line_imaging')
 
-                    contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                            "{field}.{band}.cont.dat".format(field=field, band=band))
+                    if arrayname == '12M':
+                        contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                                "contdat",
+                                                "{field}.{band}.12m.cont.dat".format(field=field, band=band))
+                    else:
+                        raise ValueError("Continuum subtraction for non-12m data "
+                                         "is not yet implemented.  We need to "
+                                         "contsub the 7m and 12m datasets "
+                                         "separately because of their differing "
+                                         "channel layout."
+                                        )
+                    if not os.path.exists(contfile):
+                        contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                                "contdat",
+                                                "{field}.{band}.cont.dat".format(field=field, band=band))
                     if not os.path.exists(contfile):
                         contfile = os.path.join(path, '../calibration/cont.dat')
 
