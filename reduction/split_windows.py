@@ -216,9 +216,13 @@ for sg in science_goals:
                 # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used
                 # else if
                 # <field>.<band>.cont.dat exists, it will be used.
+                # we only have 12m and 7m now; everything is otherwise merged
+                # (though maybe we'll merge further still)
+                arrayname = '12m' if '12M' in array_config else '7m'
                 contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
                                         'contdat',
-                                        "{field}.{band}.{array}.cont.dat".format(field=field, band=band, array=array_config.lower()))
+                                        "{field}.{band}.{array}.cont.dat".format(field=field, band=band,
+                                                                                 array=arrayname))
                 if os.path.exists(contfile):
                     logprint("##### Found manually-created cont.dat file {0}".format(contfile))
                 else:
