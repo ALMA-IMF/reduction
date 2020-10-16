@@ -292,7 +292,9 @@ for band in band_list:
                 continue
 
 
-            if any('concat' in x for x in vis):
+            if os.getenv('DO_NOT_CONCAT'):
+                concatvis = vis
+            elif any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
             elif not os.path.exists(concatvis):
