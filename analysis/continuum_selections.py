@@ -144,11 +144,11 @@ for fignum,band in enumerate((3,6)):
                 continue
 
             muids = set(metadata[bandname][field]['muid'])
-            baseline_lengths = list(map(int, metadata[bandname][field]['cont.dat']))
-            muid_to_bl = {muid: list(map(int, [key for key, contnm in metadata[bandname][field]['cont.dat'].items() if muid in contnm])) for muid in muids}
-            muid_configs = {muid: '7M' if any(x < 100 for x in muid_to_bl[muid])
-                            else '12Mshort' if any(x < lb_threshold[band] for x in muid_to_bl[muid])
-                            else '12Mlong' if any(x > lb_threshold[band] for x in muid_to_bl[muid])
+            baseline_lengths = metadata[bandname][field]['max_bl']
+            muid_to_bl = {k:int(v) for k,v in baseline_lengths.items()}
+            muid_configs = {muid: '7M' if muid_to_bl[muid] < 100
+                            else '12Mshort' if muid_to_bl[muid] < lb_threshold[band]
+                            else '12Mlong' if muid_to_bl[muid] > lb_threshold[band]
                             else None
                             for muid in muid_to_bl
                            }
