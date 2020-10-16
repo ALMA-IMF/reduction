@@ -22,6 +22,11 @@ def parse_contdotdat(filepath):
 
     return ";".join(selections)
 
+xlabel_offset = {
+    'B3': 0.00,
+    'B6': 0.20,
+}
+
 lines_to_overplot = {
     "n2hp": "93.173700GHz",
     "sio": "217.104984GHz",
@@ -266,7 +271,7 @@ for fignum,band in enumerate((3,6)):
     pl.tight_layout()
     pl.subplots_adjust(wspace=0.05, hspace=0)
 
-    fig.text(0.5, 0.04, 'Frequency (GHz)', ha='center')
+    fig.text(0.5, xlabel_offset[band], 'Frequency (GHz)', ha='center')
 
     pl.savefig(f"continuum_selection_regions_band{band}.png", bbox_inches='tight')
     pl.savefig(f"continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
