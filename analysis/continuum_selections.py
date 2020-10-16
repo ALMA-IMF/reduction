@@ -23,8 +23,8 @@ def parse_contdotdat(filepath):
     return ";".join(selections)
 
 xlabel_offset = {
-    'B3': 0.00,
-    'B6': 0.20,
+    3: 0.00,
+    6: 0.20,
 }
 
 lines_to_overplot = {
