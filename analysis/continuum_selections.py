@@ -215,18 +215,22 @@ for fignum,band in enumerate((3,6)):
                 included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 1).sum() * dnu
 
                 robust = 0 # hard-code.... yike.
-                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.meanspec.fits'
+                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.fits'
                 if os.path.exists(specname):
+                    print(specname)
                     pl.figure(4).clf()
                     fh = fits.open(specname)
                     ww = WCS(fh[0].header)
-                    specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0]
+                    specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0] / 1e9
                     pl.plot(specfrq, fh[0].data.squeeze())
-                    pl.plot(specfrq, frqmask)
+                    axlims = pl.axis()
+                    pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
+                    pl.axis(axlims)
                     pl.xlabel("Frequency")
                     pl.ylabel("Flux [Jy/beam]")
                     pl.title(os.path.split(specname)[-1].replace(".fits", ""))
-                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.meanspec.coverage.png')
+                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.coverage.png',
+                               bbox_inches='tight')
 
 
                 if muid == 'member.uid___A001_X1296_X127':
