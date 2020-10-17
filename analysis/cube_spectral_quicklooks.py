@@ -118,14 +118,16 @@ for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010
                     #cube = cube.rechunk(save_to_tmp_dir=True)
                     print(cube)
 
+                    underscore = "_" if linename or suffix else ""
+
                     print('computing max(axis=(1,2))')
-                    mxspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}_{linename}{suffix}_max.fits"
+                    mxspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}{underscore}{linename}{suffix}_max.fits"
                     if not os.path.exists(mxspecfn):
                         maxspec = cube.max(axis=(1,2))
                         maxspec.write(mxspecfn)
 
                     print('computing mean(axis=(1,2))')
-                    mnspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}_{linename}{suffix}_mean.fits"
+                    mnspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}{underscore}{linename}{suffix}_mean.fits"
                     if not os.path.exists(mnspecfn):
                         meanspec = cube.mean(axis=(1,2))
                         meanspec.write(mnspecfn)
