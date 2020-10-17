@@ -111,7 +111,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     ia.close()
 
                     if os.path.exists(fn+".fits"):
-                        cube = SpectralCube.read(fn+".fits", format='casa_image')
+                        cube = SpectralCube.read(fn+".fits", format='fits')
                     else:
                         cube = SpectralCube.read(fn, format='casa_image')
                         cube = cube.rechunk(save_to_tmp_dir=True)
