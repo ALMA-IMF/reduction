@@ -127,12 +127,20 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                     maxfreq = cube.spectral_axis.max()
                     restfreq = cube.wcs.wcs.restfrq
 
-                    min = cube.min()
-                    max = cube.max()
-                    #mad = cube.mad_std()
-                    std = cube.std()
-                    sum = cube.sum()
-                    mean = cube.mean()
+                    stats = cube.statistics()
+                    min = stats['min']
+                    max = stats['max']
+                    std = stats['sigma']
+                    sum = stats['sum']
+                    mean = stats['mean']
+
+
+                    #min = cube.min()
+                    #max = cube.max()
+                    ##mad = cube.mad_std()
+                    #std = cube.std()
+                    #sum = cube.sum()
+                    #mean = cube.mean()
 
                     del cube
 
@@ -141,12 +149,13 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                     else:
                         modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
                         modcube = modcube.rechunk(save_to_tmp_dir=True)
-                    modmin = modcube.min()
-                    modmax = modcube.max()
-                    #modmad = modcube.mad_std()
-                    modstd = modcube.std()
-                    modsum = modcube.sum()
-                    modmean = modcube.mean()
+
+                    modstats = modcube.statistics()
+                    modmin = modstats['min']
+                    modmax = modstats['max']
+                    modstd = modstats['sigma']
+                    modsum = modstats['sum']
+                    modmean = modstats['mean']
 
                     del modcube
 
