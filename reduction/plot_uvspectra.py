@@ -94,7 +94,7 @@ def plot_uvspectra(msname, **kwargs):
 
         basename = os.path.basename(msname)
         fig.savefig(f"{basename}_{fieldname}_{fieldnum}_uvspectra.png")
-        hdul.writeto(f"{basename}_{fieldname}_{fieldnum}_uvspectra.fits")
+        hdul.writeto(f"{basename}_{fieldname}_{fieldnum}_uvspectra.fits", overwrite=True)
 
     tb.close()
     msmd.close()
