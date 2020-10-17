@@ -1,11 +1,17 @@
 import numpy as np
 import pylab as pl
 import os
+import json
 from astropy import log
 from astropy import units as u
 from astropy.io import fits
 from astropy.table import Table, Column
 from casatools import table, msmetadata
+from parse_contdotdat import parse_contdotdat
+
+with open('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/metadata.json', 'r') as fh:
+    metadata = json.load(fh)
+
 
 tb = table()
 spwtb = table()
@@ -75,6 +81,40 @@ def plot_uvspectra(msname, **kwargs):
                     unit = u.dimensionless_unscaled
             else:
                 unit = u.Hz
+
+            band = 'B3' if frq.max() < 200e9 else 'B6'
+            if fieldname not in metadata[band]:
+                # probably not a target source
+                continue
+            muid = metadata[band][fieldname]['muid_configs']['12Mshort']
+            cdatfile = metadata[band][fieldname]['cont.dat'][muid]
+            contfreqs = parse_contdotdat(cdatfile)
+
+            sel = np.zeros(frq.size, dtype='int')
+
+            for freqrange in contfreqs.split(";"):
+                low,high = freqrange.split("~")
+                high = u.Quantity(high)
+                low = u.Quantity(low, unit=high.unit)
+                sel += (frq*unit > low) & (frq*unit < high)
+                #print(f"{field}_{spw}: {low}-{high} count={sel.sum()}")
+
+            usel = np.unique(sel)
+            if set(usel) == {0,1}:
+                sel = sel.astype('bool')
+
+                dat_to_plot = avgspec.copy()
+                dat_to_plot[~sel] = np.nan
+                pl.plot(frq/1e9, avgspec, linewidth=4,
+                        zorder=-5, alpha=0.75)
+            else:
+                dat_to_plot = np.empty(avgspec.shape)
+                dat_to_plot[:] = np.nan
+                # skip zero
+                for selval in usel[1:]:
+                    dat_to_plot[sel == selval] = avgspec[sel == selval]
+                pl.plot(frq/1e9, dat_to_plot, linewidth=4,
+                        zorder=selval-10, alpha=0.75, color='orange')
 
             ax.plot(frq/1e9, avgspec)
             ax.set_title(f"SPW {spw}")

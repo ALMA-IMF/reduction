@@ -7,6 +7,7 @@ from astropy import constants, units as u, table, stats, coordinates, wcs, log
 from astropy.io import fits
 from spectral_cube import SpectralCube, wcs_utils, tests, Projection, OneDSpectrum
 from astropy.nddata import Cutout2D
+from parse_contdotdat import parse_contdotdat
 
 import pylab as pl
 pl.ioff()
@@ -16,18 +17,7 @@ array = '12M'
 with open('../metadata.json', 'r') as fh:
     metadata = json.load(fh)
 
-def parse_contdotdat(filepath):
-
-    selections = []
-
-    with open(filepath, 'r') as fh:
-        for line in fh:
-            if "LSRK" in line:
-                selections.append(line.split()[0])
-
-
-    return ";".join(selections)
-
+os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results')
 
 
 for robust in (0,):
