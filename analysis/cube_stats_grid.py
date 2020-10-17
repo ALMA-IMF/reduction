@@ -111,9 +111,11 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                     ia.close()
 
                     if os.path.exists(fn+".fits"):
-                        cube = SpectralCube.read(fn+".fits", format='fits')
+                        cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     else:
                         cube = SpectralCube.read(fn, format='casa_image')
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         cube = cube.rechunk(save_to_tmp_dir=True)
 
                     if hasattr(cube, 'beam'):
@@ -147,7 +149,7 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                     del cube
 
                     if os.path.exists(fn.replace(".image", ".model")+".fits"):
-                        modcube = SpectralCube.read(fn.replace(".image", ".model")+".fits", format='fits')
+                        modcube = SpectralCube.read(fn.replace(".image", ".model")+".fits", format='fits', use_dask=True)
                     else:
                         modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
                         modcube = modcube.rechunk(save_to_tmp_dir=True)

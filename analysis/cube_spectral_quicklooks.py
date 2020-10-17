@@ -109,8 +109,10 @@ for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010
 
                     if os.path.exists(fn+".fits"):
                         cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     else:
                         cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         cube = cube.rechunk()
                     #print('Saving to tmpdir')
                     #cube = cube.rechunk(save_to_tmp_dir=True)
