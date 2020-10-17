@@ -92,6 +92,7 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                         cube = SpectralCube.read(fn+".fits")
                     else:
                         cube = SpectralCube.read(fn)
+                        cube = cube.rechunk()
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
                     else:

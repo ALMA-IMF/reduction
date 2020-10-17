@@ -111,6 +111,7 @@ for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010
                         cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
                     else:
                         cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
+                        cube = cube.rechunk()
                     #print('Saving to tmpdir')
                     #cube = cube.rechunk(save_to_tmp_dir=True)
 

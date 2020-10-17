@@ -99,6 +99,7 @@ for band in (6,3):
                             modcube = SpectralCube.read(modfile+".fits", format='fits', use_dask=True)
                         else:
                             modcube = SpectralCube.read(modfile, format='casa_image', use_dask=True)
+                            modcube = modcube.rechunk()
 
                         if nthreads > 1:
                             modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
@@ -108,6 +109,7 @@ for band in (6,3):
                         cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
                     else:
                         cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
+                        cube = cube.rechunk()
                     if nthreads > 1:
                         cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     cube.beam_threshold = 1
