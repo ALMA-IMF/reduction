@@ -49,6 +49,8 @@ default_lines = {'n2hp': '93.173700GHz',
 
 suffix = '.image'
 
+os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 os.chdir(basepath)
