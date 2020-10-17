@@ -5,6 +5,8 @@ from pathlib import Path
 from astropy import units as u
 from astropy import constants
 from astropy import log
+from astropy.io import fits
+from astropy.wcs import WCS
 from astropy.table import Table
 from pathlib import Path
 
@@ -210,6 +212,20 @@ for fignum,band in enumerate((3,6)):
                 # 1 = included
                 # 2 = covered
                 included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 1).sum() * dnu
+
+                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.meanspec.fits'
+                if os.path.exists(specname):
+                    pl.figure(4).clf()
+                    fh = fits.open(specname)
+                    ww = WCS(fh[0].header)
+                    specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0]
+                    pl.plot(specfrq, fh[0].data.squeeze())
+                    pl.plot(specfrq, frqmask)
+                    pl.xlabel("Frequency")
+                    pl.ylabel("Flux [Jy/beam]")
+                    pl.title(os.path.split(specname)[-1].replace(".fits", ""))
+                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.meanspec.coverage.png')
+
 
                 if muid == 'member.uid___A001_X1296_X127':
                     assert not np.isnan(included_bw[band][spw][field][config])
