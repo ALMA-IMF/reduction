@@ -95,12 +95,19 @@ for band in (6,3):
 
                     modfile = fn.replace(suffix, ".model")
                     if os.path.exists(modfile):
-                        modcube = SpectralCube.read(modfile, format='casa_image', use_dask=True)
+                        if os.path.exists(modfile+".fits"):
+                            modcube = SpectralCube.read(modfile+".fits", format='fits', use_dask=True)
+                        else:
+                            modcube = SpectralCube.read(modfile, format='casa_image', use_dask=True)
+
                         if nthreads > 1:
                             modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         modcube.beam_threshold=100000
 
-                    cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
+                    else:
+                        cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
                     if nthreads > 1:
                         cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     cube.beam_threshold = 1

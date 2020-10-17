@@ -110,8 +110,11 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
                     ia.close()
 
-                    cube = SpectralCube.read(fn, format='casa_image')
-                    cube = cube.rechunk(save_to_tmp_dir=True)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits", format='casa_image')
+                    else:
+                        cube = SpectralCube.read(fn, format='casa_image')
+                        cube = cube.rechunk(save_to_tmp_dir=True)
 
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
@@ -133,8 +136,11 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 
                     del cube
 
-                    modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
-                    modcube = modcube.rechunk(save_to_tmp_dir=True)
+                    if os.path.exists(fn.replace(".image", ".model")+".fits"):
+                        modcube = SpectralCube.read(fn.replace(".image", ".model")+".fits", format='fits')
+                    else:
+                        modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
+                        modcube = modcube.rechunk(save_to_tmp_dir=True)
                     modmin = modcube.min()
                     modmax = modcube.max()
                     #modmad = modcube.mad_std()

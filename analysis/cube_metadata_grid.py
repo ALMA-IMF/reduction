@@ -88,7 +88,10 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
                     ia.close()
 
-                    cube = SpectralCube.read(fn)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits")
+                    else:
+                        cube = SpectralCube.read(fn)
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
                     else:
@@ -124,7 +127,10 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 
                     line = 'none'
 
-                    cube = SpectralCube.read(fn)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits")
+                    else:
+                        cube = SpectralCube.read(fn)
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
                     else:
