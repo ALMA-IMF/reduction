@@ -1385,7 +1385,6 @@ selfcal_pars_custom = {
             "refant": "DV01",
             "solint": "inf",
             "solnorm": False,
-            "minsnr": 3,
         },
         2: {
             "calmode": "p",
@@ -1396,7 +1395,6 @@ selfcal_pars_custom = {
             "refant": "DV01",
             "solint": "int",
             "solnorm": False,
-            "minsnr": 3,
         },
         3: {
             "calmode": "p",
@@ -1405,9 +1403,8 @@ selfcal_pars_custom = {
             "minblperant": 3,
             "minsnr": 2,
             "refant": "DV01",
-            "solint": "60s",
+            "solint": "inf",
             "solnorm": False,
-            "minsnr": 3,
         },
         4: {
             "calmode": "p",
@@ -1416,9 +1413,8 @@ selfcal_pars_custom = {
             "minblperant": 3,
             "minsnr": 2,
             "refant": "DV01",
-            "solint": "30s",
+            "solint": "inf",
             "solnorm": False,
-            "minsnr": 3,
         },
     },
     "G328.25_B3_12M_robust2": {
