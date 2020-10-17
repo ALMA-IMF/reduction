@@ -13,8 +13,22 @@ pl.ioff()
 
 array = '12M'
 
-with open('../merged_cont.dat.json', 'r') as fh:
-    contfreqs = json.load(fh)
+with open('../metadata.json', 'r') as fh:
+    metadata = json.load(fh)
+
+def parse_contdotdat(filepath):
+
+    selections = []
+
+    with open(filepath, 'r') as fh:
+        for line in fh:
+            if "LSRK" in line:
+                selections.append(line.split()[0])
+
+
+    return ";".join(selections)
+
+
 
 for robust in (0,):
     ftemplate = '{field}_{band}_spw{spw}_{array}{suffix}_spw{spw}.image.fits'
@@ -27,10 +41,8 @@ for robust in (0,):
                         ('B3', '_lines.contsub',),
                         ('B6', '_lines.contsub',),
                        ):
-        for field in ('W51-E', 'G008.67', 'W51-IRS2', 'G351.77', 'G333.60',):
+        for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93".split():
 
-            if field not in contfreqs:
-                continue
 
             for spw in (0,1,2,3,4,5,6,7):
                 filename = ftemplate.format(spw=spw, field=field, band=band,
@@ -66,7 +78,12 @@ for robust in (0,):
                     spec.quicklook(filename=fig_fn)
                     sel = np.zeros(spec.size, dtype='int')
 
-                    for freqrange in contfreqs[field].split(";"):
+
+                    muid = metadata[band][field]['muid_configs']['12Mshort']
+                    cdatfile = metadata[band][field]['cont.dat'][muid]
+                    contfreqs = parse_contdotdat(cdatfile)
+
+                    for freqrange in contfreqs.split(";"):
                         low,high = freqrange.split("~")
                         high = u.Quantity(high)
                         low = u.Quantity(low, unit=high.unit)

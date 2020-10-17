@@ -1,3 +1,8 @@
+"""
+This is purely a diagnostic script for use with diagnostic_spectra.py
+
+Nothing in this file is intended to be used in any sort of production code
+"""
 import os
 import json
 
