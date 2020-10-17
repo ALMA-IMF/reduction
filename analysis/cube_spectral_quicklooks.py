@@ -78,7 +78,7 @@ rows = []
 spectra_dir = basepath / "spectra"
 os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
-for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60".split():
+for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93".split():
     for band in (3,6):
         for config in ('12M',):
             for line in spws[band]: #list(default_lines.keys()):
@@ -108,9 +108,9 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     print(f"Beginning field {field} band {band} config {config} line {linename} spw {spw} suffix {suffix}")
 
                     if os.path.exists(fn+".fits"):
-                        cube = SpectralCube.read(fn+".fits", format='fits')
+                        cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
                     else:
-                        cube = SpectralCube.read(fn, format='casa_image')
+                        cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
                     #print('Saving to tmpdir')
                     #cube = cube.rechunk(save_to_tmp_dir=True)
 

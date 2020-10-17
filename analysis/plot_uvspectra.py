@@ -65,12 +65,14 @@ def plot_uvspectra(msname, **kwargs):
             ax.set_ylabel("UV Spectrum")
 
             if frq.size != avgspec.size:
-                #raise ValueError(f"spectrum shape = {dat.shape}, frq.shape = {frq.shape}")
-                #continue
-                frq = np.arange(dat.shape[1])
-                ax.set_xlabel("Index")
-                ax.set_ylabel("Who knows?!")
-                unit = u.dimensionless_unscaled
+                frq = msmd.chanfreqs(spw)
+                if frq.size != avgspec.size:
+                    #raise ValueError(f"spectrum shape = {dat.shape}, frq.shape = {frq.shape}")
+                    #continue
+                    frq = np.arange(dat.shape[1])
+                    ax.set_xlabel("Index")
+                    ax.set_ylabel("Who knows?!")
+                    unit = u.dimensionless_unscaled
             else:
                 unit = u.Hz
 
