@@ -2,6 +2,9 @@ import numpy as np
 import pylab as pl
 import os
 from astropy import log
+from astropy import units as u
+from astropy.io import fits
+from astropy.table import Table, Column
 from casatools import table, msmetadata
 
 tb = table()
@@ -39,6 +42,8 @@ def plot_uvspectra(msname, **kwargs):
         else:
             log.error(f"TOO ??? SPWS IN {msname}")
 
+        hdul = fits.HDUList()
+
         ind = 0
         for spw in spws:
             # does not work: frq = msmd.chanfreqs(spw)
@@ -65,9 +70,23 @@ def plot_uvspectra(msname, **kwargs):
                 frq = np.arange(dat.shape[1])
                 ax.set_xlabel("Index")
                 ax.set_ylabel("Who knows?!")
+                unit = u.dimensionless_unscaled
+            else:
+                unit = u.Hz
 
             ax.plot(frq/1e9, avgspec)
             ax.set_title(f"SPW {spw}")
+
+            spectable = Table([Column(data=frq, unit=unit, name='Frequency'),
+                               Column(data=avgspec, name='Spectrum')],
+                              meta={'basename': os.path.basename(msname),
+                                    'fieldname': fieldname,
+                                    'fieldnum': fieldnum,
+                                    'spw': spw,
+                                    'msname': msname,
+                                   }
+                             )
+            hdul.append(fits.BinTableHDU(spectable))
 
             ind += 1
 
@@ -75,6 +94,7 @@ def plot_uvspectra(msname, **kwargs):
 
         basename = os.path.basename(msname)
         fig.savefig(f"{basename}_{fieldname}_{fieldnum}_uvspectra.png")
+        hdul.writeto(f"{basename}_{fieldname}_{fieldnum}_uvspectra.fits")
 
     tb.close()
     msmd.close()

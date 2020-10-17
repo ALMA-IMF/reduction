@@ -13,6 +13,7 @@
 pwd; hostname; date
 
 export WORK_DIR="/orange/adamginsburg/ALMA_IMF/reduction/analysis"
+export WORK_DIR="/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results"
 
 module load git
 

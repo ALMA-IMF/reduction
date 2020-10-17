@@ -85,11 +85,12 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                 for suffix in (".image", ".contsub.image"):
 
                     if line not in default_lines:
-                        line = 'none'
                         spw = line
+                        linename = ''
                         globblob = f"{field}_B{band}_spw{spw}_{config}_spw{spw}{suffix}"
                     else:
-                        globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
+                        linename = line
+                        globblob = f"{field}_B{band}*_{config}_*{linename}{suffix}"
 
 
                     fn = glob.glob(globblob)
@@ -104,22 +105,22 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     if line in default_lines:
                         spw = int(fn.split('spw')[1][0])
 
-                    print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}")
+                    print(f"Beginning field {field} band {band} config {config} line {linename} spw {spw} suffix {suffix}")
 
                     cube = SpectralCube.read(fn, format='casa_image')
                     #print('Saving to tmpdir')
                     #cube = cube.rechunk(save_to_tmp_dir=True)
 
                     print('computing max(axis=(1,2))')
-                    mxspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}_{line}{suffix}_max.fits"
+                    mxspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}_{linename}{suffix}_max.fits"
                     if not os.path.exists(mxspecfn):
                         maxspec = cube.max(axis=(1,2))
                         maxspec.write(mxspecfn)
 
                     print('computing mean(axis=(1,2))')
-                    mnspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}_{line}{suffix}_mean.fits"
+                    mnspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}_{linename}{suffix}_mean.fits"
                     if not os.path.exists(mnspecfn):
-                        meanspec = cube.max(axis=(1,2))
+                        meanspec = cube.mean(axis=(1,2))
                         meanspec.write(mnspecfn)
 
                     del cube

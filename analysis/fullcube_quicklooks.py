@@ -15,6 +15,7 @@ import radio_beam
 import tempfile
 import dask.array as da
 import dask
+from pathlib import Path
 from spectral_cube import SpectralCube,DaskSpectralCube
 from spectral_cube.lower_dimensional_structures import Projection
 print("Completed imports")
@@ -57,6 +58,11 @@ spws = {3: list(range(4)),
         6: list(range(7)),}
 
 suffix = '.image'
+
+cwd = os.getcwd()
+basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results')
+os.chdir(basepath)
+print(f"Changed from {cwd} to {basepath}, now running cube stats assembly")
 
 global then
 then = time.time()
@@ -187,3 +193,5 @@ for band in (6,3):
                         pctmap_K.quicklook('collapse/percentile/pngs/{0}'.format(fn.replace(suffix,"_{0}pct_K.png".format(pct))))
 
                     pl.close('all')
+
+os.chdir(cwd)
