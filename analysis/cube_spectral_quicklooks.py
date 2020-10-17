@@ -114,6 +114,7 @@ for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010
                         cube = cube.rechunk()
                     #print('Saving to tmpdir')
                     #cube = cube.rechunk(save_to_tmp_dir=True)
+                    print(cube)
 
                     print('computing max(axis=(1,2))')
                     mxspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}_{linename}{suffix}_max.fits"

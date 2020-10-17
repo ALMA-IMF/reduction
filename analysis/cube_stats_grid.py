@@ -120,8 +120,10 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                         beam = cube.beam
                     else:
                         beams = cube.beams
-                        beam = beams.smallest_beam()
+                        # use the middle-ish beam
+                        beam = beams[len(beams)//2]
 
+                    print(cube)
 
                     minfreq = cube.spectral_axis.min()
                     maxfreq = cube.spectral_axis.max()

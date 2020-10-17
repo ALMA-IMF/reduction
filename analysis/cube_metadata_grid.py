@@ -100,6 +100,8 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                         # use the middle-ish beam
                         beam = beams[len(beams)//2]
 
+                    print(cube)
+
                     spw = int(fn.split('spw')[1][0])
 
                     minfreq = cube.spectral_axis.min()
