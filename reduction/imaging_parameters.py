@@ -2747,7 +2747,9 @@ line_imaging_parameters_custom = {
     },
     "G010.62_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G010.62_B3_uid___A001_X1296_X1e9_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # "startmodel": "G010.62_B3_uid___A001_X1296_X1e9_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # UF machine has 1e9 instead of 1e5 as of 10/14/2020 - this may change
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G010.62_B3_12M_robust0_contsub": {  # More restrictive params for bright emission
         "usemask": "auto-multithresh",
@@ -2760,11 +2762,15 @@ line_imaging_parameters_custom = {
     },
     "G010.62_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G010.62_B6_uid___A001_X1296_X1df_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # "startmodel": "G010.62_B6_uid___A001_X1296_X1df_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # UF machine has 1db instead of 1df as of 10/16/2020 - this may change
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G012.80_B3_uid___A001_X1296_X1f9_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # "startmodel": "G012.80_B3_uid___A001_X1296_X1f9_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # UF machine has 1fb instead of 1f9 as of 10/16/2020 - this may change
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B3_12M_robust0_contsub": {  # More restrictive params for bright emission
         "usemask": "auto-multithresh",
@@ -2777,7 +2783,9 @@ line_imaging_parameters_custom = {
     },
     "G012.80_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # UF machine has 1ef instead of 1f1 as of 10/16/2020 - this may change
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B3_12M_robust0": {
         "threshold": "6mJy",
@@ -2814,11 +2822,14 @@ line_imaging_parameters_custom = {
     },
     "G328.25_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G328.25_B6_uid___A001_X1296_X161_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # "startmodel": "G328.25_B6_uid___A001_X1296_X161_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # UF machine has 163 instead of 161 as of 10/14/2020 - this may change
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G333.60_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G333.60_B3__continuum_merged_12M_robust0_selfcal5_finaliter.image",
+        # never correct "startmodel": "G333.60_B3__continuum_merged_12M_robust0_selfcal5_finaliter.image",
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal5_finaliter.model.tt0",
     },
     "G333.60_B3_12M_robust0_contsub": {  # More restrictive params for bright, extended emission
         "usemask": "auto-multithresh",
@@ -2854,7 +2865,9 @@ line_imaging_parameters_custom = {
     },
     "G338.93_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G338.93_B3_uid___A001_X1296_X15b_continuum_merged_12M_robust0_selfcal2_finaliter",
+        # "startmodel": "G338.93_B3_uid___A001_X1296_X15b_continuum_merged_12M_robust0_selfcal2_finaliter",
+        # UF machine has 159 instead of 15b as of 10/16/2020 - this may change
+        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G338.93_B6_12M_robust0": {
         "threshold": "6mJy",
@@ -2870,7 +2883,8 @@ line_imaging_parameters_custom = {
     },
     "G353.41_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal3_finaliter",
+        # UF machine has selfcal 6, not selfcal 3 - this will probably not change
+        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G353.41_B6_12M_robust0": {
         "threshold": "6mJy",
@@ -2885,6 +2899,8 @@ line_imaging_parameters_custom = {
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11f_continuum_merged_12M_robust0_selfcal4_finaliter",
+        # UF machine has 11b instead of 11f selfcal3 as of 10/15/2020 - this may change
+        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W43-MM2_B6_12M_robust0": {
         "threshold": "6mJy",
