@@ -1,3 +1,4 @@
+import os
 import pylab as pl
 import numpy as np
 import json
@@ -213,6 +214,7 @@ for fignum,band in enumerate((3,6)):
                 # 2 = covered
                 included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 1).sum() * dnu
 
+                robust = 0 # hard-code.... yike.
                 specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.meanspec.fits'
                 if os.path.exists(specname):
                     pl.figure(4).clf()
