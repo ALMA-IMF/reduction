@@ -26,6 +26,8 @@ def plot_uvspectra(msname, **kwargs):
     fields = msmd.fieldnames()
 
     for fieldnum,fieldname in enumerate(fields):
+        if 'J' in fieldname:
+            continue
 
 
         pl.clf()
