@@ -60,6 +60,7 @@ def plot_uvspectra(msname, **kwargs):
             stb = tb.query(f'ANTENNA1 != ANTENNA2 && FIELD_ID == {fieldnum} && DATA_DESC_ID == {spw}')
             dat = stb.getcol('DATA')
             if dat.ndim < 3:
+                stb.close()
                 continue
             # axis = 0 is poln
             # axis = 1 is spec
@@ -85,6 +86,7 @@ def plot_uvspectra(msname, **kwargs):
             band = 'B3' if frq.max() < 200e9 else 'B6'
             if fieldname not in metadata[band]:
                 # probably not a target source
+                stb.close()
                 continue
             muid = metadata[band][fieldname]['muid_configs']['12Mshort']
             cdatfile = metadata[band][fieldname]['cont.dat'][muid]
