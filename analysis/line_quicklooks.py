@@ -210,6 +210,7 @@ for field in "G328.25 G351.77 W51-IRS2 W43-MM2 G327.29 G338.93 W51-E G353.41 G00
                                    overwrite=True)
                         mom2.quicklook('collapse/moment2/pngs/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms_masked.png")))
 
+                    mcube = mcube.with_mask(np.isfinite(mx))
                     argmax = mcube.argmax(axis=0)#, how='ray')
                     hdu = mx.hdu
                     hdu.data = argmax
