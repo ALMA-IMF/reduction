@@ -88,7 +88,7 @@ for robust in (0,):
                         dat_to_plot[~sel] = np.nan
                         pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
                                 zorder=-5, alpha=0.75)
-                    else:
+                    elif len(usel) > 0:
                         dat_to_plot = np.empty(spec.value.shape)
                         dat_to_plot[:] = np.nan
                         # skip zero
@@ -96,6 +96,9 @@ for robust in (0,):
                             dat_to_plot[sel == selval] = spec.value[sel == selval]
                         pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
                                 zorder=selval-10, alpha=0.75, color='orange')
+                    else:
+                        log.error(f"No selected continuum for {field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
+                        continue
                     print(f"{field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
                     pl.title(f"{field}_{array}_{band}_spw{spw}_robust{robust}{suffix}.{operation}")
                     pl.savefig(fig_fn)
