@@ -107,7 +107,7 @@ def plot_uvspectra(msname, **kwargs):
                 dat_to_plot[~sel] = np.nan
                 pl.plot(frq/1e9, avgspec, linewidth=4,
                         zorder=-5, alpha=0.75)
-            else:
+            elif len(usel) > 1:
                 dat_to_plot = np.empty(avgspec.shape)
                 dat_to_plot[:] = np.nan
                 # skip zero

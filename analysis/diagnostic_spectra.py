@@ -88,7 +88,7 @@ for robust in (0,):
                         dat_to_plot[~sel] = np.nan
                         pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
                                 zorder=-5, alpha=0.75)
-                    elif len(usel) > 0:
+                    elif len(usel) > 1:
                         dat_to_plot = np.empty(spec.value.shape)
                         dat_to_plot[:] = np.nan
                         # skip zero
