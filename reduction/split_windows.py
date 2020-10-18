@@ -44,6 +44,7 @@ ORION.B9.cont.dat. Note that the names are case sensitive.
 import os
 import glob
 import json
+import time
 import numpy as np
 
 import sys
@@ -102,6 +103,8 @@ contdat_files = {}
 
 science_goals = glob.glob("science_goal*")
 
+t1 = time.time()
+
 for sg in science_goals:
     # walk only the science goals: walking other directories can be extremely
     # inefficient
@@ -113,6 +116,7 @@ for sg in science_goals:
             if fn[-10:] == ".split.cal":
 
                 logprint("Collecting metadata for {0} in {1}".format(fn, dirpath))
+                t0 = time.time()
 
                 filename = os.path.join(dirpath, fn)
                 msmd.open(filename)
@@ -137,7 +141,7 @@ for sg in science_goals:
                     if len(antnames) <= 4:
                         with open(os.path.join(dirpath, "{0}_{1}_TP".format(field, band)), 'w') as fh:
                             fh.write("{0}".format(antnames))
-                        logprint("Skipping total power MS {0}".format(fn))
+                        logprint("Skipping total power MS {0} [Elapsed: {1}]".format(fn, time.time()-t0))
                         msmd.close()
                         continue
                     else:
@@ -146,7 +150,7 @@ for sg in science_goals:
                 try:
                     summary = msmd.summary()
                 except RuntimeError:
-                    logprint("Skipping FAILED MS {0}".format(fn))
+                    logprint("Skipping FAILED MS {0} [Elapsed: {1}]".format(fn, time.time() - t0))
                     msmd.close()
                     continue
 
@@ -258,11 +262,12 @@ for sg in science_goals:
                 # touch the filename
                 with open(os.path.join(dirpath, "{0}_{1}_{2}".format(field, band, array_config)), 'w') as fh:
                     fh.write("{0}".format(antnames))
-                logprint("Acquired metadata for {0} in {1}_{2}_{3} successfully"
-                         .format(fn, field, band, array_config))
+                logprint("Acquired metadata for {0} in {1}_{2}_{3} successfully [Elapsed: {4}]"
+                         .format(fn, field, band, array_config, time.time() - t0))
 
 
                 msmd.close()
+
 
 with open('metadata.json', 'w') as fh:
     json.dump(metadata, fh)
@@ -271,6 +276,7 @@ with open('contdatfiles.json', 'w') as fh:
     json.dump(contdat_files, fh)
 
 logprint("Completed metadata assembly")
+logprint("Metadata acquisition took {0} seconds".format(time.time() - t1))
 
 # extract the fields from the metadata
 all_fields = set(str(x) for x in metadata['B3']) | set(str(x) for x in metadata['B6'])
