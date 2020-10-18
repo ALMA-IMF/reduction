@@ -92,29 +92,30 @@ def plot_uvspectra(msname, **kwargs):
 
             sel = np.zeros(frq.size, dtype='int')
 
-            for freqrange in contfreqs.split(";"):
-                low,high = freqrange.split("~")
-                high = u.Quantity(high)
-                low = u.Quantity(low, unit=high.unit)
-                sel += (frq*unit > low) & (frq*unit < high)
-                #print(f"{field}_{spw}: {low}-{high} count={sel.sum()}")
+            if unit is not u.dimensionless_unscaled:
+                for freqrange in contfreqs.split(";"):
+                    low,high = freqrange.split("~")
+                    high = u.Quantity(high)
+                    low = u.Quantity(low, unit=high.unit)
+                    sel += (frq*unit > low) & (frq*unit < high)
+                    #print(f"{field}_{spw}: {low}-{high} count={sel.sum()}")
 
-            usel = np.unique(sel)
-            if set(usel) == {0,1}:
-                sel = sel.astype('bool')
+                usel = np.unique(sel)
+                if set(usel) == {0,1}:
+                    sel = sel.astype('bool')
 
-                dat_to_plot = avgspec.copy()
-                dat_to_plot[~sel] = np.nan
-                pl.plot(frq/1e9, avgspec, linewidth=4,
-                        zorder=-5, alpha=0.75)
-            elif len(usel) > 1:
-                dat_to_plot = np.empty(avgspec.shape)
-                dat_to_plot[:] = np.nan
-                # skip zero
-                for selval in usel[1:]:
-                    dat_to_plot[sel == selval] = avgspec[sel == selval]
-                pl.plot(frq/1e9, dat_to_plot, linewidth=4,
-                        zorder=selval-10, alpha=0.75, color='orange')
+                    dat_to_plot = avgspec.copy()
+                    dat_to_plot[~sel] = np.nan
+                    pl.plot(frq/1e9, avgspec, linewidth=4,
+                            zorder=-5, alpha=0.75)
+                elif len(usel) > 1:
+                    dat_to_plot = np.empty(avgspec.shape)
+                    dat_to_plot[:] = np.nan
+                    # skip zero
+                    for selval in usel[1:]:
+                        dat_to_plot[sel == selval] = avgspec[sel == selval]
+                    pl.plot(frq/1e9, dat_to_plot, linewidth=4,
+                            zorder=selval-10, alpha=0.75, color='orange')
 
             ax.plot(frq/1e9, avgspec)
             ax.set_title(f"SPW {spw}")
