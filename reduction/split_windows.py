@@ -385,6 +385,7 @@ for band in bands:
 
         for path, vis, spws, muid in zip(mymd['path'], mymd['vis'], mymd['spws'], mymd['muid']):
 
+            t0 = time.time()
             contfile = mymd['cont.dat'][muid]
 
             if not os.path.exists(contfile):
@@ -533,6 +534,9 @@ for band in bands:
                              outputvis=contvis_bestsens,
                              width=widths,
                              datacolumn=datacolumn), "Split Failed 2"
+
+            logprint("Finished splitting for {0} to {1}, {2}:{3} in {4} seconds"
+                     .format(visfile, contvis, band, field, time.time() - t0))
 
 
         member_uid = path.split("member.")[-1].split("/")[0]
