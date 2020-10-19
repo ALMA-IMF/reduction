@@ -535,7 +535,7 @@ for continuum_ms in continuum_mses:
                                   phasecenter, maskname,
                                   antennae)
 
-        logprint("Skipped completed file {0} (dirty),"
+        logprint("Skipped completed file {0},"
                  " populated model column".format(imname),
                  origin='almaimf_cont_selfcal')
 
