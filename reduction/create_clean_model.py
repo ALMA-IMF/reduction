@@ -24,6 +24,9 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     # Create continuum_model.image.tt0 and .tt1 regridded to the cube spatial frame, but still with 1 spectral pix
     tt0name = "{contmodelpath}/{contimagename}.model.tt0".format(contimagename=contimagename, contmodelpath=contmodel_path)
     tt1name = "{contmodelpath}/{contimagename}.model.tt1".format(contimagename=contimagename, contmodelpath=contmodel_path)
+    if not os.path.exists(tt0name):
+        raise IOError("Continuum startmodel file {0} does not exist".format(tt0name))
+
     temp_dict_cont_tt0 = imregrid(imagename=tt0name, template="get")
     # not needed temp_dict_cont_tt1 = imregrid(imagename=tt1name, template="get")
 

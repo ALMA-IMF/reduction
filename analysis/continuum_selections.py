@@ -1,3 +1,4 @@
+import os
 import pylab as pl
 import numpy as np
 import json
@@ -5,6 +6,8 @@ from pathlib import Path
 from astropy import units as u
 from astropy import constants
 from astropy import log
+from astropy.io import fits
+from astropy.wcs import WCS
 from astropy.table import Table
 from pathlib import Path
 
@@ -21,6 +24,11 @@ def parse_contdotdat(filepath):
 
 
     return ";".join(selections)
+
+xlabel_offset = {
+    3: 0.00,
+    6: 0.20,
+}
 
 lines_to_overplot = {
     "n2hp": "93.173700GHz",
@@ -58,6 +66,8 @@ zmin = 1-(vmax/constants.c).decompose()
 zmax = 1+np.abs(vmin/constants.c).decompose()
 dzm = 1+((vmax-vmin)/constants.c).decompose()
 
+
+# these are basically just notes that get overwritten below
 frequency_coverage = {
     'B3': {
            1: (93.0931359128077, 93.21807487765145,    2048),
@@ -89,7 +99,12 @@ frange = {band: np.array((np.min([np.array(metadata[band][field]['freqs']).min(a
                           np.max([np.array(metadata[band][field]['freqs']).max(axis=0) for field in metadata[band]], axis=0)[:,1])).T/1e9
           for band in metadata}
 sorted_inds = {band: np.argsort(frange[band][:,0]) for band in frange}
-frequency_coverage = {band: {ind: tuple(frange[band][ind,:]) + (int(frequency_coverage[band][ind][2] * (frange[band][ind,1]-frange[band][ind,0])/(frequency_coverage[band][ind][1]-frequency_coverage[band][ind][0])),) for ind in sorted_inds[band]} for band in frange}
+frequency_coverage = {band:
+                      {ind: tuple(frange[band][ind,:]) +
+                       (int(frequency_coverage[band][ind][2] *
+                            (frange[band][ind,1]-frange[band][ind,0]) /
+                            (frequency_coverage[band][ind][1]-frequency_coverage[band][ind][0])),)
+                       for ind in sorted_inds[band]} for band in frange}
 
 
 configmap = {'7M': 0,
@@ -137,11 +152,11 @@ for fignum,band in enumerate((3,6)):
                 continue
 
             muids = set(metadata[bandname][field]['muid'])
-            baseline_lengths = list(map(int, metadata[bandname][field]['cont.dat']))
-            muid_to_bl = {muid: list(map(int, [key for key, contnm in metadata[bandname][field]['cont.dat'].items() if muid in contnm])) for muid in muids}
-            muid_configs = {muid: '7M' if any(x < 100 for x in muid_to_bl[muid])
-                            else '12Mshort' if any(x < lb_threshold[band] for x in muid_to_bl[muid])
-                            else '12Mlong' if any(x > lb_threshold[band] for x in muid_to_bl[muid])
+            baseline_lengths = metadata[bandname][field]['max_bl']
+            muid_to_bl = {k:int(v) for k,v in baseline_lengths.items()}
+            muid_configs = {muid: '7M' if muid_to_bl[muid] < 100
+                            else '12Mshort' if muid_to_bl[muid] < lb_threshold[band]
+                            else '12Mlong' if muid_to_bl[muid] > lb_threshold[band]
                             else None
                             for muid in muid_to_bl
                            }
@@ -198,6 +213,25 @@ for fignum,band in enumerate((3,6)):
                 # 1 = included
                 # 2 = covered
                 included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 1).sum() * dnu
+
+                robust = 0 # hard-code.... yike.
+                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.fits'
+                if os.path.exists(specname):
+                    print(specname)
+                    pl.figure(4).clf()
+                    fh = fits.open(specname)
+                    ww = WCS(fh[0].header)
+                    specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0] / 1e9
+                    pl.plot(specfrq, fh[0].data.squeeze())
+                    axlims = pl.axis()
+                    pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
+                    pl.axis(axlims)
+                    pl.xlabel("Frequency")
+                    pl.ylabel("Flux [Jy/beam]")
+                    pl.title(os.path.split(specname)[-1].replace(".fits", ""))
+                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.coverage.png',
+                               bbox_inches='tight')
+
 
                 if muid == 'member.uid___A001_X1296_X127':
                     assert not np.isnan(included_bw[band][spw][field][config])
@@ -259,7 +293,7 @@ for fignum,band in enumerate((3,6)):
     pl.tight_layout()
     pl.subplots_adjust(wspace=0.05, hspace=0)
 
-    fig.text(0.5, 0.04, 'Frequency (GHz)', ha='center')
+    fig.text(0.5, xlabel_offset[band], 'Frequency (GHz)', ha='center')
 
     pl.savefig(f"continuum_selection_regions_band{band}.png", bbox_inches='tight')
     pl.savefig(f"continuum_selection_regions_band{band}.pdf", bbox_inches='tight')

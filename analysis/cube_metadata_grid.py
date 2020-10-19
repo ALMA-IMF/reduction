@@ -27,6 +27,8 @@ if os.getenv('NO_PROGRESSBAR') is None:
 nthreads = 1
 scheduler = 'synchronous'
 
+os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+
 if os.getenv('DASK_THREADS') is not None:
     try:
         nthreads = int(os.getenv('DASK_THREADS'))
@@ -70,7 +72,7 @@ colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmas
 
 rows = []
 
-for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60".split():
+for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60".split():
     for band in (3,6):
         for config in ('7M12M', '12M'):
             for line in default_lines:
@@ -88,12 +90,21 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
                     ia.close()
 
-                    cube = SpectralCube.read(fn)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits", use_dask=True)
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                    else:
+                        cube = SpectralCube.read(fn)
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                        cube = cube.rechunk()
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
                     else:
                         beams = cube.beams
-                        beam = beams.smallest_beam()
+                        # use the middle-ish beam
+                        beam = beams[len(beams)//2]
+
+                    print(cube)
 
                     spw = int(fn.split('spw')[1][0])
 
@@ -123,7 +134,10 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
 
                     line = 'none'
 
-                    cube = SpectralCube.read(fn)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits", use_dask=True)
+                    else:
+                        cube = SpectralCube.read(fn)
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
                     else:

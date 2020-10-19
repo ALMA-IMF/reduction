@@ -19,9 +19,9 @@ default_lines = {'n2hp': '93.173700GHz',
 
 
 dirnames = {'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',
-            'linecubes_12m': 'spw[0-9]_12M_[!s]',
+            'linecubes_12m': 'spw[0-9]_12M_[a-z][!p]',
             'fullcubes_7m12m': 'spw[0-9]_7M12M_spw[0-9]',
-            'linecubes_7m12m': 'spw[0-9]_7M12M_[!s]',
+            'linecubes_7m12m': 'spw[0-9]_7M12M_[a-z][!p]',
             'bsens': 'bsens_12M_*.tt0',
             'cleanest': 'merged_12M*.tt0',
             '7m12m': 'merged_7M12M*.tt0',
@@ -33,7 +33,7 @@ dirnames = {'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',
 
 basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 
-releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/')
+releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/')
 
 with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
     with open(basepath / '../scigoals/file_tree.txt', 'w') as fh2:

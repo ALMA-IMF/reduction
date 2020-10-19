@@ -27,8 +27,10 @@ if os.getenv('NO_PROGRESSBAR') is None:
     pbar = ProgressBar()
     pbar.register()
 
-#nthreads = 1
-#scheduler = 'synchronous'
+nthreads = 1
+scheduler = 'synchronous'
+
+os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
 if os.getenv('DASK_THREADS') is not None:
     try:
@@ -78,7 +80,7 @@ cache_stats_file = open(tbldir / "cube_stats.txt", 'w')
 
 rows = []
 
-for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60".split():
+for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1".split():
     for band in (3,6):
         for config in ('7M12M', '12M'):
             for line in list(default_lines.keys()) + spws[band]:
@@ -110,37 +112,56 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                     history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
                     ia.close()
 
-                    cube = SpectralCube.read(fn, format='casa_image')
-                    cube = cube.rechunk(save_to_tmp_dir=True)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                    else:
+                        cube = SpectralCube.read(fn, format='casa_image')
+                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                        cube = cube.rechunk(save_to_tmp_dir=True)
 
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
                     else:
                         beams = cube.beams
-                        beam = beams.smallest_beam()
+                        # use the middle-ish beam
+                        beam = beams[len(beams)//2]
 
+                    print(cube)
 
                     minfreq = cube.spectral_axis.min()
                     maxfreq = cube.spectral_axis.max()
                     restfreq = cube.wcs.wcs.restfrq
 
-                    min = cube.min()
-                    max = cube.max()
-                    #mad = cube.mad_std()
-                    std = cube.std()
-                    sum = cube.sum()
-                    mean = cube.mean()
+                    stats = cube.statistics()
+                    min = stats['min']
+                    max = stats['max']
+                    std = stats['sigma']
+                    sum = stats['sum']
+                    mean = stats['mean']
+
+
+                    #min = cube.min()
+                    #max = cube.max()
+                    ##mad = cube.mad_std()
+                    #std = cube.std()
+                    #sum = cube.sum()
+                    #mean = cube.mean()
 
                     del cube
 
-                    modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
-                    modcube = modcube.rechunk(save_to_tmp_dir=True)
-                    modmin = modcube.min()
-                    modmax = modcube.max()
-                    #modmad = modcube.mad_std()
-                    modstd = modcube.std()
-                    modsum = modcube.sum()
-                    modmean = modcube.mean()
+                    if os.path.exists(fn.replace(".image", ".model")+".fits"):
+                        modcube = SpectralCube.read(fn.replace(".image", ".model")+".fits", format='fits', use_dask=True)
+                    else:
+                        modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
+                        modcube = modcube.rechunk(save_to_tmp_dir=True)
+
+                    modstats = modcube.statistics()
+                    modmin = modstats['min']
+                    modmax = modstats['max']
+                    modstd = modstats['sigma']
+                    modsum = modstats['sum']
+                    modmean = modstats['mean']
 
                     del modcube
 

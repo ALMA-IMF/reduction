@@ -49,6 +49,8 @@ default_lines = {'n2hp': '93.173700GHz',
 
 suffix = '.image'
 
+os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 os.chdir(basepath)
@@ -62,9 +64,9 @@ def dt():
     print(f"Elapsed: {now-then}")
     then = now
 
-for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60".split():
+for field in "G328.25 G351.77 W51-IRS2 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 W43-MM1 G010.62 G012.80 G333.60".split():
     for band in (3,6):
-        for config in ('7M12M', '12M'):
+        for config in ('12M',): #'7M12M',
             for line in default_lines:
                 for suffix in (".image", ".contsub.image"):
                     globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
@@ -81,14 +83,21 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                         continue
 
                     modfile = fn.replace(suffix, ".model")
-                    if os.path.exists(modfile):
+                    if os.path.exists(modfile+".fits"):
+                        modcube = SpectralCube.read(modfile+".fits", use_dask=True)
+                        modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                        modcube.beam_threshold=100000
+                    elif os.path.exists(modfile):
                         modcube = SpectralCube.read(modfile, format='casa_image', use_dask=True)
                         modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         modcube.beam_threshold=100000
 
                     rest_value = u.Quantity(default_lines[line])
 
-                    cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
+                    else:
+                        cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
                     cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     cube.beam_threshold = 1
                     #cube.allow_huge_operations = True
@@ -201,6 +210,7 @@ for field in "W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328
                                    overwrite=True)
                         mom2.quicklook('collapse/moment2/pngs/{0}'.format(fn.replace(suffix,"_mom2fwhm_kms_masked.png")))
 
+                    mcube = mcube.with_mask(np.isfinite(mx))
                     argmax = mcube.argmax(axis=0)#, how='ray')
                     hdu = mx.hdu
                     hdu.data = argmax

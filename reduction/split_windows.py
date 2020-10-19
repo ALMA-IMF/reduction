@@ -44,6 +44,7 @@ ORION.B9.cont.dat. Note that the names are case sensitive.
 import os
 import glob
 import json
+import time
 import numpy as np
 
 import sys
@@ -102,6 +103,8 @@ contdat_files = {}
 
 science_goals = glob.glob("science_goal*")
 
+t1 = time.time()
+
 for sg in science_goals:
     # walk only the science goals: walking other directories can be extremely
     # inefficient
@@ -109,10 +112,11 @@ for sg in science_goals:
         if dirpath.count(os.path.sep) >= 5:
             # skip over things below the sci/gro/mou/<blah>/* level
             continue
-        for fn in dirnames:
+        for fn in sorted(dirnames):
             if fn[-10:] == ".split.cal":
 
                 logprint("Collecting metadata for {0} in {1}".format(fn, dirpath))
+                t0 = time.time()
 
                 filename = os.path.join(dirpath, fn)
                 msmd.open(filename)
@@ -137,7 +141,7 @@ for sg in science_goals:
                     if len(antnames) <= 4:
                         with open(os.path.join(dirpath, "{0}_{1}_TP".format(field, band)), 'w') as fh:
                             fh.write("{0}".format(antnames))
-                        logprint("Skipping total power MS {0}".format(fn))
+                        logprint("Skipping total power MS {0} [Elapsed: {1}]".format(fn, time.time()-t0))
                         msmd.close()
                         continue
                     else:
@@ -146,7 +150,7 @@ for sg in science_goals:
                 try:
                     summary = msmd.summary()
                 except RuntimeError:
-                    logprint("Skipping FAILED MS {0}".format(fn))
+                    logprint("Skipping FAILED MS {0} [Elapsed: {1}]".format(fn, time.time() - t0))
                     msmd.close()
                     continue
 
@@ -158,7 +162,14 @@ for sg in science_goals:
                 # muid is 1 level above calibrated
                 muid = dirpath.split("/")[-2]
 
-                frqs = [msmd.chanfreqs(spw) for spw in spws]
+                # need the full ms to get LSRK frequencies
+                ms.open(filename)
+                try:
+                    frqs = [ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws]
+                except TypeError:
+                    frqs = [ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws]
+                ms.close()
+
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
 
                 if field in metadata[band]:
@@ -199,15 +210,28 @@ for sg in science_goals:
 
                 if 'muid_configs' in metadata[band][field]:
                     metadata[band][field]['muid_configs'][array_config] = muid
+                    metadata[band][field]['max_bl'][muid] = max_bl
                 else:
                     metadata[band][field]['muid_configs'] = {array_config: muid}
+                    metadata[band][field]['max_bl'] = {muid: max_bl}
 
+
+                # Custom cont.dat files:
+                # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used
+                # else if
+                # <field>.<band>.cont.dat exists, it will be used.
+                # we only have 12m and 7m now; everything is otherwise merged
+                # (though maybe we'll merge further still)
+                arrayname = '12m' if '12M' in array_config else '7m'
                 contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                        "{field}.{band}.{array}.cont.dat".format(field=field, band=band, array=array_config.lower()))
+                                        'contdat',
+                                        "{field}.{band}.{array}.cont.dat".format(field=field, band=band,
+                                                                                 array=arrayname))
                 if os.path.exists(contfile):
                     logprint("##### Found manually-created cont.dat file {0}".format(contfile))
                 else:
                     contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
+                                            'contdat',
                                             "{field}.{band}.cont.dat".format(field=field, band=band))
                     if os.path.exists(contfile):
                         logprint("##### Found manually-created cont.dat file {0}".format(contfile))
@@ -219,28 +243,31 @@ for sg in science_goals:
                     contdat_files[field + band + muid] = contdatpath
 
                     if 'cont.dat' in metadata[band][field]:
-                        metadata[band][field]['cont.dat'][max_bl] = contdatpath
+                        metadata[band][field]['cont.dat'][muid] = contdatpath
                     else:
-                        metadata[band][field]['cont.dat'] = {max_bl: contdatpath}
+                        metadata[band][field]['cont.dat'] = {muid: contdatpath}
                 else:
                     if 'cont.dat' in metadata[band][field]:
-                        if max_bl in metadata[band][field]['cont.dat']:
-                            logprint("*** Found DUPLICATE KEY={max_bl} in cont.dat metadata for band={band} field={field}"
-                                     .format(max_bl=max_bl, band=band, field=field))
+                        if muid in metadata[band][field]['cont.dat']:
+                            logprint("*** Found DUPLICATE KEY={muid},{max_bl}"
+                                     " in cont.dat metadata for band={band} field={field}"
+                                     .format(max_bl=max_bl, muid=muid,
+                                             band=band, field=field))
                         else:
-                            metadata[band][field]['cont.dat'][max_bl] = 'notfound_'+ ran_findcont
+                            metadata[band][field]['cont.dat'][muid] = 'notfound_'+ ran_findcont
                     else:
-                        metadata[band][field]['cont.dat'] = {max_bl: 'notfound_'+ ran_findcont}
+                        metadata[band][field]['cont.dat'] = {muid: 'notfound_'+ ran_findcont}
                     contdat_files[field + band + muid] = 'notfound_'+ ran_findcont
 
                 # touch the filename
                 with open(os.path.join(dirpath, "{0}_{1}_{2}".format(field, band, array_config)), 'w') as fh:
                     fh.write("{0}".format(antnames))
-                logprint("Acquired metadata for {0} in {1}_{2}_{3} successfully"
-                         .format(fn, field, band, array_config))
+                logprint("Acquired metadata for {0} in {1}_{2}_{3} successfully [Elapsed: {4}]"
+                         .format(fn, field, band, array_config, time.time() - t0))
 
 
                 msmd.close()
+
 
 with open('metadata.json', 'w') as fh:
     json.dump(metadata, fh)
@@ -249,6 +276,7 @@ with open('contdatfiles.json', 'w') as fh:
     json.dump(contdat_files, fh)
 
 logprint("Completed metadata assembly")
+logprint("Metadata acquisition took {0} seconds".format(time.time() - t1))
 
 # extract the fields from the metadata
 all_fields = set(str(x) for x in metadata['B3']) | set(str(x) for x in metadata['B6'])
@@ -357,18 +385,8 @@ for band in bands:
 
         for path, vis, spws, muid in zip(mymd['path'], mymd['vis'], mymd['spws'], mymd['muid']):
 
-            contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                    "{field}.{band}.cont.dat".format(field=field, band=band))
-            if os.path.exists(contfile):
-                logprint("##### Found manually-created cont.dat file {0}".format(contfile))
-            else:
-                # the cont.dat file should be in the calibration/ directory in the
-                # same SB folder
-                logprint("Did not find a manually-created cont.dat file named {0}; instead using local cont.dat.".format(contfile))
-                contfile = os.path.join(path, '../calibration/cont.dat')
-                logprint("Using cont.dat file {0} for {1}:{2}".format(contfile,
-                                                                      band,
-                                                                      field))
+            t0 = time.time()
+            contfile = mymd['cont.dat'][muid]
 
             if not os.path.exists(contfile):
                 logprint("****** No cont.dat file found for {0} = {1}:{2}.  "
@@ -517,6 +535,9 @@ for band in bands:
                              width=widths,
                              datacolumn=datacolumn), "Split Failed 2"
 
+            logprint("Finished splitting for {0} to {1}, {2}:{3} in {4} seconds"
+                     .format(visfile, contvis, band, field, time.time() - t0))
+
 
         member_uid = path.split("member.")[-1].split("/")[0]
         merged_continuum_fn = os.path.join(path,
@@ -553,6 +574,10 @@ for band in bands:
         if os.path.exists(merged_continuum_bsens_fn):
             logprint("Skipping merged continuum bsens {0} because it's done"
                      .format(merged_continuum_bsens_fn),)
+        elif field not in fields:
+            logprint("Skipping {0} because it is not one of the "
+                     "selected fields (but its metadata is being "
+                     "collected in continuum_mses.txt)".format(merged_continuum_bsens_fn))
         else:
             logprint("Merging bsens continuum for {0} {1} into {2}"
                      .format(merged_continuum_bsens_fn, field, band),)

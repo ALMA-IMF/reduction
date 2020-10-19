@@ -38,9 +38,10 @@ except ImportError:
     # futureproofing: CASA 6 imports this way
     from casatasks import tclean, uvcontsub, impbcor, concat, exportfits
     from casatasks import casalog
-from parse_contdotdat import parse_contdotdat, freq_selection_overlap
+from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
+from unite_contranges import merge_contdotdat
 from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
 from create_clean_model import create_clean_model
@@ -51,6 +52,8 @@ ms = mstool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
+with open('metadata.json', 'r') as fh:
+    metadata = json.load(fh)
 
 if os.getenv('LOGFILENAME'):
     casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
@@ -118,6 +121,9 @@ do_export_fits = True
 # CASAguides recommend chanchunks=-1, but this resulted in: 2018-09-05 23:16:34     SEVERE  tclean::task_tclean::   Exception from task_tclean : Invalid Gridding/FTM Parameter set : Must have at least 1 chanchunk
 chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 
+# default: don't continue imaging
+# (TODO: check whether we actually want to continue sometimes)
+continue_imaging = False
 
 def set_impars(impars, line_name, vis, spwnames=None):
     if line_name not in ('full', ) + spwnames:
@@ -286,7 +292,9 @@ for band in band_list:
                 continue
 
 
-            if any('concat' in x for x in vis):
+            if os.getenv('DO_NOT_CONCAT'):
+                concatvis = vis
+            elif any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
             elif not os.path.exists(concatvis):
@@ -302,39 +310,38 @@ for band in band_list:
                     concat(vis=vis, concatvis=concatvis)
 
             if do_contsub:
-                # the cont_channel_selection is purely in frequency, so it should
-                # "just work"
-                # (there may be several cont.dats - we're just grabbing the first)
-                # Different data sets are actually found to have different channel selections.
-                path = os.path.split(vis[0])[0]
-
 
                 if not os.path.exists(concatvis+".contsub"):
                     logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
                              origin='almaimf_line_imaging')
 
-                    contfile = os.path.join(os.getenv('ALMAIMF_ROOTDIR'),
-                                            "{field}.{band}.cont.dat".format(field=field, band=band))
-                    if not os.path.exists(contfile):
-                        contfile = os.path.join(path, '../calibration/cont.dat')
+                    contfile12m, contfile7m = merge_contdotdat(band, field,
+                                                               basepath='.',
+                                                               datfiles=metadata[band][field]['cont.dat'].values())
+                    contfile = contfile12m
 
                     cont_freq_selection = parse_contdotdat(contfile)
                     logprint("Selected {0} as continuum channels".format(cont_freq_selection), origin='almaimf_line_imaging')
-                    # ALTERNATIVE, manual selection
+
                     msmd.open(concatvis)
                     spws = msmd.spwsforfield(field)
                     msmd.close()
-                    new_freq_selection = ",".join([
-                        freq_selection_overlap(ms=concatvis,
-                                               freqsel=cont_freq_selection,
-                                               spw=spw_)
-                        for spw_ in spws])
-                    # Let CASA decide: All spws, here's the freqsel.  Go.
-                    # (this does not work)
-                    # new_freq_selection = '*:'+cont_freq_selection
+
+                    # obtain the frequency arrays for each spectral window
+                    ms.open(concatvis)
+                    try:
+                        frqs = {spw: ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws}
+                    except TypeError:
+                        frqs = {spw: ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws}
+                    ms.close()
+
+                    # calculate the line channels from the contdatfile (which is in LSRK)
+                    # and the frequency arrays
+                    linechannels = contchannels_to_linechannels(cont_freq_selection, frqs)
+
                     uvcontsub(vis=concatvis,
-                              fitspw=new_freq_selection,
-                              excludechans=False, # fit the regions specified in fitspw
+                              fitspw=linechannels,
+                              excludechans=True, # fit the non-line channels
                               combine='none', # DO NOT combine spws for continuum ID (since that implies combining 7m <-> 12m)
                               solint='int', # fit each integration (may be noisy?)
                               fitorder=1,
@@ -387,7 +394,14 @@ for band in band_list:
             impars['phasecenter'] = phasecenter
             impars['field'] = [field.encode()]
 
-            make_dirty_image = False
+            mask_out_endchannels = False
+            if 'mask_out_endchannels' in impars:
+                # remove this parameter
+                mask_out_endchannels = impars.pop('mask_out_endchannels')
+
+            # default Oct 13, 2020: always make dirty image
+            # so we can have a mask to work with
+            make_dirty_image = True
             if 'threshold' in impars:
                 if 'sigma' in impars['threshold']:
                     make_dirty_image = True
@@ -415,7 +429,8 @@ for band in band_list:
                     del impars_dirty['startmodel']
 
                 impars_dirty['parallel'] = parallel
-                impars_dirty['usemask'] = None
+                # use the same mask as specified for the main run
+                # impars_dirty['usemask'] = None
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
@@ -521,6 +536,7 @@ for band in band_list:
                              origin='almaimf_line_imaging')
                     del impars['startmodel']
                 else:
+                    make_continuum_startmodel = True
                     # remove the model image
                     # (it should be created by dirty imaging above)
                     if did_dirty_imaging and os.path.exists(lineimagename+".model"):
@@ -529,12 +545,14 @@ for band in band_list:
                                  origin='almaimf_line_imaging')
                         shutil.rmtree(lineimagename+".model")
                     elif (not did_dirty_imaging) and (os.path.exists(lineimagename+".model")):
-                        raise ValueError("Found an existing .model file, but startmodel "
-                                         "was set.  The pipeline won't automatically "
-                                         "pick between these models, because the existing "
-                                         "model could be a good one.  Either remove the "
-                                         "existing model {0}, or remove startmodel."
-                                         .format(lineimagename+".model"))
+                        logprint("Found an existing .model file, but startmodel "
+                                 "was set.  The pipeline will continue "
+                                 "assuming this is a continuation clean, and will "
+                                 "pick up with the existing model rather than "
+                                 "the specified startmodel.",
+                                 origin='almaimf_line_imaging')
+                        del impars['startmodel']
+                        make_continuum_startmodel = False
                     else:
                         # lineimagename+".model" does not exist
                         pass # all is happy
@@ -547,10 +565,11 @@ for band in band_list:
                         for fn in glob.glob(lineimagename+".workdirectory/*.model"):
                             shutil.rmtree(fn)
 
-                    contmodel = create_clean_model(cubeimagename=baselineimagename,
-                                                   contimagename=impars['startmodel'],
-                                                   imaging_results_path=imaging_root)
-                    impars['startmodel'] = contmodel
+                    if make_continuum_startmodel:
+                        contmodel = create_clean_model(cubeimagename=baselineimagename,
+                                                       contimagename=impars['startmodel'],
+                                                       imaging_results_path=imaging_root)
+                        impars['startmodel'] = contmodel
 
 
 
@@ -563,16 +582,33 @@ for band in band_list:
                 logprint("dirty_tclean_made_residual is set to be {0}".format(dirty_tclean_made_residual),
                          origin='almaimf_line_imaging')
 
-                # if we're re-running to try to get to completion, we must
-                # delete the mas to enable automultithresh to continue
-                # Updating to *remove* the mask instead
-                if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] not in ('', None):
-                    logprint("removing pre-existing mask {0}".format(lineimagename+".mask"),
-                             origin='almaimf_line_imaging')
-                    shutil.rmtree(lineimagename+".mask")
-                elif os.path.exists(lineimagename+".mask"):
-                    if 'usemask' in impars and impars['usemask'] != 'user':
-                        raise ValueError("Mask exists but not specified as user.")
+                # Oct 13, 2020: we'll modify the mask, not remove it
+                # if os.path.exists(lineimagename+".mask") and 'usemask' in impars and impars['usemask'] not in ('', None):
+                #     logprint("using pre-existing mask {0}".format(lineimagename+".mask"),
+                #              origin='almaimf_line_imaging')
+                #     shutil.rmtree(lineimagename+".mask")
+                # elif os.path.exists(lineimagename+".mask"):
+                #     if 'usemask' in impars and impars['usemask'] != 'user':
+                #         raise ValueError("Mask exists but not specified as user.")
+                if os.path.exists(lineimagename+".mask"):
+                    impars['usemask'] = 'user'
+                    impars['mask'] = '' # the mask exists, so CASA can't be told to use it
+
+                    if mask_out_endchannels:
+                        ia.open(lineimagename+".mask")
+                        lowedge = ia.getchunk([0,0,0,0], [-1,-1,-1,mask_out_endchannels])
+                        lowedge[:] = 0
+                        ia.putchunk(lowedge, [0,0,0,0], [-1,-1,-1,mask_out_endchannels])
+
+                        highedge = ia.getchunk([0,0,0,-1-mask_out_endchannels],
+                                               [-1,-1,-1,-1])
+                        highedge[:] = 0
+                        ia.putchunk(highedge,
+                                    [0,0,0,-1-mask_out_endchannels],
+                                    [-1,-1,-1,-1])
+
+                        ia.close()
+
 
                 # SANITY CHECK:
                 if os.path.exists(lineimagename+".model"):
@@ -597,6 +633,12 @@ for band in band_list:
                 # re-do the tclean once more, with niter=0, to force recalculation of the residual
                 niter = impars['niter']
                 impars['niter'] = 0
+                if 'startmodel' in impars:
+                    # we definitely have a model now, so we don't want a startmodel
+                    smod = impars['startmodel']
+                    impars['startmodel'] = ''
+                else:
+                    smod = ''
                 tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='',
@@ -604,6 +646,7 @@ for band in band_list:
                        **impars
                       )
                 impars['niter'] = niter
+                impars['startmodel'] = smod
                 for suffix in ('image', 'residual', 'model'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',

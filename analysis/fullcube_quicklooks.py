@@ -15,6 +15,7 @@ import radio_beam
 import tempfile
 import dask.array as da
 import dask
+from pathlib import Path
 from spectral_cube import SpectralCube,DaskSpectralCube
 from spectral_cube.lower_dimensional_structures import Projection
 print("Completed imports")
@@ -58,6 +59,11 @@ spws = {3: list(range(4)),
 
 suffix = '.image'
 
+cwd = os.getcwd()
+basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results')
+os.chdir(basepath)
+print(f"Changed from {cwd} to {basepath}, now running cube stats assembly")
+
 global then
 then = time.time()
 def dt():
@@ -89,12 +95,21 @@ for band in (6,3):
 
                     modfile = fn.replace(suffix, ".model")
                     if os.path.exists(modfile):
-                        modcube = SpectralCube.read(modfile, format='casa_image', use_dask=True)
+                        if os.path.exists(modfile+".fits"):
+                            modcube = SpectralCube.read(modfile+".fits", format='fits', use_dask=True)
+                        else:
+                            modcube = SpectralCube.read(modfile, format='casa_image', use_dask=True)
+                            modcube = modcube.rechunk()
+
                         if nthreads > 1:
                             modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         modcube.beam_threshold=100000
 
-                    cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
+                    if os.path.exists(fn+".fits"):
+                        cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
+                    else:
+                        cube = SpectralCube.read(fn, format='casa_image', use_dask=True)
+                        cube = cube.rechunk()
                     if nthreads > 1:
                         cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                     cube.beam_threshold = 1
@@ -187,3 +202,5 @@ for band in (6,3):
                         pctmap_K.quicklook('collapse/percentile/pngs/{0}'.format(fn.replace(suffix,"_{0}pct_K.png".format(pct))))
 
                     pl.close('all')
+
+os.chdir(cwd)
