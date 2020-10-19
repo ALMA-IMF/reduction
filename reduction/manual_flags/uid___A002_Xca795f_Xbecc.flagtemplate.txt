@@ -1,0 +1,2 @@
+# Xbecc has bad Tsys ripples across spw23 (all three antennas PM02,PM03,PM04)
+mode='manual' antenna='' spw='23' reason='Tsys problems'
