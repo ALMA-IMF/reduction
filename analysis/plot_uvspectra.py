@@ -94,6 +94,9 @@ def plot_uvspectra(msname, **kwargs):
             cdatfile = metadata[band][fieldname]['cont.dat'][muid]
             contfreqs = parse_contdotdat(cdatfile)
 
+            ax.plot(frq/1e9, avgspec)
+            lims = ax.axis()
+
             sel = np.zeros(frq.size, dtype='int')
 
             if unit is not u.dimensionless_unscaled:
@@ -110,7 +113,7 @@ def plot_uvspectra(msname, **kwargs):
 
                     dat_to_plot = avgspec.copy()
                     dat_to_plot[~sel] = np.nan
-                    pl.plot(frq/1e9, avgspec, linewidth=4,
+                    ax.plot(frq/1e9, avgspec, linewidth=4,
                             zorder=-5, alpha=0.75)
                 elif len(usel) > 1:
                     dat_to_plot = np.empty(avgspec.shape)
@@ -118,10 +121,10 @@ def plot_uvspectra(msname, **kwargs):
                     # skip zero
                     for selval in usel[1:]:
                         dat_to_plot[sel == selval] = avgspec[sel == selval]
-                    pl.plot(frq/1e9, dat_to_plot, linewidth=4,
+                    ax.plot(frq/1e9, dat_to_plot, linewidth=4,
                             zorder=selval-10, alpha=0.75, color='orange')
 
-            ax.plot(frq/1e9, avgspec)
+            ax.axis(lims)
             ax.set_title(f"SPW {spw}")
 
             spectable = Table([Column(data=frq, unit=unit, name='Frequency'),
