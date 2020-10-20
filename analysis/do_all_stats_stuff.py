@@ -4,9 +4,10 @@ Run all of the summary statistics
 import runpy
 import pylab as pl
 import os
+import time
+from pathlib import Path
 
-script_dir = os.environ['SCRIPT_DIR']
-os.chdir(script_dir)
+script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = ['delivery_status.py',
            'imstats.py',
@@ -25,12 +26,14 @@ scripts = ['delivery_status.py',
           ]
 
 for scriptname in scripts:
-    print(scriptname)
+    t0 = time.time()
+    print(scriptname, script_dir / scriptname)
     try:
-        runpy.run_path(scriptname, run_name="__main__")
+        runpy.run_path(script_dir / scriptname, run_name="__main__")
     except Exception as ex:
         print(ex)
     pl.close('all')
+    print(f"script {scriptname} took {(time.time() - t0)/3600.:0.1f} hours")
 
 
 # run locally runpy.run_path('latex_table.py', run_name="__main__")
