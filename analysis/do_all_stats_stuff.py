@@ -7,6 +7,7 @@ import os
 import time
 from pathlib import Path
 
+assert 'SCRIPT_DIR' in os.environ
 script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = ['delivery_status.py',
@@ -27,9 +28,9 @@ scripts = ['delivery_status.py',
 
 for scriptname in scripts:
     t0 = time.time()
-    print(scriptname, script_dir / scriptname)
+    print(f"script={scriptname}, fullpath={script_dir / scriptname}")
     try:
-        runpy.run_path(script_dir / scriptname, run_name="__main__")
+        runpy.run_path(str(script_dir / scriptname), run_name="__main__")
     except Exception as ex:
         print(ex)
     pl.close('all')
