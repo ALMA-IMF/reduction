@@ -661,10 +661,15 @@ for continuum_ms in continuum_mses:
             else:
                 minsnr = 5
 
-            okfields,notokfields = goodenough_field_solutions(caltable,
-                                                              minsnr=minsnr)
-            logprint("Fields {0} had min snr 5, fields {1} did not"
-                     .format(okfields, notokfields), origin='contim_selfcal')
+            if not selfcalpars[selfcaliter].get('ignore_selfcalheuristics'):
+                okfields,notokfields = goodenough_field_solutions(caltable,
+                                                                  minsnr=minsnr)
+                logprint("Fields {0} had min snr {2}, fields {1} did not"
+                         .format(okfields, notokfields, minsnr), origin='contim_selfcal')
+            else:
+                tb.open(caltable)
+                okfields = np.unique(tb.getcol('FIELD_ID'))
+                tb.close()
             if len(okfields) == 0:
                 if selfcal_field_id is None:
                     logprint("All fields flagged out of gaincal solns!",
