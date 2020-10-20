@@ -3,6 +3,10 @@ Run all of the summary statistics
 """
 import runpy
 import pylab as pl
+import os
+
+script_dir = os.environ['SCRIPT_DIR']
+os.chdir(script_dir)
 
 scripts = ['delivery_status.py',
            'imstats.py',
