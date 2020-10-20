@@ -2,6 +2,8 @@
 Run all of the summary statistics
 """
 import runpy
+import matplotlib
+matplotlib.use('agg')
 import pylab as pl
 import os
 import time
