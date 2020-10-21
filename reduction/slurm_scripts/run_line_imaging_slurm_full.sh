@@ -30,7 +30,7 @@ case $FIELD_ID in
 #G338.93|W51-E|W51-IRS2|G10.62) # B3 needs bigger; B6 is probably OK w/96
 #    declare -A mem_map=( ["0"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
 W43-MM2|W51-IRS2) #B3 B6
-    export MEM=128gb ;;
+    export MEM=96gb ;;
 #G333.60|W43-MM3|G353.41|G351.77|G337.92) #B3 B6
 #    export MEM=96gb ;;
 #W43-MM1|W43-MM2|G008.67) # only B3 needs more...
