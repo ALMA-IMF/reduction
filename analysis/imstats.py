@@ -532,7 +532,7 @@ document.write(newdocument)
 
 
 def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release"):
-    if 'October' in basepath:
+    if 'October31' in basepath:
         stats = assemble_stats(f"{basepath}/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
     else:
         # extra layer: bsens, cleanest, etc
