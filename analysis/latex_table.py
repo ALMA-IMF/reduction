@@ -9,7 +9,7 @@ from latex_info import (latexdict, format_float, round_to_n, rounded,
 
 latexdict = latexdict.copy()
 
-result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_sc.ecsv',
+result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_sc.ecsv',
                       auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
 with open('metadata_sc.ecsv', 'w') as fh:
     fh.write(result.text)
