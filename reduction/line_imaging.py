@@ -595,16 +595,20 @@ for band in band_list:
                     impars['mask'] = '' # the mask exists, so CASA can't be told to use it
 
                     if mask_out_endchannels:
+                        logprint("Masking out end channels {0}".format(mask_out_endchannels),
+                                 origin="almaimf_line_imaging")
                         ia.open(lineimagename+".mask")
                         lowedge = ia.getchunk([0,0,0,0], [-1,-1,-1,mask_out_endchannels])
                         lowedge[:] = 0
                         ia.putchunk(lowedge, [0,0,0,0], [-1,-1,-1,mask_out_endchannels])
 
-                        highedge = ia.getchunk([0,0,0,-1-mask_out_endchannels],
+                        shape = ia.shape()
+
+                        highedge = ia.getchunk([0,0,0,shape[3]-1-mask_out_endchannels],
                                                [-1,-1,-1,-1])
                         highedge[:] = 0
                         ia.putchunk(highedge,
-                                    [0,0,0,-1-mask_out_endchannels],
+                                    [0,0,0,shape[3]-1-mask_out_endchannels],
                                     [-1,-1,-1,-1])
 
                         ia.close()
