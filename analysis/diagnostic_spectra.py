@@ -14,10 +14,12 @@ pl.ioff()
 
 array = '12M'
 
-with open('../metadata.json', 'r') as fh:
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
+os.chdir(f'{basepath}/imaging_results')
+
+with open(f'{basepath}/metadata.json', 'r') as fh:
     metadata = json.load(fh)
 
-os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results')
 
 
 for robust in (0,):
