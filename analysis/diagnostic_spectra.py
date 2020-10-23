@@ -12,6 +12,8 @@ from parse_contdotdat import parse_contdotdat
 import pylab as pl
 pl.ioff()
 
+overwrite=False
+
 array = '12M'
 
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
@@ -43,7 +45,7 @@ for robust in (0,):
                                             )
 
                 if os.path.exists(filename):
-                    cube = SpectralCube.read(filename)
+                    cube = SpectralCube.read(filename, use_dask=True)
                 else:
                     log.exception("File {0} does not exist".format(filename))
                     if os.path.exists(filename[:-5]):
@@ -52,15 +54,16 @@ for robust in (0,):
 
                 for operation in ('mean', 'max', 'median'):
                     out_fn = f'spectra/{field}_{array}_{band}_spw{spw}_robust{robust}{suffix}.{operation}spec.fits'
-                    if not os.path.exists(out_fn):
-                        spec = cube.apply_numpy_function(getattr(np, 'nan'+operation),
-                                                         axis=(1,2),
-                                                         progressbar=True,
-                                                         projection=True,
-                                                         how='slice',
-                                                         unit=cube.unit,
-                                                        )
-                        spec.write(out_fn)
+                    if overwrite or not os.path.exists(out_fn):
+                        spec = getattr(cube, operation)(axis=(1,2))
+                        #spec = cube.apply_numpy_function(getattr(np, 'nan'+operation),
+                        #                                 axis=(1,2),
+                        #                                 progressbar=True,
+                        #                                 projection=True,
+                        #                                 how='slice',
+                        #                                 unit=cube.unit,
+                        #                                )
+                        spec.write(out_fn, overwrite=overwrite)
 
                     spec = OneDSpectrum.from_hdu(fits.open(out_fn))
 
