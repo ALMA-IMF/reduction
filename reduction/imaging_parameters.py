@@ -2728,7 +2728,9 @@ line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
 line_imaging_parameters_custom = {
     "G008.67_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "G008.67_B3_uid___A001_X1296_X1bf_continuum_merged_12M_robust0_selfcal5_finaliter",
+        #"startmodel": "G008.67_B3_uid___A001_X1296_X1bf_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # UF machine has 1c1 instead of 1bf as of 10/23/2020
+        "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G008.67_B3_12M_robust0_contsub": {  # Less restrictive autoMT params for mildly faint emission
         "usemask": "auto-multithresh",
