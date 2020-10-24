@@ -2831,7 +2831,7 @@ line_imaging_parameters_custom = {
     "G333.60_B3_12M_robust0": {
         "threshold": "6mJy",
         # never correct "startmodel": "G333.60_B3__continuum_merged_12M_robust0_selfcal5_finaliter.image",
-        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal5_finaliter.model.tt0",
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G333.60_B3_12M_robust0_contsub": {  # More restrictive params for bright, extended emission
         "usemask": "auto-multithresh",
