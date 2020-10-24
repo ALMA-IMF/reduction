@@ -14,7 +14,7 @@ from compare_images import make_comparison_image
 
 cwd = os.getcwd()
 #octoberpath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/'
-basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020'
+basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release'
 os.chdir(basepath)
 
 import imstats
@@ -22,7 +22,7 @@ import imstats
 
 #tbl = imstats.savestats(basepath=basepath)
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata.ecsv')
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='bsens_fn', data=[' '*100]*len(tbl)))
@@ -180,15 +180,15 @@ formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_bsens_cleanest.ecsv',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_bsens_cleanest.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_bsens_cleanest.tex',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_bsens_cleanest.js.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.js.html',
           #formats=formats,
           format='jsviewer')
 
