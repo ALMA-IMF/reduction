@@ -146,8 +146,13 @@ fig1.clf()
 ax1 = pl.subplot(1,2,1)
 ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3style)
 ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style)
-ax1.annotate('W51-E', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-E')],
-                       wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]))
+
+w51e_sel = (wtbl_selfcal['region'] == 'W51-E')
+if (b3sc & w51e_sel).sum() > 0:
+    ax1.annotate('W51-E', (wtbl_selfcal['sum_post'][b3sc & w51e_sel]/wtbl_selfcal['ppbeam'][b3sc & w51e_sel],
+                           wtbl_selfcal['SensVsReq'][b3sc & w51e_sel]))
+else:
+    print("W51-E B3 is missing!")
 #ax1.annotate('W51-IRS2', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')],
 #                          wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 #ax1.annotate('G010.62', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'G010.62')],
@@ -160,7 +165,8 @@ ax2 = pl.subplot(1,2,2)
 ax2.plot(wtbl_selfcal['max_post'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3style, label='B3')
 ax2.plot(wtbl_selfcal['max_post'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style, label='B6')
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
-ax2.annotate('W51-E', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-E')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-E')]))
+if (b3sc & w51e_sel).sum() > 0:
+    ax2.annotate('W51-E', (wtbl_selfcal['max_post'][b3sc & w51e_sel], wtbl_selfcal['SensVsReq'][b3sc & w51e_sel]))
 #ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
@@ -234,10 +240,16 @@ fig7.clf()
 ax1 = pl.subplot(1,2,1)
 ax1.plot(wtbl_bsens['sum_bsens'][b3bs]/wtbl_bsens['ppbeam'][b3bs], wtbl_bsens['SensVsReq'][b3bs], **b3style)
 ax1.plot(wtbl_bsens['sum_bsens'][b6bs]/wtbl_bsens['ppbeam'][b6bs], wtbl_bsens['SensVsReq'][b6bs], **b6style)
-ax1.annotate('W51-E', (wtbl_bsens['sum_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-E')]/wtbl_bsens['ppbeam'][b3bs & (wtbl_bsens['region'] == 'W51-E')],
-                       wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-E')]))
-ax1.annotate('W51-IRS2', (wtbl_bsens['sum_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')]/wtbl_bsens['ppbeam'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')],
-                          wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')]))
+w51e_sel_bsens = (wtbl_bsens['region'] == 'W51-E')
+if (b3bs & w51e_sel_bsens).sum() > 0:
+    ax1.annotate('W51-E', (wtbl_bsens['sum_bsens'][b3bs & w51e_sel_bsens]/wtbl_bsens['ppbeam'][b3bs & w51e_sel_bsens],
+                           wtbl_bsens['SensVsReq'][b3bs & w51e_sel_bsens]))
+w51irs2_sel_bsens = (wtbl_bsens['region'] == 'W51-IRS2')
+if (b3bs & w51irs2_sel_bsens).sum() > 0:
+    ax1.annotate('W51-IRS2', (wtbl_bsens['sum_bsens'][b3bs & w51irs2_sel_bsens]/wtbl_bsens['ppbeam'][b3bs & w51irs2_sel_bsens],
+                              wtbl_bsens['SensVsReq'][b3bs & w51irs2_sel_bsens]))
+else:
+    print("W51 IRS2 B3 is missing")
 #ax1.annotate('G010.62', (wtbl_bsens['sum_bsens'][b3bs & (wtbl_bsens['region'] == 'G010.62')]/wtbl_bsens['ppbeam'][b3bs & (wtbl_bsens['region'] == 'G010.62')],
 #                         wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'G010.62')]))
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
@@ -248,9 +260,14 @@ ax2 = pl.subplot(1,2,2)
 ax2.plot(wtbl_bsens['max_bsens'][b3bs], wtbl_bsens['SensVsReq'][b3bs], **b3style, label='B3')
 ax2.plot(wtbl_bsens['max_bsens'][b6bs], wtbl_bsens['SensVsReq'][b6bs], **b6style, label='B6')
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
-ax2.annotate('W51-E', (wtbl_bsens['max_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-E')], wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-E')]))
-ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')], wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'W51-IRS2')]))
-ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b6bs & (wtbl_bsens['region'] == 'W51-IRS2')], wtbl_bsens['SensVsReq'][b6bs & (wtbl_bsens['region'] == 'W51-IRS2')]))
+if (b3bs & w51e_sel_bsens).sum() > 0:
+    ax2.annotate('W51-E', (wtbl_bsens['max_bsens'][b3bs & w51e_sel_bsens], wtbl_bsens['SensVsReq'][b3bs & w51e_sel_bsens]))
+if (b3bs & w51irs2_sel_bsens).sum() > 0:
+    ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b3bs & w51irs2_sel_bsens], wtbl_bsens['SensVsReq'][b3bs & w51irs2_sel_bsens]))
+if (b6bs & w51irs2_sel_bsens).sum() > 0:
+    ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b6bs & w51irs2_sel_bsens], wtbl_bsens['SensVsReq'][b6bs & w51irs2_sel_bsens]))
+else:
+    print("W51 IRS2 B6 is missing!")
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
 ax2.set_ylabel("Sensitivity / Requested Sensitivity")
 pl.legend(loc='best')
