@@ -15,6 +15,7 @@ from compare_images import make_comparison_image
 cwd = os.getcwd()
 #octoberpath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/'
 basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release'
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/'
 os.chdir(basepath)
 
 import imstats
