@@ -101,6 +101,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     cfns = glob.glob(f"{basepath}/{field}/B{band}/cleanest/*_{config}_robust0_*final*.{suffix}")
                     if len(cfns) == 1:
                         log.info(f"Replaced original cleanest {cleanest} with {cfns[0]}")
+                        allow_reproj = False
                         cleanest = cfns[0]
                     elif len(cfns) == 0:
                         log.warn(f"Did not find any cleanest matches to {fn}")

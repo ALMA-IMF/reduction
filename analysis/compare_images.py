@@ -25,7 +25,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
         assert 'pbcor' in filename1
 
     if allow_reproj:
-        if cube_pre.shape != cube_post.shape or cube_post.wcs != cube_pre.wcs:
+        if cube_pre.shape != cube_post.shape or (cube_post.wcs != cube_pre.wcs and cube_post.wcs.wcs != cube_pre.wcs.wcs):
             cube_post = cube_post.reproject(cube_pre.header)
 
 
