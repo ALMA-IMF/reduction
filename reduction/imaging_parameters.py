@@ -1393,7 +1393,7 @@ selfcal_pars_custom = {
             "minblperant": 3,
             "minsnr": 2,
             "refant": "DV01",
-            "solint": "int",
+            "solint": "inf",
             "solnorm": False,
         },
         3: {
