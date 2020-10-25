@@ -148,7 +148,8 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
         if len(cutout_pixels_post) != len(cutout_pixels_pre):
             log.warning(f"cutout pixels are different size in pre vs post ({filename1} : {filename2})")
-        if cube_pre.wcs.celestial != cube_post.wcs.celestial:
+        if (cube_pre.wcs.celestial != cube_post.wcs.celestial) and (cube_pre.wcs.celestial.wcs != cube_post.wcs.celestial.wcs):
+            # wcs comparisons stopped working sometime in 2019-2020 - wcs.wcs comparisons appear to work?
             log.warning(f"post and pre have different celestial WCSes ({filename1} : {filename2})")
 
 
