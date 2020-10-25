@@ -1378,7 +1378,7 @@ selfcal_pars_custom = {
     "G328.25_B3_12M_robust0": {
         1: {
             "calmode": "p",
-            "combine": "scan",
+            "combine": "scan,scan",
             "gaintype": "T",
             "minblperant": 3,
             "minsnr": 2,
@@ -1388,7 +1388,7 @@ selfcal_pars_custom = {
         },
         2: {
             "calmode": "p",
-            "combine": "scan",
+            "combine": "scan,scan",
             "gaintype": "T",
             "minblperant": 3,
             "minsnr": 2,
@@ -1398,7 +1398,7 @@ selfcal_pars_custom = {
         },
         3: {
             "calmode": "p",
-            "combine": "spw",
+            "combine": "scan,spw",
             "gaintype": "T",
             "minblperant": 3,
             "minsnr": 2,
@@ -1408,7 +1408,7 @@ selfcal_pars_custom = {
         },
         4: {
             "calmode": "p",
-            "combine": "spw",
+            "combine": "scan,spw",
             "gaintype": "T",
             "minblperant": 3,
             "minsnr": 2,
