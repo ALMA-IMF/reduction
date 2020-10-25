@@ -8,6 +8,8 @@ basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResu
 
 colorslices = {'W51-IRS2': {'b': (46, 52), 'g': (52, 58), 'r': (59, 65)},
                'W51-E': {'b': (46, 52), 'g': (52, 58), 'r': (59, 65)},
+               'G010.62': {'b': (-10, -5), 'g': (-5, 0), 'r': (0, 5)},
+               'G012.80': {'b': (32,36), 'g': (36,40), 'r': (40,44)},
               }
 
 band = 'B3'
