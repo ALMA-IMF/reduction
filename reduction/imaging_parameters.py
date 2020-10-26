@@ -1398,7 +1398,7 @@ selfcal_pars_custom = {
         },
         3: {
             "calmode": "p",
-            "combine": "scan,spw",
+            "combine": "scan,scan",
             "gaintype": "T",
             "minblperant": 3,
             "minsnr": 2,
@@ -1408,7 +1408,7 @@ selfcal_pars_custom = {
         },
         4: {
             "calmode": "p",
-            "combine": "scan,spw",
+            "combine": "scan,scan",
             "gaintype": "T",
             "minblperant": 3,
             "minsnr": 2,
