@@ -604,14 +604,14 @@ imaging_parameters_nondefault = {
     },
     "G010.62_B6_12M_robust0": {
         "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "1.0mJy", 4: "0.5mJy", 5: "0.3mJy",},
-        "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000},
+        "niter": {0: 700, 1: 2500, 2: 5000, 3: 7500, 4: 10000, 5: 20000},
         "maskname": {
             0: "G010.62_centralBox_50_30.crtf",
-            1: "G010.62_B3_50mJy.crtf",
-            2: "G010.62_B3_15mJy.crtf",
-            3: "G010.62_B3_05mJy.crtf",
-            4: "G010.62_B3_03mJy.crtf",
-            5: "G010.62_B3_01mJy.crtf",
+            1: "G010.62_B6_early_iterations.crtf",
+            2: "G010.62_B6_early_iterations.crtf",
+            3: "G010.62_B6_early_iterations.crtf",
+            4: "G010.62_B6_early_iterations.crtf",
+            5: "G010.62_B6_early_iterations.crtf",
         },
     },
     "G351.77_B6_7M_robust0": {
