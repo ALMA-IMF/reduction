@@ -289,9 +289,9 @@ imaging_parameters_nondefault = {
         "niter": {0: 500, 1: 1500, 2: 3000, 3: 5000, 4: 7000, 5: 10000},
     },
     "G337.92_B3_12M_robust0": {
-        "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "4e-4Jy", 4: "2.5e-4Jy"},
+        "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "4e-4Jy", 4: "2.5e-4Jy", "final":"0.1mJy"},
         "scales": [0, 3, 9,],
-        "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000},  # rms ~ 1.25e-4 Jy/b.
+        "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000, "final":50000},  # rms ~ 1.25e-4 Jy/b.
         "maskname": {
             0: "G337.92_B3_12M_robust0.crtf",
             1: "G337.92_B3_12M_robust0.crtf",
@@ -553,7 +553,7 @@ imaging_parameters_nondefault = {
     "G353.41_B6_7M12M_robust0": {"threshold": "1.06mJy", "scales": [0, 3, 9]},
     "G353.41_B6_7M12M_robust2": {"threshold": "0.82mJy", "scales": [0, 3, 9]},
     "G327.29_B3_12M_robust0": {
-        "threshold": {0: "1.5mJy", 1: "0.6mJy", 2: "0.5mJy", "final": "0.4mJy"},
+        "threshold": {0: "1.5mJy", 1: "0.6mJy", 2: "0.5mJy", "final": "0.1mJy"},
         "niter": {0: 1000, 1: 2000, 2: 5000, "final": 200000},
         "scales": [0, 3, 9, 27],
     },
@@ -589,8 +589,8 @@ imaging_parameters_nondefault = {
     "G327.29_B6_7M12M_robust2": {"threshold": {5: "1.0mJy"}, "niter": {5: 20000}},
     "G327.29_B6_7M12M_robust-2": {"threshold": {5: "1.0mJy"}, "niter": {5: 20000}},
     "G010.62_B3_12M_robust0": {
-        "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "1.0mJy", 4: "0.5mJy", 5: "0.3mJy",},
-        "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000},
+        "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "1.0mJy", 4: "0.5mJy", 5: "0.3mJy", 6: "0.3mJy", 7: "0.3mJy"},
+        "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000, 6: 15000, 7: 15000},
         "maskname": {
             0: "G010.62_centralBox_50_30.crtf",
             1: "G010.62_B3_50mJy.crtf",
@@ -598,6 +598,8 @@ imaging_parameters_nondefault = {
             3: "G010.62_B3_05mJy.crtf",
             4: "G010.62_B3_03mJy.crtf",
             5: "G010.62_B3_01mJy.crtf",
+            6: "G010.62_B3_iter6.crtf",
+            7: "G010.62_B3_iter6.crtf",
         },
     },
     "G010.62_B6_12M_robust0": {
@@ -789,7 +791,7 @@ imaging_parameters_nondefault = {
             2: "G328_B6_clean_robust0.crtf",
             3: "G328_B6_clean_robust0.crtf",
             4: "G328_B6_clean_robust0.crtf",
-            5: "G328_B6_clean_robust0.crtf",
+            5: "G328_B6_clean_robust0.crtf", # OVERCLEANED!  Needs narrower clean boxes
         },
     },
     "G328.25_B6_12M_robust-2": {
@@ -1057,7 +1059,9 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "40s", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "solint": "25s", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
-        5: {"calmode": "ap", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        5: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
+        6: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
+        7: {"calmode": "ap", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "G010.62_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
