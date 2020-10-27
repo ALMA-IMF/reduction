@@ -457,8 +457,8 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM1_B3_12M_robust0": {
-        "threshold": {0: "1.0mJy", 1: "0.25mJy", 2: "0.15mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.12mJy",},
-        "niter": {0: 1000, 1: 9000, 2: 15000, 3: 15000, 4: 17000, "final": 25000},
+        "threshold": {0: "0.4mJy", 1: "0.25mJy", 2: "0.15mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.1mJy",},
+        "niter": {0: 10000, 1: 12500, 2: 15000, 3: 15000, 4: 17000, "final": 25000},
         "scales": {
             0: [0, 3, 9, 27],
             1: [0, 3, 9, 27],
@@ -2123,9 +2123,9 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "W43-MM1_B3_12M_robust0": {
-        1: {"calmode": "p", "gaintype": "G", "solint": "300s", "solnorm": False, "minsnr": 3},
-        2: {"calmode": "p", "gaintype": "T", "solint": "300s", "solnorm": False, "minsnr": 3},
-        3: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False, "minsnr": 3},
+        1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": False, "minsnr": 3},
+        2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": False, "minsnr": 3},
+        3: {"calmode": "p", "gaintype": "T", "solint": "300s", "solnorm": False, "minsnr": 3},
         4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False, "minsnr": 3},
     },
     "W43-MM1_B3_12M_robust2": {
