@@ -25,7 +25,7 @@ echo $?
 
 
 
-export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
+#export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
 export IPYTHON=/orange/adamginsburg/miniconda3/envs/casa6_py36/bin/ipython 
 
 
