@@ -39,7 +39,7 @@ for field in colorslices:
     norm = visualization.simple_norm(rgb_image, min_percent=0.1, max_percent=99.5)
 
     zrx = n2hc.shape[2] // 20
-    zry = n2hc.cube[1] // 20
+    zry = n2hc.shape[1] // 20
 
     pl.imshow(norm(rgb_image)[zry:-zry, zrx:-zrx], origin='lower')
 
