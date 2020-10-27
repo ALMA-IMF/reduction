@@ -610,8 +610,8 @@ imaging_parameters_nondefault = {
             1: "G010.62_B6_early_iterations.crtf",
             2: "G010.62_B6_early_iterations.crtf",
             3: "G010.62_B6_early_iterations.crtf",
-            4: "G010.62_B6_early_iterations.crtf",
-            5: "G010.62_B6_early_iterations.crtf",
+            4: "G010.62_B6_late_iterations.crtf",
+            5: "G010.62_B6_late_iterations.crtf",
         },
     },
     "G351.77_B6_7M_robust0": {
