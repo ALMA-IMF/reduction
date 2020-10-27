@@ -361,8 +361,8 @@ imaging_parameters_nondefault = {
         "imsize": [5000, 5000],
     },
     "G338.93_B3_12M_robust0": {
-        "threshold": {0: "0.36mJy", 1: "0.30mJy", 2: "0.15mJy", "final": "0.1mJy"},
-        "niter": {0: 2000, 1: 2000, 2: 5000, "final": 200000},
+        "threshold": {0: "0.36mJy", 1: "0.30mJy", 2: "0.15mJy", 3: "0.15mJy", "final": "0.1mJy"},
+        "niter": {0: 10000, 1: 10000, 2: 15000, 3: 20000, "final": 200000},
     },
     "G338.93_B3_12M_robust2": {"threshold": {"final": "0.10mJy"}, "niter": {"final": 200000},},
     "G338.93_B3_12M_robust-2": {"threshold": {"final": "0.30mJy"}, "niter": {"final": 200000},},
@@ -1765,7 +1765,8 @@ selfcal_pars_custom = {
     },
     "G338.93_B3_12M_robust0": {
         1: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "inf", "solnorm": True},
-        2: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "60s", "solnorm": True},
+        2: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "inf", "solnorm": True},
+        3: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "60s", "solnorm": True},
     },
     "G338.93_B3_12M_robust0_bsens": {
         1: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2683,7 +2684,6 @@ for key in selfcal_pars_custom:
         else:
             selfcal_pars[key][iternum] = selfcal_pars_custom[key][iternum]
 
-del selfcal_pars["G338.93_B3_12M_robust0"][3]
 del selfcal_pars["G338.93_B3_12M_robust0"][4]
 del selfcal_pars["G338.93_B3_12M_robust0_bsens"][4]
 del selfcal_pars["G338.93_B3_7M12M_robust0"][3]
