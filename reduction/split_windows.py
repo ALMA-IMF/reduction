@@ -349,6 +349,8 @@ for band in bands:
                                  datacolumn=datacolumn,
                                 ), "Split failed 3"
 
+                    flagdata(vis=outvis, mode='manual', autocorr=True)
+
                 if outvis in to_image[band][field][newid]:
                     raise ValueError()
 
@@ -514,6 +516,9 @@ for band in bands:
                 flagmanager(vis=visfile, mode='restore',
                             versionname='before_cont_flags')
 
+                # flag out the autocorres
+                flagdata(vis=contvis, mode='manual', autocorr=True)
+
 
 
             if os.path.exists(contvis_bestsens):
@@ -534,6 +539,7 @@ for band in bands:
                              outputvis=contvis_bestsens,
                              width=widths,
                              datacolumn=datacolumn), "Split Failed 2"
+                flagdata(vis=contvis_bestsens, mode='manual', autocorr=True)
 
             logprint("Finished splitting for {0} to {1}, {2}:{3} in {4} seconds"
                      .format(visfile, contvis, band, field, time.time() - t0))
@@ -561,6 +567,7 @@ for band in bands:
 
             concat(vis=cont_to_merge[band][field],
                    concatvis=merged_continuum_fn,)
+            flagdata(vis=merged_continuum_fn, mode='manual', autocorr=True)
         cont_mses.append(merged_continuum_fn)
 
 
@@ -587,6 +594,7 @@ for band in bands:
             concat(vis=[x.replace(".cont", "_bsens.cont")
                         for x in cont_to_merge[band][field]],
                    concatvis=merged_continuum_bsens_fn,)
+            flagdata(vis=merged_continuum_fn, mode='manual', autocorr=True)
 
         # for debug purposes, we also track the split, unmerged MSes
         cont_mses_unconcat += cont_to_merge[band][field]

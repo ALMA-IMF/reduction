@@ -25,8 +25,8 @@ import imstats
 # tbl = imstats.savestats(basepath=basepath)
 
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata.ecsv')
-#tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/tables/metadata.ecsv')
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/tables/metadata.ecsv')
+#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*200]*len(tbl)))
