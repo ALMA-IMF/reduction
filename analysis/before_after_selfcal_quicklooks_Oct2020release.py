@@ -67,7 +67,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
 
 
                 if any(fns):
-                    print("Found hits for ",field, band, imtype)
+                    print("Found hits for ",field, band, imtype, suffix)
                     selfcal_nums = [get_selfcal_number(fn) for fn in fns]
 
                     last_selfcal = max(selfcal_nums)
