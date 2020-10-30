@@ -267,8 +267,6 @@ for continuum_ms in continuum_mses:
     else:
         selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
 
-    flagdata(vis=selfcal_ms, mode='manual', autocorr=True)
-
     if not os.path.exists(selfcal_ms):
 
         logprint("Did not find selfcal ms.  Creating new one: "
@@ -315,6 +313,10 @@ for continuum_ms in continuum_mses:
 
     logprint("Selfcal MS is: "
              "{0}".format(selfcal_ms), origin='contim_selfcal')
+
+    flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
+    if flagsum['flagged'] != flagsum['total']:
+        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines)")
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
