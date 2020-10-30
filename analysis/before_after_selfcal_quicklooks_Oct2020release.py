@@ -27,8 +27,8 @@ import imstats
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata.ecsv')
 tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/tables/metadata.ecsv')
 #tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata.ecsv')
-tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
-tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
+tbl.add_column(Column(name='casaversion_pre', data=['                 ']*len(tbl)))
+tbl.add_column(Column(name='casaversion_post', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*200]*len(tbl)))
 tbl.add_column(Column(name='post_fn', data=[' '*200]*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
@@ -54,7 +54,7 @@ tbl.add_column(Column(name='std_sample_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='std_sample_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
-for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W43-MM2 G333.60 G338.93 G353.41".split():
     for band in (3,6):
         for imtype in ('cleanest', 'bsens', ):#'7m12m', ):
             for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits'):
