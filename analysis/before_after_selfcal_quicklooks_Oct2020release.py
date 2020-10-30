@@ -121,6 +121,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                                 (tbl['bsens'] if 'bsens' in imtype else ~tbl['bsens']) &
                                 (tbl['pbcor'] if 'pbcor' in suffix else ~tbl['pbcor'])
                                )
+                    if matchrow.sum() == 0:
+                        raise ValueError(f"No matches for field={field} band={band} config={config} imtype={imtype} suffix={suffix}")
                     tbl['scMaxDiff'][matchrow] = diffstats['max']
                     tbl['scMinDiff'][matchrow] = diffstats['min']
                     tbl['scMADDiff'][matchrow] = diffstats['mad']
@@ -180,5 +182,4 @@ for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
               #formats=formats,
               format='jsviewer')
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata.ecsv')
 os.chdir(cwd)
