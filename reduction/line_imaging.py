@@ -353,12 +353,13 @@ for band in band_list:
             # check that autocorrs are flagged out
             if 'concat' in concatvis:
                 flagsum = flagdata(vis=concatvis, mode='summary', uvrange='0~1m')
-                if flagsum['flagged'] != flagsum['total']:
+                if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+                    # if 'flagged' isn't in flagsum, it's an empty dict
                     raise ValueError("Found unflagged autocorrelation data (or at least, short baselines)")
             elif isinstance(concatvis, list):
                 for vv in concatvis:
                     flagsum = flagdata(vis=vv, mode='summary', uvrange='0~1m')
-                    if flagsum['flagged'] != flagsum['total']:
+                    if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
                         raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {vv}".format(vv=vv))
 
 
