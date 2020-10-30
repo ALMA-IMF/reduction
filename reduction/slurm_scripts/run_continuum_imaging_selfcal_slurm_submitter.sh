@@ -19,21 +19,21 @@ echo ${jobid##* }
 
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_$(date +%Y-%m-%d_%H_%M_%S).log"
 export DO_BSENS=True
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --export=ALL $CMD)
+jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --export=ALL $CMD)
 echo ${jobid##* }
 export DO_BSENS=False
 
 
-export EXCLUDE_7M=False
-export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_$(date +%Y-%m-%d_%H_%M_%S).log"
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal --export=ALL $CMD)
-echo ${jobid##* }
-
-export EXCLUDE_7M=False
-export ONLY_7M=True
-export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M_$(date +%Y-%m-%d_%H_%M_%S).log"
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal --export=ALL $CMD)
-echo ${jobid##* }
+# export EXCLUDE_7M=False
+# export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_$(date +%Y-%m-%d_%H_%M_%S).log"
+# jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal --export=ALL $CMD)
+# echo ${jobid##* }
+# 
+# export EXCLUDE_7M=False
+# export ONLY_7M=True
+# export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M_$(date +%Y-%m-%d_%H_%M_%S).log"
+# jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal --export=ALL $CMD)
+# echo ${jobid##* }
 
 
 
@@ -51,17 +51,17 @@ echo ${jobid##* }
 
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_$(date +%Y-%m-%d_%H_%M_%S).log"
 export DO_BSENS=True
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --export=ALL $CMD)
+jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --export=ALL $CMD)
 echo ${jobid##* }
 export DO_BSENS=False
 
-export EXCLUDE_7M=False
-export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_$(date +%Y-%m-%d_%H_%M_%S).log"
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal --export=ALL $CMD)
-echo ${jobid##* }
-
-export EXCLUDE_7M=False
-export ONLY_7M=True
-export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M_$(date +%Y-%m-%d_%H_%M_%S).log"
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal --export=ALL $CMD)
-echo ${jobid##* }
+# export EXCLUDE_7M=False
+# export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_$(date +%Y-%m-%d_%H_%M_%S).log"
+# jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M12M_selfcal --export=ALL $CMD)
+# echo ${jobid##* }
+# 
+# export EXCLUDE_7M=False
+# export ONLY_7M=True
+# export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_7M_$(date +%Y-%m-%d_%H_%M_%S).log"
+# jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_7M_selfcal --export=ALL $CMD)
+# echo ${jobid##* }
