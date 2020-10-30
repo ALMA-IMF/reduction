@@ -121,7 +121,7 @@ from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
 
-from tasks import tclean, plotms, split
+from tasks import tclean, plotms, split, flagdata
 
 from clearcal_cli import clearcal_cli as clearcal
 from gaincal_cli import gaincal_cli as gaincal
@@ -266,6 +266,9 @@ for continuum_ms in continuum_mses:
         selfcal_ms = basename+"_"+arrayname+"_selfcal_bsens.ms"
     else:
         selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
+
+    flagdata(vis=selfcal_ms, mode='manual', autocorr=True)
+
     if not os.path.exists(selfcal_ms):
 
         logprint("Did not find selfcal ms.  Creating new one: "

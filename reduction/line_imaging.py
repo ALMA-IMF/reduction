@@ -31,12 +31,12 @@ import numpy as np
 import astropy.units as u
 from astropy import constants
 try:
-    from tasks import tclean, uvcontsub, impbcor, concat
+    from tasks import tclean, uvcontsub, impbcor, concat, flagdata
     from taskinit import casalog
     from exportfits_cli import exportfits_cli as exportfits
 except ImportError:
     # futureproofing: CASA 6 imports this way
-    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits
+    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata
     from casatasks import casalog
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
@@ -349,6 +349,18 @@ for band in band_list:
 
                 # if do_contsub, we want to use the contsub'd MS
                 concatvis = concatvis + contsub_suffix
+
+            # check that autocorrs are flagged out
+            if 'concat' in concatvis:
+                flagsum = flagdata(vis=concatvis, mode='summary', uvrange='0~1m')
+                if flagsum['flagged'] != flagsum['total']:
+                    raise ValueError("Found unflagged autocorrelation data (or at least, short baselines)")
+            elif isinstance(concatvis, list):
+                for vv in concatvis:
+                    flagsum = flagdata(vis=vv, mode='summary', uvrange='0~1m')
+                    if flagsum['flagged'] != flagsum['total']:
+                        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {vv}".format(vv=vv))
+
 
             if 'spw' in line_name:
                 if not int(line_name.lstrip('spw')) == int(spw):
