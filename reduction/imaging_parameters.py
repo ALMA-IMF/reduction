@@ -2755,7 +2755,7 @@ line_imaging_parameters_custom = {
         "threshold": "6mJy",
         # "startmodel": "G010.62_B3_uid___A001_X1296_X1e9_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1e9 instead of 1e5 as of 10/14/2020 - this may change
-        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "G010.62_B3_12M_robust0_contsub": {  # More restrictive params for bright emission
         "usemask": "auto-multithresh",
