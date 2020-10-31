@@ -316,7 +316,7 @@ for continuum_ms in continuum_mses:
 
     flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
     if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
-        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines)")
+        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
