@@ -2,6 +2,7 @@ import glob
 from make_selfcal_animation import make_anim, make_anim_single
 import os
 import shutil
+import pylab as pl
 
 os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 
@@ -10,6 +11,8 @@ for fn in glob.glob("*_12M_robust0_*finaliter*.image.tt0.fits"):
     print(imname)
     make_anim(imname)
     make_anim_single(imname, 'image')
+
+    pl.close('all')
 
     shutil.copy(f'{imname}_selfcal_anim.gif', '/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/selfcal_animations/')
     #shutil.copy(f'{imname}_image_selfcal_anim.gif', '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/selfcal_animations/')
