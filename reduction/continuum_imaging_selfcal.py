@@ -1021,7 +1021,7 @@ for continuum_ms in continuum_mses:
         preselfcal_finalmodel_data = ia.getchunk()
         ia.close()
 
-        finaliter_selfcal = contimagename+"_robust0_selfcal{0}_finaliter.image.tt0"
+        finaliter_selfcal = contimagename+"_robust0_selfcal{0}_finaliter.image.tt0".format(selfcaliter)
 
         ia.open(finaliter_selfcal)
         finaliter_selfcal_data = ia.getchunk()
