@@ -74,7 +74,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
 
                     postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x if 'diff' not in x][0]
 
-                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
+                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal_finalmodel")
                     if "_finaliter" in preselfcal_name:
                         preselfcal_name = preselfcal_name.replace("_finaliter","")
                     if not os.path.exists(preselfcal_name) and '_v0.1' in preselfcal_name:
