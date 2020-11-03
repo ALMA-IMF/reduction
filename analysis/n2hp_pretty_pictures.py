@@ -2,7 +2,9 @@ import numpy as np
 from astropy import units as u
 from spectral_cube import SpectralCube
 from astropy import visualization
+from astropy import wcs
 import pylab as pl
+from .visualization import make_scalebar, hide_labels
 
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults'
 
@@ -17,6 +19,10 @@ colorslices = {'W51-IRS2': {'b': (46, 52), 'g': (52, 58), 'r': (59, 65)},
                'G338.93': {'b': (-68.5,-66), 'g': (-66,-63.5), 'r': (-63.5,-61)},
               }
 
+distances = {'W51-IRS2': 5.1*u.kpc,
+             'W51-E': 5.1*u.kpc,
+            }
+
 band = 'B3'
 
 for field in colorslices:
@@ -26,6 +32,9 @@ for field in colorslices:
 
     n2hc = SpectralCube.read(filepath).with_spectral_unit(u.km/u.s, velocity_convention='radio')
     n2hc = n2hc.rechunk((10,)+n2hc.shape[1:])
+
+
+    ax = pl.subplot(projection=n2hc.celestial.wcs)
 
     moment_slabs = {color: n2hc.spectral_slab(vmin*u.km/u.s,
                                               vmax*u.km/u.s).moment0(axis=0)
@@ -41,9 +50,22 @@ for field in colorslices:
     zrx = n2hc.shape[2] // 20
     zry = n2hc.shape[1] // 20
 
-    pl.imshow(norm(rgb_image)[zry:-zry, zrx:-zrx], origin='lower')
+    ax.imshow(norm(rgb_image)[zry:-zry, zrx:-zrx], origin='lower')
 
-    pl.xticks([])
-    pl.yticks([])
+    hide_labels(ax)
 
     pl.savefig(filepath+".rgb.png", bbox_inches='tight', dpi=300)
+
+    if field in distances:
+        blcx = zrx*2 * 0.05
+        blcy = zry*2 * 0.05
+        distance = (0.5*u.pc / distances[field]).to(u.deg, u.dimensionless_angles())
+        pixscale = wcs.utis.proj_plane_pixel_scale(n2hc.wcs.celestial)[0]
+        brcx = blcx + pixscale * distance
+        ax.plot([blcx, brcx], [blcy, blcy], color='w',)
+        ax.text((blcx + brcx)/2, blcy + 0.01 * zry*2,
+                "0.5 pc", color='white', verticalalignment='bottom',
+                horizontalalignment='center',
+                fontsize=14)
+
+    pl.savefig(filepath+"_scalebar.rgb.png", bbox_inches='tight', dpi=300)
