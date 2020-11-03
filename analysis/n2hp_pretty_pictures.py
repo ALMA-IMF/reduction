@@ -4,7 +4,18 @@ from spectral_cube import SpectralCube
 from astropy import visualization
 from astropy import wcs
 import pylab as pl
-from .visualization import make_scalebar, hide_labels
+
+def hide_labels(ax):
+    lon = ax.coords['RA']
+    lat = ax.coords['Dec']
+
+    lon.set_ticks_visible(False)
+    lon.set_ticklabel_visible(False)
+    lat.set_ticks_visible(False)
+    lat.set_ticklabel_visible(False)
+    lon.set_axislabel('')
+    lat.set_axislabel('')
+
 
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults'
 
@@ -34,7 +45,7 @@ for field in colorslices:
     n2hc = n2hc.rechunk((10,)+n2hc.shape[1:])
 
 
-    ax = pl.subplot(projection=n2hc.celestial.wcs)
+    ax = pl.subplot(projection=n2hc.wcs.celestial)
 
     moment_slabs = {color: n2hc.spectral_slab(vmin*u.km/u.s,
                                               vmax*u.km/u.s).moment0(axis=0)
@@ -52,20 +63,24 @@ for field in colorslices:
 
     ax.imshow(norm(rgb_image)[zry:-zry, zrx:-zrx], origin='lower')
 
+    ax.set_xticks([])
+    ax.set_yticks([])
     hide_labels(ax)
 
     pl.savefig(filepath+".rgb.png", bbox_inches='tight', dpi=300)
 
     if field in distances:
-        blcx = zrx*2 * 0.05
-        blcy = zry*2 * 0.05
+        blcx = zrx*2 * 0.15
+        blcy = zry*2 * 0.15
         distance = (0.5*u.pc / distances[field]).to(u.deg, u.dimensionless_angles())
-        pixscale = wcs.utis.proj_plane_pixel_scale(n2hc.wcs.celestial)[0]
-        brcx = blcx + pixscale * distance
+        pixscale = wcs.utils.proj_plane_pixel_scales(n2hc.wcs.celestial)[0] * u.deg
+        brcx = blcx + distance / pixscale
         ax.plot([blcx, brcx], [blcy, blcy], color='w',)
-        ax.text((blcx + brcx)/2, blcy + 0.01 * zry*2,
+        ax.text((blcx + brcx)/2, blcy + 0.03 * zry*2,
                 "0.5 pc", color='white', verticalalignment='bottom',
                 horizontalalignment='center',
-                fontsize=14)
+                fontsize=18)
 
-    pl.savefig(filepath+"_scalebar.rgb.png", bbox_inches='tight', dpi=300)
+        pl.savefig(filepath+"_scalebar.rgb.png", bbox_inches='tight', dpi=300)
+
+    print(f"{field} done")
