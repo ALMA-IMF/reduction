@@ -24,19 +24,24 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                     files = glob.glob(str(basepath / globstr))
                     for fn in files:
+                        basefn = os.path.basename(fn)
                         try:
-                            if not os.path.exists(itpath):
+                            if not os.path.exists(itpath / basefn):
                                 shutil.copy(fn, itpath)
                                 print(f"{fn} -> {itpath}")
                             else:
+                                if 'finalmodel' in fn:
+                                    print(f"{itpath/basefn} already exists")
                                 continue
                         except IsADirectoryError:
-                            target = itpath / os.path.basename(fn)
+                            target = itpath / basefn
 
                             # EITHER: Rewrite or Continue
                             if os.path.isdir(target):
                                 # If it already exists, skip
                                 # comment this line and uncomment the next if you want to overwrite
+                                if 'finalmodel' in fn:
+                                    print(f"{target} already exists")
                                 continue
                                 #shutil.rmtree(target)
                             print(f"{fn} -> {target}")
