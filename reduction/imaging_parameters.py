@@ -2899,7 +2899,9 @@ line_imaging_parameters_custom = {
     },
     "W43-MM1_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1ad_continuum_merged_12M_robust0_selfcal4_finaliter",
+        #"startmodel": "W43-MM1_B3_uid___A001_X1296_X1ad_continuum_merged_12M_robust0_selfcal4_finaliter",
+        # UF machine has 1af selfcal4 instead of 1ad selfcal4 as of 11/3/2020 - this may change
+        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
