@@ -783,15 +783,14 @@ imaging_parameters_nondefault = {
         "maskname": {4: "G328_B6_clean_robust0.crtf"},
     },
     "G328.25_B6_12M_robust0": {
-        "threshold": {0: "1e-3Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy", 5: "0.5mJy",},
-        "niter": {0: 3000, 1: 3000, 2: 9000, 3: 18000, 4: 18000, 5: 18000},
+        "threshold": {0: "1e-3Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy"},
+        "niter": {0: 3000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
         "maskname": {
             0: "G328_B6_clean_12M_robust0_3sigma.crtf",
             1: "G328_B6_clean_robust0.crtf",
             2: "G328_B6_clean_robust0.crtf",
             3: "G328_B6_clean_robust0.crtf",
             4: "G328_B6_clean_robust0.crtf",
-            5: "G328_B6_clean_robust0.crtf", # OVERCLEANED!  Needs narrower clean boxes
         },
     },
     "G328.25_B6_12M_robust-2": {
@@ -2830,7 +2829,7 @@ line_imaging_parameters_custom = {
         "threshold": "6mJy",
         # "startmodel": "G328.25_B6_uid___A001_X1296_X161_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 163 instead of 161 as of 10/14/2020 - this may change
-        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0": {
         "threshold": "6mJy",
