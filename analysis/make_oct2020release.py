@@ -24,14 +24,15 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                     files = glob.glob(str(basepath / globstr))
                     for fn in files:
+                        basefn = os.path.basepath(fn)
                         try:
-                            if not os.path.exists(itpath):
+                            if not os.path.exists(itpath / basefn):
                                 shutil.copy(fn, itpath)
                                 print(f"{fn} -> {itpath}")
                             else:
                                 continue
                         except IsADirectoryError:
-                            target = itpath / os.path.basename(fn)
+                            target = itpath / basefn
 
                             # EITHER: Rewrite or Continue
                             if os.path.isdir(target):
