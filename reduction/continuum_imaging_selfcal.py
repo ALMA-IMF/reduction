@@ -989,6 +989,12 @@ for continuum_ms in continuum_mses:
         startmodel = [contimagename+"_robust{0}_selfcal{1}_finaliter.model.tt0".format(0, selfcaliter),
                       contimagename+"_robust{0}_selfcal{1}_finaliter.model.tt1".format(0, selfcaliter)]
 
+        pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, 0)
+        if do_bsens and (pars_key+"_bsens") in imaging_parameters:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key+"_bsens"])
+        else:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key])
+
         if not dryrun:
             tclean(vis=selfcal_ms,
                    field=field.encode(),
@@ -1009,8 +1015,8 @@ for continuum_ms in continuum_mses:
                    deconvolver='mtmfs',
                    gridder='mosaic',
                    niter=0,
-                   imsize=imsize,
-                   cell=cellsize,
+                   imsize=impars_finaliter['imsize'],
+                   cell=impars_finaliter['cell'],
                    startmodel=startmodel,
                   )
             test_tclean_success()
