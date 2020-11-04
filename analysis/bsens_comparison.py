@@ -195,7 +195,7 @@ formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
           }
 
 for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
-           '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
+           '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release'):
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.ecsv',
               overwrite=True)
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.html',
