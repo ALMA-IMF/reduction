@@ -62,7 +62,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
             for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits'):
 
 
-                fns = glob.glob(f"{basepath}/{field}/B{band}/bsens/*_{config}_robust0_*final*.{suffix}")
+                fns = glob.glob(f"{basepath}/{field}/B{band}/bsens/*_{config}_robust0_*finaliter*.{suffix}")
                 if len(fns) > 1:
                     raise ValueError("Too many matches!")
                 elif len(fns) == 0:
@@ -99,7 +99,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 if not os.path.exists(cleanest):
                     # hackaround for mismatched number of selfcal iterations
-                    cfns = glob.glob(f"{basepath}/{field}/B{band}/cleanest/*_{config}_robust0_*final*.{suffix}")
+                    cfns = glob.glob(f"{basepath}/{field}/B{band}/cleanest/*_{config}_robust0_*finaliter*.{suffix}")
                     if len(cfns) == 1:
                         log.info(f"Replaced original cleanest {cleanest} with {cfns[0]}")
                         allow_reproj = False
