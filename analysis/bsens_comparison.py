@@ -196,15 +196,15 @@ formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
 
 for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
-    tbl.write('{bp}/tables/metadata_bsens_cleanest.ecsv',
+    tbl.write(f'{bp}/tables/metadata_bsens_cleanest.ecsv',
               overwrite=True)
-    tbl.write('{bp}/tables/metadata_bsens_cleanest.html',
+    tbl.write(f'{bp}/tables/metadata_bsens_cleanest.html',
               formats=formats,
               format='ascii.html', overwrite=True)
-    tbl.write('{bp}/tables/metadata_bsens_cleanest.tex',
+    tbl.write(f'{bp}/tables/metadata_bsens_cleanest.tex',
               formats=formats,
               overwrite=True)
-    tbl.write('{bp}/tables/metadata_bsens_cleanest.js.html',
+    tbl.write(f'{bp}/tables/metadata_bsens_cleanest.js.html',
               #formats=formats,
               format='jsviewer')
 
