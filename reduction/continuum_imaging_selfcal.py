@@ -989,51 +989,52 @@ for continuum_ms in continuum_mses:
         startmodel = [contimagename+"_robust{0}_selfcal{1}_finaliter.model.tt0".format(0, selfcaliter),
                       contimagename+"_robust{0}_selfcal{1}_finaliter.model.tt1".format(0, selfcaliter)]
 
-        tclean(vis=selfcal_ms,
-               field=field.encode(),
-               imagename=imname,
-               phasecenter=phasecenter,
-               outframe='LSRK',
-               veltype='radio',
-               interactive=False,
-               antenna=antennae,
-               savemodel='none',
-               datacolumn='data',
-               pbcor=True,
-               mask='',
-               usemask=None,
-               weighting='briggs',
-               robust=0,
-               specmode='mfs',
-               deconvolver='mtmfs',
-               gridder='mosaic',
-               niter=0,
-               imsize=imsize,
-               cell=cellsize,
-               startmodel=startmodel,
-              )
-        test_tclean_success()
+        if not dryrun:
+            tclean(vis=selfcal_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   interactive=False,
+                   antenna=antennae,
+                   savemodel='none',
+                   datacolumn='data',
+                   pbcor=True,
+                   mask='',
+                   usemask=None,
+                   weighting='briggs',
+                   robust=0,
+                   specmode='mfs',
+                   deconvolver='mtmfs',
+                   gridder='mosaic',
+                   niter=0,
+                   imsize=imsize,
+                   cell=cellsize,
+                   startmodel=startmodel,
+                  )
+            test_tclean_success()
 
-        ia.open(imname+".image.tt0")
-        ia.sethistory(origin='almaimf_cont_imaging',
-                      history=["git_version: {0}".format(git_version),
-                               "git_date: {0}".format(git_date)])
-        preselfcal_finalmodel_data = ia.getchunk()
-        ia.close()
+            ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
+            preselfcal_finalmodel_data = ia.getchunk()
+            ia.close()
 
-        finaliter_selfcal = contimagename+"_robust0_selfcal{0}_finaliter.image.tt0".format(selfcaliter)
+            finaliter_selfcal = contimagename+"_robust0_selfcal{0}_finaliter.image.tt0".format(selfcaliter)
 
-        ia.open(finaliter_selfcal)
-        finaliter_selfcal_data = ia.getchunk()
-        ia.close()
+            ia.open(finaliter_selfcal)
+            finaliter_selfcal_data = ia.getchunk()
+            ia.close()
 
-        exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
-        exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
 
-        from astropy.io import fits
-        fh = fits.open(imname+".image.tt0.fits")
-        fh[0].data = finaliter_selfcal_data - preselfcal_finalmodel_data
-        fh.writeto(contimagename+"robust0_selfcal{0}_finaliter_minus_preselfcal.fits".format(selfcaliter), overwrite=True)
+            from astropy.io import fits
+            fh = fits.open(imname+".image.tt0.fits")
+            fh[0].data = finaliter_selfcal_data - preselfcal_finalmodel_data
+            fh.writeto(contimagename+"robust0_selfcal{0}_finaliter_minus_preselfcal.fits".format(selfcaliter), overwrite=True)
 
     logprint("Completed band {0}".format(band),
              origin='contim_selfcal')
