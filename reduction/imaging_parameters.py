@@ -289,9 +289,9 @@ imaging_parameters_nondefault = {
         "niter": {0: 500, 1: 1500, 2: 3000, 3: 5000, 4: 7000, 5: 10000},
     },
     "G337.92_B3_12M_robust0": {
-        "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "4e-4Jy", 4: "2.5e-4Jy", "final":"0.1mJy"},
+        "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "4e-4Jy", 4: "2.5e-4Jy", "final": "0.1mJy"},
         "scales": [0, 3, 9,],
-        "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000, "final":50000},  # rms ~ 1.25e-4 Jy/b.
+        "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000, "final": 50000},  # rms ~ 1.25e-4 Jy/b.
         "maskname": {
             0: "G337.92_B3_12M_robust0.crtf",
             1: "G337.92_B3_12M_robust0.crtf",
@@ -380,7 +380,16 @@ imaging_parameters_nondefault = {
     "G338.93_B3_7M12M_robust2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000},},
     "G338.93_B3_7M12M_robust-2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000},},
     "W51-E_B6_12M_robust0": {
-        "threshold": {0: "0.3mJy", 1: "0.25mJy", 2: "0.25mJy", 3: "0.25mJy", 4: "0.25mJy", 5: "0.25mJy", 6: "0.2mJy", 7: "0.2mJy"},
+        "threshold": {
+            0: "0.3mJy",
+            1: "0.25mJy",
+            2: "0.25mJy",
+            3: "0.25mJy",
+            4: "0.25mJy",
+            5: "0.25mJy",
+            6: "0.2mJy",
+            7: "0.2mJy",
+        },
         "scales": [0, 3, 9, 27],
     },
     "W51-E_B3_12M_robust0": {
@@ -389,8 +398,8 @@ imaging_parameters_nondefault = {
         "imsize": [5000, 5000],
         "cell": ["0.0375arcsec", "0.0375arcsec"],
     },
-    "W51-E_B3_12M_robust2": {"threshold": "0.15mJy", "scales": [0, 3, 9, 27], "imsize": [5000,5000]},
-    "W51-E_B3_12M_robust-2": {"threshold": "0.15mJy", "scales": [0, 3, 9], "imsize": [5000,5000]},
+    "W51-E_B3_12M_robust2": {"threshold": "0.15mJy", "scales": [0, 3, 9, 27], "imsize": [5000, 5000]},
+    "W51-E_B3_12M_robust-2": {"threshold": "0.15mJy", "scales": [0, 3, 9], "imsize": [5000, 5000]},
     "W51-E_B3_12M_robust-0.5": {"threshold": "0.15mJy", "imsize": [5000, 5000]},
     "W51-E_B3_12M_robust0.5": {"threshold": "0.15mJy", "imsize": [5000, 5000]},
     "W51-E_B3_12M_robust1": {"threshold": "0.15mJy", "imsize": [5000, 5000]},
@@ -593,7 +602,16 @@ imaging_parameters_nondefault = {
     "G327.29_B6_7M12M_robust2": {"threshold": {5: "1.0mJy"}, "niter": {5: 20000}},
     "G327.29_B6_7M12M_robust-2": {"threshold": {5: "1.0mJy"}, "niter": {5: 20000}},
     "G010.62_B3_12M_robust0": {
-        "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "1.0mJy", 4: "0.5mJy", 5: "0.3mJy", 6: "0.3mJy", 7: "0.3mJy"},
+        "threshold": {
+            0: "10mJy",
+            1: "5mJy",
+            2: "2.5 mJy",
+            3: "1.0mJy",
+            4: "0.5mJy",
+            5: "0.3mJy",
+            6: "0.3mJy",
+            7: "0.3mJy",
+        },
         "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000, 6: 15000, 7: 15000},
         "maskname": {
             0: "G010.62_centralBox_50_30.crtf",
@@ -2736,7 +2754,7 @@ line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
 line_imaging_parameters_custom = {
     "G008.67_B3_12M_robust0": {
         "threshold": "6mJy",
-        #"startmodel": "G008.67_B3_uid___A001_X1296_X1bf_continuum_merged_12M_robust0_selfcal5_finaliter",
+        # "startmodel": "G008.67_B3_uid___A001_X1296_X1bf_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1c1 instead of 1bf as of 10/23/2020
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
@@ -2904,7 +2922,7 @@ line_imaging_parameters_custom = {
     },
     "W43-MM1_B3_12M_robust0": {
         "threshold": "6mJy",
-        #"startmodel": "W43-MM1_B3_uid___A001_X1296_X1ad_continuum_merged_12M_robust0_selfcal4_finaliter",
+        # "startmodel": "W43-MM1_B3_uid___A001_X1296_X1ad_continuum_merged_12M_robust0_selfcal4_finaliter",
         # UF machine has 1af selfcal4 instead of 1ad selfcal4 as of 11/3/2020 - this may change
         "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
