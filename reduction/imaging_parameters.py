@@ -380,7 +380,7 @@ imaging_parameters_nondefault = {
     "G338.93_B3_7M12M_robust2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000},},
     "G338.93_B3_7M12M_robust-2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000},},
     "W51-E_B6_12M_robust0": {
-        "threshold": {0: "0.3mJy", 1: "0.25mJy", 2: "0.25mJy", 3: "0.25mJy", 4: "0.25mJy", 5: "0.25mJy", 6: "0.2mJy",},
+        "threshold": {0: "0.3mJy", 1: "0.25mJy", 2: "0.25mJy", 3: "0.25mJy", 4: "0.25mJy", 5: "0.25mJy", 6: "0.2mJy", 7: "0.2mJy"},
         "scales": [0, 3, 9, 27],
     },
     "W51-E_B3_12M_robust0": {
@@ -2519,6 +2519,7 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         5: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
         6: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        7: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
     },
     "W51-E_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
