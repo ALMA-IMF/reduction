@@ -2959,11 +2959,12 @@ line_imaging_parameters_custom = {
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal4",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
+        "pblimit": 0.05, # per Nov 6 telecon
     },
     "W51-E_B3_12M_robust0_contsub": {
         "threshold": "4mJy",  # sigma is ~0.8 mJy
         "sidelobethreshold": 1.0,
-        "pblimit": 0.1,
+        "pblimit": 0.05,
     },
     "W51-IRS2_B3_12M_robust0": {
         "threshold": "6mJy",
