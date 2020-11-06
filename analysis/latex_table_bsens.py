@@ -44,6 +44,7 @@ print(wtbl)
 wtbl['selfcaliter'] = Column(data=[int(x[2:]) for x in wtbl['selfcaliter']])
 wtbl['bsens_div_cleanest_mad'] = wtbl['mad_bsens'] / wtbl['mad_cleanest']
 wtbl['bsens_div_cleanest_max'] = wtbl['max_bsens'] / wtbl['max_cleanest']
+wtbl['bsens_mad_div_req'] = wtbl['mad_bsens'] / wtbl['Req_Sens']
 
 
 cols_to_keep = {'region':'Region',
@@ -58,11 +59,12 @@ cols_to_keep = {'region':'Region',
                 #'peak':'$S_{peak}$',
                 'mad_bsens':'$\sigma_{MAD}$(bsens)',
                 'mad_cleanest':'$\sigma_{MAD}$(cleanest)',
-                'bsens_div_cleanest_mad':'$\sigma_{MAD}$(bsens)/$\sigma_{MAD}$(cleanest)',
+                'bsens_div_cleanest_mad':'$\\frac{\sigma_{MAD}(\mathrm{bsens})}{\sigma_{MAD}(\mathrm{cleanest})}$',
                 'max_bsens':'$S_{peak}$(bsens)',
                 'max_cleanest':'$S_{peak}$(cleanest)',
-                'bsens_div_cleanest_max':'$S_{peak}$(bsens)/$S_{peak}$(cleanest)',
+                'bsens_div_cleanest_max':'$\\frac{S_{peak}(\mathrm{bsens})}{S_{peak}(\mathrm{cleanest})$',
                 'Req_Sens': 'Requested $\sigma$',
+                'bsens_mad_div_req': '$\sigma_{\mathrm{bsens}}/\sigma_{\mathrm{req}}$',
                 #'dr_cleanest': "DR$_{cleanest}$",
                 #'dr_bsens': "DR$_{bsens}$",
                }

@@ -117,8 +117,11 @@ latexdict['tablefoot'] = ("}\par\n"
                           "and $\\Omega_{syn}^{1/2}/\\Omega_{req}^{1/2}$ gives the ratio of the synthesized to the "
                           "requested beam area; larger numbers imply poorer resolution.  "
                           "$\sigma_{MAD}$ and $\sigma_{req}$ are the measured and requested "
-                          "RMS sensitivity, respectively, "
-
+                          "RMS sensitivity, respectively, and $\sigma_{MAD}/\sigma{req}$ is the excess noise "
+                          "in the image over that requested.  "
+                          "$DR_{pre}$ and $DR_{post}$ are the dynamic range, $S_{peak} / \sigma_{MAD}$, for the "
+                          "pre- and post-self-calibration data; $DR_{post}/DR_{pre}$ gives the improvement "
+                          "factor."
                          )
 
 wtbl.sort('Region')
