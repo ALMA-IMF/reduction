@@ -18,6 +18,7 @@ from before_after_selfcal_quicklooks import get_selfcal_number
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/'
 os.chdir(basepath)
+sharepath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/'
 
 import imstats
 
@@ -110,6 +111,8 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                         if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
                             os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
                         fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                        shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png",
+                                    f"{sharepath}/comparison_images/")
                     except IndexError:
                         raise
                     except Exception as ex:
@@ -166,9 +169,9 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-if not os.path.exists('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/'):
-    os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/')
-    os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/')
+if not os.path.exists(f'{sharepath}/tables/'):
+    os.mkdir(sharepath)
+    os.mkdir(f'{sharepath}/tables/')
 
 for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
