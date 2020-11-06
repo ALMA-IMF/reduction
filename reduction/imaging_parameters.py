@@ -1866,9 +1866,11 @@ selfcal_pars_custom = {
     },
     "G338.93_B6_12M_robust0_bsens": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
+        2: {"calmode": "p", "gaintype": "T", "solint": "60s", "solnorm": True},
+        3: {"calmode": "p", "gaintype": "T", "solint": "30s", "solnorm": True},
+        4: {"calmode": "p", "gaintype": "T", "solint": "20s", "solnorm": True},
+        5: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
+        6: {"calmode": "p", "gaintype": "T", "solint": "5s", "solnorm": True},
     },
     "G338.93_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},

@@ -96,6 +96,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                     if fig.get_figwidth() != 14:
                         fig.set_figwidth(14)
 
+                    bsens = '_bsens' in postselfcal_name
 
 
                     try:
@@ -108,7 +109,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                                                                                   writediff=True)
                         if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
                             os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
-                        pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                        fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
                     except IndexError:
                         raise
                     except Exception as ex:
