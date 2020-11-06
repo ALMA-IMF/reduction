@@ -9,7 +9,7 @@ from spectral_cube import SpectralCube
 from astropy.stats import mad_std
 from astropy import log
 import pylab as pl
-import subprocess
+import shutil
 
 from compare_images import make_comparison_image
 
@@ -20,7 +20,7 @@ basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/'
 os.chdir(basepath)
 sharepath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/'
 
-import imstats
+#import imstats
 
 
 # tbl = imstats.savestats(basepath=basepath)
