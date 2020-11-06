@@ -44,7 +44,7 @@ print(wtbl)
 wtbl['selfcaliter'] = Column(data=[int(x[2:]) for x in wtbl['selfcaliter']])
 wtbl['bsens_div_cleanest_mad'] = wtbl['mad_bsens'] / wtbl['mad_cleanest']
 wtbl['bsens_div_cleanest_max'] = wtbl['max_bsens'] / wtbl['max_cleanest']
-wtbl['bsens_mad_div_req'] = wtbl['mad_bsens'] / wtbl['Req_Sens']
+wtbl['bsens_mad_div_req'] = wtbl['mad_bsens'] / wtbl['Req_Sens'] * 1e3
 
 
 cols_to_keep = {'region':'Region',
@@ -60,9 +60,10 @@ cols_to_keep = {'region':'Region',
                 'mad_bsens':'$\sigma_{MAD}$(bsens)',
                 'mad_cleanest':'$\sigma_{MAD}$(cleanest)',
                 'bsens_div_cleanest_mad':'$\\frac{\sigma_{MAD}(\mathrm{bsens})}{\sigma_{MAD}(\mathrm{cleanest})}$',
+                '12Mshort_frac': '$f_{BW,cleanest}$',
                 'max_bsens':'$S_{peak}$(bsens)',
                 'max_cleanest':'$S_{peak}$(cleanest)',
-                'bsens_div_cleanest_max':'$\\frac{S_{peak}(\mathrm{bsens})}{S_{peak}(\mathrm{cleanest})$',
+                'bsens_div_cleanest_max':'$\\frac{S_{peak}(\mathrm{bsens})}{S_{peak}(\mathrm{cleanest})}$',
                 'Req_Sens': 'Requested $\sigma$',
                 'bsens_mad_div_req': '$\sigma_{\mathrm{bsens}}/\sigma_{\mathrm{req}}$',
                 #'dr_cleanest': "DR$_{cleanest}$",
@@ -104,11 +105,13 @@ float_cols =  ['$\\theta_{maj}$',
  'BPA',
  '$S_{peak}$(bsens)',
  '$S_{peak}$(cleanest)',
- '$S_{peak}$(bsens)/$S_{peak}$(cleanest)',
+ '$\\frac{S_{peak}(\mathrm{bsens})}{S_{peak}(\mathrm{cleanest})}$',
  '$\\sigma_{MAD}$(bsens)',
  '$\\sigma_{MAD}$(cleanest)',
- '$\sigma_{MAD}$(bsens)/$\sigma_{MAD}$(cleanest)',
+ '$\\frac{\sigma_{MAD}(\mathrm{bsens})}{\sigma_{MAD}(\mathrm{cleanest})}$',
  'Requested $\sigma$',
+ '$\sigma_{\mathrm{bsens}}/\sigma_{\mathrm{req}}$',
+ '$f_{BW,cleanest}$',
  #'$\\theta_{req}$',
  #'\\sigma_{req}$',
  #'$\\sigma_{req}/\\sigma_{MAD}$',
@@ -123,7 +126,7 @@ wtbl['$\sigma_{MAD}$(bsens)'] *= 1000
 wtbl['$\sigma_{MAD}$(cleanest)'] *= 1000
 
 
-formats = {key: lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2)))
+formats = {key: lambda x: ('{0:0.2f}'.format(round_to_n(x,2)))
            for key in float_cols}
 
 
@@ -136,9 +139,17 @@ wtbl.write('bsens_cleanest_diff.ecsv', format='ascii.ecsv', overwrite=True)
 latexdict['header_start'] = '\label{tab:bsens_cleanest}'#\n\\footnotesize'
 latexdict['preamble'] = '\caption{Best Sensitivity vs Cleanest Continuum comparison}\n\\resizebox{\\textwidth}{!}{'
 latexdict['col_align'] = 'l'*len(wtbl.columns)
-latexdict['tabletype'] = 'table'
+latexdict['tabletype'] = 'table*'
 latexdict['tablefoot'] = ("}\par\n"
-                          "Description"
+                          "Like Table \\ref{tab:selfcal}, but comparing the cleanest and bsens data.  "
+                          "$\sigma_{MAD}$(bsens) and $\sigma_{MAD}$(cleanest) are the "
+                          "standard deviation error estimates computed from a signal-free "
+                          "region in the map using the Median Absolute Deviation as a "
+                          "robust estimator.  Their ratio shows that the broader included "
+                          "bandwidth increases sensitivity; $f_{BW,cleanest}$ specifies "
+                          "the fraction of the total bandwidth that was incorporated into "
+                          "the cleanest images.  "
+                          "$S_{peak}$ is the peak intensity in the images."
 
                          )
 
