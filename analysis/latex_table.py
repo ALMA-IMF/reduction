@@ -49,12 +49,12 @@ cols_to_keep = {'region':'Region',
                 'bmin':r'$\theta_{min}$',
                 'bpa':'BPA',
                 'Req_Res': r"$\theta_{req}$",
-                'BeamVsReq': r"$\theta_{req}/\theta_{maj}$",
+                'BeamVsReq': r"$\Omega_{syn}^{1/2}/\Omega_{req}^{1/2}$",
                 #'peak/mad': "DR",
                 'peak':'$S_{peak}$',
                 'mad':'$\sigma_{MAD}$',
                 'Req_Sens': r"$\sigma_{req}$",
-                'SensVsReq': r"$\sigma_{req}/\sigma_{MAD}$",
+                'SensVsReq': r"$\sigma_{MAD}/\sigma_{req}$",
                 'dr_pre': "DR$_{pre}$",
                 'dr_post': "DR$_{post}$",
                 'dr_improvement': "DR$_{post}$/DR$_{pre}$"}
@@ -86,8 +86,9 @@ float_cols =  ['$\\theta_{maj}$',
  '$\\sigma_{MAD}$',
  '$\\theta_{req}$',
  '\\sigma_{req}$',
- '$\\sigma_{req}/\\sigma_{MAD}$',
- '$\\theta_{req}/\\theta_{maj}$',
+ '$\\sigma_{MAD}/\\sigma_{req}$',
+# '$\\theta_{req}/\\theta_{maj}$',
+ "$\Omega_{syn}^{1/2}/\Omega_{req}^{1/2}$",
  'DR$_{pre}$',
  'DR$_{post}$',
  'DR$_{post}$/DR$_{pre}$']
@@ -110,7 +111,13 @@ latexdict['preamble'] = '\caption{Selfcal Summary}\n\\resizebox{\\textwidth}{!}{
 latexdict['col_align'] = 'l'*len(wtbl.columns)
 latexdict['tabletype'] = 'table*'
 latexdict['tablefoot'] = ("}\par\n"
-                          "Description"
+                          "$n_{sc}$ is the number of self-calibration iterations adopted.  "
+                          "$\\theta_{maj}, \\theta_{min}$, and BPA give the major and minor full-width-half-maxima (FWHM) of the synthesized beams.  "
+                          "$\\theta_{req}$ is the requested beam size, "
+                          "and $\\Omega_{syn}^{1/2}/\\Omega_{req}^{1/2}$ gives the ratio of the synthesized to the "
+                          "requested beam area; larger numbers imply poorer resolution.  "
+                          "$\sigma_{MAD}$ and $\sigma_{req}$ are the measured and requested "
+                          "RMS sensitivity, respectively, "
 
                          )
 
