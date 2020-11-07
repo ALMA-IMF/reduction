@@ -31,7 +31,7 @@ def get_requested_sens():
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
 
-def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec):
+def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec, max_radial_extent=5*u.arcsec):
     """ REDUNDANT with get_psf_secondpeak, but this one is better
 
     Process:
@@ -54,16 +54,28 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec):
     shape = cube.shape[1:]
     sy, sx = shape
 
-    Y, X = np.ogrid[0:sy, 0:sx]
+    Y, X = np.mgrid[0:sy, 0:sx]
 
     center = np.unravel_index(np.argmax(psfim), shape)
     cy, cx = center
 
-    rr = np.hypot(Y - cy, X - cx)
+    #rr = np.hypot(Y - cy, X - cx)
+
+    beam = cube.beam
+
+    # elliptical version...
+    dy = (Y - cy)
+    dx = (X - cx)
+    costh = np.cos(beam.pa)
+    sinth = np.sin(beam.pa)
+    rmajmin = beam.minor / beam.major
+
+    rr = ((dx * costh + dy * sinth)**2 / rmajmin**2 + (dx * sinth - dy * costh)**2 / 1**2)**0.5
+
     rbin = rr.astype(np.int)
 
-    # assume the PSF first minimum is within 50 pixels of center
-    radial_mean = ndimage.mean(psfim, labels=rbin, index=np.arange(50))
+    # assume the PSF first minimum is within 100 pixels of center
+    radial_mean = ndimage.mean(psfim, labels=rbin, index=np.arange(100))
 
     # find the first negative peak (approximately); we include anything
     # within this radius as part of the main beam
@@ -110,6 +122,8 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec):
             radial_extent = (min_radial_extent / pixscale).decompose().value
         else:
             radial_extent = r_max_sidelobe
+        if radial_extent * pixscale > max_radial_extent:
+            radial_extent = (max_radial_extent / pixscale).decompose().value
 
         bm2 = cube.beam.as_kernel(pixscale,
                                  x_size=radial_extent.astype('int')*2+1,
