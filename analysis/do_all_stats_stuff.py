@@ -12,7 +12,9 @@ from pathlib import Path
 assert 'SCRIPT_DIR' in os.environ
 script_dir = Path(os.environ['SCRIPT_DIR'])
 
-scripts = ['delivery_status.py',
+scripts = [
+           'make_oct2020release.py',
+           'delivery_status.py',
            'imstats.py',
            'before_after_selfcal_quicklooks_Oct2020release.py',
            'dirty_selfcal_compare.py',
