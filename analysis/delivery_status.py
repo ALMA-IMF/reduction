@@ -17,7 +17,7 @@ from before_after_selfcal_quicklooks import get_selfcal_number
 from imstats import parse_fn
 
 cwd = os.getcwd()
-basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020'
+basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020'
 os.chdir(basepath)
 
 datatable = {}
@@ -92,11 +92,11 @@ keys = next(iter(datatable.values()))
 tbldata = {key: [datatable[xx][key] for xx in datatable] for key in keys}
 tbl = Table(tbldata)
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/delivery_metadata.ecsv',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/delivery_metadata.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/delivery_metadata.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/delivery_metadata.html',
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/delivery_metadata.js.html',
+tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/delivery_metadata.js.html',
           #formats=formats,
           format='jsviewer')
 
@@ -125,7 +125,7 @@ for row in tbl:
 
 gtbl = Table(grid)
 gtbl.sort('region')
-gtbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/delivery_grid.html',
+gtbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/delivery_grid.html',
            format='ascii.html', overwrite=True, htmldict={'css':'table, th, td, tr { border: 1px solid black; text-align: center}'})
 
 os.chdir(cwd)
