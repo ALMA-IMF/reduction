@@ -9,9 +9,11 @@ basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/')
 os.chdir(basepath)
 
+overwrite = True
+
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
     for band in ('B3','B6'):
-        for imtype,itgl in zip(('cleanest', 'bsens',  ), ('continuum_merged_12M', 'bsens_12M', )):
+        for imtype,itgl in zip(('cleanest', 'bsens', ), ('continuum_merged_12M', 'bsens_12M', )):
             itpath = releasepath / field / band / imtype
             itpath.mkdir(parents=True, exist_ok=True)
 
@@ -26,23 +28,19 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     for fn in files:
                         basefn = os.path.basename(fn)
                         try:
-                            if not os.path.exists(itpath / basefn):
+                            if os.path.exists(itpath / basefn) and not overwrite:
+                                pass
+                            else:
                                 shutil.copy(fn, itpath)
                                 print(f"{fn} -> {itpath}")
-                            else:
-                                if 'finalmodel' in fn:
-                                    print(f"{itpath/basefn} already exists")
-                                continue
                         except IsADirectoryError:
                             target = itpath / basefn
 
                             # EITHER: Rewrite or Continue
                             if os.path.isdir(target):
-                                # If it already exists, skip
-                                # comment this line and uncomment the next if you want to overwrite
-                                if 'finalmodel' in fn:
-                                    print(f"{target} already exists")
-                                continue
-                                #shutil.rmtree(target)
+                                if overwrite:
+                                    shutil.rmtree(target)
+                                else:
+                                    continue
                             print(f"{fn} -> {target}")
                             shutil.copytree(fn, target)

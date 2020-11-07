@@ -14,7 +14,7 @@ script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = ['delivery_status.py',
            'imstats.py',
-           'before_after_selfcal_quicklooks_Oct2020_release.py',
+           'before_after_selfcal_quicklooks_Oct2020release.py',
            'dirty_selfcal_compare.py',
            'bsens_comparison.py',
            'robust_comparisons.py',
