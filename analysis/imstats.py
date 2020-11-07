@@ -31,7 +31,8 @@ def get_requested_sens():
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
 
-def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec, max_radial_extent=5*u.arcsec):
+def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
+                       max_radial_extent=5*u.arcsec):
     """ REDUNDANT with get_psf_secondpeak, but this one is better
 
     Process:
