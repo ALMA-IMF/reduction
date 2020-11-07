@@ -7,6 +7,9 @@ from astropy import wcs
 from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
+from spectral_cube import SpectralCube
+import scipy
+from scipy import ndimage
 import regions
 import os
 import glob
@@ -26,6 +29,41 @@ def get_requested_sens():
     from astropy.io import ascii
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
+
+def get_psf_secondpeak(fn):
+    """ REDUNDANT with get_psf_secondpeak, but this one is better """
+    cube = SpectralCube.read(fn,
+                             format='casa_image' if not fn.endswith('.fits') else 'fits')
+    psfim = cube[0]
+
+    pixscale = wcs.utils.proj_plane_pixel_scales(cube.wcs.celestial)[0] * u.deg
+
+    shape = cube.shape[1:]
+    sy, sx = shape
+
+    Y, X = np.ogrid[0:sy, 0:sx]
+
+    center = np.unravel_index(np.argmax(psfim), shape)
+    cy, cx = center
+
+    r = np.hypot(Y - cy, X - cx)
+    rbin = r.astype(np.int)
+
+    radial_mean = ndimage.mean(psfim, labels=rbin, index=np.arange(50))
+
+    # find the first negative peak (approximately); we exclude anything
+    # within this radius as part of the main beam
+    first_min_ind = scipy.signal.find_peaks(-radial_mean *
+                                            (radial_mean < 0))[0][0]
+
+    max_sidelobe = psfim[r > first_min_ind].max()
+    max_sidelobe_loc = psfim[r > first_min_ind].argmax()
+    r_max_sidelobe = r[r > first_min_ind][max_sidelobe_loc]
+
+    return max_sidelobe, r_max_sidelobe / pixscale
+
+
+
 
 def imstats(fn, reg=None):
     fh = fits.open(fn)
@@ -79,10 +117,12 @@ def imstats(fn, reg=None):
         raise IOError("Wrong image type passed to imstats: {fn}".format(fn=fn))
 
     if os.path.exists(psf_fn):
-        psf_secondpeak = get_psf_secondpeak(psf_fn)
+        psf_secondpeak, psf_secondpeak_loc = get_psf_secondpeak(psf_fn)
         meta['psf_secondpeak'] = psf_secondpeak
+        meta['psf_secondpeak_radius'] = psf_secondpeak_loc
     else:
         meta['psf_secondpeak'] = np.nan
+        meta['psf_secondpeak_radius'] = np.nan
 
     return meta
 
@@ -169,7 +209,7 @@ def get_noise_region(field, band):
 
 
 
-def get_psf_secondpeak(fn, neighborhood_size=5, threshold=0.01):
+def get_psf_secondpeak_old(fn, neighborhood_size=5, threshold=0.01):
 
     from scipy import ndimage
     from scipy.ndimage import filters
@@ -545,7 +585,7 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
                  'bsens', 'pbcor', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
-                  'std_sample', 'peak/mad', 'psf_secondpeak']
+                  'std_sample', 'peak/mad', 'psf_secondpeak', 'psf_secondpeak_radius']
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
 
