@@ -75,12 +75,11 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec, max
     rbin = rr.astype(np.int)
 
     # assume the PSF first minimum is within 100 pixels of center
-    radial_mean = ndimage.mean(psfim, labels=rbin, index=np.arange(100))
+    radial_mean = ndimage.mean(psfim**2, labels=rbin, index=np.arange(100))
 
     # find the first negative peak (approximately); we include anything
     # within this radius as part of the main beam
-    first_min_ind = scipy.signal.find_peaks(-radial_mean *
-                                            (radial_mean < 0))[0][0]
+    first_min_ind = scipy.signal.find_peaks(-radial_mean)[0][0]
 
     bm = cube.beam.as_kernel(pixscale,
                              x_size=first_min_ind.astype('int')*2+1,
@@ -114,9 +113,11 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec, max
         # as interesting as the non-Gaussian components within the first peak.
         # (useful for display)
         outside_first_peak_mask = rr > first_min_ind
+        #first_sidelobe_ind = scipy.signal.find_peaks(radial_mean * (np.arange(len(radial_mean)) > first_min_ind))[0][0]
         max_sidelobe = psfim[outside_first_peak_mask].max()
         max_sidelobe_loc = psfim[outside_first_peak_mask].argmax()
         r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
+        #r_max_sidelobe = first_sidelobe_ind
 
         if r_max_sidelobe * pixscale < min_radial_extent:
             radial_extent = (min_radial_extent / pixscale).decompose().value
