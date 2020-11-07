@@ -31,7 +31,17 @@ def get_requested_sens():
     return tbl
 
 def get_psf_secondpeak(fn):
-    """ REDUNDANT with get_psf_secondpeak, but this one is better """
+    """ REDUNDANT with get_psf_secondpeak, but this one is better
+
+    Process:
+        1. Find the first minimum of the PSF by taking the radial profile within 50 pixels
+        2. Take the integral of the PSF within that range
+        3. Calculate the residual of the PSF minus the CASA-fitted Gaussian beam
+        4. Integrate that to get the fraction of flux outside the synthesized
+        beam in the main lobe of the dirty beam
+        5. Find the peak and the location of the peak residual
+
+    """
     cube = SpectralCube.read(fn,
                              format='casa_image' if not fn.endswith('.fits') else 'fits')
     psfim = cube[0]
@@ -46,21 +56,52 @@ def get_psf_secondpeak(fn):
     center = np.unravel_index(np.argmax(psfim), shape)
     cy, cx = center
 
-    r = np.hypot(Y - cy, X - cx)
-    rbin = r.astype(np.int)
+    rr = np.hypot(Y - cy, X - cx)
+    rbin = rr.astype(np.int)
 
+    # assume the PSF first minimum is within 50 pixels of center
     radial_mean = ndimage.mean(psfim, labels=rbin, index=np.arange(50))
 
-    # find the first negative peak (approximately); we exclude anything
+    # find the first negative peak (approximately); we include anything
     # within this radius as part of the main beam
     first_min_ind = scipy.signal.find_peaks(-radial_mean *
                                             (radial_mean < 0))[0][0]
 
-    max_sidelobe = psfim[r > first_min_ind].max()
-    max_sidelobe_loc = psfim[r > first_min_ind].argmax()
-    r_max_sidelobe = r[r > first_min_ind][max_sidelobe_loc]
+    # Obsolete approach; this finds the second peak, but that's not
+    # as interesting as the non-Gaussian components within the first peak.
+    #outside_first_peak_mask = rr > first_min_ind
+    #max_sidelobe = psfim[outside_first_peak_mask].max()
+    #max_sidelobe_loc = psfim[outside_first_peak_mask].argmax()
+    #r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
+    #return max_sidelobe, r_max_sidelobe / pixscale
 
-    return max_sidelobe, r_max_sidelobe / pixscale
+    bm = cube.beam.as_kernel(pixscale,
+                             x_size=first_min_ind.astype('int')*2+1,
+                             y_size=first_min_ind.astype('int')*2+1,
+                            )
+    view = (slice(cy-first_min_ind.astype('int'), cy+first_min_ind.astype('int')+1),
+            slice(cx-first_min_ind.astype('int'), cx+first_min_ind.astype('int')+1))
+    data = psfim[view].value
+    # the data and beam must be concentric
+    # and there must be only one peak location
+    # (these checks are to avoid the even-kernel issue in which the center
+    # of the beam can have its flux spread over four pixels)
+    assert np.argmax(data) == np.argmax(bm.array)
+    assert (bm.array.max() == bm.array).sum() == 1
+
+    bmfit_residual = data-bm.array/bm.array.max()
+    radial_mask = rr[view] < first_min_ind
+
+    psf_integral_firstpeak = (data * radial_mask).sum()
+    psf_residual_integral = (bmfit_residual * radial_mask).sum()
+    residual_peak = bmfit_residual.max()
+    residual_peak_loc = rr[view].flat[bmfit_residual.argmax()]
+
+    return (residual_peak,
+            (residual_peak_loc * pixscale).to(u.arcsec),
+            psf_residual_integral/psf_integral_firstpeak)
+
+
 
 
 
@@ -117,12 +158,14 @@ def imstats(fn, reg=None):
         raise IOError("Wrong image type passed to imstats: {fn}".format(fn=fn))
 
     if os.path.exists(psf_fn):
-        psf_secondpeak, psf_secondpeak_loc = get_psf_secondpeak(psf_fn)
+        psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction = get_psf_secondpeak(psf_fn)
         meta['psf_secondpeak'] = psf_secondpeak
         meta['psf_secondpeak_radius'] = psf_secondpeak_loc
+        meta['psf_secondpeak_sidelobefraction'] = psf_sidelobe1_fraction
     else:
         meta['psf_secondpeak'] = np.nan
         meta['psf_secondpeak_radius'] = np.nan
+        meta['psf_secondpeak_sidelobefraction'] = np.nan
 
     return meta
 
@@ -585,7 +628,9 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
                  'bsens', 'pbcor', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
-                  'std_sample', 'peak/mad', 'psf_secondpeak', 'psf_secondpeak_radius']
+                  'std_sample', 'peak/mad', 'psf_secondpeak',
+                  'psf_secondpeak_radius', 'psf_secondpeak_sidelobefraction',
+                 ]
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
 
