@@ -43,8 +43,10 @@ def get_psf_secondpeak(fn):
         5. Find the peak and the location of the peak residual
 
     """
-    cube = SpectralCube.read(fn,
-                             format='casa_image' if not fn.endswith('.fits') else 'fits')
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        cube = SpectralCube.read(fn,
+                                 format='casa_image' if not fn.endswith('.fits') else 'fits')
     psfim = cube[0]
 
     pixscale = wcs.utils.proj_plane_pixel_scales(cube.wcs.celestial)[0] * u.deg
