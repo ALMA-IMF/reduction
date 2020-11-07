@@ -31,7 +31,7 @@ def get_requested_sens():
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
 
-def get_psf_secondpeak(fn, show_image=False):
+def get_psf_secondpeak(fn, show_image=False, min_radial_extent=2.5*u.arcsec):
     """ REDUNDANT with get_psf_secondpeak, but this one is better
 
     Process:
@@ -96,7 +96,7 @@ def get_psf_secondpeak(fn, show_image=False):
 
     if show_image:
         import pylab as pl
-        pl.clf()
+        #pl.clf()
 
         # Obsolete approach; this finds the second peak, but that's not
         # as interesting as the non-Gaussian components within the first peak.
@@ -106,16 +106,21 @@ def get_psf_secondpeak(fn, show_image=False):
         max_sidelobe_loc = psfim[outside_first_peak_mask].argmax()
         r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
 
+        if r_max_sidelobe * pixscale < min_radial_extent:
+            radial_extent = (min_radial_extent / pixscale).decompose().value
+        else:
+            radial_extent = r_max_sidelobe
+
         bm2 = cube.beam.as_kernel(pixscale,
-                                 x_size=r_max_sidelobe.astype('int')*2+1,
-                                 y_size=r_max_sidelobe.astype('int')*2+1,
+                                 x_size=radial_extent.astype('int')*2+1,
+                                 y_size=radial_extent.astype('int')*2+1,
                                 )
-        view = (slice(cy-r_max_sidelobe.astype('int'), cy+r_max_sidelobe.astype('int')+1),
-                slice(cx-r_max_sidelobe.astype('int'), cx+r_max_sidelobe.astype('int')+1))
+        view = (slice(cy-radial_extent.astype('int'), cy+radial_extent.astype('int')+1),
+                slice(cx-radial_extent.astype('int'), cx+radial_extent.astype('int')+1))
         bmfit_residual2 = psfim[view].value-bm2.array/bm2.array.max()
 
         #extent = np.array([-first_min_ind, first_min_ind, -first_min_ind, first_min_ind])*pixscale.to(u.arcsec).value
-        extent = np.array([-r_max_sidelobe, r_max_sidelobe, -r_max_sidelobe, r_max_sidelobe])*pixscale.to(u.arcsec).value
+        extent = np.array([-radial_extent, radial_extent, -radial_extent, radial_extent])*pixscale.to(u.arcsec).value
         pl.imshow(bmfit_residual2, origin='lower', interpolation='none',
                   extent=extent, cmap='gray_r')
         cb = pl.colorbar()
