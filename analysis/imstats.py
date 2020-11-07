@@ -31,7 +31,7 @@ def get_requested_sens():
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
 
-def get_psf_secondpeak(fn):
+def get_psf_secondpeak(fn, show_image=False):
     """ REDUNDANT with get_psf_secondpeak, but this one is better
 
     Process:
@@ -70,14 +70,6 @@ def get_psf_secondpeak(fn):
     first_min_ind = scipy.signal.find_peaks(-radial_mean *
                                             (radial_mean < 0))[0][0]
 
-    # Obsolete approach; this finds the second peak, but that's not
-    # as interesting as the non-Gaussian components within the first peak.
-    #outside_first_peak_mask = rr > first_min_ind
-    #max_sidelobe = psfim[outside_first_peak_mask].max()
-    #max_sidelobe_loc = psfim[outside_first_peak_mask].argmax()
-    #r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
-    #return max_sidelobe, r_max_sidelobe / pixscale
-
     bm = cube.beam.as_kernel(pixscale,
                              x_size=first_min_ind.astype('int')*2+1,
                              y_size=first_min_ind.astype('int')*2+1,
@@ -100,8 +92,46 @@ def get_psf_secondpeak(fn):
     residual_peak = bmfit_residual.max()
     residual_peak_loc = rr[view].flat[bmfit_residual.argmax()]
 
+    peakloc_as = (residual_peak_loc * pixscale).to(u.arcsec)
+
+    if show_image:
+        import pylab as pl
+        pl.clf()
+
+        # Obsolete approach; this finds the second peak, but that's not
+        # as interesting as the non-Gaussian components within the first peak.
+        # (useful for display)
+        outside_first_peak_mask = rr > first_min_ind
+        max_sidelobe = psfim[outside_first_peak_mask].max()
+        max_sidelobe_loc = psfim[outside_first_peak_mask].argmax()
+        r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
+
+        bm2 = cube.beam.as_kernel(pixscale,
+                                 x_size=r_max_sidelobe.astype('int')*2+1,
+                                 y_size=r_max_sidelobe.astype('int')*2+1,
+                                )
+        view = (slice(cy-r_max_sidelobe.astype('int'), cy+r_max_sidelobe.astype('int')+1),
+                slice(cx-r_max_sidelobe.astype('int'), cx+r_max_sidelobe.astype('int')+1))
+        bmfit_residual2 = psfim[view].value-bm2.array/bm2.array.max()
+
+        #extent = np.array([-first_min_ind, first_min_ind, -first_min_ind, first_min_ind])*pixscale.to(u.arcsec).value
+        extent = np.array([-r_max_sidelobe, r_max_sidelobe, -r_max_sidelobe, r_max_sidelobe])*pixscale.to(u.arcsec).value
+        pl.imshow(bmfit_residual2, origin='lower', interpolation='none',
+                  extent=extent, cmap='gray_r')
+        cb = pl.colorbar()
+        pl.matplotlib.colorbar.ColorbarBase.add_lines(self=cb,
+                                                      levels=[max_sidelobe],
+                                                      colors=[(0.1,0.7,0.1,0.9)],
+                                                      linewidths=1)
+        pl.contour(bm2.array/bm2.array.max(), levels=[0.1,0.5,0.9], colors=['r']*3, extent=extent)
+        pl.contour(rr[view], levels=[first_min_ind, r_max_sidelobe],
+                   linestyles=['--','-.'],
+                   colors=[(0.2,0.2,1,0.5), (0.1,0.7,0.1,0.5)], extent=extent)
+        pl.xlabel("RA Offset [arcsec]")
+        pl.ylabel("Dec Offset [arcsec]")
+
     return (residual_peak,
-            (residual_peak_loc * pixscale).to(u.arcsec),
+            peakloc_as,
             psf_residual_integral/psf_integral_firstpeak)
 
 
