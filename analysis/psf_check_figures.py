@@ -13,6 +13,8 @@ releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Rele
 if not os.path.exists(releasepath / 'figures'):
     os.mkdir(releasepath / 'figures')
 
+pl.close('all')
+
 for jj, band in enumerate(('B3', 'B6')):
     fig = pl.figure(jj, figsize=(15, 10))
     fig.clf()
@@ -41,7 +43,9 @@ for jj, band in enumerate(('B3', 'B6')):
 
         ax = pl.subplot(3, 5, ii+1)
         ax.set_title(field)
-        get_psf_secondpeak(psffn, show_image=True, min_radial_extent=2.5*u.arcsec)
+        get_psf_secondpeak(psffn, show_image=True, min_radial_extent=1.5*u.arcsec,
+                           max_radial_extent=5*u.arcsec
+                          )
 
         if ii not in (0, 5, 10):
             ax.set_ylabel("")
