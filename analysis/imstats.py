@@ -9,6 +9,7 @@ from astropy.stats import mad_std
 from radio_beam import Beam
 from spectral_cube import SpectralCube
 import scipy
+import scipy.signal
 from scipy import ndimage
 import regions
 import os
