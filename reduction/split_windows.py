@@ -290,7 +290,11 @@ else:
 
 logprint("Splitting fields {0}".format(fields))
 
-to_image = {}
+if os.path.exists('to_image.json'):
+    with open('to_image.json', 'r') as fh:
+        to_image = json.load(fh)
+else:
+    to_image = {}
 
 for band in bands:
     to_image[band] = {}
