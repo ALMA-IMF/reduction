@@ -97,7 +97,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                     if fig.get_figwidth() != 14:
                         fig.set_figwidth(14)
 
-                    bsens = '_bsens' in postselfcal_name
+                    bsens = '_bsens' if 'bsens' in postselfcal_name else ''
 
 
                     try:
