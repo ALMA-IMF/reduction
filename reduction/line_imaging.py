@@ -506,8 +506,17 @@ for band in band_list:
                 logprint("Computing residual image statistics for {0}".format(lineimagename),
                          origin='almaimf_line_imaging')
                 ia.open(lineimagename+".residual")
-                stats = ia.statistics(robust=True)
-                rms = float(stats['medabsdevmed'] * 1.482602218505602)
+                try:
+                    stats = ia.statistics(robust=True)
+                    rms = float(stats['medabsdevmed'] * 1.482602218505602)
+                except RuntimeError as ex:
+                    if "Binning accounting error" in str(ex):
+                        logprint("Could not use robust statistics; reverting to non-robust",
+                                 origin="almaimf_line_imaging")
+                        stats = ia.statistics()
+                        rms = stats['rms']
+                    else:
+                        raise ex
                 ia.close()
 
                 if rms >= 1:
