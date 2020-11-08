@@ -53,7 +53,7 @@ for jj, band in enumerate(('B3', 'B6')):
             ax.set_xlabel("")
 
 
-    pl.subplots_adjust(wspace=0.3)
+    pl.subplots_adjust(wspace=0.32)
     fig.savefig(releasepath / f'figures/{band}_psfs.png', bbox_inches='tight', dpi=300)
     fig.savefig(releasepath / f'figures/{band}_psfs.pdf', bbox_inches='tight')
 
