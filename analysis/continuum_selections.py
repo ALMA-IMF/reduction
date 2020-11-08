@@ -272,7 +272,7 @@ for fignum,band in enumerate((3,6)):
         # red -> 1 (included)
         # yellow -> 2 (covered, not-continuum)
         ax.imshow(frqmask, extent=[minfrq, maxfrq, nfields*nconfigs, 0],
-                  interpolation='none', cmap='gnuplot')
+                  interpolation='nearest', cmap='gnuplot')
         ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
 
         xmin, xmax = ax.get_xlim()
@@ -331,7 +331,7 @@ bandfrac_tbl[bandfrac_tbl==0]=np.nan
 fig = pl.figure(2)
 fig.clf()
 ax = fig.gca()
-pl.imshow(bandfrac_tbl.T, interpolation='none', cmap='viridis', vmin=0, vmax=1)
+pl.imshow(bandfrac_tbl.T, interpolation='nearest', cmap='viridis', vmin=0, vmax=1)
 ax.set_xticks(list(range(6)),)
 ax.set_xticklabels(['7m-B3','12m-short-B3', '12m-long-B3', '7m-B6','12m-short-B6', '12m-long-B6'])
 pl.xticks(rotation='vertical')

@@ -145,7 +145,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
         #extent = np.array([-first_min_ind, first_min_ind, -first_min_ind, first_min_ind])*pixscale.to(u.arcsec).value
         extent = np.array([-radial_extent, radial_extent, -radial_extent, radial_extent])*pixscale.to(u.arcsec).value
-        pl.imshow(bmfit_residual2, origin='lower', interpolation='none',
+        pl.imshow(bmfit_residual2, origin='lower', interpolation='nearest',
                   extent=extent, cmap='gray_r')
         cb = pl.colorbar()
         pl.matplotlib.colorbar.ColorbarBase.add_lines(self=cb,

@@ -138,7 +138,7 @@ def show(imgs, zoom=None, clear=True, norm=asinhn,
         # matplotlib futurewarning doesn't like lists of slices?
         view = tuple(view)
 
-        ax.imshow(imgs[imn].value[view], origin='lower', interpolation='none',
+        ax.imshow(imgs[imn].value[view], origin='lower', interpolation='nearest',
                   norm=norm, cmap=cmap, **kwargs)
 
         if imn == 'model' and 'mask' in imgs:

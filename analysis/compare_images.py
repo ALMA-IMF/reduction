@@ -93,13 +93,13 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     for ax in (ax1,ax2,ax3):
         ax.cla()
 
-    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='none', cmap=cm)
+    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax1.set_title(title1)
 
-    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='none', cmap=cm)
+    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax2.set_title(title2)
 
-    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='none', cmap=cm)
+    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax3.set_title(f"{title2} - {title1}")
 
     for ax in (ax1,ax2,ax3):

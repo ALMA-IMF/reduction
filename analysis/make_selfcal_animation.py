@@ -10,7 +10,7 @@ from astropy.convolution import convolve_fft
 warnings.filterwarnings('ignore')
 
 pl.rcParams['image.origin'] = 'lower'
-pl.rcParams['image.interpolation'] = 'none'
+pl.rcParams['image.interpolation'] = 'nearest'
 pl.rcParams['ytick.direction'] = 'in'
 pl.rcParams['xtick.direction'] = 'in'
 pl.rcParams['ytick.color'] = 'w'
