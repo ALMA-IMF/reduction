@@ -52,17 +52,22 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
     pixscale = wcs.utils.proj_plane_pixel_scales(cube.wcs.celestial)[0] * u.deg
 
-    shape = cube.shape[1:]
+    center = np.unravel_index(np.argmax(psfim), psfim.shape)
+    cy, cx = center
+
+    cutout = psfim[cy-100:cy+101, cx-100:cx+101]
+    psfim = cutout
+    fullbeam = cube.beam.as_kernel(pixscale, x_size=201, y_size=201,)
+
+    shape = cutout.shape
     sy, sx = shape
 
     Y, X = np.mgrid[0:sy, 0:sx]
 
-    center = np.unravel_index(np.argmax(psfim), shape)
-    cy, cx = center
-
-    #rr = np.hypot(Y - cy, X - cx)
-
     beam = cube.beam
+
+    center = np.unravel_index(np.argmax(cutout), cutout.shape)
+    cy, cx = center
 
     # elliptical version...
     dy = (Y - cy)
@@ -71,32 +76,30 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     sinth = np.sin(beam.pa)
     rmajmin = beam.minor / beam.major
 
-    rr = ((dx * costh + dy * sinth)**2 / rmajmin**2 + (dx * sinth - dy * costh)**2 / 1**2)**0.5
+    rr = ((dx * costh + dy * sinth)**2 / rmajmin**2 +
+          (dx * sinth - dy * costh)**2 / 1**2)**0.5
 
-    rbin = rr.astype(np.int)
+    rbin = (rr).astype(np.int)
 
     # assume the PSF first minimum is within 100 pixels of center
-    radial_mean = ndimage.mean(psfim**2, labels=rbin, index=np.arange(100))
+    radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(100))
 
     # find the first negative peak (approximately); we include anything
     # within this radius as part of the main beam
     first_min_ind = scipy.signal.find_peaks(-radial_mean)[0][0]
 
-    bm = cube.beam.as_kernel(pixscale,
-                             x_size=first_min_ind.astype('int')*2+1,
-                             y_size=first_min_ind.astype('int')*2+1,
-                            )
     view = (slice(cy-first_min_ind.astype('int'), cy+first_min_ind.astype('int')+1),
             slice(cx-first_min_ind.astype('int'), cx+first_min_ind.astype('int')+1))
-    data = psfim[view].value
+    data = cutout[view].value
+    bm = fullbeam.array[view]
     # the data and beam must be concentric
     # and there must be only one peak location
     # (these checks are to avoid the even-kernel issue in which the center
     # of the beam can have its flux spread over four pixels)
-    assert np.argmax(data) == np.argmax(bm.array)
-    assert (bm.array.max() == bm.array).sum() == 1
+    assert np.argmax(data) == np.argmax(bm)
+    assert (bm.max() == bm).sum() == 1
 
-    bmfit_residual = data-bm.array/bm.array.max()
+    bmfit_residual = data-bm/bm.max()
     radial_mask = rr[view] < first_min_ind
 
     psf_integral_firstpeak = (data * radial_mask).sum()
@@ -106,17 +109,22 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
     peakloc_as = (residual_peak_loc * pixscale).to(u.arcsec)
 
+    # pl.figure(3).clf()
+    # bmradmean = ndimage.mean((fullbeam.array/fullbeam.array.max())**2, labels=rbin, index=np.arange(100))
+    # pl.plot(radial_mean)
+    # pl.plot(bmradmean)
+    # pl.figure(1)
+
     if show_image:
         import pylab as pl
         #pl.clf()
 
-        # Obsolete approach; this finds the second peak, but that's not
-        # as interesting as the non-Gaussian components within the first peak.
+        # this finds the second peak
         # (useful for display)
-        outside_first_peak_mask = rr > first_min_ind
+        outside_first_peak_mask = (rr > first_min_ind) & (fullbeam.array < 1e-5)
         #first_sidelobe_ind = scipy.signal.find_peaks(radial_mean * (np.arange(len(radial_mean)) > first_min_ind))[0][0]
-        max_sidelobe = psfim[outside_first_peak_mask].max()
-        max_sidelobe_loc = psfim[outside_first_peak_mask].argmax()
+        max_sidelobe = cutout[outside_first_peak_mask].max()
+        max_sidelobe_loc = cutout[outside_first_peak_mask].argmax()
         r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
         #r_max_sidelobe = first_sidelobe_ind
 
@@ -133,7 +141,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
                                 )
         view = (slice(cy-radial_extent.astype('int'), cy+radial_extent.astype('int')+1),
                 slice(cx-radial_extent.astype('int'), cx+radial_extent.astype('int')+1))
-        bmfit_residual2 = psfim[view].value-bm2.array/bm2.array.max()
+        bmfit_residual2 = cutout[view].value-bm2.array/bm2.array.max()
 
         #extent = np.array([-first_min_ind, first_min_ind, -first_min_ind, first_min_ind])*pixscale.to(u.arcsec).value
         extent = np.array([-radial_extent, radial_extent, -radial_extent, radial_extent])*pixscale.to(u.arcsec).value
@@ -146,7 +154,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
                                                       linewidths=1)
         pl.contour(bm2.array/bm2.array.max(), levels=[0.1,0.5,0.9], colors=['r']*3, extent=extent)
         pl.contour(rr[view], levels=[first_min_ind, r_max_sidelobe],
-                   linestyles=['--','-.'],
+                   linestyles=['--',':'],
                    colors=[(0.2,0.2,1,0.5), (0.1,0.7,0.1,0.5)], extent=extent)
         pl.xlabel("RA Offset [arcsec]")
         pl.ylabel("Dec Offset [arcsec]")

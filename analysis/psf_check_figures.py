@@ -1,6 +1,6 @@
 import glob
 import os
-import shutil
+from astropy import units as u
 
 from pathlib import Path
 
@@ -43,7 +43,7 @@ for jj, band in enumerate(('B3', 'B6')):
 
         ax = pl.subplot(3, 5, ii+1)
         ax.set_title(field)
-        get_psf_secondpeak(psffn, show_image=True, min_radial_extent=1.5*u.arcsec,
+        get_psf_secondpeak(psffn, show_image=True, min_radial_extent=2.5*u.arcsec,
                            max_radial_extent=5*u.arcsec
                           )
 
