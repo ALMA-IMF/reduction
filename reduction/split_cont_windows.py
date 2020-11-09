@@ -173,6 +173,7 @@ for band in bands:
             else:
                 logprint("Flagging and splitting {0} to {1} for continuum"
                          .format(visfile, contvis),)
+                logprint("contfile is {0}".format(contfile))
 
 
                 linechannels = contchannels_to_linechannels(cont_channel_selection,
