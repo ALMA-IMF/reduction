@@ -106,9 +106,9 @@ for band in bands:
             mymd['cont.dat_file'] = contfile
             contdat_files[field + band + muid] = contfile
 
-            visfile = os.path.join(path, vis)
-            contvis = os.path.join(path, "continuum_"+vis+".cont")
-            contvis_bestsens = os.path.join(path, "continuum_"+vis+"_bsens.cont")
+            visfile = str(os.path.join(path, vis))
+            contvis = str(os.path.join(path, "continuum_"+vis+".cont"))
+            contvis_bestsens = str(os.path.join(path, "continuum_"+vis+"_bsens.cont"))
 
             cont_to_merge[band][field].append(contvis)
 

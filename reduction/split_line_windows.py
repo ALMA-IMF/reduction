@@ -87,12 +87,12 @@ for band in bands:
         for newid in range(nspws):
             to_image[band][field][newid] = []
             for path, vis, spws in zip(mymd['path'], mymd['vis'], mymd['spws']):
-                base_uid = vis.split(".")[0]
-                invis = os.path.join(path, vis)
-                outvis = os.path.join(path,
+                base_uid = str(vis.split(".")[0])
+                invis = str(os.path.join(path, vis))
+                outvis = str(os.path.join(path,
                                       "{base_uid}_{field}_{band}_spw{spw}.split"
                                       .format(band=band, field=field,
-                                              spw=newid, base_uid=base_uid))
+                                              spw=newid, base_uid=base_uid)))
 
                 if os.path.exists(outvis):
                     logprint("Skipping {0} because it's done".format(outvis))
