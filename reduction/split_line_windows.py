@@ -34,7 +34,7 @@ bands = {'B3': (80, 110),
 
 
 def logprint(string):
-    casalog.post(string, origin='split_windows')
+    casalog.post(string, origin='split_line_windows')
     print(string)
 
 logprint("ALMAIMF_ROOTDIR directory set to {0}".format(os.getenv('ALMAIMF_ROOTDIR')))

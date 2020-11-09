@@ -37,7 +37,7 @@ bands = {'B3': (80, 110),
 
 
 def logprint(string):
-    casalog.post(string, origin='split_windows')
+    casalog.post(string, origin='split_cont_windows')
     print(string)
 
 logprint("ALMAIMF_ROOTDIR directory set to {0}".format(os.getenv('ALMAIMF_ROOTDIR')))
@@ -58,9 +58,7 @@ if os.getenv('FIELD_ID'):
 else:
     fields = all_fields
 
-
-with open('to_image.json', 'r') as fh:
-    to_image = json.load(fh)
+logprint("fields include: {0}".format(fields))
 
 cont_mses = []
 cont_mses_unconcat = []
@@ -316,4 +314,4 @@ with open('metadata_updated.json', 'w') as fh:
 with open('contdatfiles_updated.json', 'w') as fh:
     json.dump(contdat_files, fh)
 
-logprint("Completed split_windows")
+logprint("Completed split_cont_windows")
