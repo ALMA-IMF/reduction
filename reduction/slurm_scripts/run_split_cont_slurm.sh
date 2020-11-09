@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=split_windows      # Job name
+#SBATCH --job-name=split_cont      # Job name
 #SBATCH --mail-type=END,FAIL          # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=adamginsburg@ufl.edu     # Where to send mail	
 #SBATCH --ntasks=1
