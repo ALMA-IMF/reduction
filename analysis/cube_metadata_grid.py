@@ -150,7 +150,7 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                     maxfreq = cube.spectral_axis.max()
                     restfreq = cube.wcs.wcs.restfrq
 
-                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
+                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, mod_date, restfreq, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
                     rows.append(row)
 
 from astropy.table import Table
