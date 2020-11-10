@@ -37,32 +37,34 @@ releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredIma
 
 with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
     with open(basepath / '../scigoals/file_tree.txt', 'w') as fh2:
+        with open(basepath / '../scigoals/modtimes.txt', 'w') as fh3:
 
-        for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
-            if not os.path.exists(releasepath / field):
-                mkdir(releasepath / field)
-            for band in (3,6):
-                bandpath = Path(f"B{band}")
-                if not os.path.exists(releasepath / field / bandpath):
-                    mkdir(releasepath / field / bandpath)
-                for dirname, globstr in dirnames.items():
-                    if not os.path.exists(releasepath / field / bandpath / dirname):
-                        mkdir(releasepath / field / bandpath / dirname)
-                    cwd = os.getcwd()
-                    chdir(releasepath / field / bandpath / dirname)
-                    globbo = str(basepath / f"{field}_B{band}*{globstr}*")
-                    filelist = glob.glob(globbo)
-                    fitsglobbo = str(basepath / f"{field}_B{band}*{globstr}*fits")
-                    filelist += glob.glob(fitsglobbo)
-                    #print(field, band, dirname, config, filelist)
-                    for fn in filelist:
-                        #print(f"Linking {dotdot / fn} to {os.getcwd()}")
-                        basename = os.path.basename(fn)
-                        if not os.path.exists(basename):
-                            symlink(fn, basename)
-                        elif not os.path.exists(os.readlink(basename)):
-                            os.unlink(basename)
-                            symlink(fn, basename)
-                        fh1.write(os.path.realpath(basename) + "\n")
-                        fh2.write(os.path.join(os.getcwd(), basename) + "\n")
-                    chdir(cwd)
+            for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+                if not os.path.exists(releasepath / field):
+                    mkdir(releasepath / field)
+                for band in (3,6):
+                    bandpath = Path(f"B{band}")
+                    if not os.path.exists(releasepath / field / bandpath):
+                        mkdir(releasepath / field / bandpath)
+                    for dirname, globstr in dirnames.items():
+                        if not os.path.exists(releasepath / field / bandpath / dirname):
+                            mkdir(releasepath / field / bandpath / dirname)
+                        cwd = os.getcwd()
+                        chdir(releasepath / field / bandpath / dirname)
+                        globbo = str(basepath / f"{field}_B{band}*{globstr}*")
+                        filelist = glob.glob(globbo)
+                        fitsglobbo = str(basepath / f"{field}_B{band}*{globstr}*fits")
+                        filelist += glob.glob(fitsglobbo)
+                        #print(field, band, dirname, config, filelist)
+                        for fn in filelist:
+                            #print(f"Linking {dotdot / fn} to {os.getcwd()}")
+                            basename = os.path.basename(fn)
+                            if not os.path.exists(basename):
+                                symlink(fn, basename)
+                            elif not os.path.exists(os.readlink(basename)):
+                                os.unlink(basename)
+                                symlink(fn, basename)
+                            fh1.write(os.path.realpath(basename) + "\n")
+                            fh2.write(os.path.join(os.getcwd(), basename) + "\n")
+                            fh3.write(os.path.getmtime(basename) + "  " os.path.realpath(basename) + "\n")
+                        chdir(cwd)
