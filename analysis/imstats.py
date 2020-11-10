@@ -160,7 +160,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
         pl.ylabel("Dec Offset [arcsec]")
 
     return (residual_peak,
-            peakloc_as,
+            peakloc_as.value,
             psf_residual_integral/psf_integral_firstpeak)
 
 
@@ -731,8 +731,8 @@ if __name__ == "__main__":
                 #("/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/",
                 ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/",
-                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                #("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/",
+                #"1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
                 ("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
                 ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",

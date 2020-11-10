@@ -14,6 +14,8 @@ script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = [
            'make_oct2020release.py',
+           # don't do this any more 'link_files.py',
+           'link_files_restructured.py',
            'delivery_status.py',
            'imstats.py',
            'before_after_selfcal_quicklooks_Oct2020release.py',
