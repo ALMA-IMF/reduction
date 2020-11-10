@@ -2,6 +2,7 @@ import glob
 from os import symlink, chdir, mkdir
 from pathlib import Path
 import os
+import time
 
 spws = {3: list(range(4)),
         6: list(range(7)),}
@@ -66,5 +67,5 @@ with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
                                 symlink(fn, basename)
                             fh1.write(os.path.realpath(basename) + "\n")
                             fh2.write(os.path.join(os.getcwd(), basename) + "\n")
-                            fh3.write(os.path.getmtime(basename) + "  " os.path.realpath(basename) + "\n")
+                            fh3.write(time.ctime(os.path.getmtime(basename)) + "  " +  os.path.realpath(basename) + "\n")
                         chdir(cwd)
