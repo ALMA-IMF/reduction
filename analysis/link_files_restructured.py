@@ -54,8 +54,9 @@ with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
                         chdir(releasepath / field / bandpath / dirname)
                         globbo = str(basepath / f"{field}_B{band}*{globstr}*")
                         filelist = glob.glob(globbo)
-                        fitsglobbo = str(basepath / f"{field}_B{band}*{globstr}*fits")
-                        filelist += glob.glob(fitsglobbo)
+                        # included in globbo
+                        #fitsglobbo = str(basepath / f"{field}_B{band}*{globstr}*fits")
+                        #filelist += glob.glob(fitsglobbo)
                         #print(field, band, dirname, config, filelist)
                         for fn in filelist:
                             #print(f"Linking {dotdot / fn} to {os.getcwd()}")
