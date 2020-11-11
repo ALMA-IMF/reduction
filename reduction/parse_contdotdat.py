@@ -71,6 +71,11 @@ def contchannels_to_linechannels(contsel, freqslist, return_fractions=False):
         invselected = ~selected
 
         line_fraction[spw] = invselected.sum() / float(invselected.size)
+        if line_fraction[spw] == 0:
+            # the code below doesn't know how to handle the case where
+            # no lines are selected; simplest is to simply *not flag anything*
+            # in those channels (there are no line channels in that window)
+            continue
 
         chans = ([0] +
                  np.where(invselected[1:] !=
