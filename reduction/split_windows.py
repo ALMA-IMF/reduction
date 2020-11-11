@@ -82,6 +82,8 @@ for scriptname in scripts:
     t0 = time.time()
     print(f"script={scriptname}, fullpath={script_dir / scriptname}")
     try:
+        execfile(str(script_dir / scriptname)
+     except NameError:
         runpy.run_path(str(script_dir / scriptname), run_name="__main__")
     except Exception as ex:
         print(ex)

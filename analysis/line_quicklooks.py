@@ -253,3 +253,6 @@ for field in "G328.25 G351.77 W51-IRS2 W43-MM2 G327.29 G338.93 W51-E G353.41 G00
 Files that have resulted in m/s parsing failures:
     ['G012.80_B3_spw0_7M12M_n2hp.contsub.image']
 """
+
+# for fn in /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/collapse/*/pngs; do out=${fn//*collapse\// }; out=${out/\//_}; outdir="/bio/web/secure/adamginsburg/ALMA-IMF/cube_quicklooks/${out/ /}"; cp -v ${fn}/* ${outdir}; done
+# for fn in /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/collapse/*/pngs; do out=${fn//*collapse\// }; out=${out/\//_}; echo $out; mkdir /bio/web/secure/adamginsburg/ALMA-IMF/cube_quicklooks/${out}; cp -v ${fn}/* /bio/web/secure/adamginsburg/ALMA-IMF/cube_quicklooks/${out}/; done
