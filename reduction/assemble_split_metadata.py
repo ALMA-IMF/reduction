@@ -191,7 +191,7 @@ for sg in science_goals:
 
                     cont_channel_selection = parse_contdotdat(contdatpath)
                     _, linefracs = contchannels_to_linechannels(cont_channel_selection,
-                                                                freqs,
+                                                                frqs,
                                                                 return_fractions=True)
 
 
