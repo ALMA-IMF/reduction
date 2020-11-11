@@ -176,8 +176,10 @@ for band in bands:
                 logprint("contfile is {0}".format(contfile))
 
 
-                linechannels = contchannels_to_linechannels(cont_channel_selection,
-                                                            freqs)
+                linechannels, linefracs = contchannels_to_linechannels(cont_channel_selection,
+                                                            freqs,
+                                                            return_fractions=True)
+                logprint("Line fractions are: {0}".format(linefracs))
 
 
                 flagmanager(vis=visfile, mode='save',

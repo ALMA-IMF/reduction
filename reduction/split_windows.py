@@ -61,16 +61,16 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
         import metadata_tools
         os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
+        script_dir = os.getenv('ALMAIMF_ROOTDIR')
     except ImportError:
         raise ValueError("metadata_tools not found on path; make sure to "
                          "specify ALMAIMF_ROOTDIR environment variable "
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
+    script_dir = os.getenv('ALMAIMF_ROOTDIR')
+    sys.path.append(script_dir)
 
-
-script_dir = os.path.dirname(__file__)
 
 scripts = [
            'assemble_split_metadata.py',
@@ -80,11 +80,13 @@ scripts = [
 
 for scriptname in scripts:
     t0 = time.time()
-    print(f"script={scriptname}, fullpath={script_dir / scriptname}")
+    fullpath = os.path.join(script_dir, scriptname)
+    print("script={scriptname}, fullpath={fullpath}".format(scriptname=scriptname, fullpath=fullpath))
     try:
-        execfile(str(script_dir / scriptname)
+        execfile(fullpath)
      except NameError:
-        runpy.run_path(str(script_dir / scriptname), run_name="__main__")
+        runpy.run_path(fullpath, run_name="__main__")
     except Exception as ex:
         print(ex)
-    print(f"script {scriptname} took {(time.time() - t0)/3600.:0.1f} hours")
+    print("script {scriptname} took ".format(scriptname=scriptname),
+          (time.time() - t0)/3600," hours")

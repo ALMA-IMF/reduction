@@ -56,6 +56,10 @@ basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 os.chdir(basepath)
 print(f"Changed from {cwd} to {basepath}, now running line_quicklooks")
 
+# allow %run -i w/overwrite=True to force overwriting
+if 'overwrite' not in locals():
+    overwrite = bool(os.getenv('OVERWRITE'))
+
 global then
 then = time.time()
 def dt():
@@ -78,7 +82,7 @@ for field in "G328.25 G351.77 W51-IRS2 W43-MM2 G327.29 G338.93 W51-E G353.41 G00
                         print(f"Found no matches for glob {globblob}")
                         continue
 
-                    if os.path.exists('collapse/min/{0}'.format(fn.replace(suffix,"_min_K.fits"))):
+                    if os.path.exists('collapse/min/{0}'.format(fn.replace(suffix,"_min_K.fits"))) and not overwrite:
                         print(f"Found completed quicklooks for {fn}, skipping.")
                         continue
 

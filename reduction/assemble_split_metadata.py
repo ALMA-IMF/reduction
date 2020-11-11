@@ -25,6 +25,7 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
 else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
+from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels # noqa: E402
 
 msmd = msmdtool()
 ms = mstool()
@@ -111,8 +112,10 @@ for sg in science_goals:
                 ms.open(filename)
                 try:
                     frqs = [ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws]
+                    frqdict = {spw: ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws}
                 except TypeError:
                     frqs = [ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws]
+                    frqdict = {spw: ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws}
                 ms.close()
 
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
@@ -188,10 +191,18 @@ for sg in science_goals:
                     contdatpath = os.path.realpath(contfile)
                     contdat_files[field + band + muid] = contdatpath
 
+                    cont_channel_selection = parse_contdotdat(contdatpath)
+                    _, linefracs = contchannels_to_linechannels(cont_channel_selection,
+                                                                frqdict,
+                                                                return_fractions=True)
+
+
                     if 'cont.dat' in metadata[band][field]:
                         metadata[band][field]['cont.dat'][muid] = contdatpath
+                        metadata[band][field]['line_fractions'].append(linefracs)
                     else:
                         metadata[band][field]['cont.dat'] = {muid: contdatpath}
+                        metadata[band][field]['line_fractions'] = [linefracs]
                 else:
                     if 'cont.dat' in metadata[band][field]:
                         if muid in metadata[band][field]['cont.dat']:
@@ -204,6 +215,8 @@ for sg in science_goals:
                     else:
                         metadata[band][field]['cont.dat'] = {muid: 'notfound_' + ran_findcont}
                     contdat_files[field + band + muid] = 'notfound_' + ran_findcont
+
+
 
                 # touch the filename
                 with open(os.path.join(dirpath, "{0}_{1}_{2}".format(field, band, array_config)), 'w') as fh:

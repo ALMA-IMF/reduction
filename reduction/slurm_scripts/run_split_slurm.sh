@@ -30,9 +30,14 @@ export PYTHONPATH=$SCRIPT_DIR
 
 export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 
+# need casa6/py3
+# export CASA=/orange/adamginsburg/casa/casa-6.1.0-118/bin/casa
+
 export LOGFILENAME="casa_log_split_$(date +%Y-%m-%d_%H_%M_%S).log"
 
 echo $LOGFILENAME
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
-xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_windows.py')"
+xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/assemble_split_metadata.py')"
+xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_line_windows.py')"
+xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_cont_windows.py')"
