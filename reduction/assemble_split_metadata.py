@@ -118,25 +118,18 @@ for sg in science_goals:
 
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
 
-                cont_channel_selection = parse_contdotdat(contfile)
-                _, linefracs = contchannels_to_linechannels(cont_channel_selection,
-                                                            freqs,
-                                                            return_fractions=True)
-
                 if field in metadata[band]:
                     metadata[band][field]['path'].append(os.path.abspath(dirpath)),
                     metadata[band][field]['vis'].append(fn)
                     metadata[band][field]['spws'].append(spws)
                     metadata[band][field]['freqs'].append(frqslims)
                     metadata[band][field]['muid'].append(muid)
-                    metadata[band][field]['line_fractions'].append(linefracs)
                 else:
                     metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                              'vis': [fn],
                                              'spws': [spws],
                                              'freqs': [frqslims],
                                              'muid': [muid],
-                                             'line_fractions': [linefracs],
                                             }
 
                 ran_findcont = False
@@ -196,10 +189,18 @@ for sg in science_goals:
                     contdatpath = os.path.realpath(contfile)
                     contdat_files[field + band + muid] = contdatpath
 
+                    cont_channel_selection = parse_contdotdat(contdatpath)
+                    _, linefracs = contchannels_to_linechannels(cont_channel_selection,
+                                                                freqs,
+                                                                return_fractions=True)
+
+
                     if 'cont.dat' in metadata[band][field]:
                         metadata[band][field]['cont.dat'][muid] = contdatpath
+                        metadata[band][field]['line_fractions'].append(linefracs)
                     else:
                         metadata[band][field]['cont.dat'] = {muid: contdatpath}
+                        metadata[band][field]['line_fractions'] = [linefracs]
                 else:
                     if 'cont.dat' in metadata[band][field]:
                         if muid in metadata[band][field]['cont.dat']:
@@ -212,6 +213,8 @@ for sg in science_goals:
                     else:
                         metadata[band][field]['cont.dat'] = {muid: 'notfound_' + ran_findcont}
                     contdat_files[field + band + muid] = 'notfound_' + ran_findcont
+
+
 
                 # touch the filename
                 with open(os.path.join(dirpath, "{0}_{1}_{2}".format(field, band, array_config)), 'w') as fh:
