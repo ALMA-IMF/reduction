@@ -84,7 +84,7 @@ for scriptname in scripts:
     print("script={scriptname}, fullpath={fullpath}".format(scriptname=scriptname, fullpath=fullpath))
     try:
         execfile(fullpath)
-     except NameError:
+    except NameError:
         runpy.run_path(fullpath, run_name="__main__")
     except Exception as ex:
         print(ex)
