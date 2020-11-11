@@ -81,9 +81,10 @@ scripts = [
 for scriptname in scripts:
     t0 = time.time()
     fullpath = os.path.join(script_dir, scriptname)
-    print(f"script={scriptname}, fullpath={fullpath}")
+    print("script={scriptname}, fullpath={fullpath}".format(scriptname=scriptname, fullpath=fullpath))
     try:
         runpy.run_path(fullpath, run_name="__main__")
     except Exception as ex:
         print(ex)
-    print(f"script {scriptname} took {(time.time() - t0)/3600.:0.1f} hours")
+    print("script {scriptname} took ".format(scriptname=scriptname),
+          (time.time() - t0)/3600," hours")

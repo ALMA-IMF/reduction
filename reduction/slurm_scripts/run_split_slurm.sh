@@ -31,7 +31,7 @@ export PYTHONPATH=$SCRIPT_DIR
 export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 
 # need casa6/py3
-export CASA=/orange/adamginsburg/casa/casa-6.1.0-118/bin/casa
+# export CASA=/orange/adamginsburg/casa/casa-6.1.0-118/bin/casa
 
 export LOGFILENAME="casa_log_split_$(date +%Y-%m-%d_%H_%M_%S).log"
 
