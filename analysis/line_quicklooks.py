@@ -58,7 +58,7 @@ print(f"Changed from {cwd} to {basepath}, now running line_quicklooks")
 
 # allow %run -i w/overwrite=True to force overwriting
 if 'overwrite' not in locals():
-    overwrite = False
+    overwrite = bool(os.getenv('OVERWRITE'))
 
 global then
 then = time.time()
