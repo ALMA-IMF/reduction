@@ -266,8 +266,8 @@ for band in bands:
             logprint("Merging continuum for {0} {1} into {2}"
                      .format(merged_continuum_fn, field, band),)
 
-            concat(vis=cont_to_merge[band][field],
-                   concatvis=merged_continuum_fn,)
+            assert concat(vis=cont_to_merge[band][field],
+                          concatvis=merged_continuum_fn,)
             flagdata(vis=merged_continuum_fn, mode='manual', autocorr=True)
         cont_mses.append(merged_continuum_fn)
 
@@ -292,9 +292,9 @@ for band in bands:
 
             # Note this search-and-replace pattern: we use this instead
             # of separately storing the continuum bsens MS names
-            concat(vis=[x.replace(".cont", "_bsens.cont")
-                        for x in cont_to_merge[band][field]],
-                   concatvis=merged_continuum_bsens_fn,)
+            assert concat(vis=[x.replace(".cont", "_bsens.cont")
+                               for x in cont_to_merge[band][field]],
+                          concatvis=merged_continuum_bsens_fn,)
             flagdata(vis=merged_continuum_fn, mode='manual', autocorr=True)
 
         # for debug purposes, we also track the split, unmerged MSes
