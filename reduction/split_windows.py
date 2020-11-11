@@ -50,7 +50,7 @@ import runpy
 
 # If run from command line
 if len(sys.argv) > 2:
-    aux = os.path.dirname(sys.argv[2])
+    aux = os.path.dirname(os.path.abspath(sys.argv[-1]))
     if os.path.isdir(aux):
         almaimf_rootdir = aux
 
@@ -61,15 +61,15 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
     try:
         import metadata_tools
         os.environ['ALMAIMF_ROOTDIR'] = os.path.split(metadata_tools.__file__)[0]
-        script_dir = os.getenv('ALMAIMF_ROOTDIR')
+        almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
     except ImportError:
         raise ValueError("metadata_tools not found on path; make sure to "
                          "specify ALMAIMF_ROOTDIR environment variable "
                          "or your PYTHONPATH variable to include the directory"
                          " containing the ALMAIMF code.")
 else:
-    script_dir = os.getenv('ALMAIMF_ROOTDIR')
-    sys.path.append(script_dir)
+    almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
+    sys.path.append(almaimf_rootdir)
 
 
 scripts = [
@@ -80,7 +80,7 @@ scripts = [
 
 for scriptname in scripts:
     t0 = time.time()
-    fullpath = os.path.join(script_dir, scriptname)
+    fullpath = os.path.join(almaimf_rootdir, scriptname)
     print("script={scriptname}, fullpath={fullpath}".format(scriptname=scriptname, fullpath=fullpath))
     try:
         execfile(fullpath)
