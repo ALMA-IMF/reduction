@@ -112,8 +112,10 @@ for sg in science_goals:
                 ms.open(filename)
                 try:
                     frqs = [ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws]
+                    frqdict = {spw: ms.cvelfreqs(spwid=[spw], outframe='LSRK') for spw in spws}
                 except TypeError:
                     frqs = [ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws]
+                    frqdict = {spw: ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws}
                 ms.close()
 
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
@@ -191,7 +193,7 @@ for sg in science_goals:
 
                     cont_channel_selection = parse_contdotdat(contdatpath)
                     _, linefracs = contchannels_to_linechannels(cont_channel_selection,
-                                                                frqs,
+                                                                frqdict,
                                                                 return_fractions=True)
 
 
