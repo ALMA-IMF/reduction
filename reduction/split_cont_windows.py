@@ -246,7 +246,7 @@ for band in bands:
                      .format(visfile, contvis, band, field, time.time() - t0))
 
 
-        member_uid = path.split("member.")[-1].split("/")[0]
+        member_uid = str(path.split("member.")[-1].split("/")[0])
         merged_continuum_fn = os.path.join(path,
                                            "{field}_{band}_{muid}_continuum_merged.cal.ms"
                                            .format(field=field,
