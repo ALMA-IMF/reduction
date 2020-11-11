@@ -70,7 +70,11 @@ else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
 
-script_dir = os.path.dirname(__file__)
+try:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+except NameError:  # We are the main py2exe script, not a module
+    import sys
+    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 scripts = [
            'assemble_split_metadata.py',
