@@ -85,6 +85,11 @@ for band in bands:
 
         for path, vis, spws, muid in zip(mymd['path'], mymd['vis'], mymd['spws'], mymd['muid']):
 
+            # force strings (not unicode) for CASA's benefit
+            path = str(path)
+            vis = str(vis)
+            muid = str(muid)
+
             t0 = time.time()
             contfile = mymd['cont.dat'][muid]
 
