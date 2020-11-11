@@ -25,6 +25,7 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
 else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
+from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels # noqa: E402
 
 msmd = msmdtool()
 ms = mstool()
@@ -117,18 +118,25 @@ for sg in science_goals:
 
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
 
+                cont_channel_selection = parse_contdotdat(contfile)
+                _, linefracs = contchannels_to_linechannels(cont_channel_selection,
+                                                            freqs,
+                                                            return_fractions=True)
+
                 if field in metadata[band]:
                     metadata[band][field]['path'].append(os.path.abspath(dirpath)),
                     metadata[band][field]['vis'].append(fn)
                     metadata[band][field]['spws'].append(spws)
                     metadata[band][field]['freqs'].append(frqslims)
                     metadata[band][field]['muid'].append(muid)
+                    metadata[band][field]['line_fractions'].append(linefracs)
                 else:
                     metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                              'vis': [fn],
                                              'spws': [spws],
                                              'freqs': [frqslims],
                                              'muid': [muid],
+                                             'line_fractions': [linefracs],
                                             }
 
                 ran_findcont = False

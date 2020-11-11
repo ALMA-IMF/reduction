@@ -22,7 +22,7 @@ def parse_contdotdat(filepath):
 
     return ";".join(selections)
 
-def contchannels_to_linechannels(contsel, freqslist):
+def contchannels_to_linechannels(contsel, freqslist, return_fractions=False):
     """
     Parameters
     ----------
@@ -43,6 +43,8 @@ def contchannels_to_linechannels(contsel, freqslist):
 
     new_sel = []
 
+    line_fraction = {}
+
     for spw,freq in freqslist.items():
         fmin, fmax = np.min(freq), np.max(freq)
         if fmin > fmax:
@@ -56,12 +58,19 @@ def contchannels_to_linechannels(contsel, freqslist):
             if flo > fhi:
                 flo,fhi = fhi,flo
 
-            if fhi < fmax and flo > fmin:
+            # only include selections that are at least partly in range
+            if flo < fhi < fmax or fmax > flo > fmin:
                 selected |= (freq > flo) & (freq < fhi)
+            # but also allow for the case where EVERYTHING is included
+            elif fhi > fmax and flo < fmin:
+                selected[:] = True
+
 
 
         # invert from continuum to line
         invselected = ~selected
+
+        line_fraction[spw] = invselected.sum() / float(invselected.size)
 
         chans = ([0] +
                  np.where(invselected[1:] !=
@@ -74,7 +83,10 @@ def contchannels_to_linechannels(contsel, freqslist):
 
         new_sel.append(selchan)
 
-    return ",".join(new_sel)
+    if return_fractions:
+        return ",".join(new_sel), line_fraction
+    else:
+        return ",".join(new_sel)
 
 def freq_selection_overlap(ms, freqsel, spw=0):
     """
