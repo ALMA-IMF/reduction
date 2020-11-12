@@ -185,6 +185,7 @@ for band in bands:
                                                             freqs,
                                                             return_fractions=True)
                 logprint("Line fractions are: {0}".format(linefracs))
+                logprint("Line channels are: {0}".format(linechannels))
 
 
                 flagmanager(vis=visfile, mode='save',

@@ -25,10 +25,12 @@ for sg in science_goals:
 
                 for ii,fv in flagversions.items():
                     if 'name' in fv:
+                        print(fv, fullfn)
                         flagmanager(fullfn, mode='restore', versionname=fv['name'])
                         flag_info = flagdata(vis=fullfn, mode='summary')
                         all_flag_info[field_id][fv['name']] = flag_info['field']
-                        print(flag_info['field'])
+
+                        print(flag_info['field'], flag_info['field'][field_id]['flagged'] / flag_info['field'][field_id]['total'])
 
 
 
