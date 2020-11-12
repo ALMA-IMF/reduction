@@ -159,7 +159,7 @@ else:
 #                         wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]))
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.set_xlabel("Sum [Jy]")
-ax1.set_ylabel("Sensitivity / Requested Sensitivity")
+ax1.set_ylabel("Measured Noise / Requested Sensitivity")
 
 ax2 = pl.subplot(1,2,2)
 ax2.plot(wtbl_selfcal['max_post'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3style, label='B3')
@@ -170,7 +170,7 @@ if (b3sc & w51e_sel).sum() > 0:
 #ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
-ax2.set_ylabel("Sensitivity / Requested Sensitivity")
+ax2.set_ylabel("Measured Noise / Requested Sensitivity")
 pl.legend(loc='best')
 
 pl.savefig("../datapaper/figures/noise_excess.pdf", bbox_inches='tight')
@@ -182,25 +182,57 @@ pl.savefig("../datapaper/figures/noise_excess.png", bbox_inches='tight')
 b3sc = wtbl_selfcal['band'] == 'B3'
 b6sc = wtbl_selfcal['band'] == 'B6'
 
+# fig5 = pl.figure(5, figsize=(10,5))
+# fig5.clf()
+# ax1 = pl.subplot(1,2,1)
+# ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], **b3style)
+# ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], **b6style)
+# ax1.plot(ax1.get_xlim(), [1,1], 'k--')
+# ax1.set_xlabel("Sum [Jy]")
+# ax1.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
+#
+# ax2 = pl.subplot(1,2,2)
+# ax2.plot(wtbl_selfcal['max_post'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], **b3style, label='B3')
+# ax2.plot(wtbl_selfcal['max_post'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], **b6style, label='B6')
+# ax2.plot(ax2.get_xlim(), [1,1], 'k--')
+# ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
+# ax2.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
+# pl.legend(loc='best')
+#
+# pl.savefig("../datapaper/figures/beam_size_comparison.pdf", bbox_inches='tight')
+# pl.savefig("../datapaper/figures/beam_size_comparison.png", bbox_inches='tight')
+
+
 fig5 = pl.figure(5, figsize=(10,5))
 fig5.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], **b3style)
-ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], **b6style)
+ax1.plot(wtbl_selfcal['SensVsReq'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], label='B3', **b3style)
+ax1.plot(wtbl_selfcal['SensVsReq'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], label='B6', **b6style)
+lims = ax1.axis()
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
-ax1.set_xlabel("Sum [Jy]")
+ax1.plot([1,1], ax1.get_ylim(), 'k--')
+ax1.set_xlabel("Measured Noise / Requested Sensitivity")
 ax1.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
+ax1.axis(lims)
 
 ax2 = pl.subplot(1,2,2)
-ax2.plot(wtbl_selfcal['max_post'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], **b3style, label='B3')
-ax2.plot(wtbl_selfcal['max_post'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], **b6style, label='B6')
+ax2.plot(wtbl_bsens['SensVsReq'][b3bs], 1./wtbl_bsens['BeamVsReq'][b3bs], label='B3', **b3style)
+ax2.plot(wtbl_bsens['SensVsReq'][b6bs], 1./wtbl_bsens['BeamVsReq'][b6bs], label='B6', **b6style)
+lims = ax2.axis()
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
-ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
+ax2.plot([1,1], ax2.get_ylim(), 'k--')
+ax2.set_xlabel("Measured Noise / Requested Sensitivity")
 ax2.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
+ax2.axis(lims)
+
 pl.legend(loc='best')
 
 pl.savefig("../datapaper/figures/beam_size_comparison.pdf", bbox_inches='tight')
 pl.savefig("../datapaper/figures/beam_size_comparison.png", bbox_inches='tight')
+
+
+
+
 
 
 
@@ -254,7 +286,7 @@ else:
 #                         wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'G010.62')]))
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.set_xlabel("Sum [Jy]")
-ax1.set_ylabel("Sensitivity / Requested Sensitivity")
+ax1.set_ylabel("Measured Noise / Requested Sensitivity")
 
 ax2 = pl.subplot(1,2,2)
 ax2.plot(wtbl_bsens['max_bsens'][b3bs], wtbl_bsens['SensVsReq'][b3bs], **b3style, label='B3')
@@ -269,7 +301,7 @@ if (b6bs & w51irs2_sel_bsens).sum() > 0:
 else:
     print("W51 IRS2 B6 is missing!")
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
-ax2.set_ylabel("Sensitivity / Requested Sensitivity")
+ax2.set_ylabel("Measured Noise / Requested Sensitivity")
 pl.legend(loc='best')
 
 pl.savefig("../datapaper/figures/noise_excess_bsens.pdf", bbox_inches='tight')
@@ -289,7 +321,7 @@ for tb,msk in ((wtbl_bsens, b3bs,), (wtbl_selfcal, b3sc)):
 
 ax1.hist(wtbl_bsens['SensVsReq'][b3bs], bins=bins_b3, alpha=0.5)
 ax1.hist(wtbl_selfcal['SensVsReq'][b3sc], bins=bins_b3, alpha=0.5)
-ax1.set_xlabel("Sensitivity / Requested Sensitivity")
+ax1.set_xlabel("Measured Noise / Requested Sensitivity")
 ax1.set_title("B3")
 
 bins_b6 = np.linspace(0.45, 2, 10)
@@ -300,7 +332,7 @@ for tb,msk in ((wtbl_bsens, b3bs,), (wtbl_selfcal, b3sc)):
 ax2 = pl.subplot(1,2,2)
 ax2.hist(wtbl_bsens['SensVsReq'][b6bs], bins=bins_b6, alpha=0.5, label='BSENS')
 ax2.hist(wtbl_selfcal['SensVsReq'][b6sc], bins=bins_b6, alpha=0.5, label='Cleanest')
-ax2.set_xlabel("Sensitivity / Requested Sensitivity")
+ax2.set_xlabel("Measured Noise / Requested Sensitivity")
 ax2.set_title("B6")
 pl.legend(loc='best')
 
