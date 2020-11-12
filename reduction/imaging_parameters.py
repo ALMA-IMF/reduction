@@ -2481,8 +2481,8 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
-        5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
-        6: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
+        5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
+        6: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
     },
     "W51-E_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2537,8 +2537,8 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
-        5: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
-        6: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
+        6: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
         7: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
     },
     "W51-E_B6_12M_robust2": {
@@ -2559,8 +2559,8 @@ selfcal_pars_custom = {
         3: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
-        6: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
-        7: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        6: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
+        7: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
     },
     "W51-E_B6_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
