@@ -34,4 +34,4 @@ for sg in science_goals:
 
 
 
-
+print({key: val['G353.41']['flagged'] / val['G353.41']['total'] for key, val in all_flag_info['G353.41_B3_12Mlong'].items()})
