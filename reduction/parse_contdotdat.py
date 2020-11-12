@@ -78,11 +78,11 @@ def contchannels_to_linechannels(contsel, freqslist, return_fractions=False):
             continue
 
         # get the indices where we swap between selected and not
-        internal_indices = np.where(invselected[1:] != invselected[:-1])[0].tolist()
+        chans = np.where(invselected[1:] != invselected[:-1])[0].tolist()
 
         if invselected[0]:
             # if the first index is 'True', then we start with selected
-            chans = [0] + internal_indices
+            chans = [0] + chans
         if invselected[-1]:
             chans = chans + [len(freq)-1]
 
