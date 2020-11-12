@@ -86,7 +86,8 @@ frequency_coverage = {
         7: (231.48238541765087, 233.35640885515087, 1920),
     }
 }
-total_bw = {band: sum(entry[1]-entry[0] for entry in flist.values()) for band,flist in frequency_coverage.items()}
+total_bw = {band: sum(entry[1]-entry[0] for entry in flist.values())
+            for band,flist in frequency_coverage.items()}
 
 basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L')
 with open(basepath / 'contdatfiles.json', 'r') as fh:
@@ -314,7 +315,13 @@ included_bw_byband = {band:
                       for band in (3,6)}
 #print(included_bw_byband)
 
-bandfrac = {band: {field: {config: included_bw_byband[band][field][config]/total_bw[f"B{band}"] for config in included_bw_byband[band][field]} for field in included_bw_byband[band]} for band in (3,6)}
+bandfrac = {band:
+            {field:
+             {config:
+              included_bw_byband[band][field][config]/total_bw[f"B{band}"]
+              for config in included_bw_byband[band][field]}
+             for field in included_bw_byband[band]}
+            for band in (3,6)}
 bandfrac_tbl = np.empty([len(bandfrac) * nconfigs, nfields]) * np.nan
 bandfrac_flat = []
 for ibb, band in enumerate([3,6]):
