@@ -72,10 +72,18 @@ def contchannels_to_linechannels(contsel, freqslist, return_fractions=False):
 
         line_fraction[spw] = invselected.sum() / float(invselected.size)
 
-        chans = ([0] +
-                 np.where(invselected[1:] !=
-                                invselected[:-1])[0].tolist() +
-                 [len(freq)-1])
+        # get the indices where we swap between selected and not
+        internal_indices = np.where(invselected[1:] != invselected[:-1])[0].tolist()
+
+        if invselected[0]:
+            # if the first index is 'True', then we start with selected
+            chans = [0] + internal_indices
+        if invselected[-1]:
+            chans = chans + [len(freq)-1]
+
+        if len(chans) % 2 > 0:
+            raise ValueError("Found an odd number of channel endpoints in "
+                             "line inclusion for spw {0}. ".format(spw))
 
         selchan = ("{0}:".format(spw) +
                    ";".join(["{0}~{1}".format(lo,hi)
