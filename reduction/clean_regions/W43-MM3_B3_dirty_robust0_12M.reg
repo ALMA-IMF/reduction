@@ -1,4 +1,5 @@
-# Region file format: DS9 version 4.1
+# Region file format: DS9 CARTA 1.4
 global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
-fk5
-polygon(18:47:42.5225,-2:00:10.600,18:47:40.7395,-2:00:16.379,18:47:41.1491,-2:00:40.939,18:47:42.9080,-2:00:31.910) #text={0.75mJy}
+icrs
+polygon(281.927173,-2.002945,281.914929,-2.003891,281.919868,-2.011966,281.928779,-2.008865) # color=green width=1 text={0.28mJy}
+polygon(281.914713,-2.006523,281.916296,-2.013510,281.902116,-2.019508,281.898818,-2.011862) # color=green width=1 text={0.13mJy}
