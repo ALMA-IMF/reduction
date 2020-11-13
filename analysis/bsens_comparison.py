@@ -194,7 +194,7 @@ formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
+for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release'):
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.ecsv',
               overwrite=True)
