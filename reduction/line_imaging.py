@@ -21,6 +21,11 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         Image only one line at each run.  Can be 'n2hp', 'CO' (Case insensitive)
     LOGFILENAME=<name>
         Optional.  If specified, the logger will use this filenmae
+    DO_CONTSUB=True / blank
+        If speicified, will continuum-subtract the measurement sets before
+        imaging them.  A file metadata.json containing the paths to the
+        cont.dat files is required in this case.
+        metadata[band][field]['cont.dat'] = ['/path/to/cont.dat']
 """
 
 import json
@@ -52,8 +57,6 @@ ms = mstool()
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
-with open('metadata.json', 'r') as fh:
-    metadata = json.load(fh)
 
 if os.getenv('LOGFILENAME'):
     casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
@@ -105,6 +108,10 @@ if 'do_contsub' not in locals():
         do_contsub = False
 if do_contsub:
     contsub_suffix = '.contsub'
+
+    # needed for cont.dat files
+    with open('metadata.json', 'r') as fh:
+        metadata = json.load(fh)
 else:
     contsub_suffix = ''
 
