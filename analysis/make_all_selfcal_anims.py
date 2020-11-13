@@ -6,7 +6,8 @@ import pylab as pl
 
 os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 
-for fn in glob.glob("*_12M_robust0_*finaliter*.image.tt0.fits"):
+#for fn in glob.glob("*_12M_robust0_*finaliter*.image.tt0.fits"):
+for fn in glob.glob("G353*_12M_robust0_*finaliter*.image.tt0.fits"):
     imname = fn.split("_selfcal")[0]
     print(imname)
     make_anim(imname)

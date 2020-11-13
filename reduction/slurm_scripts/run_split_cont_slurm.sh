@@ -4,7 +4,7 @@
 #SBATCH --mail-user=adamginsburg@ufl.edu     # Where to send mail	
 #SBATCH --ntasks=1
 #SBATCH --mem=4gb                     # Job memory request
-#SBATCH --time=168:00:00               # Time limit hrs:min:sec
+#SBATCH --time=96:00:00               # Time limit hrs:min:sec
 #SBATCH --output=split_cont_windows_%j.log   # Standard output and error log
 
 

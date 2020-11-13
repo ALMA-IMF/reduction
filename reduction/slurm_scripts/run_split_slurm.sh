@@ -38,6 +38,7 @@ export LOGFILENAME="casa_log_split_$(date +%Y-%m-%d_%H_%M_%S).log"
 echo $LOGFILENAME
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
-xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/assemble_split_metadata.py')"
-xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_line_windows.py')"
-xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_cont_windows.py')"
+xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_windows.py')"
+#xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/assemble_split_metadata.py')"
+#xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_line_windows.py')"
+#xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/split_cont_windows.py')"
