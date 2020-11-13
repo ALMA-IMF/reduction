@@ -2947,6 +2947,7 @@ line_imaging_parameters_custom = {
     "W43-MM3_B6_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "imsize": [1280, 1280],
     },
     "W51-E_B6_12M_robust0": {
         "pblimit": 0.1,
