@@ -470,8 +470,8 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM1_B3_12M_robust0": {
-        "threshold": {0: "0.4mJy", 1: "0.25mJy", 2: "0.15mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.1mJy",},
-        "niter": {0: 10000, 1: 12500, 2: 15000, 3: 15000, 4: 17000, "final": 25000},
+        "threshold": {0: "0.1mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.1mJy",},
+        "niter": {0: 20000, 1: 20000, 2: 20000, 3: 20000, 4: 20000, "final": 25000},
         "scales": {
             0: [0, 3, 9, 27],
             1: [0, 3, 9, 27],
