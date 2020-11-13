@@ -393,7 +393,7 @@ imaging_parameters_nondefault = {
         "scales": [0, 3, 9, 27],
     },
     "W51-E_B3_12M_robust0": {
-        "threshold": {0: "0.15mJy", 1: "0.15mJy", 2: "0.1mJy", 3: "0.09mJy", 4: "0.09mJy", 5: "0.08mJy", 6: "0.07mJy",},
+        "threshold": {0: "0.15mJy", 1: "0.15mJy", 2: "0.1mJy", 3: "0.09mJy", 4: "0.09mJy", 5: "0.08mJy", 6: "0.07mJy", 7:"0.07mJy"},
         "scales": [0, 3, 9, 27],
         "imsize": [5000, 5000],
         "cell": ["0.0375arcsec", "0.0375arcsec"],
@@ -498,8 +498,8 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM2_B3_12M_robust0": {
-        "threshold": {0: "0.2mJy", 1: "0.5mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.12mJy",},
-        "niter": {0: 9000, 1: 10000, 2: 16000, 3: 16000, 4: 18000, "final": 25000},
+        "threshold": {0: "0.2mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.12mJy",},
+        "niter": {0: 30000, 1: 30000, 2: 30000, 3: 30000, 4: 30000, "final": 30000},
         "scales": {
             0: [0, 3, 9, 27],
             1: [0, 3, 9, 27],
@@ -526,14 +526,15 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM3_B3_12M_robust0": {
-        "threshold": {0: "1.0mJy", 1: "0.75mJy", 2: "0.15mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.11mJy",},
-        "niter": {0: 1000, 1: 6000, 2: 12000, 3: 15000, 4: 15000, "final": 24000},
+        "threshold": {0: "1.0mJy", 1: "0.75mJy", 2: "0.15mJy", 3: "0.1mJy", 4: "0.1mJy", 5:"0.1mJy", "final": "0.11mJy",},
+        "niter": {0: 1000, 1: 6000, 2: 12000, 3: 15000, 4: 15000, 5: 20000, "final": 24000},
         "scales": {
             0: [0, 3, 9, 27],
             1: [0, 3, 9, 27],
             2: [0, 3, 9, 27],
             3: [0, 3, 9, 27],
             4: [0, 3, 9, 27],
+            5: [0, 3, 9, 27],
             "final": [0, 3, 9, 27, 81],
         },
         "maskname": {"final": ""},
@@ -2368,10 +2369,11 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "W43-MM3_B3_12M_robust0": {
-        1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": False},
-        2: {"calmode": "p", "gaintype": "T", "solint": "600s", "solnorm": False},
-        3: {"calmode": "p", "gaintype": "T", "solint": "200s", "solnorm": False},
-        4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False},
+        1: {"calmode": "p", "gaintype": "G", "solint": "inf", "solnorm": True},
+        2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
+        3: {"calmode": "p", "gaintype": "T", "solint": "200s", "solnorm": True},
+        4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": True},
+        5: {"calmode": "ap", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "W43-MM3_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2477,12 +2479,13 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "W51-E_B3_12M_robust0": {
-        1: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
+        1: {"calmode": "p", "gaintype": "G", "minsnr": 5, "solint": "inf", "solnorm": True},
         2: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
         6: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
+        7: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
     },
     "W51-E_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
