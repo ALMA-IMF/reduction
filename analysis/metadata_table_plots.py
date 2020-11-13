@@ -224,6 +224,10 @@ ax1.set_xlabel("Measured Noise / Requested Sensitivity")
 ax1.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
 ax1.axis(lims)
 
+b3bs = wtbl_bsens['band'] == 'B3'
+b6bs = wtbl_bsens['band'] == 'B6'
+wtbl_bsens['SensVsReqPost'] = wtbl_bsens['mad_sample_bsens'] / wtbl_bsens['Req_Sens'] * 1000
+
 ax2 = pl.subplot(1,2,2)
 ax2.plot(wtbl_bsens['SensVsReqPost'][b3bs], 1./wtbl_bsens['BeamVsReq'][b3bs], label='B3', **b3style)
 ax2.plot(wtbl_bsens['SensVsReqPost'][b6bs], 1./wtbl_bsens['BeamVsReq'][b6bs], label='B6', **b6style)
@@ -274,7 +278,6 @@ pl.savefig("../datapaper/figures/dynamic_range.png", bbox_inches='tight')
 
 b3bs = wtbl_bsens['band'] == 'B3'
 b6bs = wtbl_bsens['band'] == 'B6'
-wtbl_bsens['SensVsReqPost'] = wtbl_bsens['mad_sample_bsens'] / wtbl_bsens['Req_Sens'] * 1000
 
 fig7 = pl.figure(7, figsize=(10,5))
 fig7.clf()
