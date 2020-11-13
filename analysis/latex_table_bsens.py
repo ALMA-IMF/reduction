@@ -1,3 +1,4 @@
+import numpy as np
 from astropy.table import Table, Column
 from astropy import table
 import requests
@@ -30,9 +31,14 @@ bp_tbl.remove_column('config_1')
 bp_tbl.remove_column('config_2')
 
 tbl = table.join(Table.read('metadata_bsens_cleanest.ecsv'), bp_tbl, keys=('region', 'band'))
+bad = np.array(['diff' in x for x in tbl['filename']])
 
 # downselect (need bsens=true to avoid duplication - but be wary in case you remove duplicates upstream!)
-keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor']) & (tbl['bsens'])
+keep = ((tbl['suffix'] == 'finaliter') &
+        (tbl['robust'] == 'r0.0') &
+        (~tbl['pbcor']) &
+        (tbl['bsens']) &
+        (~bad))
 
 
 wtbl = tbl[keep]

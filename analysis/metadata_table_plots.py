@@ -14,12 +14,20 @@ bp_tbl.remove_column('config_2')
 
 tbl_selfcal = table.join(Table.read('metadata_sc.ecsv'), bp_tbl, keys=('region', 'band'))
 bad = np.array(['diff' in x for x in tbl_selfcal['filename']])
-keep_selfcal = (tbl_selfcal['suffix'] == 'finaliter') & (tbl_selfcal['robust'] == 'r0.0') & (~tbl_selfcal['pbcor']) & (~tbl_selfcal['bsens']) & (~bad)
+keep_selfcal = ((tbl_selfcal['suffix'] == 'finaliter') &
+                (tbl_selfcal['robust'] == 'r0.0') &
+                (~tbl_selfcal['pbcor']) &
+                (~tbl_selfcal['bsens']) & 
+                (~bad))
 wtbl_selfcal = tbl_selfcal[keep_selfcal]
 
 tbl_bsens = table.join(Table.read('metadata_bsens_cleanest.ecsv'), bp_tbl, keys=('region', 'band'))
 bad = np.array(['diff' in x for x in tbl_bsens['filename']])
-keep_bsens = (tbl_bsens['suffix'] == 'finaliter') & (tbl_bsens['robust'] == 'r0.0') & (~tbl_bsens['pbcor']) & (tbl_bsens['bsens']) & (~bad)
+keep_bsens = ((tbl_bsens['suffix'] == 'finaliter') &
+              (tbl_bsens['robust'] == 'r0.0') &
+              (~tbl_bsens['pbcor']) &
+              (tbl_bsens['bsens']) &
+              (~bad))
 wtbl_bsens = tbl_bsens[keep_bsens]
 
 
@@ -139,36 +147,37 @@ pl.savefig("../datapaper/figures/bsens_rms_change.png", bbox_inches='tight')
 
 b3sc = wtbl_selfcal['band'] == 'B3'
 b6sc = wtbl_selfcal['band'] == 'B6'
-wtbl_selfcal['SensVsReq'] = wtbl_selfcal['mad_sample_post'] / wtbl_selfcal['Req_Sens'] * 1000
+wtbl_selfcal['SensVsReqPost'] = wtbl_selfcal['mad_sample_post'] / wtbl_selfcal['Req_Sens'] * 1000
+
 
 fig1 = pl.figure(4, figsize=(10,5))
 fig1.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3style)
-ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style)
+ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], wtbl_selfcal['SensVsReqPost'][b3sc], **b3style)
+ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], wtbl_selfcal['SensVsReqPost'][b6sc], **b6style)
 
 w51e_sel = (wtbl_selfcal['region'] == 'W51-E')
 if (b3sc & w51e_sel).sum() > 0:
     ax1.annotate('W51-E', (wtbl_selfcal['sum_post'][b3sc & w51e_sel]/wtbl_selfcal['ppbeam'][b3sc & w51e_sel],
-                           wtbl_selfcal['SensVsReq'][b3sc & w51e_sel]))
+                           wtbl_selfcal['SensVsReqPost'][b3sc & w51e_sel]))
 else:
     print("W51-E B3 is missing!")
 #ax1.annotate('W51-IRS2', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')],
-#                          wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
+#                          wtbl_selfcal['SensVsReqPost'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 #ax1.annotate('G010.62', (wtbl_selfcal['sum_post'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]/wtbl_selfcal['ppbeam'][b3sc & (wtbl_selfcal['region'] == 'G010.62')],
-#                         wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]))
+#                         wtbl_selfcal['SensVsReqPost'][b3sc & (wtbl_selfcal['region'] == 'G010.62')]))
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.set_xlabel("Sum [Jy]")
 ax1.set_ylabel("Measured Noise / Requested Sensitivity")
 
 ax2 = pl.subplot(1,2,2)
-ax2.plot(wtbl_selfcal['max_post'][b3sc], wtbl_selfcal['SensVsReq'][b3sc], **b3style, label='B3')
-ax2.plot(wtbl_selfcal['max_post'][b6sc], wtbl_selfcal['SensVsReq'][b6sc], **b6style, label='B6')
+ax2.plot(wtbl_selfcal['max_post'][b3sc], wtbl_selfcal['SensVsReqPost'][b3sc], **b3style, label='B3')
+ax2.plot(wtbl_selfcal['max_post'][b6sc], wtbl_selfcal['SensVsReqPost'][b6sc], **b6style, label='B6')
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
 if (b3sc & w51e_sel).sum() > 0:
-    ax2.annotate('W51-E', (wtbl_selfcal['max_post'][b3sc & w51e_sel], wtbl_selfcal['SensVsReq'][b3sc & w51e_sel]))
-#ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
-ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReq'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
+    ax2.annotate('W51-E', (wtbl_selfcal['max_post'][b3sc & w51e_sel], wtbl_selfcal['SensVsReqPost'][b3sc & w51e_sel]))
+#ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReqPost'][b3sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
+ax2.annotate('W51-IRS2', (wtbl_selfcal['max_post'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')], wtbl_selfcal['SensVsReqPost'][b6sc & (wtbl_selfcal['region'] == 'W51-IRS2')]))
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
 ax2.set_ylabel("Measured Noise / Requested Sensitivity")
 pl.legend(loc='best')
@@ -206,8 +215,8 @@ b6sc = wtbl_selfcal['band'] == 'B6'
 fig5 = pl.figure(5, figsize=(10,5))
 fig5.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.plot(wtbl_selfcal['SensVsReq'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], label='B3', **b3style)
-ax1.plot(wtbl_selfcal['SensVsReq'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], label='B6', **b6style)
+ax1.plot(wtbl_selfcal['SensVsReqPost'][b3sc], 1./wtbl_selfcal['BeamVsReq'][b3sc], label='B3', **b3style)
+ax1.plot(wtbl_selfcal['SensVsReqPost'][b6sc], 1./wtbl_selfcal['BeamVsReq'][b6sc], label='B6', **b6style)
 lims = ax1.axis()
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.plot([1,1], ax1.get_ylim(), 'k--')
@@ -216,8 +225,8 @@ ax1.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
 ax1.axis(lims)
 
 ax2 = pl.subplot(1,2,2)
-ax2.plot(wtbl_bsens['SensVsReq'][b3bs], 1./wtbl_bsens['BeamVsReq'][b3bs], label='B3', **b3style)
-ax2.plot(wtbl_bsens['SensVsReq'][b6bs], 1./wtbl_bsens['BeamVsReq'][b6bs], label='B6', **b6style)
+ax2.plot(wtbl_bsens['SensVsReqPost'][b3bs], 1./wtbl_bsens['BeamVsReq'][b3bs], label='B3', **b3style)
+ax2.plot(wtbl_bsens['SensVsReqPost'][b6bs], 1./wtbl_bsens['BeamVsReq'][b6bs], label='B6', **b6style)
 lims = ax2.axis()
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
 ax2.plot([1,1], ax2.get_ylim(), 'k--')
@@ -265,39 +274,39 @@ pl.savefig("../datapaper/figures/dynamic_range.png", bbox_inches='tight')
 
 b3bs = wtbl_bsens['band'] == 'B3'
 b6bs = wtbl_bsens['band'] == 'B6'
-wtbl_bsens['SensVsReq'] = wtbl_bsens['mad_sample_bsens'] / wtbl_bsens['Req_Sens'] * 1000
+wtbl_bsens['SensVsReqPost'] = wtbl_bsens['mad_sample_bsens'] / wtbl_bsens['Req_Sens'] * 1000
 
 fig7 = pl.figure(7, figsize=(10,5))
 fig7.clf()
 ax1 = pl.subplot(1,2,1)
-ax1.plot(wtbl_bsens['sum_bsens'][b3bs]/wtbl_bsens['ppbeam'][b3bs], wtbl_bsens['SensVsReq'][b3bs], **b3style)
-ax1.plot(wtbl_bsens['sum_bsens'][b6bs]/wtbl_bsens['ppbeam'][b6bs], wtbl_bsens['SensVsReq'][b6bs], **b6style)
+ax1.plot(wtbl_bsens['sum_bsens'][b3bs]/wtbl_bsens['ppbeam'][b3bs], wtbl_bsens['SensVsReqPost'][b3bs], **b3style)
+ax1.plot(wtbl_bsens['sum_bsens'][b6bs]/wtbl_bsens['ppbeam'][b6bs], wtbl_bsens['SensVsReqPost'][b6bs], **b6style)
 w51e_sel_bsens = (wtbl_bsens['region'] == 'W51-E')
 if (b3bs & w51e_sel_bsens).sum() > 0:
     ax1.annotate('W51-E', (wtbl_bsens['sum_bsens'][b3bs & w51e_sel_bsens]/wtbl_bsens['ppbeam'][b3bs & w51e_sel_bsens],
-                           wtbl_bsens['SensVsReq'][b3bs & w51e_sel_bsens]))
+                           wtbl_bsens['SensVsReqPost'][b3bs & w51e_sel_bsens]))
 w51irs2_sel_bsens = (wtbl_bsens['region'] == 'W51-IRS2')
 if (b3bs & w51irs2_sel_bsens).sum() > 0:
     ax1.annotate('W51-IRS2', (wtbl_bsens['sum_bsens'][b3bs & w51irs2_sel_bsens]/wtbl_bsens['ppbeam'][b3bs & w51irs2_sel_bsens],
-                              wtbl_bsens['SensVsReq'][b3bs & w51irs2_sel_bsens]))
+                              wtbl_bsens['SensVsReqPost'][b3bs & w51irs2_sel_bsens]))
 else:
     print("W51 IRS2 B3 is missing")
 #ax1.annotate('G010.62', (wtbl_bsens['sum_bsens'][b3bs & (wtbl_bsens['region'] == 'G010.62')]/wtbl_bsens['ppbeam'][b3bs & (wtbl_bsens['region'] == 'G010.62')],
-#                         wtbl_bsens['SensVsReq'][b3bs & (wtbl_bsens['region'] == 'G010.62')]))
+#                         wtbl_bsens['SensVsReqPost'][b3bs & (wtbl_bsens['region'] == 'G010.62')]))
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.set_xlabel("Sum [Jy]")
 ax1.set_ylabel("Measured Noise / Requested Sensitivity")
 
 ax2 = pl.subplot(1,2,2)
-ax2.plot(wtbl_bsens['max_bsens'][b3bs], wtbl_bsens['SensVsReq'][b3bs], **b3style, label='B3')
-ax2.plot(wtbl_bsens['max_bsens'][b6bs], wtbl_bsens['SensVsReq'][b6bs], **b6style, label='B6')
+ax2.plot(wtbl_bsens['max_bsens'][b3bs], wtbl_bsens['SensVsReqPost'][b3bs], **b3style, label='B3')
+ax2.plot(wtbl_bsens['max_bsens'][b6bs], wtbl_bsens['SensVsReqPost'][b6bs], **b6style, label='B6')
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
 if (b3bs & w51e_sel_bsens).sum() > 0:
-    ax2.annotate('W51-E', (wtbl_bsens['max_bsens'][b3bs & w51e_sel_bsens], wtbl_bsens['SensVsReq'][b3bs & w51e_sel_bsens]))
+    ax2.annotate('W51-E', (wtbl_bsens['max_bsens'][b3bs & w51e_sel_bsens], wtbl_bsens['SensVsReqPost'][b3bs & w51e_sel_bsens]))
 if (b3bs & w51irs2_sel_bsens).sum() > 0:
-    ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b3bs & w51irs2_sel_bsens], wtbl_bsens['SensVsReq'][b3bs & w51irs2_sel_bsens]))
+    ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b3bs & w51irs2_sel_bsens], wtbl_bsens['SensVsReqPost'][b3bs & w51irs2_sel_bsens]))
 if (b6bs & w51irs2_sel_bsens).sum() > 0:
-    ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b6bs & w51irs2_sel_bsens], wtbl_bsens['SensVsReq'][b6bs & w51irs2_sel_bsens]))
+    ax2.annotate('W51-IRS2', (wtbl_bsens['max_bsens'][b6bs & w51irs2_sel_bsens], wtbl_bsens['SensVsReqPost'][b6bs & w51irs2_sel_bsens]))
 else:
     print("W51 IRS2 B6 is missing!")
 ax2.set_xlabel("Peak [Jy beam$^{-1}$]")
@@ -316,22 +325,22 @@ ax1 = pl.subplot(1,2,1)
 bins_b3 = np.linspace(0.45, 4.5, 10)
 
 for tb,msk in ((wtbl_bsens, b3bs,), (wtbl_selfcal, b3sc)):
-    if any(tb['SensVsReq'][msk] < bins_b3.min()) or any(tb['SensVsReq'][msk] > bins_b3.max()):
+    if any(tb['SensVsReqPost'][msk] < bins_b3.min()) or any(tb['SensVsReqPost'][msk] > bins_b3.max()):
         raise ValueError("bad binning b3")
 
-ax1.hist(wtbl_bsens['SensVsReq'][b3bs], bins=bins_b3, alpha=0.5)
-ax1.hist(wtbl_selfcal['SensVsReq'][b3sc], bins=bins_b3, alpha=0.5)
+ax1.hist(wtbl_bsens['SensVsReqPost'][b3bs], bins=bins_b3, alpha=0.5)
+ax1.hist(wtbl_selfcal['SensVsReqPost'][b3sc], bins=bins_b3, alpha=0.5)
 ax1.set_xlabel("Measured Noise / Requested Sensitivity")
 ax1.set_title("B3")
 
 bins_b6 = np.linspace(0.45, 2, 10)
 for tb,msk in ((wtbl_bsens, b3bs,), (wtbl_selfcal, b3sc)):
-    if any(tb['SensVsReq'][msk] < bins_b3.min()) or any(tb['SensVsReq'][msk] > bins_b3.max()):
+    if any(tb['SensVsReqPost'][msk] < bins_b3.min()) or any(tb['SensVsReqPost'][msk] > bins_b3.max()):
         raise ValueError("bad binning b3")
 
 ax2 = pl.subplot(1,2,2)
-ax2.hist(wtbl_bsens['SensVsReq'][b6bs], bins=bins_b6, alpha=0.5, label='BSENS')
-ax2.hist(wtbl_selfcal['SensVsReq'][b6sc], bins=bins_b6, alpha=0.5, label='Cleanest')
+ax2.hist(wtbl_bsens['SensVsReqPost'][b6bs], bins=bins_b6, alpha=0.5, label='BSENS')
+ax2.hist(wtbl_selfcal['SensVsReqPost'][b6sc], bins=bins_b6, alpha=0.5, label='Cleanest')
 ax2.set_xlabel("Measured Noise / Requested Sensitivity")
 ax2.set_title("B6")
 pl.legend(loc='best')

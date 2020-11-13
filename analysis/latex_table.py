@@ -1,3 +1,4 @@
+import numpy as np
 from astropy.table import Table, Column
 from astropy import table
 import requests
@@ -29,9 +30,14 @@ bp_tbl.remove_column('config_1')
 bp_tbl.remove_column('config_2')
 
 tbl = table.join(Table.read('metadata_sc.ecsv'), bp_tbl, keys=('region', 'band'))
+bad = np.array(['diff' in x for x in tbl['filename']])
 
 # downselect
-keep = (tbl['suffix'] == 'finaliter') & (tbl['robust'] == 'r0.0') & (tbl['pbcor']) & (~tbl['bsens'])
+keep = ((tbl['suffix'] == 'finaliter') &
+        (tbl['robust'] == 'r0.0') &
+        (~tbl['pbcor']) &
+        (~tbl['bsens']) &
+        (~bad))
 
 
 wtbl = tbl[keep]
@@ -40,7 +46,12 @@ wtbl = tbl[keep]
 print(len(wtbl))
 print(wtbl)
 
+# strip preceding "sc" from selfcal numbers
 wtbl['selfcaliter'] = Column(data=[int(x[2:]) for x in wtbl['selfcaliter']])
+
+# SensVsReq can be populated with either pre- or post-; we want post
+wtbl['SensVsReqPost'] = wtbl['mad_sample_post'] / wtbl['Req_Sens'] * 1000
+wtbl['SensVsReqPre'] = wtbl['mad_sample_pre'] / wtbl['Req_Sens'] * 1000
 
 cols_to_keep = {'region':'Region',
                 'band':'Band',
@@ -54,7 +65,7 @@ cols_to_keep = {'region':'Region',
                 'peak':'$S_{peak}$',
                 'mad':'$\sigma_{MAD}$',
                 'Req_Sens': r"$\sigma_{req}$",
-                'SensVsReq': r"$\sigma_{MAD}/\sigma_{req}$",
+                'SensVsReqPost': r"$\sigma_{MAD}/\sigma_{req}$",
                 'dr_pre': "DR$_{pre}$",
                 'dr_post': "DR$_{post}$",
                 'dr_improvement': "DR$_{post}$/DR$_{pre}$"}
@@ -69,15 +80,15 @@ units = {'$S_{peak}$':u.Jy.to_string(u.format.LatexInline),
         }
 latexdict['units'] = units
 
-wtbl = wtbl[list(cols_to_keep.keys())]
+fwtbl = wtbl[list(cols_to_keep.keys())]
 
 
 for old, new in cols_to_keep.items():
     if old in wtbl.colnames:
         #wtbl[old].meta['description'] = description[old]
-        wtbl.rename_column(old, new)
+        fwtbl.rename_column(old, new)
         if new in units:
-            wtbl[new].unit = units[new]
+            fwtbl[new].unit = units[new]
 
 float_cols =  ['$\\theta_{maj}$',
  '$\\theta_{min}$',
@@ -94,13 +105,13 @@ float_cols =  ['$\\theta_{maj}$',
  'DR$_{post}$/DR$_{pre}$']
 
 # convert to mJy
-wtbl['$\sigma_{MAD}$'] *= 1000
+fwtbl['$\sigma_{MAD}$'] *= 1000
 
 
 formats = {key: lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2)))
            for key in float_cols}
 
-wtbl.write('selfcal_summary.ecsv', format='ascii.ecsv', overwrite=True)
+fwtbl.write('selfcal_summary.ecsv', format='ascii.ecsv', overwrite=True)
 
 
 
@@ -108,7 +119,7 @@ wtbl.write('selfcal_summary.ecsv', format='ascii.ecsv', overwrite=True)
 #latexdict['caption'] = 'Continuum Source IDs and photometry'
 latexdict['header_start'] = '\label{tab:selfcal}'#\n\\footnotesize'
 latexdict['preamble'] = '\caption{Selfcal Summary}\n\\resizebox{\\textwidth}{!}{'
-latexdict['col_align'] = 'l'*len(wtbl.columns)
+latexdict['col_align'] = 'l'*len(fwtbl.columns)
 latexdict['tabletype'] = 'table*'
 latexdict['tablefoot'] = ("}\par\n"
                           "$n_{sc}$ is the number of self-calibration iterations adopted.  "
@@ -124,8 +135,8 @@ latexdict['tablefoot'] = ("}\par\n"
                           "factor."
                          )
 
-wtbl.sort('Region')
+fwtbl.sort('Region')
 
-wtbl.write("../datapaper/selfcal_summary.tex", formats=formats,
+fwtbl.write("../datapaper/selfcal_summary.tex", formats=formats,
            overwrite=True, latexdict=latexdict)
 
