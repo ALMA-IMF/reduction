@@ -26,11 +26,12 @@ scripts = [
            'selfcal_field_data.py',
            'continuum_selections.py',
            'cube_metadata_grid.py',
-           'fullcube_quicklooks.py',
-           '7m12m_comparison.py',
+           'cube_spectral_quicklooks.py',
            'diagnostic_images.py',
            'diagnostic_spectra.py',
            'plot_uvspectra.py',
+           'fullcube_quicklooks.py',
+           '7m12m_comparison.py',
           ]
 
 for scriptname in scripts:

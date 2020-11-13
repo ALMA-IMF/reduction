@@ -50,7 +50,7 @@ if cores > 1:
     client = Client(memory_limit=mem, processes=False,
                     n_workers=nnodes, threads_per_worker=cores)
     scheduler = client
-    
+
 
 print(f"Using {nthreads} threads with the {scheduler} scheduler")
 
