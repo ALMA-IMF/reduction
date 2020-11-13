@@ -130,6 +130,8 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                         print(f"Found no matches for glob {globblob}")
                         continue
 
+                    mod_date = time.ctime(os.path.getmtime(fn))
+
                     ia.open(fn)
                     history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
                     ia.close()

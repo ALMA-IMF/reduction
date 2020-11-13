@@ -185,6 +185,7 @@ for band in bands:
                                                             freqs,
                                                             return_fractions=True)
                 logprint("Line fractions are: {0}".format(linefracs))
+                logprint("Cont channels are: {0}".format(cont_channel_selection))
                 logprint("Line channels are: {0}".format(linechannels))
 
 
