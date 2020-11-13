@@ -1,16 +1,25 @@
 
-vis = '../W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_selfcal.ms'
+vis = '../W51-E_B3_uid___A001_X1296_X10b_continuum_merged_bsens_12M_selfcal_bsens.ms/'
+startmodel = ['../imaging_results/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_bsens_12M_robust0_selfcal6_finaliter.model.tt0',
+              '../imaging_results/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_bsens_12M_robust0_selfcal6_finaliter.model.tt1']
 msmd.open(vis)
 for obsid in range(msmd.nobservations()):
     scanset = msmd.scannumbers(obsid=obsid)
     if len(scanset) > 0:
 
         tclean(vis=vis,
-               cell='0.08arcsec',
-               imsize=256,
+               cell='0.05arcsec',
+               imsize=512,
+               startmodel=startmodel,
                #field="0",
                scan=",".join(map(str, scanset.tolist())),
-               imagename='W51-E_ObsID_{0:02d}'.format(obsid),
+               nterms=2,
+               specmode='mfs',
+               deconvolver='mtmfs',
+               uvrange='100~2000m',
+               weighting='briggs',
+               robust=0,
+               imagename='W51-E_ObsID_startmod_bsens_uvcut_robust0_{0:02d}'.format(obsid),
                phasecenter='ICRS 19:23:43.9 +14.30.34.8')
 msmd.close()
 
