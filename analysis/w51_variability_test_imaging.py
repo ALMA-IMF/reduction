@@ -38,3 +38,17 @@ obs9_conv11 = convolution.convolve_fft(obs9[0], bm11[0], normalize_kernel=False)
 obs11_conv9 = convolution.convolve_fft(obs11[0], bm9[0], normalize_kernel=False)
 obs9minusobs11 = obs9_conv11 - obs11_conv9
 fits.PrimaryHDU(data=obs9minusobs11, header=cube.wcs.celestial.to_header()).writeto('obs9_minus_obs11.fits')
+
+for spw in msmd.spwsforfield('W51-E'):
+    tclean(vis=vis,
+           cell='0.05arcsec',
+           imsize=512,
+           startmodel=startmodel,
+           spw=spw,
+           specmode='mfs',
+           deconvolver='mtmfs',
+           nterms=2,
+           weighting='briggs',
+           robust=0,
+           imagename='W51-E_ObsID_startmod_bsens_robust0_continuum_spw{0}'.format(spw),
+           phasecenter='ICRS 19:23:43.9 +14.30.34.8')
