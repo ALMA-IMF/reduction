@@ -19,17 +19,17 @@ default_lines = {'n2hp': '93.173700GHz',
                 }
 
 
-dirnames = {'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',
-            'linecubes_12m': 'spw[0-9]_12M_[a-z][!p]',
-            'fullcubes_7m12m': 'spw[0-9]_7M12M_spw[0-9]',
-            'linecubes_7m12m': 'spw[0-9]_7M12M_[a-z][!p]',
-            'bsens': 'bsens_12M_*.tt0',
-            'cleanest': 'merged_12M*.tt0',
-            'masks': 'robust0_12M_mask.mask',
-            '7m12m': 'merged_7M12M*.tt0',
-            '7m12m_bsens': 'bsens_7M12M*.tt0',
-            '7m': 'merged_7M_*.tt0',
-            '7m_bsens': 'bsens_7M_*.tt0',
+dirnames = {'fullcubes_12m': ('spw[0-9]_12M_spw[0-9]',),
+            'linecubes_12m': ('spw[0-9]_12M_[a-z][!p]',),
+            'fullcubes_7m12m': ('spw[0-9]_7M12M_spw[0-9]',),
+            'linecubes_7m12m': ('spw[0-9]_7M12M_[a-z][!p]',),
+            'bsens': ('bsens_12M_*.tt0',),
+            'cleanest': ('merged_12M*.tt0', '.mask'),
+            'masks': ('robust0_12M_mask.mask',),
+            '7m12m': ('merged_7M12M*.tt0',),
+            '7m12m_bsens': ('bsens_7M12M*.tt0',),
+            '7m': ('merged_7M_*.tt0',),
+            '7m_bsens': ('bsens_7M_*.tt0',),
            }
 
 
@@ -48,27 +48,28 @@ with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
                     bandpath = Path(f"B{band}")
                     if not os.path.exists(releasepath / field / bandpath):
                         mkdir(releasepath / field / bandpath)
-                    for dirname, globstr in dirnames.items():
-                        if not os.path.exists(releasepath / field / bandpath / dirname):
-                            mkdir(releasepath / field / bandpath / dirname)
-                        cwd = os.getcwd()
-                        chdir(releasepath / field / bandpath / dirname)
-                        globbo = str(basepath / f"{field}_B{band}*{globstr}*")
-                        filelist = glob.glob(globbo)
-                        # included in globbo
-                        #fitsglobbo = str(basepath / f"{field}_B{band}*{globstr}*fits")
-                        #filelist += glob.glob(fitsglobbo)
-                        #print(field, band, dirname, config, filelist)
-                        for fn in filelist:
-                            #print(f"Linking {dotdot / fn} to {os.getcwd()}")
-                            basename = os.path.basename(fn)
-                            if not os.path.exists(basename):
-                                symlink(fn, basename)
-                            elif not os.path.exists(os.readlink(basename)):
-                                os.unlink(basename)
-                                symlink(fn, basename)
-                            fh1.write(os.path.realpath(basename) + "\n")
-                            newpath = os.path.join(os.getcwd(), basename)
-                            fh2.write(newpath + "\n")
-                            fh3.write(time.ctime(os.path.getmtime(basename)) + "  " +  newpath + "\n")
-                        chdir(cwd)
+                    for dirname, globstrs in dirnames.items():
+                        for globstr in globstrs:
+                            if not os.path.exists(releasepath / field / bandpath / dirname):
+                                mkdir(releasepath / field / bandpath / dirname)
+                            cwd = os.getcwd()
+                            chdir(releasepath / field / bandpath / dirname)
+                            globbo = str(basepath / f"{field}_B{band}*{globstr}*")
+                            filelist = glob.glob(globbo)
+                            # included in globbo
+                            #fitsglobbo = str(basepath / f"{field}_B{band}*{globstr}*fits")
+                            #filelist += glob.glob(fitsglobbo)
+                            #print(field, band, dirname, config, filelist)
+                            for fn in filelist:
+                                #print(f"Linking {dotdot / fn} to {os.getcwd()}")
+                                basename = os.path.basename(fn)
+                                if not os.path.exists(basename):
+                                    symlink(fn, basename)
+                                elif not os.path.exists(os.readlink(basename)):
+                                    os.unlink(basename)
+                                    symlink(fn, basename)
+                                fh1.write(os.path.realpath(basename) + "\n")
+                                newpath = os.path.join(os.getcwd(), basename)
+                                fh2.write(newpath + "\n")
+                                fh3.write(time.ctime(os.path.getmtime(basename)) + "  " +  newpath + "\n")
+                            chdir(cwd)
