@@ -393,8 +393,17 @@ imaging_parameters_nondefault = {
         "scales": [0, 3, 9, 27],
     },
     "W51-E_B3_12M_robust0": {
-        "threshold": {0: "0.15mJy", 1: "0.15mJy", 2: "0.1mJy", 3: "0.09mJy", 4: "0.09mJy", 5: "0.08mJy", 6: "0.07mJy", 7:"0.07mJy"},
-        "niter": {0: 200000, 1: 200000, 2: 200000, 3: 200000, 4: 200000, 5: 200000, 6: 200000, 7: 200000,  "final": 200000},
+        "threshold": {
+            0: "0.15mJy",
+            1: "0.15mJy",
+            2: "0.1mJy",
+            3: "0.09mJy",
+            4: "0.09mJy",
+            5: "0.08mJy",
+            6: "0.07mJy",
+            7: "0.07mJy",
+        },
+        # MAYBE needs more iterations? "niter": {0: 200000, 1: 200000, 2: 200000, 3: 200000, 4: 200000, 5: 200000, 6: 200000, 7: 200000,  "final": 200000},
         "scales": [0, 3, 9, 27],
         "imsize": [4800, 4800],
         "cell": ["0.0375arcsec", "0.0375arcsec"],
@@ -527,7 +536,15 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM3_B3_12M_robust0": {
-        "threshold": {0: "0.1mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", 5:"0.1mJy", "final": "0.11mJy",},
+        "threshold": {
+            0: "0.1mJy",
+            1: "0.1mJy",
+            2: "0.1mJy",
+            3: "0.1mJy",
+            4: "0.1mJy",
+            5: "0.1mJy",
+            "final": "0.11mJy",
+        },
         "niter": {0: 20000, 1: 20000, 2: 20000, 3: 20000, 4: 20000, 5: 20000, "final": 24000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -2967,7 +2984,7 @@ line_imaging_parameters_custom = {
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal4",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
-        "pblimit": 0.05, # per Nov 6 telecon
+        "pblimit": 0.05,  # per Nov 6 telecon
     },
     "W51-E_B3_12M_robust0_contsub": {
         "threshold": "4mJy",  # sigma is ~0.8 mJy
