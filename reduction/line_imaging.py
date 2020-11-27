@@ -322,7 +322,7 @@ for band in band_list:
                     logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
                              origin='almaimf_line_imaging')
 
-                    contfile12m, contfile7m = merge_contdotdat(band, field,
+                    contfile12m, contfile7m = merge_contdotdat(field, band,
                                                                basepath='.',
                                                                datfiles=metadata[band][field]['cont.dat'].values())
                     contfile = contfile12m
