@@ -313,6 +313,7 @@ for continuum_ms in continuum_mses:
 
     logprint("Selfcal MS is: "
              "{0}".format(selfcal_ms), origin='contim_selfcal')
+    assert os.path.exists(selfcal_ms)
 
     flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
     if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:

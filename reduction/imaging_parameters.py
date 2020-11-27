@@ -2973,7 +2973,7 @@ line_imaging_parameters_custom = {
     },
     "W43-MM3_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "W43-MM3_B6_12M_robust0": {
         "threshold": "6mJy",
