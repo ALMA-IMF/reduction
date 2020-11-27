@@ -7,6 +7,8 @@ It is partly a performance test - for the bigger cubes, there were sometimes mem
 
 The noise estimation region and num_workers are both hard-coded and should be
 customized.
+
+We should eventually allow multi-cube combination using full statcont abilities
 """
 import time
 from spectral_cube import SpectralCube
