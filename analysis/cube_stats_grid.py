@@ -27,9 +27,6 @@ if os.getenv('NO_PROGRESSBAR') is None:
     pbar = ProgressBar()
     pbar.register()
 
-nthreads = 1
-scheduler = 'synchronous'
-
 os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
 if os.getenv('DASK_THREADS') is not None:
