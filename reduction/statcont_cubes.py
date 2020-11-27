@@ -48,6 +48,8 @@ for fn in sorted(sizes, key=lambda x: sizes[x]):
         print(cube)
 
         noise = cube[50:100,50:-50,50:-50].mad_std()
+        if noise == 0:
+            noise = 0.001 * cube.unit
 
         with cube.use_dask_scheduler('threads', num_workers=32):
             result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=False)
