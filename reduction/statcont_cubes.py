@@ -23,6 +23,10 @@ import glob
 
 import os
 
+# for zarr storage
+os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+
+
 def get_size(start_path = '.'):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
@@ -52,7 +56,7 @@ for fn in sorted(sizes, key=lambda x: sizes[x]):
             noise = 0.001 * cube.unit
 
         with cube.use_dask_scheduler('threads', num_workers=32):
-            result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=False)
+            result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
 
         fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(fn+'.statcont.cont.fits', overwrite=True)
         print(f"{fn} -> {outfn} in {time.time()-t0}s")
