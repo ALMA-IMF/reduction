@@ -73,7 +73,7 @@ for key in imaging_parameters:
 
 imaging_parameters_nondefault = {
     "G008.67_B6_12M_robust0": {
-        "threshold": {0: "6.5mJy", 1: "5.5mJy", 2: "4.5mJy", 3: "3.5mJy", 4: "2.9mJy", 5: "0.75mJy",},
+        "threshold": {0: "6.5mJy", 1: "5.5mJy", 2: "4.5mJy", 3: "3.5mJy", 4: "2.9mJy", 5: "0.75mJy"},
         "niter": {0: 1500, 1: 1500, 2: 3000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B6_0.crtf",
@@ -85,7 +85,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G008.67_B6_12M_robust0_bsens": {
-        "threshold": {0: "7.5mJy", 1: "6.5mJy", 2: "5.5mJy", 3: "4.5mJy", 4: "3.25mJy", 5: "0.5mJy",},
+        "threshold": {0: "7.5mJy", 1: "6.5mJy", 2: "5.5mJy", 3: "4.5mJy", 4: "3.25mJy", 5: "0.5mJy"},
         "niter": {0: 1500, 1: 1500, 2: 3000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B6_0.crtf",
@@ -97,7 +97,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G008.67_B6_7M12M_robust0": {
-        "threshold": {0: "6.0mJy", 1: "5.0mJy", 2: "4.0mJy", 3: "3.5mJy", 4: "2.9mJy", 5: "0.75mJy",},
+        "threshold": {0: "6.0mJy", 1: "5.0mJy", 2: "4.0mJy", 3: "3.5mJy", 4: "2.9mJy", 5: "0.75mJy"},
         "niter": {0: 1500, 1: 1500, 2: 3000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B6_0.crtf",
@@ -109,7 +109,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G008.67_B3_12M_robust0": {
-        "threshold": {0: "2.5mJy", 1: "2.0mJy", 2: "1.5mJy", 3: "1.0mJy", 4: "0.7mJy", 5: "0.3mJy",},
+        "threshold": {0: "2.5mJy", 1: "2.0mJy", 2: "1.5mJy", 3: "1.0mJy", 4: "0.7mJy", 5: "0.3mJy"},
         "niter": {0: 700, 1: 700, 2: 2000, 3: 5000, 4: 50000, 5: 50000},
         "maskname": {
             0: "mask_G008_B3_1.crtf",
@@ -121,7 +121,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G008.67_B3_7M12M_robust0": {
-        "threshold": {0: "5.0mJy", 1: "4.5mJy", 2: "4.0mJy", 3: "4.5mJy", 4: "2.5mJy", 5: "0.4mJy",},
+        "threshold": {0: "5.0mJy", 1: "4.5mJy", 2: "4.0mJy", 3: "4.5mJy", 4: "2.5mJy", 5: "0.4mJy"},
         "niter": {0: 1000, 1: 1000, 2: 2000, 3: 5000, 4: 25000, 5: 50000},
         "maskname": {
             0: "mask_G008_B3_7M12M_0.crtf",
@@ -133,7 +133,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G008.67_B3_12M_robust0_bsens": {
-        "threshold": {0: "3.0mJy", 1: "2.5mJy", 2: "1.5mJy", 3: "0.8mJy", 4: "0.3mJy", 5: "0.16mJy",},
+        "threshold": {0: "3.0mJy", 1: "2.5mJy", 2: "1.5mJy", 3: "0.8mJy", 4: "0.3mJy", 5: "0.16mJy"},
         "niter": {0: 1200, 1: 1500, 2: 3000, 3: 5000, 4: 70000, 5: 90000},
         "maskname": {
             0: "mask_G008_B3_1.crtf",
@@ -146,7 +146,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G010.62_B3_7M12M_robust0": {
-        "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "0.8mJy", 4: "0.5mJy", 5: "0.32mJy",},
+        "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "0.8mJy", 4: "0.5mJy", 5: "0.32mJy"},
         "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 15000, 5: 15000},
         "maskname": {
             0: "G010.62_55arcsecCircle.crtf",
@@ -158,7 +158,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G333.60_B3_12M_robust0": {
-        "threshold": {0: "0.8mJy", 1: "0.8mJy", 2: "0.4mJy", 3: "0.2mJy", 4: "0.1mJy", 5: "0.07mJy",},
+        "threshold": {0: "0.8mJy", 1: "0.8mJy", 2: "0.4mJy", 3: "0.2mJy", 4: "0.1mJy", 5: "0.07mJy"},
         "niter": {0: 3000, 1: 3000, 2: 10000, 3: 30000, 4: 90000, 5: 90000},
         "maskname": {
             0: "mask_G333_B3_12m_0.1.crtf",
@@ -183,7 +183,7 @@ imaging_parameters_nondefault = {
         "maskname": "mask_G333_B3_12m_0.0015.crtf",
     },
     "G333.60_B3_7M12M_robust0": {
-        "threshold": {0: "0.8mJy", 1: "0.8mJy", 2: "0.4mJy", 3: "0.2mJy", 4: "0.1mJy", 5: "0.07mJy",},
+        "threshold": {0: "0.8mJy", 1: "0.8mJy", 2: "0.4mJy", 3: "0.2mJy", 4: "0.1mJy", 5: "0.07mJy"},
         "niter": {0: 3000, 1: 3000, 2: 10000, 3: 30000, 4: 90000, 5: 90000},
         "maskname": {
             0: "mask_G333_B3_7m12m_0.1.crtf",
@@ -217,7 +217,7 @@ imaging_parameters_nondefault = {
             5: "0.15 mJy",
             "final": "0.15 mJy",
         },
-        "niter": {0: 3000, 1: 3000, 2: 6000, 3: 12000, 4: 24000, 5: 48000, "final": 70000,},
+        "niter": {0: 3000, 1: 3000, 2: 6000, 3: 12000, 4: 24000, 5: 48000, "final": 70000},
         "maskname": {
             0: "mask_G333_B6_12m_0.1.crtf",
             1: "mask_G333_B6_12m_0.1.crtf",
@@ -251,7 +251,7 @@ imaging_parameters_nondefault = {
             5: "0.15 mJy",
             "final": "0.15 mJy",
         },
-        "niter": {0: 3000, 1: 3000, 2: 6000, 3: 12000, 4: 24000, 5: 48000, "final": 70000,},
+        "niter": {0: 3000, 1: 3000, 2: 6000, 3: 12000, 4: 24000, 5: 48000, "final": 70000},
         "maskname": {
             0: "mask_G333_B6_7m12m_0.1.crtf",
             1: "mask_G333_B6_7m12m_0.1.crtf",
@@ -276,21 +276,21 @@ imaging_parameters_nondefault = {
         "scales": [0, 3, 9, 27],
     },
     "G012.80_B3_7M12M_robust0": {
-        "threshold": {0: "10.0mJy", 1: "10mJy", 2: "3mJy", 3: "3mJy", 4: "1mJy", 5: "0.25mJy",},
+        "threshold": {0: "10.0mJy", 1: "10mJy", 2: "3mJy", 3: "3mJy", 4: "1mJy", 5: "0.25mJy"},
         "niter": {0: 100, 1: 500, 2: 1000, 3: 1500, 4: 3000, 5: 5000},
         "scales": {0: [0, 3, 9, 27, 100]},
     },
     "G012.80_B3_12M_robust0": {
-        "threshold": {0: "10.0mJy", 1: "10mJy", 2: "5mJy", 3: "3mJy", 4: "1mJy", 5: "0.25mJy",},
+        "threshold": {0: "10.0mJy", 1: "10mJy", 2: "5mJy", 3: "3mJy", 4: "1mJy", 5: "0.25mJy"},
         "niter": {0: 500, 1: 100, 2: 1000, 3: 3000, 4: 5000, 5: 7000},
     },
     "G012.80_B6_12M_robust0": {
-        "threshold": {0: "3.0mJy", 1: "2mJy", 2: "1.5mJy", 3: "1mJy", 4: "1mJy", 5: "0.25mJy",},
+        "threshold": {0: "3.0mJy", 1: "2mJy", 2: "1.5mJy", 3: "1mJy", 4: "1mJy", 5: "0.25mJy"},
         "niter": {0: 500, 1: 1500, 2: 3000, 3: 5000, 4: 7000, 5: 10000},
     },
     "G337.92_B3_12M_robust0": {
         "threshold": {0: "10e-4Jy", 1: "10e-4Jy", 2: "5e-4Jy", 3: "4e-4Jy", 4: "2.5e-4Jy", "final": "0.1mJy"},
-        "scales": [0, 3, 9,],
+        "scales": [0, 3, 9],
         "niter": {0: 5000, 1: 8000, 2: 10000, 3: 15000, 4: 30000, "final": 50000},  # rms ~ 1.25e-4 Jy/b.
         "maskname": {
             0: "G337.92_B3_12M_robust0.crtf",
@@ -364,21 +364,21 @@ imaging_parameters_nondefault = {
         "threshold": {0: "0.36mJy", 1: "0.30mJy", 2: "0.15mJy", 3: "0.15mJy", "final": "0.1mJy"},
         "niter": {0: 10000, 1: 10000, 2: 15000, 3: 20000, "final": 200000},
     },
-    "G338.93_B3_12M_robust2": {"threshold": {"final": "0.10mJy"}, "niter": {"final": 200000},},
-    "G338.93_B3_12M_robust-2": {"threshold": {"final": "0.30mJy"}, "niter": {"final": 200000},},
+    "G338.93_B3_12M_robust2": {"threshold": {"final": "0.10mJy"}, "niter": {"final": 200000}},
+    "G338.93_B3_12M_robust-2": {"threshold": {"final": "0.30mJy"}, "niter": {"final": 200000}},
     "G338.93_B3_12M_robust0_bsens": {
-        "threshold": {0: "0.34mJy", 1: "0.25mJy", 2: "0.15mJy", 3: "0.12mJy", "final": "0.1mJy",},
+        "threshold": {0: "0.34mJy", 1: "0.25mJy", 2: "0.15mJy", 3: "0.12mJy", "final": "0.1mJy"},
         "niter": {0: 2000, 1: 2000, 2: 5000, 3: 8000, "final": 200000},
     },
-    "G338.93_B3_12M_robust2_bsens": {"threshold": {"final": "0.10mJy"}, "niter": {"final": 200000},},
-    "G338.93_B3_12M_robust-2_bsens": {"threshold": {"final": "0.30mJy"}, "niter": {"final": 200000},},
+    "G338.93_B3_12M_robust2_bsens": {"threshold": {"final": "0.10mJy"}, "niter": {"final": 200000}},
+    "G338.93_B3_12M_robust-2_bsens": {"threshold": {"final": "0.30mJy"}, "niter": {"final": 200000}},
     "G338.93_B3_7M12M_robust0": {
         "threshold": {0: "0.5mJy", 1: "0.4mJy", 2: "0.2mJy", "final": "0.1mJy"},
         "niter": {0: 2000, 1: 5000, 2: 8000, "final": 200000},
         "scales": [0, 3, 9, 27],
     },
-    "G338.93_B3_7M12M_robust2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000},},
-    "G338.93_B3_7M12M_robust-2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000},},
+    "G338.93_B3_7M12M_robust2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000}},
+    "G338.93_B3_7M12M_robust-2": {"threshold": {"final": "0.1mJy"}, "niter": {"final": 200000}},
     "W51-E_B6_12M_robust0": {
         "threshold": {
             0: "0.3mJy",
@@ -427,7 +427,7 @@ imaging_parameters_nondefault = {
     "W51-E_B6_7M12M_robust0": {"threshold": "3mJy", "scales": [0, 3, 9, 27]},
     "W51-E_B3_7M12M_robust0": {
         "threshold": {0: "5mJy", 1: "3mJy", 2: "1mJy", 3: "1mJy"},
-        "scales": {0: [9, 27], 1: [3, 9, 27], 2: [0, 3, 9, 27], 3: [0, 3, 9, 27],},
+        "scales": {0: [9, 27], 1: [3, 9, 27], 2: [0, 3, 9, 27], 3: [0, 3, 9, 27]},
         "cell": ["0.0375arcsec", "0.0375arcsec"],
         "imsize": [4800, 4800],
     },
@@ -441,13 +441,13 @@ imaging_parameters_nondefault = {
             5: "0.25mJy",
             "final": "0.35mJy",
         },
-        "niter": {0: 1000, 1: 3000, 2: 10000, 3: 12000, 4: 15000, 5: 15000, "final": 22000,},
+        "niter": {0: 1000, 1: 3000, 2: 10000, 3: 12000, 4: 15000, 5: 15000, "final": 22000},
         "scales": [0, 3, 9, 27],
         "maskname": {"final": ""},
         "usemask": {"final": "pb"},
     },
     "W43-MM2_B6_7M12M_robust0": {
-        "threshold": {0: "2.0mJy", 1: "2.0mJy", 2: "1.0mJy", 3: "0.5mJy", 4: "0.4mJy", "final": "0.5mJy",},
+        "threshold": {0: "2.0mJy", 1: "2.0mJy", 2: "1.0mJy", 3: "0.5mJy", 4: "0.4mJy", "final": "0.5mJy"},
         "niter": {0: 1000, 1: 5000, 2: 10000, 3: 10000, 4: 10000, "final": 25000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -470,13 +470,13 @@ imaging_parameters_nondefault = {
             5: "0.25mJy",
             "final": "0.23mJy",
         },
-        "niter": {0: 1000, 1: 3000, 2: 12000, 3: 12000, 4: 12000, 5: 15000, "final": 18000,},
+        "niter": {0: 1000, 1: 3000, 2: 12000, 3: 12000, 4: 12000, 5: 15000, "final": 18000},
         "scales": [0, 3, 9, 27],
         "maskname": {"final": ""},
         "usemask": {"final": "pb"},
     },
     "W43-MM3_B6_7M12M_robust0": {
-        "threshold": {0: "1.0mJy", 1: "1.0mJy", 2: "0.7mJy", 3: "0.35mJy", 4: "0.35mJy", "final": "0.5mJy",},
+        "threshold": {0: "1.0mJy", 1: "1.0mJy", 2: "0.7mJy", 3: "0.35mJy", 4: "0.35mJy", "final": "0.5mJy"},
         "niter": {0: 1000, 1: 5000, 2: 10000, 3: 10000, 4: 10000, "final": 10000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -490,7 +490,7 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM1_B3_12M_robust0": {
-        "threshold": {0: "0.1mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.1mJy",},
+        "threshold": {0: "0.1mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.1mJy"},
         "niter": {0: 20000, 1: 20000, 2: 20000, 3: 20000, 4: 20000, "final": 25000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -504,7 +504,7 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM1_B3_7M12M_robust0": {
-        "threshold": {0: "1.0mJy", 1: "1.0mJy", 2: "0.23mJy", 3: "0.15mJy", 4: "0.1mJy", "final": "0.05mJy",},
+        "threshold": {0: "1.0mJy", 1: "1.0mJy", 2: "0.23mJy", 3: "0.15mJy", 4: "0.1mJy", "final": "0.05mJy"},
         "niter": {0: 1000, 1: 9000, 2: 13000, 3: 15000, 4: 17000, "final": 26000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -518,7 +518,7 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM2_B3_12M_robust0": {
-        "threshold": {0: "0.2mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.12mJy",},
+        "threshold": {0: "0.2mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", "final": "0.12mJy"},
         "niter": {0: 30000, 1: 30000, 2: 30000, 3: 30000, 4: 30000, "final": 30000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -532,7 +532,7 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM2_B3_7M12M_robust0": {
-        "threshold": {0: "0.5mJy", 1: "1.0mJy", 2: "0.5mJy", 3: "0.2mJy", 4: "0.08mJy", "final": "0.06mJy",},
+        "threshold": {0: "0.5mJy", 1: "1.0mJy", 2: "0.5mJy", 3: "0.2mJy", 4: "0.08mJy", "final": "0.06mJy"},
         "niter": {0: 9000, 1: 10000, 2: 12000, 3: 15000, 4: 20000, 5: 25000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -546,15 +546,7 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM3_B3_12M_robust0": {
-        "threshold": {
-            0: "0.1mJy",
-            1: "0.1mJy",
-            2: "0.1mJy",
-            3: "0.1mJy",
-            4: "0.1mJy",
-            5: "0.1mJy",
-            "final": "0.11mJy",
-        },
+        "threshold": {0: "0.1mJy", 1: "0.1mJy", 2: "0.1mJy", 3: "0.1mJy", 4: "0.1mJy", 5: "0.1mJy", "final": "0.11mJy"},
         "niter": {0: 20000, 1: 20000, 2: 20000, 3: 20000, 4: 20000, 5: 20000, "final": 24000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -569,7 +561,7 @@ imaging_parameters_nondefault = {
         "usemask": {"final": "pb"},
     },
     "W43-MM3_B3_7M12M_robust0": {
-        "threshold": {0: "1.0mJy", 1: "1.0mJy", 2: "0.5mJy", 3: "0.2mJy", 4: "0.1mJy", "final": "0.04mJy",},
+        "threshold": {0: "1.0mJy", 1: "1.0mJy", 2: "0.5mJy", 3: "0.2mJy", 4: "0.1mJy", "final": "0.04mJy"},
         "niter": {0: 3000, 1: 8000, 2: 15000, 3: 17000, 4: 20000, "final": 25000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -599,8 +591,8 @@ imaging_parameters_nondefault = {
         "niter": {0: 1000, 1: 2000, 2: 5000, "final": 200000},
         "scales": [0, 3, 9, 27],
     },
-    "G327.29_B3_12M_robust-2": {"threshold": {"final": "0.4mJy"}, "niter": {"final": 200000}, "scales": [0, 3, 9, 27],},
-    "G327.29_B3_12M_robust2": {"threshold": {"final": "0.4mJy"}, "niter": {"final": 200000}, "scales": [0, 3, 9, 27],},
+    "G327.29_B3_12M_robust-2": {"threshold": {"final": "0.4mJy"}, "niter": {"final": 200000}, "scales": [0, 3, 9, 27]},
+    "G327.29_B3_12M_robust2": {"threshold": {"final": "0.4mJy"}, "niter": {"final": 200000}, "scales": [0, 3, 9, 27]},
     "G327.29_B3_7M12M_robust0": {
         "threshold": {0: "2.0mJy", 1: "1.8mJy", "final": "1.5mJy"},
         "niter": {0: 5000, 1: 5000, "final": 200000},
@@ -611,20 +603,16 @@ imaging_parameters_nondefault = {
         "niter": {"final": 200000},
         "scales": [0, 3, 9, 27],
     },
-    "G327.29_B3_7M12M_robust2": {
-        "threshold": {"final": "0.5mJy"},
-        "niter": {"final": 100000},
-        "scales": [0, 3, 9, 27],
-    },
+    "G327.29_B3_7M12M_robust2": {"threshold": {"final": "0.5mJy"}, "niter": {"final": 100000}, "scales": [0, 3, 9, 27]},
     "G327.29_B6_12M_robust0": {
-        "threshold": {0: "2.0mJy", 1: "1.5mJy", 2: "1.0mJy", 3: "1.0mJy", 4: "0.8mJy", 5: "0.5mJy", "final": "0.5mJy",},
-        "niter": {0: 1000, 1: 1000, 2: 5000, 3: 8000, 4: 10000, 5: 10000, "final": 20000,},
+        "threshold": {0: "2.0mJy", 1: "1.5mJy", 2: "1.0mJy", 3: "1.0mJy", 4: "0.8mJy", 5: "0.5mJy", "final": "0.5mJy"},
+        "niter": {0: 1000, 1: 1000, 2: 5000, 3: 8000, 4: 10000, 5: 10000, "final": 20000},
         "scales": [0, 3, 9, 27],
     },
-    "G327.29_B6_12M_robust2": {"threshold": {"final": "1.0mJy"}, "niter": {"final": 20000},},
-    "G327.29_B6_12M_robust-2": {"threshold": {"final": "1.0mJy"}, "niter": {"final": 20000},},
+    "G327.29_B6_12M_robust2": {"threshold": {"final": "1.0mJy"}, "niter": {"final": 20000}},
+    "G327.29_B6_12M_robust-2": {"threshold": {"final": "1.0mJy"}, "niter": {"final": 20000}},
     "G327.29_B6_7M12M_robust0": {
-        "threshold": {0: "2.0mJy", 1: "1.5mJy", 2: "1.0mJy", 3: "0.8mJy", 4: "0.8mJy", 5: "0.5mJy",},
+        "threshold": {0: "2.0mJy", 1: "1.5mJy", 2: "1.0mJy", 3: "0.8mJy", 4: "0.8mJy", 5: "0.5mJy"},
         "niter": {0: 1000, 1: 1000, 2: 5000, 3: 8000, 4: 10000, 5: 200000},
         "scales": [0, 3, 9, 27],
     },
@@ -654,7 +642,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G010.62_B6_12M_robust0": {
-        "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "1.0mJy", 4: "0.5mJy", 5: "0.3mJy",},
+        "threshold": {0: "10mJy", 1: "5mJy", 2: "2.5 mJy", 3: "1.0mJy", 4: "0.5mJy", 5: "0.3mJy"},
         "niter": {0: 700, 1: 2500, 2: 5000, 3: 7500, 4: 10000, 5: 20000},
         "maskname": {
             0: "G010.62_centralBox_50_30.crtf",
@@ -678,7 +666,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G351.77_B6_7M12M_robust0": {
-        "threshold": {0: "10.0mJy", 1: "10.0mJy", 2: "5.0mJy", 3: "1.0mJy", 4: "1.0mJy", "final": "1.0mJy",},
+        "threshold": {0: "10.0mJy", 1: "10.0mJy", 2: "5.0mJy", 3: "1.0mJy", 4: "1.0mJy", "final": "1.0mJy"},
         "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 25000},
         "scales": [0, 3],
         "maskname": {
@@ -703,7 +691,7 @@ imaging_parameters_nondefault = {
         "maskname": {"final": "G351.77_B6_7M12M_finaliter.crtf"},
     },
     "G351.77_B6_12M_robust0": {
-        "threshold": {0: "12e-4Jy", 1: "12e-4Jy", 2: "12e-4Jy", 3: "12e-4Jy", 4: "12e-4Jy",},
+        "threshold": {0: "12e-4Jy", 1: "12e-4Jy", 2: "12e-4Jy", 3: "12e-4Jy", 4: "12e-4Jy"},
         "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
         "maskname": {
             0: "G351.77_B6_12M.crtf",
@@ -720,7 +708,7 @@ imaging_parameters_nondefault = {
         "maskname": {4: "G351.77_B6_12M_final.crtf"},
     },
     "G351.77_B6_12M_robust-2": {
-        "threshold": {0: "14.4e-4Jy", 1: "14.4e-4Jy", 2: "14.4e-4Jy", 3: "14.4e-4Jy", 4: "14.4e-4Jy",},
+        "threshold": {0: "14.4e-4Jy", 1: "14.4e-4Jy", 2: "14.4e-4Jy", 3: "14.4e-4Jy", 4: "14.4e-4Jy"},
         "niter": {4: 18000},
         "maskname": {4: "G351.77_B6_12M_final.crtf"},
     },
@@ -780,11 +768,11 @@ imaging_parameters_nondefault = {
             6: "0.35mJy",
             "final": "0.35mJy",
         },
-        "niter": {0: 1000, 1: 1000, 2: 2000, 3: 3000, 4: 4000, 5: 5000, 6: 6000, "final": 50000,},
+        "niter": {0: 1000, 1: 1000, 2: 2000, 3: 3000, 4: 4000, 5: 5000, 6: 6000, "final": 50000},
         "scales": [0, 3, 9, 27],
     },
-    "G338.93_B6_12M_robust2": {"threshold": {"final": "0.25mJy"}, "niter": {"final": 20000}, "scales": [0, 3, 9, 27],},
-    "G338.93_B6_12M_robust-2": {"threshold": {"final": "0.50mJy"}, "niter": {"final": 20000}, "scales": [0, 3, 9],},
+    "G338.93_B6_12M_robust2": {"threshold": {"final": "0.25mJy"}, "niter": {"final": 20000}, "scales": [0, 3, 9, 27]},
+    "G338.93_B6_12M_robust-2": {"threshold": {"final": "0.50mJy"}, "niter": {"final": 20000}, "scales": [0, 3, 9]},
     "G338.93_B6_12M_robust0_bsens": {
         "threshold": {
             0: "1.2mJy",
@@ -796,7 +784,7 @@ imaging_parameters_nondefault = {
             6: "0.30mJy",
             "final": "0.35mJy",
         },
-        "niter": {0: 1000, 1: 1000, 2: 2000, 3: 3000, 4: 4000, 5: 5000, 6: 6000, "final": 50000,},
+        "niter": {0: 1000, 1: 1000, 2: 2000, 3: 3000, 4: 4000, 5: 5000, 6: 6000, "final": 50000},
         "scales": [0, 3, 9, 27],
     },
     "G338.93_B6_12M_robust2_bsens": {
@@ -845,7 +833,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G328.25_B6_12M_robust-2": {
-        "threshold": {0: "16e-4Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy", 5: "0.5mJy",},
+        "threshold": {0: "16e-4Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy", 5: "0.5mJy"},
         "niter": {0: 3000, 1: 3000, 2: 9000, 3: 18000, 4: 18000, 5: 18000},
         "maskname": {
             0: "G328_B6_clean_12M_robust0_3sigma.crtf",
@@ -857,7 +845,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G328.25_B6_12M_robust2": {
-        "threshold": {0: "8e-4Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy", 5: "0.5mJy",},
+        "threshold": {0: "8e-4Jy", 1: "2mJy", 2: "1mJy", 3: "0.5mJy", 4: "0.5mJy", 5: "0.5mJy"},
         "niter": {0: 3000, 1: 3000, 2: 9000, 3: 18000, 4: 18000, 5: 18000},
         "maskname": {
             0: "G328_B6_clean_12M_robust0_3sigma.crtf",
@@ -869,7 +857,7 @@ imaging_parameters_nondefault = {
         },
     },
     "G328.25_B3_7M12M_robust0": {
-        "threshold": {0: "0.6mJy", 1: "0.3mJy", 2: "0.3mJy", 3: "0.3mJy", 4: "0.2mJy",},  # rms = 3e-4 Jy/beam
+        "threshold": {0: "0.6mJy", 1: "0.3mJy", 2: "0.3mJy", 3: "0.3mJy", 4: "0.2mJy"},  # rms = 3e-4 Jy/beam
         "niter": {0: 1000, 1: 3000, 2: 9000, 3: 18000, 4: 18000},
         "maskname": {
             0: "G328.25_B3_12M_clean_robust2_1stiter_3sigma.crtf",
@@ -879,10 +867,10 @@ imaging_parameters_nondefault = {
             4: "G328_B3_mask.crtf",
         },
     },
-    "G328.25_B3_7M12M_robust-2": {"threshold": {4: "1mJy"}, "niter": {4: 25000}, "maskname": {4: "G328_B3_mask.crtf"},},
-    "G328.25_B3_7M12M_robust2": {"threshold": {4: "1mJy"}, "niter": {4: 25000}, "maskname": {4: "G328_B3_mask.crtf"},},
+    "G328.25_B3_7M12M_robust-2": {"threshold": {4: "1mJy"}, "niter": {4: 25000}, "maskname": {4: "G328_B3_mask.crtf"}},
+    "G328.25_B3_7M12M_robust2": {"threshold": {4: "1mJy"}, "niter": {4: 25000}, "maskname": {4: "G328_B3_mask.crtf"}},
     "G328.25_B3_12M_robust0": {
-        "threshold": {0: "0.30mJy", 1: "0.3mJy", 2: "0.3mJy", 3: "0.3mJy", 4: "0.2mJy",},  # rms = 1e-4 Jy/beam
+        "threshold": {0: "0.30mJy", 1: "0.3mJy", 2: "0.3mJy", 3: "0.3mJy", 4: "0.2mJy"},  # rms = 1e-4 Jy/beam
         "niter": {0: 5000, 1: 9000, 2: 10000, 3: 15000, 4: 20000},
         "maskname": {
             0: "G328.25_B3_12M_clean_robust0_1stiter_3sigma.crtf",
@@ -2973,11 +2961,11 @@ line_imaging_parameters_custom = {
     },
     "W43-MM3_B3_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "W43-MM3_B6_12M_robust0": {
         "threshold": "6mJy",
-        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1280, 1280],
     },
     "W51-E_B6_12M_robust0": {
@@ -3124,11 +3112,13 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s", "width": "2km/s"},
+        "sio": {"cubewidth": "100km/s", "vlsr": "91km/s", "width": "0.37km/s"},
     },
     "W43-MM3": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "90km/s", "width": "2km/s"},
+        "sio": {"cubewidth": "100km/s", "vlsr": "93km/s", "width": "0.37km/s"},
     },
     "W51-E": {
         "12co": {"cubewidth": "150km/s"},
