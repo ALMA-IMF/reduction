@@ -31,7 +31,7 @@ os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
 
-def get_size(start_path = '.'):
+def get_size(start_path='.'):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
@@ -50,6 +50,10 @@ for fn in sorted(sizes, key=lambda x: sizes[x]):
     if not os.path.exists(outfn):
         t0 = time.time()
 
+        # touch the file to allow parallel runs
+        with open(outfn, 'w') as fh:
+            fh.write("")
+
         print(fn, sizes[fn]/1024**3)
 
         cube = SpectralCube.read(fn)
@@ -62,5 +66,5 @@ for fn in sorted(sizes, key=lambda x: sizes[x]):
         with cube.use_dask_scheduler('threads', num_workers=32):
             result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
 
-        fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(fn+'.statcont.cont.fits', overwrite=True)
+        fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn, overwrite=True)
         print(f"{fn} -> {outfn} in {time.time()-t0}s")
