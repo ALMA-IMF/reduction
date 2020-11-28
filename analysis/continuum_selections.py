@@ -296,8 +296,8 @@ for fignum,band in enumerate((3,6)):
 
     fig.text(0.5, xlabel_offset[band], 'Frequency (GHz)', ha='center')
 
-    pl.savefig(f"continuum_selection_regions_band{band}.png", bbox_inches='tight')
-    pl.savefig(f"continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
+    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
+    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
 
 #print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
 #print(included_bw)
@@ -347,8 +347,8 @@ ax.set_yticklabels(fields)
 ax.set_ylim(-0.5,len(fields)-0.5)
 cb = pl.colorbar()
 cb.set_label("Fraction of bandwidth in 'cleanest' continuum")
-pl.savefig("continuum_selection_fraction.png", bbox_inches='tight')
-pl.savefig("continuum_selection_fraction.pdf", bbox_inches='tight')
+pl.savefig(f"{basepath}/paper_figures/continuum_selection_fraction.png", bbox_inches='tight')
+pl.savefig(f"{basepath}/paper_figures/continuum_selection_fraction.pdf", bbox_inches='tight')
 
 
 bandfrac_table = Table(bandfrac_flat)
