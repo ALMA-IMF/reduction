@@ -162,7 +162,7 @@ for fignum,band in enumerate((3,6)):
                             for muid in muid_to_bl
                            }
             muid_configs.update({val:key for key,val in metadata[bandname][field]['muid_configs'].items()})
-            print(band, field, muid_configs)
+            print(f"Loop info: ", band, field, muid_configs)
 
             for muid in muids:
 
@@ -216,7 +216,7 @@ for fignum,band in enumerate((3,6)):
                 included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 1).sum() * dnu
 
                 robust = 0 # hard-code.... yike.
-                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.fits'
+                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}.image_mean.fits'
                 if os.path.exists(specname):
                     print(specname)
                     pl.figure(4).clf()
