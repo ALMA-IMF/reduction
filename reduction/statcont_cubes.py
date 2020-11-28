@@ -21,10 +21,14 @@ from statcont.cont_finding import c_sigmaclip_scube
 
 import glob
 
+import tempfile
+
 import os
 
 # for zarr storage
-os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+
+assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp/'
 
 
 def get_size(start_path = '.'):
