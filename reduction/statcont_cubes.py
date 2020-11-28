@@ -11,11 +11,11 @@ customized.
 We should eventually allow multi-cube combination using full statcont abilities
 """
 import time
+from astropy.table import Table
 from spectral_cube import SpectralCube
 from astropy.io import fits
 from dask.diagnostics import ProgressBar
-pbar = ProgressBar()
-pbar.register()
+from pathlib import Path
 
 from statcont.cont_finding import c_sigmaclip_scube
 
@@ -28,8 +28,14 @@ import os
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
+pbar = ProgressBar()
+pbar.register()
+
 assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
+basepath = Path('/orange/adamginsburg/ALMA-IMF/2017.1.01355.L/imaging_results')
+
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_sc.ecsv')
 
 def get_size(start_path='.'):
     total_size = 0
@@ -42,11 +48,23 @@ def get_size(start_path='.'):
 
     return total_size
 
-sizes = {fn: get_size(fn) for fn in glob.glob("*_12M_spw[0-9].image")}
+# simpler approach
+# sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
+
+# use tbl, ignore 7m12m
+sizes = {ii: get_size(basepath / fn)
+         for ii, fn in enumerate(tbl['filename'])
+         if '_12M_' in fn} # ignore 7m12m
 
 
-for fn in sorted(sizes, key=lambda x: sizes[x]):
+for ii in sorted(sizes, key=lambda x: sizes[x]):
+
+    row = tbl[ii]
+    noise = tbl['std'].quantity[ii]
+    fn = row['filename']
+
     outfn = fn+'.statcont.cont.fits'
+
     if not os.path.exists(outfn):
         t0 = time.time()
 
@@ -59,12 +77,9 @@ for fn in sorted(sizes, key=lambda x: sizes[x]):
         cube = SpectralCube.read(fn)
         print(cube)
 
-        noise = cube[50:100,50:-50,50:-50].mad_std()
-        if noise == 0:
-            noise = 0.001 * cube.unit
-
         with cube.use_dask_scheduler('threads', num_workers=32):
             result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
 
-        fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn, overwrite=True)
+        fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
+                                                                       overwrite=True)
         print(f"{fn} -> {outfn} in {time.time()-t0}s")
