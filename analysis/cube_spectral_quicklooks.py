@@ -118,7 +118,7 @@ for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010
                     #cube = cube.rechunk(save_to_tmp_dir=True)
                     print(cube)
 
-                    underscore = "_" if linename or (suffix and not suffix.startswith('.') else ""
+                    underscore = "_" if linename or (suffix and not suffix.startswith('.')) else ""
 
                     mxspecfn = spectra_dir / f"{field}_B{band}_spw{spw}_{config}{underscore}{linename}{suffix}_max.fits"
                     if not os.path.exists(mxspecfn):
