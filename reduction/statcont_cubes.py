@@ -49,11 +49,12 @@ def get_size(start_path='.'):
     return total_size
 
 # simpler approach
-# sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
+#sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
+filenames = list(tbl['filename']) + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
 
 # use tbl, ignore 7m12m
 sizes = {ii: get_size(basepath / fn)
-         for ii, fn in enumerate(tbl['filename'])
+         for ii, fn in enumerate(filenames)
          if '_12M_' in fn
          and os.path.exists(basepath / fn)
         } # ignore 7m12m
@@ -61,9 +62,7 @@ sizes = {ii: get_size(basepath / fn)
 
 for ii in sorted(sizes, key=lambda x: sizes[x]):
 
-    row = tbl[ii]
-    noise = tbl['std'].quantity[ii]
-    fn = basepath / row['filename']
+    fn = basepath / filenames[ii]
 
     outfn = fn+'.statcont.cont.fits'
 
@@ -80,6 +79,11 @@ for ii in sorted(sizes, key=lambda x: sizes[x]):
         print(cube)
 
         with cube.use_dask_scheduler('threads', num_workers=32):
+            if ii < len(tbl):
+                noise = tbl['std'].quantity[ii]
+            else:
+                noise = cube.std()
+
             result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
 
         fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
