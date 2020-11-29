@@ -35,7 +35,7 @@ assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
 basepath = Path('/orange/adamginsburg/ALMA-IMF/2017.1.01355.L/imaging_results')
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA_IMF/tables/cube_stats.ecsv')
 
 def get_size(start_path='.'):
     total_size = 0
@@ -50,7 +50,7 @@ def get_size(start_path='.'):
 
 # simpler approach
 #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-filenames = list(tbl['filename']) + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
+filenames = list(tbl['filename']) + list(glob.glob(str(basepath / "*_12M_spw[0-9].image")))
 
 # use tbl, ignore 7m12m
 sizes = {ii: get_size(basepath / fn)
