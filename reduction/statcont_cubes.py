@@ -49,13 +49,12 @@ def get_size(start_path='.'):
 
 # simpler approach
 #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-filenames = list(tbl['filename']) + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
+filenames = [f'{basepath}/fn' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
 
 # use tbl, ignore 7m12m
-sizes = {ii: get_size(f"{basepath}/{fn}")
+sizes = {ii: get_size(fn)
          for ii, fn in enumerate(filenames)
-         if '_12M_spw' in fn
-         and os.path.exists(f"{basepath}/{fn}")
+         if '_12M_spw' in fn and os.path.exists(fn)
         } # ignore 7m12m
 
 
