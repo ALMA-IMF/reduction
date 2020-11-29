@@ -79,8 +79,8 @@ rows = []
 
 for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1".split():
     for band in (3,6):
-        for config in ('7M12M', '12M'):
-            for line in list(default_lines.keys()) + spws[band]:
+        for config in ('12M',): # '7M12M', 
+            for line in spws[band] + list(default_lines.keys()):
                 for suffix in (".image", ".contsub.image"):
 
                     if line not in default_lines:
