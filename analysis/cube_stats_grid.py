@@ -103,6 +103,11 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                         print(f"Found no matches for glob {globblob}")
                         continue
 
+                    modfn = fn.replace(".image", ".model")
+                    if os.path.exists(fn) and not os.path.exists(modfn):
+                        log.error(f"File {fn} is missing its model {modfn}")
+                        continue
+
                     if line in default_lines:
                         spw = int(fn.split('spw')[1][0])
 
@@ -150,10 +155,10 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
 
                     del cube
 
-                    if os.path.exists(fn.replace(".image", ".model")+".fits"):
-                        modcube = SpectralCube.read(fn.replace(".image", ".model")+".fits", format='fits', use_dask=True)
+                    if os.path.exists(modfn+".fits"):
+                        modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
                     else:
-                        modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
+                        modcube = SpectralCube.read(modfn, format='casa_image')
                         modcube = modcube.rechunk(save_to_tmp_dir=True)
 
                     modstats = modcube.statistics()
