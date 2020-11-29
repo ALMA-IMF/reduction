@@ -35,7 +35,7 @@ assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
 basepath = Path('/orange/adamginsburg/ALMA-IMF/2017.1.01355.L/imaging_results')
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_sc.ecsv')
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
 
 def get_size(start_path='.'):
     total_size = 0
