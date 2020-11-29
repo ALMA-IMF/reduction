@@ -54,7 +54,7 @@ filenames = list(tbl['filename']) + list(glob.glob(f"{basepath}/*_12M_spw[0-9].i
 # use tbl, ignore 7m12m
 sizes = {ii: get_size(f"{basepath}/{fn}")
          for ii, fn in enumerate(filenames)
-         if '_12M_' in fn
+         if '_12M_spw' in fn
          and os.path.exists(f"{basepath}/{fn}")
         } # ignore 7m12m
 
