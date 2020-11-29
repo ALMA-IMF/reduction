@@ -15,7 +15,6 @@ from astropy.table import Table
 from spectral_cube import SpectralCube
 from astropy.io import fits
 from dask.diagnostics import ProgressBar
-from pathlib import Path
 
 from statcont.cont_finding import c_sigmaclip_scube
 
@@ -33,7 +32,7 @@ pbar.register()
 
 assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
-basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results')
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 
 tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
 
@@ -50,19 +49,19 @@ def get_size(start_path='.'):
 
 # simpler approach
 #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-filenames = list(tbl['filename']) + list(glob.glob(str(basepath / "*_12M_spw[0-9].image")))
+filenames = list(tbl['filename']) + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image")))
 
 # use tbl, ignore 7m12m
-sizes = {ii: get_size(basepath / fn)
+sizes = {ii: get_size(f"{basepath}/{fn}")
          for ii, fn in enumerate(filenames)
          if '_12M_' in fn
-         and os.path.exists(basepath / fn)
+         and os.path.exists(f"{basepath}/{fn}")
         } # ignore 7m12m
 
 
 for ii in sorted(sizes, key=lambda x: sizes[x]):
 
-    fn = basepath / filenames[ii]
+    fn = f"{basepath}/{filenames[ii]}"
 
     outfn = fn+'.statcont.cont.fits'
 
