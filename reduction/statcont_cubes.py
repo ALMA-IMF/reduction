@@ -60,7 +60,7 @@ sizes = {ii: get_size(fn)
 
 for ii in sorted(sizes, key=lambda x: sizes[x]):
 
-    fn = f"{basepath}/{filenames[ii]}"
+    fn = filenames[ii]
 
     outfn = fn+'.statcont.cont.fits'
 
