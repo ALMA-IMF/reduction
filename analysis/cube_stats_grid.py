@@ -39,6 +39,9 @@ if os.getenv('DASK_THREADS') is not None:
     except (TypeError,ValueError):
         nthreads = 1
         scheduler = 'synchronous'
+else:
+    nthreads = 1
+    scheduler = 'synchronous'
 
 print(f"Using scheduler {scheduler} with {nthreads} threads")
 
@@ -84,8 +87,8 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                 for suffix in (".image", ".contsub.image"):
 
                     if line not in default_lines:
-                        line = 'none'
                         spw = line
+                        line = 'none'
                         globblob = f"{field}_B{band}_spw{spw}_{config}_spw{spw}{suffix}"
                     else:
                         globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
