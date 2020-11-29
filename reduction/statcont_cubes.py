@@ -54,14 +54,16 @@ def get_size(start_path='.'):
 # use tbl, ignore 7m12m
 sizes = {ii: get_size(basepath / fn)
          for ii, fn in enumerate(tbl['filename'])
-         if '_12M_' in fn} # ignore 7m12m
+         if '_12M_' in fn
+         and os.path.exists(basepath / fn)
+        } # ignore 7m12m
 
 
 for ii in sorted(sizes, key=lambda x: sizes[x]):
 
     row = tbl[ii]
     noise = tbl['std'].quantity[ii]
-    fn = row['filename']
+    fn = basepath / row['filename']
 
     outfn = fn+'.statcont.cont.fits'
 
@@ -72,7 +74,7 @@ for ii in sorted(sizes, key=lambda x: sizes[x]):
         with open(outfn, 'w') as fh:
             fh.write("")
 
-        print(fn, sizes[fn]/1024**3)
+        print(fn, sizes[ii]/1024**3)
 
         cube = SpectralCube.read(fn)
         print(cube)
