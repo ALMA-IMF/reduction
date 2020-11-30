@@ -10,6 +10,7 @@ import numpy as np
 from astropy.io import fits
 from astropy import units as u
 from astropy.stats import mad_std
+from astropy import log
 import pylab as pl
 import radio_beam
 import glob
