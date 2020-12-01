@@ -31,7 +31,7 @@ if __name__ == "__main__":
     if os.getenv('ENVIRONMENT') == 'BATCH':
         from dask.distributed import Client
         client = Client()
-        print(client.scheduler_info()['services'])
+        print(f"Client schedular info: {client.scheduler_info()['services']}")
     else:
         from dask.diagnostics import ProgressBar
         pbar = ProgressBar()
