@@ -26,7 +26,7 @@ import os
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
-if os.environ['ENVIRONMENT'] == 'BATCH':
+if os.getenv('ENVIRONMENT') == 'BATCH':
     from dask.distributed import Client
     client = Client()
 else:

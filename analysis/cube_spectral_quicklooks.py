@@ -19,7 +19,7 @@ from spectral_cube.lower_dimensional_structures import Projection
 
 from pathlib import Path
 
-if os.getenv('NO_PROGRESSBAR') is None:
+if os.getenv('NO_PROGRESSBAR') is None and not (os.getenv('ENVIRON') == 'BATCH'):
     from dask.diagnostics import ProgressBar
     pbar = ProgressBar()
     pbar.register()

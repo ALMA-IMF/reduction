@@ -23,7 +23,7 @@ ia = image()
 from pathlib import Path
 tbldir = Path('/bio/web/secure/adamginsburg/ALMA-IMF/tables')
 
-if os.getenv('NO_PROGRESSBAR') is None:
+if os.getenv('NO_PROGRESSBAR') is None and not (os.getenv('ENVIRON') == 'BATCH'):
     from dask.diagnostics import ProgressBar
     pbar = ProgressBar()
     pbar.register()
