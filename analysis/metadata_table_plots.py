@@ -35,6 +35,7 @@ keep_bsens = ((tbl_bsens['suffix'] == 'finaliter') &
 wtbl_bsens = tbl_bsens[keep_bsens]
 
 
+wtbl_bsens['bsens_improvement'] = wtbl_bsens['mad_sample_bsens']/wtbl_bsens['mad_sample_cleanest']
 
 b3style = {'marker':'o', 'markersize':10, 'alpha':0.75, 'markeredgecolor':(0,0,0,0.1), 'linestyle':'none'}
 b6style = {'marker':'s', 'markersize':10, 'alpha':0.75, 'markeredgecolor':(0,0,0,0.1), 'linestyle':'none'}

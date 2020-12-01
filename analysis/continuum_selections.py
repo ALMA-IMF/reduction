@@ -162,7 +162,7 @@ for fignum,band in enumerate((3,6)):
                             for muid in muid_to_bl
                            }
             muid_configs.update({val:key for key,val in metadata[bandname][field]['muid_configs'].items()})
-            print(band, field, muid_configs)
+            print(f"Loop info: ", band, field, muid_configs)
 
             for muid in muids:
 
@@ -216,7 +216,7 @@ for fignum,band in enumerate((3,6)):
                 included_bw[band][spw][field][config] = (frqmask[fieldnum*nconfigs+configid,:] == 1).sum() * dnu
 
                 robust = 0 # hard-code.... yike.
-                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.fits'
+                specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}.image_mean.fits'
                 if os.path.exists(specname):
                     print(specname)
                     pl.figure(4).clf()
@@ -296,8 +296,8 @@ for fignum,band in enumerate((3,6)):
 
     fig.text(0.5, xlabel_offset[band], 'Frequency (GHz)', ha='center')
 
-    pl.savefig(f"continuum_selection_regions_band{band}.png", bbox_inches='tight')
-    pl.savefig(f"continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
+    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
+    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
 
 #print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
 #print(included_bw)
@@ -347,8 +347,8 @@ ax.set_yticklabels(fields)
 ax.set_ylim(-0.5,len(fields)-0.5)
 cb = pl.colorbar()
 cb.set_label("Fraction of bandwidth in 'cleanest' continuum")
-pl.savefig("continuum_selection_fraction.png", bbox_inches='tight')
-pl.savefig("continuum_selection_fraction.pdf", bbox_inches='tight')
+pl.savefig(f"{basepath}/paper_figures/continuum_selection_fraction.png", bbox_inches='tight')
+pl.savefig(f"{basepath}/paper_figures/continuum_selection_fraction.pdf", bbox_inches='tight')
 
 
 bandfrac_table = Table(bandfrac_flat)

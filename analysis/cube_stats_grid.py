@@ -10,6 +10,7 @@ import numpy as np
 from astropy.io import fits
 from astropy import units as u
 from astropy.stats import mad_std
+from astropy import log
 import pylab as pl
 import radio_beam
 import glob
@@ -27,7 +28,7 @@ if os.getenv('NO_PROGRESSBAR') is None:
     pbar = ProgressBar()
     pbar.register()
 
-os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
 if os.getenv('DASK_THREADS') is not None:
     try:
@@ -39,6 +40,9 @@ if os.getenv('DASK_THREADS') is not None:
     except (TypeError,ValueError):
         nthreads = 1
         scheduler = 'synchronous'
+else:
+    nthreads = 1
+    scheduler = 'synchronous'
 
 print(f"Using scheduler {scheduler} with {nthreads} threads")
 
@@ -79,13 +83,13 @@ rows = []
 
 for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1".split():
     for band in (3,6):
-        for config in ('7M12M', '12M'):
-            for line in list(default_lines.keys()) + spws[band]:
+        for config in ('12M',): # '7M12M', 
+            for line in spws[band] + list(default_lines.keys()):
                 for suffix in (".image", ".contsub.image"):
 
                     if line not in default_lines:
-                        line = 'none'
                         spw = line
+                        line = 'none'
                         globblob = f"{field}_B{band}_spw{spw}_{config}_spw{spw}{suffix}"
                     else:
                         globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
@@ -98,6 +102,11 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
                         fn = fn[0]
                     else:
                         print(f"Found no matches for glob {globblob}")
+                        continue
+
+                    modfn = fn.replace(".image", ".model")
+                    if os.path.exists(fn) and not os.path.exists(modfn):
+                        log.error(f"File {fn} is missing its model {modfn}")
                         continue
 
                     if line in default_lines:
@@ -147,10 +156,10 @@ for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G35
 
                     del cube
 
-                    if os.path.exists(fn.replace(".image", ".model")+".fits"):
-                        modcube = SpectralCube.read(fn.replace(".image", ".model")+".fits", format='fits', use_dask=True)
+                    if os.path.exists(modfn+".fits"):
+                        modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
                     else:
-                        modcube = SpectralCube.read(fn.replace(".image", ".model"), format='casa_image')
+                        modcube = SpectralCube.read(modfn, format='casa_image')
                         modcube = modcube.rechunk(save_to_tmp_dir=True)
 
                     modstats = modcube.statistics()

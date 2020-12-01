@@ -11,23 +11,32 @@ customized.
 We should eventually allow multi-cube combination using full statcont abilities
 """
 import time
+from astropy.table import Table
 from spectral_cube import SpectralCube
 from astropy.io import fits
 from dask.diagnostics import ProgressBar
-pbar = ProgressBar()
-pbar.register()
 
 from statcont.cont_finding import c_sigmaclip_scube
 
 import glob
 
+import tempfile
+
 import os
 
 # for zarr storage
-os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
+pbar = ProgressBar()
+pbar.register()
 
-def get_size(start_path = '.'):
+assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
+
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
+
+tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
+
+def get_size(start_path='.'):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
@@ -38,25 +47,43 @@ def get_size(start_path = '.'):
 
     return total_size
 
-sizes = {fn: get_size(fn) for fn in glob.glob("*_12M_spw[0-9].image")}
+# simpler approach
+#sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
+filenames = [f'{basepath}/fn' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
+
+# use tbl, ignore 7m12m
+sizes = {ii: get_size(fn)
+         for ii, fn in enumerate(filenames)
+         if '_12M_spw' in fn and os.path.exists(fn)
+        } # ignore 7m12m
 
 
-for fn in sorted(sizes, key=lambda x: sizes[x]):
+for ii in sorted(sizes, key=lambda x: sizes[x]):
+
+    fn = filenames[ii]
+
     outfn = fn+'.statcont.cont.fits'
+
     if not os.path.exists(outfn):
         t0 = time.time()
 
-        print(fn, sizes[fn]/1024**3)
+        # touch the file to allow parallel runs
+        with open(outfn, 'w') as fh:
+            fh.write("")
+
+        print(fn, sizes[ii]/1024**3)
 
         cube = SpectralCube.read(fn)
         print(cube)
 
-        noise = cube[50:100,50:-50,50:-50].mad_std()
-        if noise == 0:
-            noise = 0.001 * cube.unit
-
         with cube.use_dask_scheduler('threads', num_workers=32):
+            if ii < len(tbl):
+                noise = tbl['std'].quantity[ii]
+            else:
+                noise = cube.std()
+
             result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
 
-        fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(fn+'.statcont.cont.fits', overwrite=True)
+        fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
+                                                                       overwrite=True)
         print(f"{fn} -> {outfn} in {time.time()-t0}s")
