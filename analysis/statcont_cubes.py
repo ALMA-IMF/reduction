@@ -26,68 +26,70 @@ import os
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
-if os.getenv('ENVIRONMENT') == 'BATCH':
-    from dask.distributed import Client
-    client = Client()
-else:
-    from dask.diagnostics import ProgressBar
-    pbar = ProgressBar()
-    pbar.register()
+if __name__ == "__main__":
+    # need to be in main block for dask to work
+    if os.getenv('ENVIRONMENT') == 'BATCH':
+        from dask.distributed import Client
+        client = Client()
+    else:
+        from dask.diagnostics import ProgressBar
+        pbar = ProgressBar()
+        pbar.register()
 
-assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
+    assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
-basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
+    basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
+    tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
 
-def get_size(start_path='.'):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            # skip if it is symbolic link
-            if not os.path.islink(fp):
-                total_size += os.path.getsize(fp)
+    def get_size(start_path='.'):
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(start_path):
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                # skip if it is symbolic link
+                if not os.path.islink(fp):
+                    total_size += os.path.getsize(fp)
 
-    return total_size
+        return total_size
 
-# simpler approach
-#sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-filenames = [f'{basepath}/fn' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
+    # simpler approach
+    #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
+    filenames = [f'{basepath}/fn' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
 
-# use tbl, ignore 7m12m
-sizes = {ii: get_size(fn)
-         for ii, fn in enumerate(filenames)
-         if '_12M_spw' in fn and os.path.exists(fn)
-        } # ignore 7m12m
+    # use tbl, ignore 7m12m
+    sizes = {ii: get_size(fn)
+             for ii, fn in enumerate(filenames)
+             if '_12M_spw' in fn and os.path.exists(fn)
+            } # ignore 7m12m
 
 
-for ii in sorted(sizes, key=lambda x: sizes[x]):
+    for ii in sorted(sizes, key=lambda x: sizes[x]):
 
-    fn = filenames[ii]
+        fn = filenames[ii]
 
-    outfn = fn+'.statcont.cont.fits'
+        outfn = fn+'.statcont.cont.fits'
 
-    if not os.path.exists(outfn):
-        t0 = time.time()
+        if not os.path.exists(outfn):
+            t0 = time.time()
 
-        # touch the file to allow parallel runs
-        with open(outfn, 'w') as fh:
-            fh.write("")
+            # touch the file to allow parallel runs
+            with open(outfn, 'w') as fh:
+                fh.write("")
 
-        print(fn, sizes[ii]/1024**3)
+            print(fn, sizes[ii]/1024**3)
 
-        cube = SpectralCube.read(fn)
-        print(cube)
+            cube = SpectralCube.read(fn)
+            print(cube)
 
-        with cube.use_dask_scheduler('threads', num_workers=32):
-            if ii < len(tbl):
-                noise = tbl['std'].quantity[ii]
-            else:
-                noise = cube.std()
+            with cube.use_dask_scheduler('threads', num_workers=32):
+                if ii < len(tbl):
+                    noise = tbl['std'].quantity[ii]
+                else:
+                    noise = cube.std()
 
-            result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
+                result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
 
-        fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
-                                                                       overwrite=True)
-        print(f"{fn} -> {outfn} in {time.time()-t0}s")
+            fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
+                                                                           overwrite=True)
+            print(f"{fn} -> {outfn} in {time.time()-t0}s")
