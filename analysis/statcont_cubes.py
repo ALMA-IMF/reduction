@@ -14,7 +14,6 @@ import time
 from astropy.table import Table
 from spectral_cube import SpectralCube
 from astropy.io import fits
-from dask.diagnostics import ProgressBar
 
 from statcont.cont_finding import c_sigmaclip_scube
 
@@ -27,8 +26,13 @@ import os
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
-pbar = ProgressBar()
-pbar.register()
+if os.environ['ENVIRONMENT'] == 'BATCH':
+    from dask.distributed import Client
+    client = Client()
+else:
+    from dask.diagnostics import ProgressBar
+    pbar = ProgressBar()
+    pbar.register()
 
 assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
