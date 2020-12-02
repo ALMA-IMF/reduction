@@ -2779,15 +2779,6 @@ line_imaging_parameters_custom = {
         # UF machine has 1c1 instead of 1bf as of 10/23/2020
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
-    "G008.67_B3_12M_robust0_contsub": {  # Less restrictive autoMT params for mildly faint emission
-        "usemask": "auto-multithresh",
-        "noisethreshold": 3.5,
-        "sidelobethreshold": 2.0,
-        "negativethreshold": 15.0,
-        "minbeamfrac": 0.3,
-        "dogrowprune": True,
-        "threshold": "3mJy",
-    },
     "G008.67_B6_12M_robust0": {
         "threshold": "20mJy",
         # "startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2799,15 +2790,6 @@ line_imaging_parameters_custom = {
         # "startmodel": "G010.62_B3_uid___A001_X1296_X1e9_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1e9 instead of 1e5 as of 10/14/2020 - this may change
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal7_finaliter",
-    },
-    "G010.62_B3_12M_robust0_contsub": {  # More restrictive params for bright emission
-        "usemask": "auto-multithresh",
-        "noisethreshold": 4.2,
-        "sidelobethreshold": 2.5,
-        "negativethreshold": 15.0,
-        "minbeamfrac": 0.3,
-        "dogrowprune": True,
-        "threshold": "6mJy",
     },
     "G010.62_B6_12M_robust0": {
         "threshold": "6mJy",
@@ -2821,15 +2803,6 @@ line_imaging_parameters_custom = {
         # UF machine has 1fb instead of 1f9 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
-    "G012.80_B3_12M_robust0_contsub": {  # More restrictive params for bright emission
-        "usemask": "auto-multithresh",
-        "noisethreshold": 4.0,
-        "sidelobethreshold": 2.5,
-        "negativethreshold": 15.0,
-        "minbeamfrac": 0.3,
-        "dogrowprune": True,
-        "threshold": "9mJy",
-    },
     "G012.80_B6_12M_robust0": {
         "threshold": "6mJy",
         # "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2842,15 +2815,6 @@ line_imaging_parameters_custom = {
         # UF machine has 17d instead of 17f as of 10/14/2020 - this may change
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
-    "G327.29_B3_12M_robust0_contsub": {  # Less restrictive params for faint, extended emission
-        "usemask": "auto-multithresh",
-        "noisethreshold": 2.0,
-        "sidelobethreshold": 2.0,
-        "negativethreshold": 15.0,
-        "minbeamfrac": 0.3,
-        "dogrowprune": True,
-        "threshold": "3mJy",
-    },
     "G327.29_B6_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2860,15 +2824,6 @@ line_imaging_parameters_custom = {
     # 		"threshold": "6mJy",
     # 		"startmodel": ""
     # 	},
-    "G328.25_B3_12M_robust0_contsub": {  # Less restrictive params for marginal detection
-        "usemask": "auto-multithresh",
-        "noisethreshold": 3.0,
-        "sidelobethreshold": 2.0,
-        "negativethreshold": 15.0,
-        "minbeamfrac": 0.3,
-        "dogrowprune": True,
-        "threshold": "3mJy",
-    },
     "G328.25_B6_12M_robust0": {
         "threshold": "6mJy",
         # "startmodel": "G328.25_B6_uid___A001_X1296_X161_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2880,15 +2835,6 @@ line_imaging_parameters_custom = {
         # never correct "startmodel": "G333.60_B3__continuum_merged_12M_robust0_selfcal5_finaliter.image",
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
-    "G333.60_B3_12M_robust0_contsub": {  # More restrictive params for bright, extended emission
-        "usemask": "auto-multithresh",
-        "noisethreshold": 4.0,
-        "sidelobethreshold": 3.5,
-        "negativethreshold": 15.0,
-        "minbeamfrac": 0.3,
-        "dogrowprune": True,
-        "threshold": "6mJy",
-    },
     "G333.60_B6_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2898,15 +2844,6 @@ line_imaging_parameters_custom = {
         # "startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
         # UF machine has 147 instead of 145 as of 10/14/2020 - this may change
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
-    },
-    "G337.92_B3_12M_robust0_contsub": {  # Less restrictive params for faint-extended emission
-        "usemask": "auto-multithresh",
-        "noisethreshold": 2.5,
-        "sidelobethreshold": 2.0,
-        "negativethreshold": 15.0,
-        "minbeamfrac": 0.3,
-        "dogrowprune": True,
-        "threshold": "2mJy",
     },
     "G337.92_B6_12M_robust0": {
         "threshold": "14mJy",
@@ -2973,21 +2910,10 @@ line_imaging_parameters_custom = {
         "threshold": "16mJy",  # sigma is ~4 mJy
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
-    "W51-E_B6_12M_robust0_contsub": {
-        "usemask": "auto-multithresh",
-        "sidelobethreshold": 1.0,
-        "pblimit": 0.1,
-        "threshold": "16mJy",  # sigma is ~4 mJy
-    },
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal4",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
         "pblimit": 0.05,  # per Nov 6 telecon
-    },
-    "W51-E_B3_12M_robust0_contsub": {
-        "threshold": "4mJy",  # sigma is ~0.8 mJy
-        "sidelobethreshold": 1.0,
-        "pblimit": 0.05,
     },
     "W51-IRS2_B3_12M_robust0": {
         "threshold": "6mJy",
@@ -3052,85 +2978,100 @@ line_parameters_custom = {
     "G008.67": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "44km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
     },
     "G010.62": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "0km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
         "n2hp": {"cubewidth": "60km/s"},
     },
     "G012.80": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "35km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
     },
     "G327.29": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-40km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-37km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-37km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-37km/s"},
     },
     "G333.60": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-44km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-44km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-44km/s"},
     },
     "G337.92": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-36km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-36km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-36km/s"},
     },
     "G338.93": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-63km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-63km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-63km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
     },
     "G353.41": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-17km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "-17km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-17km/s"},
         "n2hp": {"cubewidth": "32km/s"},
     },
     "W43-MM1": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "100km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "91km/s", "width": "0.37km/s"},
     },
     "W43-MM3": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "90km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "93km/s", "width": "0.37km/s"},
     },
     "W51-E": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "59km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
         "n2hp": {"cubewidth": "60km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
     "W51-IRS2": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "56km/s", "width": "2km/s"},
+        "h41a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
+        "h30a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
 }
