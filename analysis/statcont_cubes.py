@@ -11,6 +11,7 @@ customized.
 We should eventually allow multi-cube combination using full statcont abilities
 """
 import time
+import warnings
 from astropy.table import Table
 from spectral_cube import SpectralCube
 from astropy.io import fits
@@ -94,13 +95,15 @@ if __name__ == "__main__":
             cube = SpectralCube.read(fn)
             print(cube)
 
-            with cube.use_dask_scheduler('threads', num_workers=nworkers):
-                if ii < len(tbl):
-                    noise = tbl['std'].quantity[ii]
-                else:
-                    noise = cube.std()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                with cube.use_dask_scheduler('threads', num_workers=nworkers):
+                    if ii < len(tbl):
+                        noise = tbl['std'].quantity[ii]
+                    else:
+                        noise = cube.std()
 
-                result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
+                    result = c_sigmaclip_scube(cube, noise, save_to_tmp_dir=True)
 
             fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
                                                                            overwrite=True)
