@@ -36,7 +36,7 @@ if __name__ == "__main__":
     else:
         memlim = 1
         ntasks = 8
-    client = Client(memory_limit=f'{memlim}GB', nworkers=ntasks)
+    client = Client(memory_limit=f'{memlim}GB', n_workers=ntasks)
     nworkers = len(client.scheduler_info()['workers'])
     print(f"Client schedular info: {client.scheduler_info()['services']}")
     print(f"Number of workers: {nworkers}")
