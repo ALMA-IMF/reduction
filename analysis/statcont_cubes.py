@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # need to be in main block for dask to work
     from dask.distributed import Client
     if os.getenv('SLURM_MEM_PER_NODE'):
-        memlim_total = int(os.getenv('SLURM_MEM_PER_NODE') / 1024) # GB
+        memlim_total = int(os.getenv('SLURM_MEM_PER_NODE')) / 1024 # GB
         ntasks = int(os.getenv('SLURM_NTASKS'))
         memlim = memlim_total / ntasks
     else:
