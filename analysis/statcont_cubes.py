@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # need to be in main block for dask to work
     if os.getenv('ENVIRONMENT') == 'BATCH':
         from dask.distributed import Client
-        client = Client()
+        client = Client(memory_limit='16GB')
         print(f"Client schedular info: {client.scheduler_info()['services']}")
     else:
         from dask.diagnostics import ProgressBar
