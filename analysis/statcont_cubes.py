@@ -29,7 +29,7 @@ os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 if __name__ == "__main__":
     # need to be in main block for dask to work
     from dask.distributed import Client
-    client = Client(memory_limit='16GB')
+    client = Client(memory_limit='1GB')
     nworkers = len(client.scheduler_info()['workers'])
     print(f"Client schedular info: {client.scheduler_info()['services']}")
     print(f"Number of workers: {nworkers}")
