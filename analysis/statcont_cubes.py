@@ -28,10 +28,14 @@ os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
 if __name__ == "__main__":
     # need to be in main block for dask to work
+    from dask.distributed import Client
+    client = Client(memory_limit='16GB')
+    nworkers = len(client.scheduler_info()['workers'])
+    print(f"Client schedular info: {client.scheduler_info()['services']}")
+    print(f"Number of workers: {nworkers}")
+    print(f"Client schedular info: {client.scheduler_info()}")
     if os.getenv('ENVIRONMENT') == 'BATCH':
-        from dask.distributed import Client
-        client = Client(memory_limit='16GB')
-        print(f"Client schedular info: {client.scheduler_info()['services']}")
+        pass
     else:
         from dask.diagnostics import ProgressBar
         pbar = ProgressBar()
@@ -83,7 +87,7 @@ if __name__ == "__main__":
             cube = SpectralCube.read(fn)
             print(cube)
 
-            with cube.use_dask_scheduler('threads', num_workers=32):
+            with cube.use_dask_scheduler('threads', num_workers=nworkers):
                 if ii < len(tbl):
                     noise = tbl['std'].quantity[ii]
                 else:
