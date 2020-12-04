@@ -42,6 +42,7 @@ if __name__ == "__main__":
     print(f"Client schedular info: {client.scheduler_info()['services']}")
     print(f"Number of workers: {nworkers}")
     print(f"Client schedular info: {client.scheduler_info()}")
+    print(f"Client vers: {client.get_versions(check=True)}")
     if os.getenv('ENVIRONMENT') == 'BATCH':
         pass
     else:
