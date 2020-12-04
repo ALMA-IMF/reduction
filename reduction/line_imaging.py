@@ -624,6 +624,10 @@ for band in band_list:
                     impars['mask'] = '' # the mask exists, so CASA can't be told to use it
 
                     if mask_out_endchannels:
+                        # we mask out the end channels because sometimes these
+                        # channels have less coverage, and attempting to clean
+                        # these outer channels frequently causes tclean to
+                        # diverge
                         logprint("Masking out end channels {0}".format(mask_out_endchannels),
                                  origin="almaimf_line_imaging")
                         ia.open(infile=lineimagename+".mask")
