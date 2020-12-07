@@ -2840,13 +2840,13 @@ line_imaging_parameters_custom = {
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G337.92_B3_12M_robust0": {
-        "threshold": "9mJy",
+        "threshold": "5mJy",
         # "startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
         # UF machine has 147 instead of 145 as of 10/14/2020 - this may change
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G337.92_B6_12M_robust0": {
-        "threshold": "14mJy",
+        "threshold": "12mJy",
         "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G338.93_B3_12M_robust0": {
