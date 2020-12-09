@@ -8,15 +8,24 @@ from astroquery.alma import Alma
 from bs4 import BeautifulSoup
 import re
 
-def get_mous_to_sb_mapping(project_code):
+flux_scales = {'Jy': 1,
+               'mJy': 1e-3,
+               'µJy': 1e-6,
+              }
+
+def get_mous_to_sb_mapping(project_code, QA2_required=True):
 
     tbl = Alma.query(payload={'project_code': project_code}, cache=False,
-                     public=False)['Member ous id','SB name']
-    mapping = {row['Member ous id']: row['SB name'] for row in tbl}
+                     public=False)['Member ous id','SB name', 'QA2 Status']
+    if QA2_required:
+        mapping = {row['Member ous id']: row['SB name'] for row in tbl if
+                   row['QA2 Status'] == 'Y'}
+    else:
+        mapping = {row['Member ous id']: row['SB name'] for row in tbl}
     return mapping
 
 def get_human_readable_name(weblog, mapping=None):
-
+    print("Reading weblog {0}".format(weblog))
     for directory, dirnames, filenames in os.walk(weblog):
         if 't2-1_details.html' in filenames:
             #print("Found {0}:{1}".format(directory, "t2-1_details.html"))
@@ -93,6 +102,11 @@ def get_human_readable_name(weblog, mapping=None):
                                 uid = td.text
 
                 sbname = mapping[uid]
+#                try:
+#                    sbname = mapping[uid]
+#                except:
+#                    sbname = 'fail'
+#                    print('fail = {0}'.format(directory))
 
     return sbname, max_baseline
 
@@ -134,7 +148,9 @@ def get_calibrator_fluxes(weblog):
             tbls = [xx for xx in soup.findAll('table')
                     if 'summary' in xx.attrs
                     and xx.attrs['summary'] == 'Flux density results']
-            assert len(tbls) == 1
+            if len(tbls) != 1:
+                raise ValueError("No flux density data found in pipeline run "
+                                 "{0}.".format(weblog))
             tbl = tbls[0]
             rows = tbl.findAll('tr')
 
@@ -151,11 +167,12 @@ def get_calibrator_fluxes(weblog):
 
                 assert spw is not None
 
-                fscale = 1e-3 if 'mJy' in flux_txt else 1
-                cscale = 1e-3 if 'mJy' in catflux_txt else 1
+                fscale = flux_scales[flux_txt.split()[1]]
+                efscale = flux_scales[flux_txt.split()[4]]
+                cscale = flux_scales[catflux_txt.split()[1]]
 
                 flux = float(flux_txt.split()[0]) * fscale
-                eflux = float(flux_txt.split()[3]) * fscale
+                eflux = float(flux_txt.split()[3]) * efscale
                 catflux = float(catflux_txt.strip().split()[0]) * cscale
 
                 date = date_map[uid]
@@ -170,13 +187,13 @@ def get_calibrator_fluxes(weblog):
             return data
     raise ValueError("{0} is not a valid weblog (it may be missing stage15)".format(weblog))
 
-def get_all_fluxes(weblog_list):
+def get_all_fluxes(weblog_list, mapping=None):
 
     data_dict = {}
     for weblog in ProgressBar(weblog_list):
         try:
             data = get_calibrator_fluxes(weblog)
-            name,_ = get_human_readable_name(weblog)
+            name,_ = get_human_readable_name(weblog, mapping=mapping)
             data_dict[name] = data
         except ValueError:
             continue
@@ -188,9 +205,9 @@ def get_all_fluxes(weblog_list):
                         'spw': key[2],
                         'freq': key[3],
                         'measurement': value}
-                       for ii,(key,value) in enumerate(data.items())
+                       for ii,(key,value) in enumerate(data_.items())
                       }
-                 for name,data_list in data_dict.items()
+                 for name,data_ in data_dict.items()
                 }
 
     return flux_data
@@ -213,6 +230,7 @@ def fluxes_to_table(flux_dict):
 
 
 def weblog_names(list_of_weblogs, mapping):
+
     data = [(get_human_readable_name(weblog, mapping), weblog)
             for weblog in list_of_weblogs]
     hrns = [x[0][0] for x in data]

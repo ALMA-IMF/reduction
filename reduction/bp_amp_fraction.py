@@ -36,7 +36,7 @@ def bp_amp_var(vis, spw, intent='CALIBRATE_BANDPASS#ON_SOURCE',
 
     # Get the average:
     a=mydata['amplitude'].T[:,:,0,1].flatten()
-    amp_mean = np.nanmean(a)	
+    amp_mean = np.nanmean(a)
     amp_std  = np.nanstd(a)
     threshold=2*amp_std
     amp_nonan = a[np.logical_not(np.isnan(a))]

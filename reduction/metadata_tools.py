@@ -1,10 +1,23 @@
 import numpy as np
-from casac import casac
-from taskinit import msmdtool, casalog, qatool, tbtool
+import os
+import astropy.units as u
+from astropy import constants
+try:
+    from casac import casac
+    synthesisutils = casac.synthesisutils
+    from taskinit import msmdtool, casalog, qatool, tbtool, mstool, iatool
+    from tasks import tclean
+except ImportError:
+    from casatools import (quanta as qatool, table as tbtool, msmetadata as
+                           msmdtool, synthesisutils, ms as mstool,
+                           image as iatool)
+    from casatasks import casalog, tclean
 msmd = msmdtool()
+ms = mstool()
 qa = qatool()
-st = casac.synthesisutils()
+st = synthesisutils()
 tb = tbtool()
+ia = iatool()
 
 def logprint(string, origin='almaimf_metadata',
              priority='INFO'):
@@ -90,7 +103,8 @@ def determine_phasecenter(ms, field, formatted=False):
         return (csys, mean_ra*180/np.pi, mean_dec*180/np.pi)
 
 def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
-                     min_pixscale=0.05):
+                     min_pixscale=0.02, only_7m=False, exclude_7m=False,
+                     makeplot=False, veryverbose=False):
     """
     Parameters
     ----------
@@ -98,7 +112,7 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         Minimum allowed pixel scale in arcsec
     """
 
-    logprint("Determining imsize of individual ms {0}".format(ms))
+    logprint("Determining imsize of individual ms {0} spw {1}".format(ms, spw))
 
     cen_ra, cen_dec = phasecenter
 
@@ -117,6 +131,9 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     field_id_has_scans = np.array([len(msmd.scansforfield(fid)) > 0
                                    for fid in field_ids], dtype='bool')
 
+    logprint("Field IDs {0} matching field name {1} have scans."
+             .format(field_ids[field_id_has_scans], field))
+
     noscans = field_ids[~field_id_has_scans]
     if any(~field_id_has_scans):
         logprint("Found *scanless* field IDs {0} matching field name {1}."
@@ -134,14 +151,50 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     # compute baselines to determine synth beamsize
     tb.open(ms+"/ANTENNA")
     positions = tb.getcol('POSITION')
+    diameters = tb.getcol('DISH_DIAMETER')
     tb.close()
-
-    # note that for concatenated MSes, this includes baselines that don't exist
-    baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
-    max_baseline = baseline_lengths.max()
 
     antsize = np.array([msmd.antennadiameter(antid)['value']
                         for antid in first_antid]) # m
+
+    if exclude_7m:
+        assert 12 in antsize, "No 12m antennae found in ms {0}".format(ms)
+        assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
+        first_antid = [x for x,y in zip(first_antid, antsize) if y > 7]
+        first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y > 7]
+        field_ids = np.array([x for x,y in zip(field_ids[field_id_has_scans], antsize) if y > 7])
+        # this one is trivial: should be all True
+        field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y > 7])
+
+        bl_sel = diameters != 7
+
+        antsize = np.array([x for x in antsize if x > 7])
+        logprint("Determining pixel scale and image size for only 12m data")
+    elif only_7m:
+        assert 7 in antsize, "No 7m antennae found in ms {0}".format(ms)
+        assert len(first_antid) == len(antsize) == len(first_scan_for_field) == len(field_ids[field_id_has_scans]) == (field_id_has_scans).sum()
+        first_antid = [x for x,y in zip(first_antid, antsize) if y == 7]
+        first_scan_for_field = [x for x,y in zip(first_scan_for_field, antsize) if y == 7]
+        field_ids = np.array([x for x,y in zip(field_ids[field_id_has_scans], antsize) if y == 7])
+        # this one is trivial: should be all True
+        field_id_has_scans = np.array([x for x,y in zip(field_id_has_scans[field_id_has_scans], antsize) if y == 7])
+
+        bl_sel = diameters == 7
+
+        antsize = np.array([x for x in antsize if x == 7])
+        logprint("Determining pixel scale and image size for only 7m data")
+    else:
+        # the shape matters if any are false...
+        field_id_has_scans = field_id_has_scans[field_id_has_scans]
+        bl_sel = slice(None)
+        logprint("Determining pixel scale and image size for all data, both 7m and 12m")
+
+    # note that for concatenated MSes, this includes baselines that don't exist
+    # (i.e., it includes baselines between TM1 and TM2 positions)
+    baseline_lengths = (((positions[None,:,:]-positions.T[:,:,None])**2).sum(axis=1)**0.5)
+    max_baseline = baseline_lengths[bl_sel,:][:,bl_sel].max()
+    logprint("Maximum baseline length = {0}".format(max_baseline))
+
     # because we're working with line-split data, we assume the reffreq comes
     # from spw 0
     freq = msmd.reffreq(spw)['m0']['value'] # Hz
@@ -157,16 +210,17 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
 
     # round to nearest 0.01"
     if pixscale > 0.01/206265.:
-        pixscale_as = np.floor((pixscale * 180/np.pi * 3600 * 100) % 100) / 100
+        pixscale_as = 180/np.pi * 3600 * pixscale
+        pixscale_as = np.round(pixscale_as, 2)
         if pixscale_as < min_pixscale:
             pixscale_as = min_pixscale
-        else:
-            pixscale = pixscale_as * np.pi / 3600 / 180
+        # re-set pixscale to be radians
+        pixscale = pixscale_as * np.pi / 3600 / 180
         logprint("Pixel scale = {0} rad = {1} \" ".format(pixscale, pixscale_as))
     else:
         raise ValueError("Pixel scale was {0}\", too small".format(pixscale*206265))
 
-    pb_pix = primary_beam_fwhm / pixscale
+    pb_pix = (primary_beam_fwhm / pixscale)[field_id_has_scans]
 
 
     def r2d(x):
@@ -184,9 +238,24 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     furthest_dec_pix_plus = (pix_centers_dec+pb_pix).max()
     furthest_dec_pix_minus = (pix_centers_dec-pb_pix).min()
 
-    logprint("RA/Dec degree centers and pixel centers of pointings are \n{0}\nand\n{1}"
-             .format(list(zip(ptgctrs_ra_deg, ptgctrs_dec_deg)),
-                     list(zip(pix_centers_ra, pix_centers_dec))))
+    if makeplot:
+        import pylab as pl
+        pl.figure(figsize=(10,10)).clf()
+        pl.plot(pix_centers_ra, pix_centers_dec, 'o')
+        circles = [pl.matplotlib.patches.Circle((x,y), radius=rad, facecolor='none', edgecolor='b')
+                   for x,y,rad in zip(pix_centers_ra, pix_centers_dec, pb_pix)]
+        collection = pl.matplotlib.collections.PatchCollection(circles)
+        collection.set_facecolor('none')
+        collection.set_edgecolor('r')
+        pl.gca().add_collection(collection)
+        pl.gca().axis([furthest_ra_pix_minus, furthest_ra_pix_plus,
+                       furthest_dec_pix_minus, furthest_dec_pix_plus])
+
+
+    if veryverbose:
+        logprint("RA/Dec degree centers and pixel centers of pointings are \n{0}\nand\n{1}"
+                 .format(list(zip(ptgctrs_ra_deg, ptgctrs_dec_deg)),
+                         list(zip(pix_centers_ra, pix_centers_dec))))
     logprint("Furthest RA pixels from center are {0},{1}"
              .format(furthest_ra_pix_minus, furthest_ra_pix_plus))
     logprint("Furthest Dec pixels from center are {0},{1}"
@@ -224,11 +293,27 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
         ddec = np.max([dec for ra, dec, pixscale in results])
         pixscale = np.min([pixscale for ra, dec, pixscale in results])
     else:
-        dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
-                                             pixfraction_of_fwhm, **kwargs)
+
+        if spw=='all':
+            msmd.open(ms)
+            spws = msmd.spwsforfield(field)
+            msmd.close()
+
+            logprint("Determining imsize of all spectral windows: {0}".format(spws))
+            results = [get_indiv_imsize(ms, field, phasecenter, spw,
+                                        pixfraction_of_fwhm, **kwargs)
+                       for spw in spws]
+
+            dra = np.max([ra for ra, dec, pixscale in results])
+            ddec = np.max([dec for ra, dec, pixscale in results])
+            pixscale = np.min([pixscale for ra, dec, pixscale in results])
+
+        else:
+            dra,ddec,pixscale = get_indiv_imsize(ms, field, phasecenter, spw,
+                                                 pixfraction_of_fwhm, **kwargs)
 
     # if the image is nearly square (to within 10%), make sure it is square.
-    if np.abs(dra - ddec) / dra < 0.1:
+    if float(np.abs(dra - ddec)) / dra < 0.1:
         if dra < ddec:
             dra = ddec
         else:
@@ -237,3 +322,192 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
     logprint("Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
 
     return int(dra), int(ddec), pixscale
+
+def determine_imsizes(mses, field, phasecenter, **kwargs):
+    assert isinstance(mses, list),"Incorrect input to determine_imsizes"
+    results = [determine_imsize(ms, field, phasecenter, **kwargs) for ms in mses]
+    dra, ddec, _ = np.max(results, axis=0)
+    _, _, pixscale = np.min(results, axis=0)
+
+    logprint("ALL MSES: Determined imsize is {0},{1} w/scale {2}\"".format(dra,ddec,pixscale))
+
+    return int(dra), int(ddec), pixscale
+
+def check_model_is_populated(msfile):
+    ms.open(msfile)
+    modelphase = ms.getdata(items=['model_phase'])
+    if 'model_phase' not in modelphase:
+        raise ValueError("model_phase not acquired")
+    if modelphase['model_phase'].shape == (0,):
+        raise ValueError("Model phase column was not populated")
+    ms.close()
+
+
+
+def effectiveResolutionAtFreq(vis, spw, freq, kms=True):
+    """
+    Returns the effective resolution of a channel (in Hz or km/s)
+    of the specified measurement set and spw ID.
+    Note: For ALMA, this will only be correct for cycle 3 data onward.
+    freq: frequency in quanity
+    kms: if True, then return the value in km/s (otherwise Hz)
+    To see this information for an ASDM, use
+       printLOsFromASDM(showEffective=True)
+    -Todd Hunter
+    """
+    if (not os.path.exists(vis+'/SPECTRAL_WINDOW')):
+        raise ValueError("Could not find ms (or its SPECTRAL_WINDOW table).")
+    mytb = tbtool()
+    mytb.open(vis+'/SPECTRAL_WINDOW')
+    if (type(spw) != list and type(spw) != np.ndarray):
+        spws = [int(spw)]
+    else:
+        spws = [int(s) for s in spw]
+    bws = []
+    for spw in spws:
+        chfreq = mytb.getcell('CHAN_FREQ',spw) # Hz
+        sepfreq = np.abs(chfreq-freq.to(u.Hz).value)
+        ind = np.where(sepfreq==sepfreq.min())
+        bwarr = mytb.getcell('RESOLUTION',spw) # Hz
+        bw = bwarr[ind]
+        if kms:
+            bw = constants.c.to(u.km/u.s).value*bw/freq.to(u.Hz).value
+        bws.append(bw)
+    mytb.close()
+    if (len(bws) == 1):
+        bws = bws[0]
+    return bws
+
+def test_tclean_success():
+    # An EXTREMELY HACKY way to test whether tclean succeeded on the previous iteration
+    with open(casalog.logfile(), "r") as fh:
+        lines = fh.readlines()
+
+    for line in lines[-5:]:
+        if 'SEVERE  tclean::::      An error occurred running task tclean.' in line:
+            raise ValueError("tclean failed.  See log for detailed error report.\n{0}".format(line))
+        if 'SEVERE' in line:
+            raise ValueError("SEVERE error message encountered: {0}".format(line))
+
+
+def populate_model_column(imname, selfcal_ms, field, impars_thisiter,
+                          phasecenter, maskname, antennae,
+                          startmodel=''):
+    # run tclean to repopulate the modelcolumn prior to gaincal
+    # (force niter = 0 so we don't clean any more)
+
+
+    # bugfix: for no reason at all, the reference frequency can change.
+    # tclean chokes if it gets the wrong reffreq.
+    ia.open(imname+".image.tt0")
+    reffreq = "{0}Hz".format(ia.coordsys().referencevalue()['numeric'][3])
+    ia.close()
+
+    # have to remove mask for tclean to work
+    os.system('rm -r {0}.mask'.format(imname))
+    impars_thisiter['niter'] = 0
+    logprint("(dirty) Imaging parameters are: {0}".format(impars_thisiter),
+             origin='almaimf_cont_selfcal')
+    logprint("This tclean run with zero iterations is only being done to "
+             "populate the model column from image {0}.".format(imname),
+             origin='almaimf_cont_selfcal')
+    try:
+        tclean(vis=selfcal_ms,
+                     field=field.encode(),
+                     imagename=imname,
+                     phasecenter=phasecenter,
+                     outframe='LSRK',
+                     veltype='radio',
+                     mask=maskname,
+                     interactive=False,
+                     antenna=antennae,
+                     #reffreq=reffreq,
+                     startmodel=startmodel,
+                     savemodel='modelcolumn',
+                     datacolumn='corrected',
+                     pbcor=True,
+                     calcres=True,
+                     calcpsf=False,
+                     **impars_thisiter
+                    )
+        test_tclean_success()
+    except Exception as ex:
+        print(ex)
+        logprint("tclean FAILED with reffreq unspecified."
+                 "  Trying again with reffreq={0}.".format(reffreq),
+                 origin='almaimf_cont_selfcal')
+        tclean(vis=selfcal_ms,
+               field=field.encode(),
+               imagename=imname,
+               phasecenter=phasecenter,
+               outframe='LSRK',
+               veltype='radio',
+               mask=maskname,
+               interactive=False,
+               antenna=antennae,
+               reffreq=reffreq,
+               startmodel=startmodel,
+               savemodel='modelcolumn',
+               datacolumn='corrected',
+               pbcor=True,
+               calcres=True,
+               calcpsf=False,
+               **impars_thisiter
+              )
+        test_tclean_success()
+
+    # # even if this works, I hate it.
+    # if not success:
+    #     logprint("tclean FAILED with NO REFFREQ.  Trying again with a totally bullshit approach",
+    #              origin='almaimf_cont_selfcal')
+    #     modelname = [imname+".model.tt0",
+    #                  imname+".model.tt1"]
+    #     success = tclean(vis=selfcal_ms,
+    #                      field=field.encode(),
+    #                      imagename=imname+"_BULL",
+    #                      phasecenter=phasecenter,
+    #                      startmodel=modelname,
+    #                      outframe='LSRK',
+    #                      veltype='radio',
+    #                      mask=maskname,
+    #                      interactive=False,
+    #                      cell=cellsize,
+    #                      imsize=imsize,
+    #                      antenna=antennae,
+    #                      #reffreq=reffreq,
+    #                      savemodel='modelcolumn',
+    #                      datacolumn='corrected',
+    #                      pbcor=True,
+    #                      calcres=True,
+    #                      calcpsf=True,
+    #                      **impars_thisiter
+    #                     )
+    #if not success:
+    #    # BACKUP PLAN: use ft instead of tclean [WRONG because it doesn't
+    #    # use the same imager]
+    #    modelname = [imname+".model.tt0",
+    #                 imname+".model.tt1"]
+
+    #    logprint("Using ``ft`` to populate the model column from {0}".format(modelname),
+    #             origin='almaimf_cont_selfcal')
+    #    success = ft(vis=selfcal_ms,
+    #                 field=field.encode(),
+    #                 model=modelname,
+    #                 nterms=2,
+    #                 usescratch=True
+    #                )
+
+    #    logprint("Completed ft with result={0} for image={1}"
+    #             " populated model column".format(success, imname),
+    #             origin='almaimf_cont_selfcal')
+
+    #    # link ("copy") the current mask to be this round's mask
+    #    # why am I doing this?  Isn't the mask always well-defined?
+    #    # this can only introduce conflicts in the mask naming...
+    #    # (maybe this was copied from ft above...)
+    #    #os.system('ln -s {0} {1}.mask'.format(maskname, imname))
+
+
+    # if not success:
+    #     raise ValueError("tclean failed to restore the model {0}.model* "
+    #                      "into the model column".format(imname))

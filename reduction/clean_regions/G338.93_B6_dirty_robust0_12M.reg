@@ -1,0 +1,6 @@
+# Region file format: DS9 version 4.1
+# Filename: /wkh09/patricio/ALMA-IMF/band6/imaging_results/G338.93_B6__continuum_merged_12M_robust0_dirty.image.tt0
+global color=green dash=0 dashlist=8 3 delete=1 edit=1 fixed=0 font="helvetica 10 normal roman" highlite=1 include=1 move=1 select=1 source=1 width=1
+fk5
+box(-109.857580,-45.695796,78.17",69.19",0) # text={44.0mJy}
+
