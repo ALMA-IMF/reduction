@@ -399,12 +399,12 @@ imaging_parameters_nondefault = {
             2: "0.1mJy",
             3: "0.09mJy",
             4: "0.09mJy",
-            5: "0.08mJy", # TIP: next time, go to 0.08.  0.07 takes _ages_
+            5: "0.08mJy",  # TIP: next time, go to 0.08.  0.07 takes _ages_
             6: "0.08mJy",
             7: "0.08mJy",
         },
         "niter": {
-            0: 100000, # limit to 100k for time considerations
+            0: 100000,  # limit to 100k for time considerations
             1: 100000,
             2: 100000,
             3: 100000,
@@ -2804,7 +2804,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B6_12M_robust0": {
-        "threshold": "6mJy",
+        "threshold": "24mJy",
         # "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1ef instead of 1f1 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
