@@ -24,6 +24,7 @@ keep_selfcal = ((tbl_selfcal['suffix'] == 'finaliter') &
                 (~tbl_selfcal['bsens']) & 
                 (~bad))
 wtbl_selfcal = tbl_selfcal[keep_selfcal]
+assert len(wtbl_selfcal) == 29
 
 tbl_bsens = table.join(Table.read('metadata_bsens_cleanest.ecsv'), bp_tbl, keys=('region', 'band'))
 bad = np.array(['diff' in x for x in tbl_bsens['filename']])
@@ -33,6 +34,7 @@ keep_bsens = ((tbl_bsens['suffix'] == 'finaliter') &
               (tbl_bsens['bsens']) &
               (~bad))
 wtbl_bsens = tbl_bsens[keep_bsens]
+assert len(wtbl_bsens) == 29
 
 
 wtbl_bsens['bsens_improvement'] = wtbl_bsens['mad_sample_bsens']/wtbl_bsens['mad_sample_cleanest']

@@ -2804,7 +2804,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B6_12M_robust0": {
-        "threshold": "6mJy",
+        "threshold": "24mJy",
         # "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1ef instead of 1f1 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
