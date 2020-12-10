@@ -399,20 +399,20 @@ imaging_parameters_nondefault = {
             2: "0.1mJy",
             3: "0.09mJy",
             4: "0.09mJy",
-            5: "0.08mJy",
-            6: "0.07mJy",
-            7: "0.07mJy",
+            5: "0.08mJy", # TIP: next time, go to 0.08.  0.07 takes _ages_
+            6: "0.08mJy",
+            7: "0.08mJy",
         },
         "niter": {
-            0: 200000,
-            1: 200000,
-            2: 200000,
-            3: 200000,
-            4: 200000,
-            5: 200000,
-            6: 200000,
-            7: 200000,
-            "final": 200000,
+            0: 100000, # limit to 100k for time considerations
+            1: 100000,
+            2: 100000,
+            3: 100000,
+            4: 100000,
+            5: 100000,
+            6: 100000,
+            7: 100000,
+            "final": 100000,
         },
         "scales": [0, 3, 9, 27],
         "imsize": [4800, 4800],
@@ -2840,17 +2840,17 @@ line_imaging_parameters_custom = {
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G337.92_B3_12M_robust0": {
-        "threshold": "9mJy",
+        "threshold": "5mJy",
         # "startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
         # UF machine has 147 instead of 145 as of 10/14/2020 - this may change
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G337.92_B6_12M_robust0": {
-        "threshold": "14mJy",
+        "threshold": "12mJy",
         "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G338.93_B3_12M_robust0": {
-        "threshold": "6mJy",
+        "threshold": "5mJy",
         # "startmodel": "G338.93_B3_uid___A001_X1296_X15b_continuum_merged_12M_robust0_selfcal2_finaliter",
         # UF machine has 159 instead of 15b as of 10/16/2020 - this may change
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",

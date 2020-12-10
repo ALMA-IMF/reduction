@@ -104,7 +104,8 @@ if __name__ == "__main__":
                     else:
                         noise = cube.std()
 
-                    result = c_sigmaclip_scube(cube, noise, rechunk=[-1,10,10],
+                    result = c_sigmaclip_scube(cube, noise,
+                                               verbose=True,
                                                save_to_tmp_dir=True)
 
             fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
