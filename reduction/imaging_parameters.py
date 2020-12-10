@@ -399,12 +399,12 @@ imaging_parameters_nondefault = {
             2: "0.1mJy",
             3: "0.09mJy",
             4: "0.09mJy",
-            5: "0.08mJy", # TIP: next time, go to 0.08.  0.07 takes _ages_
+            5: "0.08mJy",  # TIP: next time, go to 0.08.  0.07 takes _ages_
             6: "0.08mJy",
             7: "0.08mJy",
         },
         "niter": {
-            0: 100000, # limit to 100k for time considerations
+            0: 100000,  # limit to 100k for time considerations
             1: 100000,
             2: 100000,
             3: 100000,
