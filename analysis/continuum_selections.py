@@ -217,6 +217,7 @@ for fignum,band in enumerate((3,6)):
 
                 robust = 0 # hard-code.... yike.
                 specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}.image_mean.fits'
+                specname = basepath / f'imaging_results/spectra/{field}_B{band}_spw{spw}_{"12M" if "12M" in config else "7M"}.image_mean.fits'
                 if os.path.exists(specname):
                     print(specname)
                     pl.figure(4).clf()
@@ -230,7 +231,7 @@ for fignum,band in enumerate((3,6)):
                     pl.xlabel("Frequency")
                     pl.ylabel("Flux [Jy/beam]")
                     pl.title(os.path.split(specname)[-1].replace(".fits", ""))
-                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.coverage.png',
+                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_B{band}_spw{spw}_{"12M" if "12M" in config else "7M"}_robust{robust}_lines.image_mean.coverage.png',
                                bbox_inches='tight')
 
 
