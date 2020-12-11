@@ -223,7 +223,7 @@ for fignum,band in enumerate((3,6)):
                     fh = fits.open(specname)
                     ww = WCS(fh[0].header)
                     specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0] / 1e9
-                    pl.plot(specfrq, fh[0].data.squeeze())
+                    pl.plot(specfrq, fh[0].data.squeeze(), color='k', drawstyle='steps-mid')
                     axlims = pl.axis()
                     pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
                     pl.axis(axlims)
