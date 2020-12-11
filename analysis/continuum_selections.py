@@ -1,4 +1,5 @@
 import os
+import warnings
 import pylab as pl
 import numpy as np
 import json
@@ -222,12 +223,14 @@ for fignum,band in enumerate((3,6)):
                     print(specname)
                     pl.figure(4).clf()
                     fh = fits.open(specname)
-                    ww = WCS(fh[0].header)
+                    with warnings.catch_warnings():
+                        warnings.simplefilter('ignore')
+                        ww = WCS(fh[0].header)
                     specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0] / 1e9
                     pl.plot(specfrq, fh[0].data.squeeze(), color='k', drawstyle='steps-mid', linewidth=0.8)
                     axlims = pl.axis()
                     sptoplot = fh[0].data.squeeze()
-                    msk = np.interp(specfrq, frqarr, frqmask[fieldnum*nconfigs + configid],)
+                    msk = np.interp(specfrq, frqarr.to_value(u.GHz), frqmask[fieldnum*nconfigs + configid],)
                     sptoplot[msk.astype('bool')] = np.nan
                     #pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
                     pl.plot(specfrq, sptoplot, color='orange', drawstyle='steps-mid', linewidth=2, alpha=0.75)
