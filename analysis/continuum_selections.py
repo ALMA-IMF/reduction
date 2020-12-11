@@ -224,9 +224,13 @@ for fignum,band in enumerate((3,6)):
                     fh = fits.open(specname)
                     ww = WCS(fh[0].header)
                     specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0] / 1e9
-                    pl.plot(specfrq, fh[0].data.squeeze(), color='k', drawstyle='steps-mid')
+                    pl.plot(specfrq, fh[0].data.squeeze(), color='k', drawstyle='steps-mid', linewidth=0.8)
                     axlims = pl.axis()
-                    pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
+                    sptoplot = fh[0].data.squeeze()
+                    msk = np.interp(specfrq, frqarr, frqmask[fieldnum*nconfigs + configid],)
+                    sptoplot[msk.astype('bool') = np.nan
+                    #pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
+                    pl.plot(specfrq, sptoplot, color='orange', drawstyle='steps-mid', linewidth=2, alpha=0.75)
                     pl.axis(axlims)
                     pl.xlabel("Frequency")
                     pl.ylabel("Flux [Jy/beam]")
