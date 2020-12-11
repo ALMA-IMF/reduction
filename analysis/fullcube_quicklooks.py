@@ -34,6 +34,7 @@ nthreads = 1
 scheduler = 'synchronous'
 
 use_temp_dir = os.getenv('USE_TEMP_ZARR')
+os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
 cores = os.getenv('SLURM_CPUS_ON_NODE')
 if cores is not None:
@@ -75,7 +76,7 @@ def dt():
 print("starting loops")
 
 for band in (6,3):
-    for config in ('12M', '7M12M'):
+    for config in ('12M',):# '7M12M'):
         for field in "G012.80 G328.25 G351.77 G327.29 G338.93 W51-E G353.41 G008.67 W43-MM2 G333.60 G337.92 W43-MM3 W43-MM1 G010.62 W51-IRS2".split():
             for spw in spws[band]:
                 for suffix in (".image", ".contsub.image"):
