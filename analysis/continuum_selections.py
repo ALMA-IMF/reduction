@@ -228,7 +228,7 @@ for fignum,band in enumerate((3,6)):
                     axlims = pl.axis()
                     sptoplot = fh[0].data.squeeze()
                     msk = np.interp(specfrq, frqarr, frqmask[fieldnum*nconfigs + configid],)
-                    sptoplot[msk.astype('bool') = np.nan
+                    sptoplot[msk.astype('bool')] = np.nan
                     #pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
                     pl.plot(specfrq, sptoplot, color='orange', drawstyle='steps-mid', linewidth=2, alpha=0.75)
                     pl.axis(axlims)
