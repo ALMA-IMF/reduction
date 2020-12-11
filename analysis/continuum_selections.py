@@ -229,11 +229,17 @@ for fignum,band in enumerate((3,6)):
                     specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0] / 1e9
                     pl.plot(specfrq, fh[0].data.squeeze(), color='k', drawstyle='steps-mid', linewidth=0.8)
                     axlims = pl.axis()
-                    sptoplot = fh[0].data.squeeze()
-                    msk = np.interp(specfrq, frqarr.to_value(u.GHz), frqmask[fieldnum*nconfigs + configid],)
-                    sptoplot[msk.astype('bool')] = np.nan
-                    #pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
+                    sptoplot = fh[0].data.squeeze().copy()
+
+                    # frqmask = 1 is continuum
+                    msk = np.interp(specfrq, frqarr.to_value(u.GHz), frqmask[fieldnum*nconfigs + configid])
+                    sptoplot[msk != 1.0] = np.nan
                     pl.plot(specfrq, sptoplot, color='orange', drawstyle='steps-mid', linewidth=2, alpha=0.75)
+
+                    sptoplot = fh[0].data.squeeze().copy()
+                    sptoplot[msk > 0] = np.nan
+                    pl.plot(specfrq, sptoplot, color='red', drawstyle='steps-mid', linewidth=2, alpha=0.75)
+
                     pl.axis(axlims)
                     pl.xlabel("Frequency")
                     pl.ylabel("Flux [Jy/beam]")
