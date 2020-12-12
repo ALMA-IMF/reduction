@@ -126,7 +126,7 @@ if __name__ == "__main__":
                                 dat_to_plot = spec.value.copy()
                                 dat_to_plot[~sel] = np.nan
                                 pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
-                                        zorder=-5, alpha=0.75)
+                                        zorder=-5, alpha=0.75, color='orange')
                             elif len(usel) > 1:
                                 dat_to_plot = np.empty(spec.value.shape)
                                 dat_to_plot[:] = np.nan
