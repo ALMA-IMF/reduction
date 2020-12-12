@@ -95,7 +95,7 @@ if __name__ == "__main__":
                         spec_jy = OneDSpectrum.from_hdu(fits.open(out_fn)).with_spectral_unit(u.GHz)
                         if cube.shape[0] != spec_jy.size:
                             spec_jy = getattr(cube, operation)(axis=(1,2))
-                            spec_jy.write(out_fn, overwrite=overwrite)
+                            spec_jy.write(out_fn, overwrite=True)
 
                         jtok = cube.jtok_factors()
                         spec_K = spec_jy * jtok*u.K / (u.Jy/u.beam)
