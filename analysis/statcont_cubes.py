@@ -107,7 +107,9 @@ if __name__ == "__main__":
                     result = c_sigmaclip_scube(cube, noise,
                                                verbose=True,
                                                save_to_tmp_dir=True)
+                    data_to_write = result[1].compute()
 
-            fits.PrimaryHDU(data=result[1], header=cube[0].header).writeto(outfn,
-                                                                           overwrite=True)
+                    fits.PrimaryHDU(data=result[1],
+                                    header=cube[0].header).writeto(outfn,
+                                                                   overwrite=True)
             print(f"{fn} -> {outfn} in {time.time()-t0}s")
