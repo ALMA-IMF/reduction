@@ -120,7 +120,13 @@ if __name__ == "__main__":
                                 #print(f"{field}_{spw}: {low}-{high} count={sel.sum()}")
 
                             usel = np.unique(sel)
-                            if set(usel) == {0,1}:
+                            # 0 means 'not included in any windows', 1 means 'included in 1 window'
+                            # 2 or more means included in 2 or more.
+                            # The cases addressed here are:
+                            # {0,1}: some continuum, some not
+                            # {1}: all continuum
+                            # {0,1,2,...} or {1,2,...}: some or all continuum, at least one pixel twice or more
+                            if set(usel) in ({0,1}, {1}):
                                 sel = sel.astype('bool')
 
                                 dat_to_plot = spec.value.copy()
