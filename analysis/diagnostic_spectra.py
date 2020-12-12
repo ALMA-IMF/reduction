@@ -90,16 +90,12 @@ if __name__ == "__main__":
                         out_fn = f'spectra/{field}_{array}_{band}_spw{spw}_robust{robust}{suffix}.{operation}spec.fits'
                         if overwrite or not os.path.exists(out_fn):
                             spec = getattr(cube, operation)(axis=(1,2))
-                            #spec = cube.apply_numpy_function(getattr(np, 'nan'+operation),
-                            #                                 axis=(1,2),
-                            #                                 progressbar=True,
-                            #                                 projection=True,
-                            #                                 how='slice',
-                            #                                 unit=cube.unit,
-                            #                                )
                             spec.write(out_fn, overwrite=overwrite)
 
                         spec_jy = OneDSpectrum.from_hdu(fits.open(out_fn)).with_spectral_unit(u.GHz)
+                        if cube.shape[0] != spec_jy.size:
+                            spec_jy = getattr(cube, operation)(axis=(1,2))
+                            spec_jy.write(out_fn, overwrite=overwrite)
 
                         jtok = cube.jtok_factors()
                         spec_K = spec_jy * jtok*u.K / (u.Jy/u.beam)
