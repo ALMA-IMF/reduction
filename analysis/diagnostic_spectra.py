@@ -140,5 +140,5 @@ if __name__ == "__main__":
                             log.error(f"No selected continuum for {field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
                             continue
                         print(f"{field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
-                        pl.title(f"{field}_{array}_{band}_spw{spw}_robust{robust}{suffix}.{operation}")
+                        pl.title(f"{field} {array} {band} spw{spw} robust{robust}{suffix} {operation}")
                         pl.savefig(fig_fn)
