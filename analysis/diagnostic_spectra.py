@@ -99,46 +99,49 @@ if __name__ == "__main__":
                             #                                )
                             spec.write(out_fn, overwrite=overwrite)
 
-                        spec = OneDSpectrum.from_hdu(fits.open(out_fn)).with_spectral_unit(u.GHz)
+                        spec_jy = OneDSpectrum.from_hdu(fits.open(out_fn)).with_spectral_unit(u.GHz)
+
+                        jtok = cube.jtok_factors()
+                        spec_K = spec_jy * jtok*u.K / (u.Jy/u.beam)
+
+                        for spec, unit in zip((spec_jy, spec_K), ("", "K")):
+                            fig_fn = f'spectra/pngs/{field}_{array}_{band}_spw{spw}_robust{robust}{suffix}{unit}.{operation}spec.png'
+                            pl.clf()
+                            spec.quicklook(filename=fig_fn, color='k',
+                                           linewidth=0.9, drawstyle='steps-mid')
+                            sel = np.zeros(spec.size, dtype='int')
 
 
-                        fig_fn = f'spectra/pngs/{field}_{array}_{band}_spw{spw}_robust{robust}{suffix}.{operation}spec.png'
-                        pl.clf()
-                        spec.quicklook(filename=fig_fn, color='k',
-                                       linewidth=0.9, drawstyle='steps-mid')
-                        sel = np.zeros(spec.size, dtype='int')
+                            muid = metadata[band][field]['muid_configs']['12Mshort']
+                            cdatfile = metadata[band][field]['cont.dat'][muid]
+                            contfreqs = parse_contdotdat(cdatfile)
 
+                            for freqrange in contfreqs.split(";"):
+                                low,high = freqrange.split("~")
+                                high = u.Quantity(high)
+                                low = u.Quantity(low, unit=high.unit)
+                                sel += (spec.spectral_axis > low) & (spec.spectral_axis < high)
+                                #print(f"{field}_{spw}: {low}-{high} count={sel.sum()}")
 
-                        muid = metadata[band][field]['muid_configs']['12Mshort']
-                        cdatfile = metadata[band][field]['cont.dat'][muid]
-                        contfreqs = parse_contdotdat(cdatfile)
+                            usel = np.unique(sel)
+                            if set(usel) == {0,1}:
+                                sel = sel.astype('bool')
 
-                        for freqrange in contfreqs.split(";"):
-                            low,high = freqrange.split("~")
-                            high = u.Quantity(high)
-                            low = u.Quantity(low, unit=high.unit)
-                            sel += (spec.spectral_axis > low) & (spec.spectral_axis < high)
-                            #print(f"{field}_{spw}: {low}-{high} count={sel.sum()}")
-
-                        usel = np.unique(sel)
-                        if set(usel) == {0,1}:
-                            sel = sel.astype('bool')
-
-                            dat_to_plot = spec.value.copy()
-                            dat_to_plot[~sel] = np.nan
-                            pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
-                                    zorder=-5, alpha=0.75)
-                        elif len(usel) > 1:
-                            dat_to_plot = np.empty(spec.value.shape)
-                            dat_to_plot[:] = np.nan
-                            # skip zero
-                            for selval in usel[1:]:
-                                dat_to_plot[sel == selval] = spec.value[sel == selval]
-                            pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
-                                    zorder=selval-10, alpha=0.75, color='orange')
-                        else:
-                            log.error(f"No selected continuum for {field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
-                            continue
-                        print(f"{field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
-                        pl.title(f"{field} {array} {band} spw{spw} robust{robust}{suffix} {operation}")
-                        pl.savefig(fig_fn)
+                                dat_to_plot = spec.value.copy()
+                                dat_to_plot[~sel] = np.nan
+                                pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
+                                        zorder=-5, alpha=0.75)
+                            elif len(usel) > 1:
+                                dat_to_plot = np.empty(spec.value.shape)
+                                dat_to_plot[:] = np.nan
+                                # skip zero
+                                for selval in usel[1:]:
+                                    dat_to_plot[sel == selval] = spec.value[sel == selval]
+                                pl.plot(spec.spectral_axis, dat_to_plot, linewidth=4,
+                                        zorder=selval-10, alpha=0.75, color='orange')
+                            else:
+                                log.error(f"No selected continuum for {field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
+                                continue
+                            print(f"{field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
+                            pl.title(f"{field} {array} {band} spw{spw} robust{robust}{suffix} {operation}")
+                            pl.savefig(fig_fn)
