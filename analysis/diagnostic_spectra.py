@@ -78,7 +78,8 @@ if __name__ == "__main__":
                                                 )
 
                     if os.path.exists(filename):
-                        cube = SpectralCube.read(filename, use_dask=True)
+                        cube = SpectralCube.read(filename,
+                                                 use_dask=True).with_spectral_unit(u.GHz)
                     else:
                         log.exception("File {0} does not exist".format(filename))
                         if os.path.exists(filename[:-5]):
@@ -98,12 +99,13 @@ if __name__ == "__main__":
                             #                                )
                             spec.write(out_fn, overwrite=overwrite)
 
-                        spec = OneDSpectrum.from_hdu(fits.open(out_fn))
+                        spec = OneDSpectrum.from_hdu(fits.open(out_fn)).with_spectral_unit(u.GHz)
 
 
                         fig_fn = f'spectra/pngs/{field}_{array}_{band}_spw{spw}_robust{robust}{suffix}.{operation}spec.png'
                         pl.clf()
-                        spec.quicklook(filename=fig_fn)
+                        spec.quicklook(filename=fig_fn, color='k',
+                                       linewidth=0.9, drawstyle='steps-mid')
                         sel = np.zeros(spec.size, dtype='int')
 
 

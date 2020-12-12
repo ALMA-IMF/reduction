@@ -231,6 +231,17 @@ def imstats(fn, reg=None):
 
     return meta
 
+"""
+We want to calculate the "epsilon" value from https://ui.adsabs.harvard.edu/abs/1995AJ....110.2037J/abstract
+
+epsilon = C1  / ( R2 - R1 )
+
+C1 is the model convolved with the synthesized beam, summed
+R1 is the residual, summed
+R2 is the dirty map.  It can be calculated as R1 + model convolved with dirty beam.
+epsion = C1 / D1
+"""
+
 def parse_fn(fn):
 
     basename = os.path.basename(fn)
