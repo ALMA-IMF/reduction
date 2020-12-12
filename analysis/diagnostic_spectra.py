@@ -144,4 +144,4 @@ if __name__ == "__main__":
                                 continue
                             print(f"{field}_{array}_{band}_spw{spw}_robust{robust}.{operation}: {sel.sum()} {usel}")
                             pl.title(f"{field} {array} {band} spw{spw} robust{robust}{suffix} {operation}")
-                            pl.savefig(fig_fn)
+                            pl.savefig(fig_fn, bbox_inches='tight')
