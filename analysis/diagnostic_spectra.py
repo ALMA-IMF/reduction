@@ -80,6 +80,9 @@ if __name__ == "__main__":
                     if os.path.exists(filename):
                         cube = SpectralCube.read(filename,
                                                  use_dask=True).with_spectral_unit(u.GHz)
+                    elif os.path.exists(filename[:-5]):
+                        cube = SpectralCube.read(filename[:-5], format='casa_image',
+                                                 use_dask=True).with_spectral_unit(u.GHz)
                     else:
                         log.exception("File {0} does not exist".format(filename))
                         if os.path.exists(filename[:-5]):
@@ -126,7 +129,7 @@ if __name__ == "__main__":
                             # {0,1}: some continuum, some not
                             # {1}: all continuum
                             # {0,1,2,...} or {1,2,...}: some or all continuum, at least one pixel twice or more
-                            if set(usel) in ({0,1}, {1}):
+                            if set(usel) in ({0, 1}, {1}):
                                 sel = sel.astype('bool')
 
                                 dat_to_plot = spec.value.copy()
