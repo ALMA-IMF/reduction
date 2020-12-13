@@ -7,6 +7,7 @@ from astropy.wcs import WCS
 
 from astropy.visualization import simple_norm
 import pylab as pl
+pl.rcParams['font.size'] = 14
 
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults'
 
@@ -98,11 +99,14 @@ for field in ("G327.29",):
             fig2 = pl.figure(2)
             fig2.clf()
             ax = fig2.add_subplot(projection=b3wcs[slicey, slicex])
-            ax.imshow(fh_b3[0].data.squeeze()[slicey, slicex], cmap='gray_r',
-                      norm=simple_norm(fh_b3[0].data.squeeze()[slicey, slicex],
-                                       max_percent=99.95, stretch='asinh',
-                                       min_percent=20),
-                     )
+            im = ax.imshow(fh_b3[0].data.squeeze()[slicey, slicex]*1e3,
+                           cmap='gray_r',
+                           norm=simple_norm(fh_b3[0].data.squeeze()[slicey,
+                                                                    slicex]*1e3,
+                                            max_percent=99.95, stretch='asinh',
+                                            min_percent=20),)
+            cb = fig2.colorbar(mappable=im)
+            cb.set_label("$S_\\nu$ [mJy/beam]")
             ax.contour(b6_proj_to_b3[slicey, slicex], levels=[3.e-3, 2.e-2],
                        colors=['orange', 'red'],
                        linewidths=0.65,
