@@ -2780,7 +2780,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G008.67_B6_12M_robust0": {
-        "threshold": "28mJy",#estimated noise: 9-11 mJy, from sio-only cube
+        "threshold": "33mJy", #"28mJy",#estimated noise: 9-11 mJy, from sio-only cube
         # "startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1b9 instead of 1b7 as of 10/14/2020 - this may change
         "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2796,7 +2796,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "G010.62_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 2.8-3.2 mJy, from sio-only cube
+        "threshold": "9.6mJy",#"6mJy", #estimated noise: 2.8-3.2 mJy, from sio-only cube
         # "startmodel": "G010.62_B6_uid___A001_X1296_X1df_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1db instead of 1df as of 10/16/2020 - this may change
         "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2818,7 +2818,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B6_spw1_12M_sio":{
-        "threshold": "24mJy", #this needs to be updated with values from the most recent sio cube (14 Dec. 2020)
+        "threshold": "24mJy", #this needs to be updated with values from the most recent sio cube once it is made (14 Dec. 2020)
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B3_12M_robust0": {
@@ -2828,7 +2828,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G327.29_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 9.5-11.5 mJy, from sio-only cube
+        "threshold": "34.5mJy",#"6mJy", #estimated noise: 9.5-11.5 mJy, from sio-only cube
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B6_spw1_12M_sio":{
@@ -2841,13 +2841,13 @@ line_imaging_parameters_custom = {
     # 		"startmodel": ""
     # 	},
     "G328.25_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 15-20 mJy, from sio-only cube
+        "threshold": "63mJy",#"6mJy", #estimated noise: 15-21 mJy, from sio-only cube
         # "startmodel": "G328.25_B6_uid___A001_X1296_X161_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 163 instead of 161 as of 10/14/2020 - this may change
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_spw1_12M_sio":{
-        "threshold": "60mJy", #typical rms is 15-20 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "63mJy", #typical rms is 15-21 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0": {
@@ -2856,7 +2856,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G333.60_B6_12M_robust0": {
-        "threshold": "6mJy",#estimated noise: 4.3-5.2 mJy, from sio-only cube
+        "threshold": "15.6mJy",#"6mJy",#estimated noise: 4.3-5.2 mJy, from sio-only cube
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G333.60_B6_spw1_12M_sio":{
@@ -2870,7 +2870,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G337.92_B6_12M_robust0": {
-        "threshold": "12mJy", #estimated noise: 4.8-5.6 mJy, from sio-only cube
+        "threshold": "16.8mJy",#"12mJy", #estimated noise: 4.8-5.6 mJy, from sio-only cube
         "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G337.92_B6_spw1_12M_sio":{
@@ -2884,7 +2884,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
     },
     "G338.93_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 5-6 mJy, from sio-only cube
+        "threshold": "18mJy",#"6mJy", #estimated noise: 5-6 mJy, from sio-only cube
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G338.93_B6_spw1_12M_sio":{
@@ -2896,7 +2896,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0": {
-        "threshold": "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
+        "threshold": "48mJy",#"6mJy",#estimated noise: 12-16 mJy, from sio-only cube
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_spw1_12M_sio":{
@@ -2909,7 +2909,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G353.41_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
+        "threshold": "48mJy",#"6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
         # "startmodel": "G353.41_B6_uid___A001_X1296_X1cb_continuum_merged_12M_robust0_selfcal3_finaliter",
         # UF machine has 1c9 selfcal6 instead of 1cb selfcal3 as of 10/15/2020 - this may change
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
@@ -2931,7 +2931,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W43-MM2_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 2.7 mJy, from sio-only cube
+        "threshold": "8.1mJy",#"6mJy", #estimated noise: 2.7 mJy, from sio-only cube
         # NOTE: 111/113 name ambiguous
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1280, 1280],
@@ -2945,7 +2945,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "W43-MM3_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 3.1 mJy, from sio-only cube
+        "threshold": "9.3mJy",#"6mJy", #estimated noise: 3.1 mJy, from sio-only cube
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1280, 1280],
     },
@@ -2972,7 +2972,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W51-IRS2_B6_12M_robust0": {
-        "threshold": "6mJy", #estimated noise: 3.2 mJy, from sio-only cube
+        "threshold": "9.6mJy",#"6mJy", #estimated noise: 3.2 mJy, from sio-only cube
         "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8_finaliter",
     },
     "W51-IRS2_B6_spw1_12M_sio":{
