@@ -2812,13 +2812,13 @@ line_imaging_parameters_custom = {
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B6_12M_robust0": {
-        "threshold": "24mJy", #estimated noise: , from sio-only cube
+        "threshold": "39mJy",#"24mJy", #estimated noise: 13 mJy, from sio-only cube
         # "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1ef instead of 1f1 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B6_spw1_12M_sio":{
-        "threshold": "24mJy", #this needs to be updated with values from the most recent sio cube once it is made (14 Dec. 2020)
+        "threshold": "39mJy", #typical rms values are 10-13 mJy, using 3sigma as threshold (14 Dec. 2020)
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B3_12M_robust0": {
@@ -3048,6 +3048,7 @@ line_parameters_custom = {
     },
     "G012.80": {
         "12co": {"cubewidth": "150km/s"},
+        "sio":{"cubewidth": "60km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
