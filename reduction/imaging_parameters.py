@@ -2883,7 +2883,7 @@ line_imaging_parameters_custom = {
         # UF machine has 159 instead of 15b as of 10/16/2020 - this may change
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
     },
-    "G338.93_B3_12M_12m_n2hp": {
+    "G338.93_B3_12M_robust0_n2hp": {
         "threshold": "5mJy",
         # "startmodel": "G338.93_B3_uid___A001_X1296_X15b_continuum_merged_12M_robust0_selfcal2_finaliter",
         # UF machine has 159 instead of 15b as of 10/16/2020 - this may change
