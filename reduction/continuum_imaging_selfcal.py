@@ -1016,6 +1016,7 @@ for continuum_ms in continuum_mses:
                    deconvolver='mtmfs',
                    gridder='mosaic',
                    niter=0,
+                   pblimit=impars_finaliter['pblimit'],
                    imsize=impars_finaliter['imsize'],
                    cell=impars_finaliter['cell'],
                    startmodel=startmodel,
