@@ -47,6 +47,7 @@ imaging_parameters = {
     "{0}_{1}_{2}_robust{3}".format(field, band, array, robust): {
         "threshold": "1mJy",  # RMS ~0.5-0.6 mJy
         "pblimit": 0.1,
+        "pbmask": 0.1,
         "niter": 100000,
         "robust": robust,
         "weighting": "briggs",
