@@ -108,7 +108,7 @@ float_cols =  ['$\\theta_{maj}$',
 fwtbl['$\sigma_{MAD}$'] *= 1000
 
 
-formats = {key: lambda x: strip_trailing_zeros('{0:0.2f}'.format(round_to_n(x,2)))
+formats = {key: lambda x: strip_trailing_zeros('{0:0.3f}'.format(round_to_n(x,2)))
            for key in float_cols}
 
 fwtbl.write('selfcal_summary.ecsv', format='ascii.ecsv', overwrite=True)
