@@ -2943,6 +2943,9 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1280, 1280],
     },
+    "W43-MM2_B6_12M_robust0_contsub": {
+        "imsize": [1280, 1280],
+    },
     "W43-MM2_B6_12M_robust0_sio": {
         "threshold": "8.1mJy",  # typical rms: 2.3-2.7 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -3044,21 +3047,21 @@ line_parameters_default = {
 }
 for field in allfields:
     line_parameters_default[field]["12co"]["cubewidth"] = "150km/s"
-    line_parameters_default[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
+    line_parameters_default[field]["ch3cnv8=1"]["cubewidth"] = "150km/s"  # is 150 wide enough?
 line_parameters = copy.deepcopy(line_parameters_default)
 
 line_parameters_custom = {
     "G008.67": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "60km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
     },
     "G010.62": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "60km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
         "n2hp": {"cubewidth": "60km/s"},
@@ -3066,41 +3069,41 @@ line_parameters_custom = {
     "G012.80": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "60km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
     },
     "G327.29": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "70km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "70km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-37km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-37km/s"},
     },
     "G333.60": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "60km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-44km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-44km/s"},
     },
     "G337.92": {
         "12co": {"cubewidth": "150km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-36km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-36km/s"},
     },
     "G338.93": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "60km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-63km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-63km/s"},
         "sio": {"cubewidth": "120km/s"},
@@ -3108,26 +3111,26 @@ line_parameters_custom = {
     "G351.77": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "70km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
     },
     "G353.41": {
         "12co": {"cubewidth": "150km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-17km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-17km/s"},
         "n2hp": {"cubewidth": "32km/s"},
     },
     "W43-MM1": {
         "12co": {"cubewidth": "150km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
         "12co": {"cubewidth": "150km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "91km/s", "width": "0.37km/s"},
@@ -3135,14 +3138,14 @@ line_parameters_custom = {
     },
     "W43-MM3": {
         "12co": {"cubewidth": "150km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "93km/s", "width": "0.37km/s"},
     },
     "W51-E": {
         "12co": {"cubewidth": "150km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
         "n2hp": {"cubewidth": "60km/s"},
@@ -3151,7 +3154,7 @@ line_parameters_custom = {
     "W51-IRS2": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "70km/s"},
-        "ch3cn": {"cubewidth": "150km/s"},
+        "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
         "sio": {"cubewidth": "120km/s"},
