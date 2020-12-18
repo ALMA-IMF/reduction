@@ -132,7 +132,7 @@ wtbl['$\sigma_{MAD}$(bsens)'] *= 1000
 wtbl['$\sigma_{MAD}$(cleanest)'] *= 1000
 
 
-formats = {key: lambda x: ('{0:0.2f}'.format(round_to_n(x,2)))
+formats = {key: lambda x: ('{0:0.3f}'.format(round_to_n(x,2)))
            for key in float_cols}
 
 

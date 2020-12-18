@@ -39,8 +39,10 @@ assert len(wtbl_bsens) == 29
 
 wtbl_bsens['bsens_improvement'] = wtbl_bsens['mad_sample_bsens']/wtbl_bsens['mad_sample_cleanest']
 
-b3style = {'marker':'o', 'markersize':10, 'alpha':0.75, 'markeredgecolor':(0,0,0,0.1), 'linestyle':'none'}
-b6style = {'marker':'s', 'markersize':10, 'alpha':0.75, 'markeredgecolor':(0,0,0,0.1), 'linestyle':'none'}
+b3style = {'marker':'o', 'markersize':8, 'alpha':0.75, 'markerfacecolor': 'tab:orange', 'markeredgecolor':(0.8,0.4445,0,0.1), 'linestyle':'none'}
+b6style = {'marker':'s', 'markersize':8, 'alpha':0.75, 'markerfacecolor': 'tab:blue', 'markeredgecolor':(0.021,0.264,.503,0.1), 'linestyle':'none'}
+b3histstyle = {'facecolor': 'tab:orange', 'edgecolor':b3style['markeredgecolor']}
+b6histstyle = {'facecolor': 'tab:blue', 'edgecolor':b6style['markeredgecolor']}
 
 import pylab as pl
 
@@ -338,8 +340,11 @@ for tb,msk in ((wtbl_bsens, b3bs,), (wtbl_selfcal, b3sc)):
     if any(tb['SensVsReqPost'][msk] < bins_b3.min()) or any(tb['SensVsReqPost'][msk] > bins_b3.max()):
         raise ValueError("bad binning b3")
 
-ax1.hist(wtbl_bsens['SensVsReqPost'][b3bs], bins=bins_b3, alpha=0.5)
-ax1.hist(wtbl_selfcal['SensVsReqPost'][b3sc], bins=bins_b3, alpha=0.5)
+bsenshiststyle = {'facecolor': 'indigo', 'edgecolor': 'purple'}
+cleanesthiststyle = {'facecolor': 'tab:green', 'edgecolor': 'seagreen'}
+
+ax1.hist(wtbl_bsens['SensVsReqPost'][b3bs], bins=bins_b3, alpha=0.9, **bsenshiststyle)
+ax1.hist(wtbl_selfcal['SensVsReqPost'][b3sc], bins=bins_b3, alpha=0.5, **cleanesthiststyle)
 ax1.set_xlabel("Measured Noise / Requested Sensitivity")
 ax1.set_title("B3")
 
@@ -349,8 +354,8 @@ for tb,msk in ((wtbl_bsens, b3bs,), (wtbl_selfcal, b3sc)):
         raise ValueError("bad binning b3")
 
 ax2 = pl.subplot(1,2,2)
-ax2.hist(wtbl_bsens['SensVsReqPost'][b6bs], bins=bins_b6, alpha=0.5, label='BSENS')
-ax2.hist(wtbl_selfcal['SensVsReqPost'][b6sc], bins=bins_b6, alpha=0.5, label='Cleanest')
+ax2.hist(wtbl_bsens['SensVsReqPost'][b6bs], bins=bins_b6, alpha=0.9, label='BSENS', **bsenshiststyle)
+ax2.hist(wtbl_selfcal['SensVsReqPost'][b6sc], bins=bins_b6, alpha=0.5, label='Cleanest', **cleanesthiststyle)
 ax2.set_xlabel("Measured Noise / Requested Sensitivity")
 ax2.set_title("B6")
 pl.legend(loc='best')

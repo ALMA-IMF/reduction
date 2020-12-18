@@ -59,7 +59,7 @@ tbl.add_column(Column(name='dr_improvement_bsens', data=[np.nan]*len(tbl)))
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
     for band in (3,6):
         for config in ("12M",): # "7M12M"):
-            for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits'):
+            for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits', 'model.tt0'):
 
 
                 fns = glob.glob(f"{basepath}/{field}/B{band}/bsens/*_{config}_robust0_*finaliter*.{suffix}")

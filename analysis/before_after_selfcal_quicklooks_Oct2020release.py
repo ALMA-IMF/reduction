@@ -60,7 +60,7 @@ pl.close('all')
 for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W43-MM2 G333.60 G338.93 G353.41".split():
     for band in (3,6):
         for imtype in ('cleanest', 'bsens', ):#'7m12m', ):
-            for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits'):
+            for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits', 'model.tt0'):
 
                 # for not all-in-the-same-place stuff
                 fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*selfcal[0-9]*.{suffix}")
