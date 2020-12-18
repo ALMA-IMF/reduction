@@ -2938,7 +2938,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W43-MM2_B6_12M_robust0": {
-        "threshold": "6mJy",  # "6mJy", #estimated noise: 2.7 mJy, from sio-only cube
+        "threshold": "8.1mJy",  # "6mJy", #estimated noise: 2.7 mJy, from sio-only cube
         # NOTE: 111/113 name ambiguous
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1280, 1280],
