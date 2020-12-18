@@ -2999,17 +2999,23 @@ for key in line_imaging_parameters_custom:
     else:
         line_imaging_parameters[key] = line_imaging_parameters_custom[key]
 
+
 default_lines = {
-    "n2hp": "93.173700GHz",
-    "sio": "217.104984GHz",
-    "h2co303": "218.222195GHz",
-    "12co": "230.538GHz",
-    "13cs": "231.22068520GHz",
-    "h30a": "231.900928GHz",
     "h41a": "92.034434GHz",
+    "ch3cnv8=1": "92.26144GHz",
+    "13cs_2-1": "92.49430800GHz",
+    "n2hp": "93.173700GHz",
+    "ch3cch_62-52": "102.547983GHz",
+    "h2cs_312-211": "104.617040GHz",
+    "oc33s_18-17": "216.14735900GHz",
+    "sio": "217.104984GHz",
+    "h2co_303-202": "218.222195GHz",
     "c18o": "219.560358GHz",
-    "ch3cn": "92.26144GHz",
-    "ch3cch": "102.547983GHz",
+    "so_6-5": "219.94944200GHz",
+    "12co": "230.538GHz",
+    "ocs_19-18": "231.06099340GHz",
+    "13cs_5-4": "231.22068520GHz",
+    "h30a": "231.900928GHz",
 }
 field_vlsr = {
     "W51-E": "55km/s",
@@ -3121,11 +3127,11 @@ line_parameters_custom = {
     },
     "W43-MM2": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "60km/s", "vlsr": "90km/s"},
         "ch3cn": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "91km/s", "width": "0.37km/s"},
+        "13cs_2-1": {"cubewidth": "20km/s"},
     },
     "W43-MM3": {
         "12co": {"cubewidth": "150km/s"},
