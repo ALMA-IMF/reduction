@@ -79,6 +79,12 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 filepath = fn.split("bsens")[0]
 
+                try:
+                    bsens_cube = SpectralCube.read(bsens)
+                except Exception as ex:
+                    log.error(f"Failed to open 'bsens' image {bsens}")
+                    raise ex
+
                 if not os.path.exists(cleanest):
                     # hackaround for mismatched UID names, which shouldn't happen but did
                     ind = cleanest.find('uid')
@@ -108,7 +114,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                         log.warn(f"Found too many matches: {cfns}")
 
                 try:
-                    clean_fh = fits.open(cleanest)
+                    clean_cube = SpectralCube.read(cleanest)
                 except Exception as ex:
                     log.error(f"Failed to open 'cleanest' image {cleanest} (check for a bsens-cleanest mismatch)")
                     print(ex)
