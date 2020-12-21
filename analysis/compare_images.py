@@ -1,4 +1,5 @@
 from spectral_cube import SpectralCube
+from spectral_cube.utils import NoBeamError
 from astropy import visualization
 from astropy.stats import mad_std
 from astropy import units as u
@@ -53,11 +54,15 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
         raise ex
 
     ww = cube_post.wcs
-    beam = cube_post.beam
     pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
-    ppbeam = (beam.sr / pixscale).decompose()
-    assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
-    ppbeam = ppbeam.value
+    try:
+        beam = cube_post.beam
+        ppbeam = (beam.sr / pixscale).decompose()
+        assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+        ppbeam = ppbeam.value
+    except NoBeamError:
+        beam = np.nan*u.sr
+        ppbeam = np.nan
 
     if writediff:
         fits.PrimaryHDU(data=diff,

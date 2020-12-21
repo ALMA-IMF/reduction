@@ -80,7 +80,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 filepath = fn.split("bsens")[0]
 
                 try:
-                    bsens_cube = SpectralCube.read(bsens)
+                    bsens_cube = SpectralCube.read(bsens, format='fits' if 'fits' in bsens else 'casa_image')
                 except Exception as ex:
                     log.error(f"Failed to open 'bsens' image {bsens}")
                     raise ex
@@ -114,7 +114,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                         log.warn(f"Found too many matches: {cfns}")
 
                 try:
-                    clean_cube = SpectralCube.read(cleanest)
+                    clean_cube = SpectralCube.read(cleanest, format='fits' if 'fits' in cleanest else 'casa_image')
                 except Exception as ex:
                     log.error(f"Failed to open 'cleanest' image {cleanest} (check for a bsens-cleanest mismatch)")
                     print(ex)
