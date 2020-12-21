@@ -79,8 +79,6 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 filepath = fn.split("bsens")[0]
 
-                bsens_fh = fits.open(bsens)
-
                 if not os.path.exists(cleanest):
                     # hackaround for mismatched UID names, which shouldn't happen but did
                     ind = cleanest.find('uid')
