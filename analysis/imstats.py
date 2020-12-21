@@ -8,6 +8,7 @@ from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
 from spectral_cube import SpectralCube
+from spectral_cube.utils import NoBeamError
 import scipy
 import scipy.signal
 from scipy import ndimage
@@ -169,21 +170,30 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
 
 def imstats(fn, reg=None):
-    fh = fits.open(fn)
+    try:
+        fh = fits.open(fn)
+        data = fh[0].data
+        ww = wcs.WCS(fh[0].header)
+    except IsADirectoryError:
+        cube = SpectralCube.read(fn, format='casa_image')
+        data = cube[0].value
+        ww = cube.wcs
 
-    bm = Beam.from_fits_header(fh[0].header)
-
-    data = fh[0].data
 
     mad = mad_std(data, ignore_nan=True)
     peak = np.nanmax(data)
     imsum = np.nansum(data)
 
-    ww = wcs.WCS(fh[0].header)
     pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
-    ppbeam = (bm.sr / pixscale).decompose()
-    assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
-    ppbeam = ppbeam.value
+
+    try:
+        bm = Beam.from_fits_header(fh[0].header)
+        ppbeam = (bm.sr / pixscale).decompose()
+        assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+        ppbeam = ppbeam.value
+    except NoBeamError:
+        ppbeam = np.nan
+        bm = Beam(np.nan)
 
 
     meta = {'beam': bm.to_header_keywords(),
@@ -200,7 +210,7 @@ def imstats(fn, reg=None):
 
     if reg is not None:
         reglist = regions.read_ds9(reg)
-        data = fh[0].data.squeeze()
+        data = data.squeeze()
         composite_region = reduce(operator.or_, reglist)
         if hasattr(composite_region, 'to_mask'):
             msk = composite_region.to_mask()
@@ -214,6 +224,8 @@ def imstats(fn, reg=None):
 
     if fn.endswith('.image.tt0') or fn.endswith('.image.tt0.fits') or fn.endswith('.image.tt0.pbcor.fits') or fn.endswith('.image.tt0.pbcor'):
         psf_fn = fn.split(".image.tt0")[0] + ".psf.tt0"
+    elif fn.endswith('.model.tt0') or fn.endswith('.model.tt0.fits') or fn.endswith('.model.tt0.pbcor.fits') or fn.endswith('.model.tt0.pbcor'):
+        psf_fn = fn.split(".model.tt0")[0] + ".psf.tt0"
     elif fn.endswith('.image') or fn.endswith('.image.fits') or fn.endswith('.image.pbcor.fits') or fn.endswith('.image.pbcor'):
         psf_fn = fn.split(".image") + ".psf"
     else:
@@ -687,13 +699,13 @@ document.write(newdocument)
 
 
 
-def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release"):
+def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release", suffix='image.tt0'):
     if 'October31' in basepath:
-        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
+        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.{suffix}*.fits", ditch_suffix=f".{suffix[:-1]}")
     else:
         # extra layer: bsens, cleanest, etc
-        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
-    with open(f'{basepath}/tables/metadata.json', 'w') as fh:
+        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.{suffix}*.fits", ditch_suffix=f".{suffix[:-1]}")
+    with open(f'{basepath}/tables/metadata_{suffix}.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
     requested = get_requested_sens()
@@ -725,11 +737,11 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     tbl.add_column(Column(name='SensVsReq', data=tbl['mad']*1e3/tbl['Req_Sens']))
     tbl.add_column(Column(name='BeamVsReq', data=(tbl['bmaj']*tbl['bmin'])**0.5/tbl['Req_Res']))
 
-    tbl.write(f'{basepath}/tables/metadata.ecsv', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.ecsv', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.html',
               format='ascii.html', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata.tex', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata.js.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.tex', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.js.html',
               format='jsviewer')
 
     return tbl
@@ -753,6 +765,7 @@ if __name__ == "__main__":
 
             os.chdir(basepath)
             tbl = savestats(basepath=basepath)
+            modtbl = savestats(basepath=basepath, suffix='model.tt0')
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
             flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2020' in basepath)
     os.chdir(cwd)
