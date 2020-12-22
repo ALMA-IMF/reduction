@@ -188,20 +188,24 @@ def imstats(fn, reg=None):
 
     pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
 
-    if 'cube' in locals():
-        try:
-            bm = cube.beam
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', UserWarning, append=True)
+        warnings.filterwarnings('ignore', RuntimeWarning, append=True)
+
+        if 'cube' in locals():
+            try:
+                bm = cube.beam
+                ppbeam = (bm.sr / pixscale).decompose()
+                assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+                ppbeam = ppbeam.value
+            except NoBeamError:
+                ppbeam = np.nan
+                bm = Beam(np.nan)
+        else:
+            bm = Beam.from_fits_header(fh[0].header)
             ppbeam = (bm.sr / pixscale).decompose()
             assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
             ppbeam = ppbeam.value
-        except NoBeamError:
-            ppbeam = np.nan
-            bm = Beam(np.nan)
-    else:
-        bm = Beam.from_fits_header(fh[0].header)
-        ppbeam = (bm.sr / pixscale).decompose()
-        assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
-        ppbeam = ppbeam.value
 
 
 
