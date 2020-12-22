@@ -7,6 +7,7 @@ from astropy import wcs
 from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
+from radio_beam.beam import NoBeamException
 from spectral_cube import SpectralCube
 from spectral_cube.utils import NoBeamError, BeamWarning, StokesWarning
 import scipy
@@ -203,12 +204,14 @@ def imstats(fn, reg=None):
                 ppbeam = np.nan
                 bm = Beam(np.nan)
         else:
-            bm = Beam.from_fits_header(fh[0].header)
-            ppbeam = (bm.sr / pixscale).decompose()
-            assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
-            ppbeam = ppbeam.value
-
-
+            try:
+                bm = Beam.from_fits_header(fh[0].header)
+                ppbeam = (bm.sr / pixscale).decompose()
+                assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+                ppbeam = ppbeam.value
+            except NoBeamException:
+                ppbeam = np.nan
+                bm = Beam(np.nan)
 
 
         meta = {'beam': bm.to_header_keywords(),
