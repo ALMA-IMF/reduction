@@ -8,7 +8,7 @@ from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
 from spectral_cube import SpectralCube
-from spectral_cube.utils import NoBeamError
+from spectral_cube.utils import NoBeamError, BeamWarning, StokesWarning
 import scipy
 import scipy.signal
 from scipy import ndimage
@@ -20,6 +20,8 @@ import operator
 import re
 
 warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning, append=True)
+warnings.filterwarnings('ignore', category=BeamWarning, append=True)
+warnings.filterwarnings('ignore', category=StokesWarning, append=True)
 
 
 
@@ -189,6 +191,9 @@ def imstats(fn, reg=None):
     if 'cube' in locals():
         try:
             bm = cube.beam
+            ppbeam = (bm.sr / pixscale).decompose()
+            assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+            ppbeam = ppbeam.value
         except NoBeamError:
             ppbeam = np.nan
             bm = Beam(np.nan)
