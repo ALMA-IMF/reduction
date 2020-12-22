@@ -22,6 +22,7 @@ import re
 warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning, append=True)
 warnings.filterwarnings('ignore', category=BeamWarning, append=True)
 warnings.filterwarnings('ignore', category=StokesWarning, append=True)
+np.errstate(divide='ignore')
 
 
 
