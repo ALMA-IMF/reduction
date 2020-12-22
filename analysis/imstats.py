@@ -765,7 +765,7 @@ if __name__ == "__main__":
                ):
 
             os.chdir(basepath)
-            modtbl = savestats(basepath=basepath, suffix='model.tt0')
+            modtbl = savestats(basepath=basepath, suffix='model.tt0', filetype="")
             tbl = savestats(basepath=basepath)
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
             flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2020' in basepath)
