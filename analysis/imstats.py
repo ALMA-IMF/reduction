@@ -210,17 +210,17 @@ def imstats(fn, reg=None):
 
 
 
-    meta = {'beam': bm.to_header_keywords(),
-            'bmaj': bm.major.to(u.arcsec).value,
-            'bmin': bm.minor.to(u.arcsec).value,
-            'bpa': bm.pa.value,
-            'mad': mad,
-            'peak': peak,
-            'peak/mad': peak / mad,
-            'ppbeam': ppbeam,
-            'sum': imsum,
-            'fluxsum': imsum / ppbeam,
-           }
+        meta = {'beam': bm.to_header_keywords(),
+                'bmaj': bm.major.to(u.arcsec).value,
+                'bmin': bm.minor.to(u.arcsec).value,
+                'bpa': bm.pa.value,
+                'mad': mad,
+                'peak': peak,
+                'peak/mad': peak / mad,
+                'ppbeam': ppbeam,
+                'sum': imsum,
+                'fluxsum': imsum / ppbeam,
+               }
 
     if reg is not None:
         reglist = regions.read_ds9(reg)
