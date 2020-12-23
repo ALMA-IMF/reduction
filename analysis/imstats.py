@@ -731,7 +731,7 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release",
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
                  'bsens', 'pbcor', 'filename']
-    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
+    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'sum', 'mad', 'mad_sample',
                   'std_sample', 'peak/mad', 'psf_secondpeak',
                   'psf_secondpeak_radius', 'psf_secondpeak_sidelobefraction',
                  ]
