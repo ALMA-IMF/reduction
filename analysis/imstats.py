@@ -187,6 +187,8 @@ def imstats(fn, reg=None):
     mad = mad_std(data, ignore_nan=True)
     peak = np.nanmax(data)
     imsum = np.nansum(data)
+    sumgt5sig = np.nansum(data[data>5*mad])
+    sumgt3sig = np.nansum(data[data>3*mad])
 
     pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
 
@@ -224,6 +226,8 @@ def imstats(fn, reg=None):
                 'ppbeam': ppbeam,
                 'sum': imsum,
                 'fluxsum': imsum / ppbeam,
+                'sumgt5sig': sumgt5sig,
+                'sumgt3sig': sumgt3sig,
                }
 
     if reg is not None:
@@ -731,9 +735,10 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release",
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
                  'bsens', 'pbcor', 'filename']
-    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'sum', 'mad', 'mad_sample',
-                  'std_sample', 'peak/mad', 'psf_secondpeak',
-                  'psf_secondpeak_radius', 'psf_secondpeak_sidelobefraction',
+    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'sum', 'fluxsum', 'sumgt3sig',
+                  'sumgt5sig', 'mad', 'mad_sample', 'std_sample', 'peak/mad',
+                  'psf_secondpeak', 'psf_secondpeak_radius',
+                  'psf_secondpeak_sidelobefraction',
                  ]
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
