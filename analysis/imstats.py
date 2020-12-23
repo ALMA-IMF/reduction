@@ -187,8 +187,8 @@ def imstats(fn, reg=None):
     mad = mad_std(data, ignore_nan=True)
     peak = np.nanmax(data)
     imsum = np.nansum(data)
-    sumgt5sig = np.nansum(data[data>5*mad])
-    sumgt3sig = np.nansum(data[data>3*mad])
+    sumgt5sig = np.nansum(data[data > 5*mad])
+    sumgt3sig = np.nansum(data[data > 3*mad])
 
     pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
 
