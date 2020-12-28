@@ -1,7 +1,9 @@
 import numpy as np
+import time
 from astropy import units as u
 import radio_beam
-from astropy import stats
+import regions
+from astropy import stats, convolution
 from spectral_cube import SpectralCube
 import pylab as pl
 import spectral_cube
@@ -48,7 +50,7 @@ cutoutregions = {
         "fk5; box(281.9025, -2.0152, 25\", 25\")",
     ),
     "W51IRS2": (
-        "fk5; box(19:23:39.975,+14:31:08.2,12\",12\")",
+        "fk5; box(19:23:39.975,+14:31:08.2,25\",25\")",
     ),
     "W51E": (
         "fk5; box(19:23:43.93,+14:30:34.8,5\",5\")",
@@ -57,11 +59,146 @@ cutoutregions = {
     ),
 }
 
-def compare_spectral_indices(finaliter_prefix_b3, finaliter_prefix_b6, cutoutregion, fignum=1, stdthresh=2, scalebarlength=5):
+prefixes = {
+    'G328': dict(
+        finaliter_prefix_b3="G328.25/B3/cleanest/G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
+        finaliter_prefix_b6="G328.25/B6/cleanest/G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",),
+    'G333': dict(
+        finaliter_prefix_b6="G333.60/B6/cleanest/G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
+        finaliter_prefix_b3="G333.60/B3/cleanest/G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal5_finaliter",),
+    'G12': dict(
+        finaliter_prefix_b3="G012.80/B3/cleanest/G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal5_finaliter",
+        finaliter_prefix_b6="G012.80/B6/cleanest/G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",),
+    'W51IRS2': dict(
+        finaliter_prefix_b3="W51-IRS2/B3/cleanest/W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+        finaliter_prefix_b6="W51-IRS2/B6/cleanest/W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8_finaliter",),
+    'G008': dict(
+        finaliter_prefix_b3="G008.67/B3/cleanest/G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+        finaliter_prefix_b6="G008.67/B6/cleanest/G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",),
+    'G327': dict(
+        finaliter_prefix_b3="G327.29/B3/cleanest/G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+        finaliter_prefix_b6="G327.29/B6/cleanest/G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",),
+    'G10': dict(
+        finaliter_prefix_b3="G010.62/B3/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal7_finaliter",
+        finaliter_prefix_b6="G010.62/B6/cleanest/G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",),
+    'G337': dict(
+        finaliter_prefix_b3="G337.92/B3/cleanest/G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+        finaliter_prefix_b6="G337.92/B6/cleanest/G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",),
+    'G338': dict(
+        finaliter_prefix_b3="G338.93/B3/cleanest/G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+        finaliter_prefix_b6="G338.93/B6/cleanest/G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",),
+    'G351': dict(
+        finaliter_prefix_b3="G351.77/B3/cleanest/G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
+        finaliter_prefix_b6="G351.77/B6/cleanest/G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",),
+    'G353': dict(
+        finaliter_prefix_b3="G353.41/B3/cleanest/G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+        finaliter_prefix_b6="G353.41/B6/cleanest/G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",),
+    'W43MM3': dict(
+        finaliter_prefix_b3="W43-MM3/B3/cleanest/W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
+        finaliter_prefix_b6="W43-MM3/B6/cleanest/W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",),
+    'W43MM2': dict(
+        finaliter_prefix_b3="W43-MM2/B3/cleanest/W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+        finaliter_prefix_b6="W43-MM2/B6/cleanest/W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",),
+    'W51-E': dict(
+        finaliter_prefix_b3="W51-E/B3/cleanest/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+        finaliter_prefix_b6="W51-E/B6/cleanest/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",),
+}
+
+
+
+
+def alpha_hist(finaliter_prefix_b3, finaliter_prefix_b6, threshold=5,
+               basepath='/home/adam/work/alma-imf/reduction/', las=None):
+    image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube()
+    image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube()
+    image_b3 = image_b3 * u.beam / image_b3.beam.sr
+    image_b6 = image_b6 * u.beam / image_b6.beam.sr
+
+    fieldname = os.path.basename(finaliter_prefix_b6).split("_")[0]
+    print()
+    print(fieldname)
+    print(image_b3)
+    print(image_b6)
+
+    if las:
+        print(f"LAS {las} unsharp masking")
+        t0 = time.time()
+        smb3 = image_b3[0].convolve_to(radio_beam.Beam(las), allow_huge=True)
+        print(f"Convolution of b3: {time.time() - t0} seconds")
+        image_b3 = image_b3 - smb3
+        print(f"Subtraction of convolved slice: {time.time()-t0}")
+        smb6 = image_b6[0].convolve_to(radio_beam.Beam(las), allow_huge=True)
+        image_b6 = image_b6 - smb6
+        dt = time.time() - t0
+        print(f"LAS subtraction took {dt} seconds")
+
+
+    noise_region_b3 = regions.read_ds9(f"{basepath}/reduction/noise_estimation_regions/{fieldname}_B3_noise_sampling.reg")
+    noise_region_b6 = regions.read_ds9(f"{basepath}/reduction/noise_estimation_regions/{fieldname}_B6_noise_sampling.reg")
+
+    beams = radio_beam.Beams(major=u.Quantity([image_b3.beam.major, image_b6.beam.major]),
+                             minor=u.Quantity([image_b3.beam.minor, image_b6.beam.minor]),
+                             pa=u.Quantity([image_b3.beam.pa, image_b6.beam.pa]))
+    commonbeam = radio_beam.commonbeam.commonbeam(beams)
+    print(commonbeam)
+
+    if image_b3.beam.sr < image_b6.beam.sr:
+        header = image_b6[0].header
+    else:
+        header = image_b3[0].header
+
+    print("Convolution and Reprojection")
+    t0 = time.time()
+    image_b3_repr = image_b3[0].convolve_to(commonbeam, allow_huge=True).reproject(header)
+    print(f"B3 reprojection took {time.time()-t0} seconds")
+    t0 = time.time()
+    image_b6_repr = image_b6[0].convolve_to(commonbeam, allow_huge=True).reproject(header)
+    print(f"B6 reprojection took {time.time()-t0} seconds")
+
+    t0 = time.time()
+    noiseim_b3 = image_b3.subcube_from_regions(noise_region_b3)[0].convolve_to(commonbeam, allow_huge=True)
+    noiseim_b6 = image_b6.subcube_from_regions(noise_region_b6)[0].convolve_to(commonbeam, allow_huge=True)
+    print(f"Shape of noiseims; b3={noiseim_b3.shape}, b6={noiseim_b6.shape}.  Subcubes took {time.time()-t0} seconds.")
+
+    t0 = time.time()
+    b3_std = stats.mad_std(noiseim_b3, ignore_nan=True)
+    b6_std = stats.mad_std(noiseim_b6, ignore_nan=True)
+    print(f"mad_std took {time.time()-t0} seconds")
+
+    t0 = time.time()
+    mask = (image_b3_repr > threshold*b3_std) & (image_b6_repr > threshold*b6_std)
+    alpha_b3_b6 = (np.log(image_b3_repr / image_b6_repr) / np.log(image_b3.wcs.wcs.crval[2] / image_b6.wcs.wcs.crval[2])).value
+    alpha_b3_b6[~mask] = np.nan
+    print(f"mask & alpha calc took {time.time()-t0} seconds")
+
+    pl.figure(2, figsize=(8,8)).clf()
+    ax = pl.gca()
+    ax.hist(alpha_b3_b6[mask], bins=np.linspace(-2,5), density=True)
+    ax.set_xlabel("Spectral Index $\\alpha$")
+    ax.set_ylabel("Fraction of Pixels")
+
+    return mask, alpha_b3_b6, image_b3_repr, image_b6_repr
+
+
+def compare_spectral_indices(finaliter_prefix_b3, finaliter_prefix_b6,
+                             cutoutregion, fignum=1, stdthresh=5,
+                             scalebarlength=5,
+                             basepath='/home/adam/work/alma-imf/reduction/', ):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     image_tt1_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     image_tt1_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
+
+    image_b3 = image_b3 * u.beam / image_b3.beam.sr
+    image_b6 = image_b6 * u.beam / image_b6.beam.sr
+    image_tt1_b3 = image_tt1_b3 * u.beam / image_tt1_b3.beam.sr
+    image_tt1_b6 = image_tt1_b6 * u.beam / image_tt1_b6.beam.sr
+
+
+    fieldname = os.path.basename(finaliter_prefix_b6).split("_")[0]
+    print(fieldname)
+    noise_region_b3 = regions.read_ds9(f"{basepath}/reduction/noise_estimation_regions/{fieldname}_B3_noise_sampling.reg")
+    noise_region_b6 = regions.read_ds9(f"{basepath}/reduction/noise_estimation_regions/{fieldname}_B6_noise_sampling.reg")
 
     beams = radio_beam.Beams(major=u.Quantity([image_b3.beam.major, image_b6.beam.major]),
                              minor=u.Quantity([image_b3.beam.minor, image_b6.beam.minor]),
@@ -83,8 +220,10 @@ def compare_spectral_indices(finaliter_prefix_b3, finaliter_prefix_b6, cutoutreg
     alpha_b3 = image_tt1_b3_repr / image_b3_repr
     alpha_b6 = image_tt1_b6_repr / image_b6_repr
 
-    b3_std = stats.mad_std(image_b3_repr.value, ignore_nan=True)
-    b6_std = stats.mad_std(image_b6_repr.value, ignore_nan=True)
+    noiseim_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0', format='casa_image', use_dask=True).subcube_from_regions(noise_region_b3)[0].convolve_to(commonbeam)
+    noiseim_b6 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0', format='casa_image', use_dask=True).subcube_from_regions(noise_region_b6)[0].convolve_to(commonbeam)
+    b3_std = stats.mad_std(noiseim_b3.value, ignore_nan=True)
+    b6_std = stats.mad_std(noiseim_b6.value, ignore_nan=True)
 
     mask = (image_b3_repr.value > stdthresh*b3_std) & (image_b6_repr.value > stdthresh*b6_std)
     alpha_b3_b6 = (np.log(image_b3_repr / image_b6_repr) / np.log(image_b3.wcs.wcs.crval[2] / image_b6.wcs.wcs.crval[2])).value
@@ -140,6 +279,67 @@ if __name__ == "__main__":
     pl.rcParams['image.origin'] = 'lower'
     pl.rcParams['image.interpolation'] = 'none'
     pl.rcParams['figure.facecolor'] = 'w'
+
+    if not locals().get('skip_alphahist'):
+        mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**prefixes['G12'], las=5*u.arcsec)
+
+        data = {}
+        for fieldid, pfxs in prefixes.items():
+            mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**pfxs)
+            data[fieldid] = (mask, alpha_b3_b6)
+            pl.savefig(f"../paper_figures/alpha_histograms/{fieldid}_B3B6_alpha_histogram.pdf", bbox_inches='tight')
+            
+        pl.figure(3, figsize=(16,10)).clf()
+        xs = np.arange(-3,6)
+        for ii,fieldid in enumerate(sorted(data)):
+            mask, alph = data[fieldid]
+            ax = pl.subplot(3,5,ii+2)
+            ax.hist(alph[mask], bins=xs, stacked=True, density=True, label=fieldid, histtype='step')
+            ax.axvline(0, color='k', linestyle='--', zorder=-5)
+            ax.axvline(2, color='k', linestyle='--', zorder=-5)
+            ax.set_ylim(0,1.0)
+            ax.set_xlim(-3,5)
+            if ii >= 9:
+                ax.set_xlabel("Spectral Index $\\alpha$")
+                ax.set_xticks([-2,-1,0,1,2,3,4,5])
+            else:
+                ax.set_xticks([])
+            if (ii+1) % 5 == 0:
+                ax.set_ylabel("Fraction of Pixels")
+            else:
+                ax.set_yticks([])
+            ax.set_title(fieldid)
+        pl.savefig(f"../paper_figures/alpha_histograms/all_B3B6_alpha_histograms.pdf", bbox_inches='tight')
+
+        data_las = {}
+        for fieldid, pfxs in prefixes.items():
+            mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**pfxs, las=5*u.arcsec)
+            data_las[fieldid] = (mask, alpha_b3_b6)
+            pl.savefig(f"../paper_figures/alpha_histograms/{fieldid}_B3B6_alpha_histogram_5as_LAS.pdf", bbox_inches='tight')
+
+        pl.figure(3, figsize=(16,10)).clf()
+        xs = np.arange(-3,6)
+        for ii,fieldid in enumerate(sorted(data_las)):
+            mask, alph = data_las[fieldid]
+            ax = pl.subplot(3,5,ii+2)
+            ax.hist(alph[mask], bins=xs, stacked=True, density=True, label=fieldid, histtype='step')
+            ax.axvline(0, color='k', linestyle='--', zorder=-5)
+            ax.axvline(2, color='k', linestyle='--', zorder=-5)
+            ax.set_ylim(0,1.0)
+            ax.set_xlim(-3,5)
+            if ii >= 9:
+                ax.set_xlabel("Spectral Index $\\alpha$")
+                ax.set_xticks([-2,-1,0,1,2,3,4,5])
+            else:
+                ax.set_xticks([])
+            if (ii+1) % 5 == 0:
+                ax.set_ylabel("Fraction of Pixels")
+            else:
+                ax.set_yticks([])
+            ax.set_title(fieldid)
+        pl.savefig(f"../paper_figures/alpha_histograms/all_B3B6_alpha_histograms_5as_LAS.pdf", bbox_inches='tight')
+        
+
 
     compare_spectral_indices(
         finaliter_prefix_b3="G328.25/B3/cleanest/G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
