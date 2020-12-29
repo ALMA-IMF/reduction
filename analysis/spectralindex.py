@@ -26,7 +26,7 @@ cutoutregions = {
         "fk5; box(239.499, -53.9668, 15\", 15\")",
     ),
     "G327": (
-        "fk5; box(15:53:07,-54:37:10,25\",25\")",
+        "fk5; box(15:53:07,-54:37:10, 45\",45\")",
     ),
     "G333": (
         "fk5; box(245.539, -50.1002, 60\",60\")",
@@ -310,6 +310,23 @@ if __name__ == "__main__":
                 ax.set_yticks([])
             ax.set_title(fieldid)
         pl.savefig(f"../paper_figures/alpha_histograms/all_B3B6_alpha_histograms.pdf", bbox_inches='tight')
+
+        pl.figure(4, figsize=(8,8)).clf()
+        fracs = {key: ((data[key][1] > 2).sum()/np.isfinite(data[key][1]).sum(),
+                       (data[key][1] < 2).sum()/np.isfinite(data[key][1]).sum(),
+                       np.isfinite(data[key][1]).sum()/data[key][1].size
+                      )
+                 for key in data}
+        ff = [fracs[key][1] for key in fracs]
+        dust = [fracs[key][0] for key in fracs]
+        ttl = [fracs[key][2] for key in fracs]
+        pl.scatter(ttl, dust)
+        for key in fracs:
+            tx = pl.annotate(key, (fracs[key][2], fracs[key][0]), fontsize=12)
+            tx.set_horizontalalignment('center')
+        pl.ylabel("Fraction of pixels with $\\alpha>2$")
+        pl.xlabel("Fraction of pixels with $S_\\nu > 5 \sigma$")
+        pl.savefig("../paper_figures/alpha_histograms/spindx_classification_summary.pdf")
 
         data_las = {}
         for fieldid, pfxs in prefixes.items():
