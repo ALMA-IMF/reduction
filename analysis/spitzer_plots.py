@@ -97,6 +97,7 @@ contour_levels = {
     'G338': {'B3': [0.005], 'B6':[0.01]},
     'G351': {'B3': [0.005], 'B6':[0.01]},
     'G353': {'B3': [0.005], 'B6':[0.01]},
+    'W43MM1': {'B3': [0.005], 'B6':[1]},
 }
 
 
@@ -113,6 +114,10 @@ if __name__ == "__main__":
         os.mkdir('spitzer_datapath/fov_plots')
     if not os.path.exists('spitzer_datapath/fov_contour_plots'):
         os.mkdir('spitzer_datapath/fov_contour_plots')
+
+    prefixes['W43MM1'] = dict(
+        finaliter_prefix_b3="W43-MM1/B3/cleanest/W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+        finaliter_prefix_b6="W43-MM2/B6/cleanest/W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",)
 
     for fieldid, pfxs in prefixes.items():
 

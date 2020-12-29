@@ -52,7 +52,7 @@ cutoutregions = {
     "W51IRS2": (
         "fk5; box(19:23:39.975,+14:31:08.2,25\",25\")",
     ),
-    "W51E": (
+    "W51-E": (
         "fk5; box(19:23:43.93,+14:30:34.8,5\",5\")",
         "fk5; box(19:23:43.90,+14:30:26.0,7\",7\")",
         "fk5; box(19:23:42.00,+14:30:36.0,15\",20\")",
@@ -441,19 +441,19 @@ if __name__ == "__main__":
     compare_spectral_indices(
         finaliter_prefix_b3="W51-E/B3/cleanest/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         finaliter_prefix_b6="W51-E/B6/cleanest/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
-        cutoutregion=cutoutregions['W51E'][0],
+        cutoutregion=cutoutregions['W51-E'][0],
         scalebarlength=1)
     pl.savefig(f"{paperpath}/figures/W51Ee2_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="W51-E/B3/cleanest/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         finaliter_prefix_b6="W51-E/B6/cleanest/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
-        cutoutregion=cutoutregions['W51E'][1],
+        cutoutregion=cutoutregions['W51-E'][1],
         scalebarlength=1)
     pl.savefig(f"{paperpath}/figures/W51Ee8_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="W51-E/B3/cleanest/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         finaliter_prefix_b6="W51-E/B6/cleanest/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
-        cutoutregion=cutoutregions['W51E'][2])
+        cutoutregion=cutoutregions['W51-E'][2])
     pl.savefig(f"{paperpath}/figures/W51EIRS1_B3B6_spectral_index.pdf", bbox_inches='tight')
