@@ -4,22 +4,24 @@ from astropy import table
 import requests
 import keyring
 from astropy import units as u
+import datetime
 
 from latex_info import (latexdict, format_float, round_to_n, rounded,
                         rounded_arr, strip_trailing_zeros, exp_to_tex)
 
 latexdict = latexdict.copy()
 
-result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.ecsv',
-                      auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
-with open('metadata_bsens_cleanest.ecsv', 'w') as fh:
-    fh.write(result.text)
+if datetime.datetime.today() > datetime.datetime(year=2021, month=1, day=10):
+    result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.ecsv',
+                          auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
+    with open('metadata_bsens_cleanest.ecsv', 'w') as fh:
+        fh.write(result.text)
 
 
-result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/tables/bandpass_fraction.ecsv',
-                      auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
-with open('bandpass_fraction.ecsv', 'w') as fh:
-    fh.write(result.text)
+    result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/tables/bandpass_fraction.ecsv',
+                          auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
+    with open('bandpass_fraction.ecsv', 'w') as fh:
+        fh.write(result.text)
 
 bp_tbl = Table.read('bandpass_fraction.ecsv')
 bp_tbl['band'] = [f'B{b}' for b in bp_tbl['band']]
