@@ -51,7 +51,9 @@ def get_spitzer_data(crd, size):
 
             return files
 
-def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[0.01], 'B6':[0.01]}):
+def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitzerpath='spitzer_datapath',
+                        spitzer_display_args=dict(stretch='log', min_percent=1, max_percent=99.99, clip=True),
+                        contour_level={'B3':[0.01], 'B6':[0.01]}):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0.fits', use_dask=False, format='fits')
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0.fits', use_dask=False, format='fits')
 
@@ -64,7 +66,9 @@ def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitz
     fig.clf()
     ax = fig.add_subplot(projection=ww.celestial)
 
-    ax.imshow(simple_norm(spitz.data, stretch='log', min_percent=5, max_percent=99.99)(spitz.data.T.swapaxes(0,1)))
+    spitz_data = np.array([simple_norm(x, **spitzer_display_args)(x) for x in spitz.data])
+
+    ax.imshow(spitz_data.T.swapaxes(0,1))
 
     lims = ax.axis()
 
