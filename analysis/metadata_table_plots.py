@@ -3,8 +3,8 @@ from astropy import table
 from astropy.table import Table
 
 import runpy
-runpy.run_path('latex_table.py')
-runpy.run_path('latex_table_bsens.py')
+#runpy.run_path('latex_table.py')
+#runpy.run_path('latex_table_bsens.py')
 
 bp_tbl = Table.read('bandpass_fraction.ecsv')
 bp_tbl['band'] = [f'B{b}' for b in bp_tbl['band']]
@@ -123,31 +123,39 @@ ax2.plot([0,0.001], [0, 0.001], 'k--')
 
 # bsens_rms_change:
 # How much does the RMS noise improve going from cleanest (denominator) to bsens (numerator)?
-fig3 = pl.figure(3, figsize=(15,5))
+fig3 = pl.figure(3, figsize=(6, 6))
 fig3.clf()
-ax1 = pl.subplot(1,3,1)
-ax1.plot(wtbl_bsens['sum_cleanest'][b3]/wtbl_bsens['ppbeam'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style)
-ax1.plot(wtbl_bsens['sum_cleanest'][b6]/wtbl_bsens['ppbeam'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style)
-#ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
-ax1.set_xlabel("Sum (cleanest) [Jy]")
-ax1.set_ylabel("MAD (bsens) / MAD (cleanest)")
-#ax1.add_patch(pl.Rectangle((-0.05,0.2), width=26, height=0.7, facecolor='r', alpha=0.25))
+# these first two panels were exploratory but contained no relevant information.
+# ax1 = pl.subplot(1,3,1)
+# ax1.plot(wtbl_bsens['sum_cleanest'][b3]/wtbl_bsens['ppbeam'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style)
+# ax1.plot(wtbl_bsens['sum_cleanest'][b6]/wtbl_bsens['ppbeam'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style)
+# #ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
+# ax1.set_xlabel("Sum (cleanest) [Jy]")
+# ax1.set_ylabel("MAD (bsens) / MAD (cleanest)")
+# #ax1.add_patch(pl.Rectangle((-0.05,0.2), width=26, height=0.7, facecolor='r', alpha=0.25))
+# 
+# ax2 = pl.subplot(1,3,2)
+# ax2.plot(wtbl_bsens['max_cleanest'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style, label='B3')
+# ax2.plot(wtbl_bsens['max_cleanest'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style, label='B6')
+# #ax2.plot(np.linspace(0, 1), np.linspace(0, 1)*0.17 + 1, 'k--', zorder=-5, alpha=0.5)
+# ax2.set_xlabel("Peak (cleanest)")
+# ax2.set_ylabel("MAD (bsens) / MAD (cleanest)")
+# #ax2.add_patch(pl.Rectangle((-0.05,0.4), width=0.45, height=0.55, facecolor='r', alpha=0.25))
+# 
+# ax3 = pl.subplot(1,3,3)
+ax3 = pl.subplot(1, 1, 1)
+ax3.plot(wtbl_bsens['12Mshort_frac'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], label='B3', **b3style)
+ax3.plot(wtbl_bsens['12Mshort_frac'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], label='B6', **b6style)
 
-ax2 = pl.subplot(1,3,2)
-ax2.plot(wtbl_bsens['max_cleanest'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style, label='B3')
-ax2.plot(wtbl_bsens['max_cleanest'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style, label='B6')
-#ax2.plot(np.linspace(0, 1), np.linspace(0, 1)*0.17 + 1, 'k--', zorder=-5, alpha=0.5)
-ax2.set_xlabel("Peak (cleanest)")
-ax2.set_ylabel("MAD (bsens) / MAD (cleanest)")
-#ax2.add_patch(pl.Rectangle((-0.05,0.4), width=0.45, height=0.55, facecolor='r', alpha=0.25))
-pl.legend(loc='best')
+# theory line: noise ~ 1/sqrt(bw)
+axlims = ax3.axis()
+ax3.plot(np.linspace(0,1), np.linspace(0,1)**0.5, label=r'$\sigma\propto \Delta \nu^{-1/2}$')
+ax3.axis(axlims)
 
-ax3 = pl.subplot(1,3,3)
-ax3.plot(wtbl_bsens['12Mshort_frac'][b3], wtbl_bsens['mad_sample_bsens'][b3]/wtbl_bsens['mad_sample_cleanest'][b3], **b3style)
-ax3.plot(wtbl_bsens['12Mshort_frac'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtbl_bsens['mad_sample_cleanest'][b6], **b6style)
 #ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
 ax3.set_xlabel("Fraction of Bandwidth in 'cleanest'")
 ax3.set_ylabel("MAD (bsens) / MAD (cleanest)")
+pl.legend(loc='best')
 #ax1.add_patch(pl.Rectangle((-0.05,0.2), width=26, height=0.7, facecolor='r', alpha=0.25))
 
 pl.savefig("../datapaper/figures/bsens_rms_change.pdf", bbox_inches='tight')
