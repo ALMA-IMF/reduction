@@ -49,8 +49,8 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
     diff_b3 = bsens_b3 - image_b3
     diff_b6 = bsens_b6 - image_b6
 
-    normpars_b3_default = dict(min_percent=0.1, max_percent=99.9, stretch='asinh')
-    normpars_b6_default = dict(min_percent=0.1, max_percent=99.9, stretch='asinh')
+    normpars_b3_default = dict(min_percent=0.1, max_percent=99.9, stretch='linear')
+    normpars_b6_default = dict(min_percent=0.1, max_percent=99.9, stretch='linear')
 
     if normpars_b3 is not None:
         normpars_b3_default.update(normpars_b3)
