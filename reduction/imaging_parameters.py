@@ -1100,7 +1100,6 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         5: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         6: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
-        7: {"calmode": "ap", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "G010.62_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1155,7 +1154,6 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "40s", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "solint": "25s", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
-        5: {"calmode": "ap", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "G010.62_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1585,7 +1583,6 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "15s", "solnorm": False},
         3: {"calmode": "p", "gaintype": "T", "solint": "5s", "solnorm": False},
         4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False},
-        5: {"calmode": "ap", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G333.60_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1604,7 +1601,6 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "15s", "solnorm": False},
         3: {"calmode": "p", "gaintype": "T", "solint": "5s", "solnorm": False},
         4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": False},
-        5: {"calmode": "ap", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G333.60_B3_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1641,7 +1637,6 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "15s", "solnorm": False},
         3: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "5s", "solnorm": False},
         4: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "int", "solnorm": False},
-        5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G333.60_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1660,7 +1655,7 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "15s", "solnorm": False},
         3: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "5s", "solnorm": False},
         4: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "int", "solnorm": False},
-        5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
+        #5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G333.60_B6_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1814,7 +1809,7 @@ selfcal_pars_custom = {
     "G338.93_B3_12M_robust0_bsens": {
         1: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "inf", "solnorm": True},
         2: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "60s", "solnorm": True},
-        3: {"calmode": "ap", "combine": "scan", "gaintype": "T", "solint": "inf", "solnorm": True},
+        3: {"calmode": "p", "combine": "scan", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G338.93_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2057,8 +2052,8 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        5: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
-        6: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
+        5: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
+        6: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G353.41_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2077,8 +2072,8 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        5: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
-        6: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
+        5: {"calmode": "p", "gaintype": "G", "solint": "inf", "solnorm": False},
+        6: {"calmode": "p", "gaintype": "G", "solint": "inf", "solnorm": False},
     },
     "G353.41_B3_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2115,8 +2110,8 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        5: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
-        6: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
+        5: {"calmode": "p", "gaintype": "G", "solint": "inf", "solnorm": False},
+        6: {"calmode": "p", "gaintype": "G", "solint": "inf", "solnorm": False},
     },
     "G353.41_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2135,8 +2130,8 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
-        5: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
-        6: {"calmode": "ap", "gaintype": "G", "solint": "inf", "solnorm": False},
+        5: {"calmode": "p", "gaintype": "G", "solint": "inf", "solnorm": False},
+        6: {"calmode": "p", "gaintype": "G", "solint": "inf", "solnorm": False},
     },
     "G353.41_B6_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2390,7 +2385,7 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "gaintype": "T", "solint": "200s", "solnorm": True},
         4: {"calmode": "p", "gaintype": "T", "solint": "int", "solnorm": True},
-        5: {"calmode": "ap", "gaintype": "T", "solint": "inf", "solnorm": True},
+        5: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "W43-MM3_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2502,7 +2497,7 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
         6: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "int", "solnorm": True},
-        7: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
+        7: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
     },
     "W51-E_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2674,7 +2669,7 @@ selfcal_pars_custom = {
         5: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
         6: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
         7: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
-        8: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        8: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "W51-IRS2_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2693,9 +2688,9 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         3: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
         4: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": True},
-        5: {"calmode": "ap", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
-        6: {"calmode": "ap", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
-        7: {"calmode": "ap", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        5: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        6: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        7: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "W51-IRS2_B6_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
