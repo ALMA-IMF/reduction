@@ -135,7 +135,7 @@ chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 # (TODO: check whether we actually want to continue sometimes)
 continue_imaging = False
 
-def set_impars(impars, line_name, vis, spwnames=None):
+def set_impars(impars, line_name, vis, linpars, spwnames=None):
     if line_name not in ('full', ) + spwnames:
         local_impars = {}
         if 'width' in linpars:
@@ -411,7 +411,8 @@ for band in band_list:
                 pars_key = pars_key+"_"+line_name
             impars = line_imaging_parameters[pars_key]
 
-            set_impars(impars=impars, line_name=line_name, vis=vis, spwnames=spwnames)
+            set_impars(impars=impars, line_name=line_name, vis=vis,
+                       linpars=linpars, spwnames=spwnames)
 
             if 'imsize' not in impars:
                 impars['imsize'] = imsize
