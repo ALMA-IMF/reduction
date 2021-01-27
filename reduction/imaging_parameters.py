@@ -1655,7 +1655,7 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "15s", "solnorm": False},
         3: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "5s", "solnorm": False},
         4: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "int", "solnorm": False},
-        #5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
+        # 5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G333.60_B6_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2938,9 +2938,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1280, 1280],
     },
-    "W43-MM2_B6_12M_robust0_contsub": {
-        "imsize": [1280, 1280],
-    },
+    "W43-MM2_B6_12M_robust0_contsub": {"imsize": [1280, 1280],},
     "W43-MM2_B6_12M_robust0_sio": {
         "threshold": "8.1mJy",  # typical rms: 2.3-2.7 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
