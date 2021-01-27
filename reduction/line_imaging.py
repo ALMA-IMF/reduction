@@ -407,6 +407,7 @@ for band in band_list:
                                                          arrayname, robust,
                                                          contsub_suffix.replace(".", "_"))
             if (pars_key+"_"+line_name) in line_imaging_parameters:
+                logprint("Using parameter key {0} instead of {1}".format(pars_key+"_"+line_name, pars_key))
                 pars_key = pars_key+"_"+line_name
             impars = line_imaging_parameters[pars_key]
 
