@@ -22,7 +22,7 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
     LOGFILENAME=<name>
         Optional.  If specified, the logger will use this filenmae
     DO_CONTSUB=True / blank
-        If speicified, will continuum-subtract the measurement sets before
+        If specified, will continuum-subtract the measurement sets before
         imaging them.  A file metadata.json containing the paths to the
         cont.dat files is required in this case.
         metadata[band][field]['cont.dat'] = ['/path/to/cont.dat']
