@@ -1,3 +1,4 @@
+# this is a comment at the top
 from astropy.io import fits
 from astropy import stats
 from astropy import units as u
