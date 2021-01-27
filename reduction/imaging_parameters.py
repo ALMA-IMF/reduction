@@ -279,7 +279,7 @@ imaging_parameters_nondefault = {
     "G012.80_B3_7M12M_robust0": {
         "threshold": {0: "10.0mJy", 1: "10mJy", 2: "3mJy", 3: "3mJy", 4: "1mJy", 5: "0.25mJy"},
         "niter": {0: 100, 1: 500, 2: 1000, 3: 1500, 4: 3000, 5: 5000},
-        "scales": {0: [0, 3, 9, 27, 100]},
+        "scales": {0: [0, 3, 9, 27, 100, 2000000]},
     },
     "G012.80_B3_12M_robust0": {
         "threshold": {0: "10.0mJy", 1: "10mJy", 2: "5mJy", 3: "3mJy", 4: "1mJy", 5: "0.25mJy"},
@@ -1655,7 +1655,7 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "15s", "solnorm": False},
         3: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "5s", "solnorm": False},
         4: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "int", "solnorm": False},
-        #5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
+        # 5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G333.60_B6_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2938,9 +2938,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1280, 1280],
     },
-    "W43-MM2_B6_12M_robust0_contsub": {
-        "imsize": [1280, 1280],
-    },
+    "W43-MM2_B6_12M_robust0_contsub": {"imsize": [1280, 1280],},
     "W43-MM2_B6_12M_robust0_sio": {
         "threshold": "8.1mJy",  # typical rms: 2.3-2.7 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
