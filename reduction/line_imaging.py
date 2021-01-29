@@ -44,7 +44,7 @@ except ImportError:
     from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata
     from casatasks import casalog
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
-from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint
+from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint as logprint_
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from unite_contranges import merge_contdotdat
 from taskinit import msmdtool, iatool, mstool
@@ -54,6 +54,9 @@ from getversion import git_date, git_version
 msmd = msmdtool()
 ia = iatool()
 ms = mstool()
+
+def logprint(msg, origin="almaimf_line_imaging", **kwargs):
+    return logprint_(msg, origin=origin, **kwargs)
 
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
@@ -132,7 +135,7 @@ chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 # (TODO: check whether we actually want to continue sometimes)
 continue_imaging = False
 
-def set_impars(impars, line_name, vis, spwnames=None):
+def set_impars(impars, line_name, vis, linpars, spwnames=None):
     if line_name not in ('full', ) + spwnames:
         local_impars = {}
         if 'width' in linpars:
@@ -404,14 +407,23 @@ for band in band_list:
                                                          arrayname, robust,
                                                          contsub_suffix.replace(".", "_"))
             if (pars_key+"_"+line_name) in line_imaging_parameters:
+                logprint("Using parameter key {0} instead of {1}".format(pars_key+"_"+line_name, pars_key))
                 pars_key = pars_key+"_"+line_name
             impars = line_imaging_parameters[pars_key]
 
-            set_impars(impars=impars, line_name=line_name, vis=vis, spwnames=spwnames)
+            set_impars(impars=impars, line_name=line_name, vis=vis,
+                       linpars=linpars, spwnames=spwnames)
 
-            impars['imsize'] = imsize
-            impars['cell'] = cellsize
-            impars['phasecenter'] = phasecenter
+            if 'imsize' not in impars:
+                impars['imsize'] = imsize
+            else:
+                logprint("Overriding imsize={0} to {1}".format(imsize, impars['imsize']))
+            if 'cell' not in impars:
+                impars['cell'] = cellsize
+                logprint("Overriding cell={0} to {1}".format(cellsize, impars['cell']))
+            if 'phasecenter' not in impars:
+                impars['phasecenter'] = phasecenter
+                logprint("Overriding phasecenter={0} to {1}".format(phasecenter, impars['phasecenter']))
             impars['field'] = [field.encode()]
 
             mask_out_endchannels = False
