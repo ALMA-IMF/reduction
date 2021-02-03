@@ -3,8 +3,8 @@ from astropy import table
 from astropy.table import Table
 
 import runpy
-#runpy.run_path('latex_table.py')
-#runpy.run_path('latex_table_bsens.py')
+runpy.run_path('latex_table.py')
+runpy.run_path('latex_table_bsens.py')
 
 bp_tbl = Table.read('bandpass_fraction.ecsv')
 bp_tbl['band'] = [f'B{b}' for b in bp_tbl['band']]
@@ -371,6 +371,3 @@ pl.legend(loc='best')
 
 pl.savefig("../datapaper/figures/noise_excess_bsens_vs_selfcal.pdf", bbox_inches='tight')
 pl.savefig("../datapaper/figures/noise_excess_bsens_vs_selfcal.png", bbox_inches='tight')
-
-
-
