@@ -30,6 +30,7 @@ def parse_fn(fn):
             'selfcaliter': 'sc'+str(selfcaliter),
             'selfcaltype': selfcal_entry.strip(string.digits),
             'bsens': 'bsens' in fn.lower(),
+            'solint': solint,
            }
 
 def get_field_data(fn):
@@ -47,6 +48,9 @@ def get_field_metadata(fn):
         msname = split[0] + "M_selfcal_bsens.ms"
     else:
         msname = split[0] + "M_selfcal.ms"
+
+    if not os.path.exists(msname):
+        return{'MISSING': 'MISSING'}
 
     tb.open(msname+"/FIELD")
     phasedir = tb.getcol("PHASE_DIR")
@@ -83,7 +87,7 @@ if __name__ == "__main__":
     tbl.sort(keys=['region', 'array', 'band', 'bsens', 'selfcaliter', ])
     tbl.write("fields_summary_table.ecsv", overwrite=True)
 
-    shutil.copy("fields_summary_table.ecsv", "/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/")
+    shutil.copy("fields_summary_table.ecsv", "/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/")
 
 
 
@@ -102,11 +106,11 @@ if __name__ == "__main__":
     latexdict['header_start'] = '\label{tab:selfcal_fields}'#\n\\footnotesize'
     latexdict['preamble'] = '\caption{Selfcal Field Inclusion}\n\\resizebox{\\textwidth}{!}{'
     latexdict['col_align'] = 'l'*len(ltbl.columns)
-    latexdict['tabletype'] = 'table'
+    latexdict['tabletype'] = 'table*'
     latexdict['tablefoot'] = ("}\par\n"
-                              "Number of fields included in each self-calibrationt entry"
+                              "Number of fields included in each self-calibration entry"
 
                              )
 
-    ltbl.write("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/selfcal_fields_table.tex",
+    ltbl.write("/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/selfcal_fields_table.tex",
                overwrite=True, latexdict=latexdict)

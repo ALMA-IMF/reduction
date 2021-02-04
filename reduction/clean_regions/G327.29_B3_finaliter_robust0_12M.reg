@@ -1,12 +1,13 @@
-# Region file format: DS9 version 4.1
-# Filename: /home/myso/share/almaimf/G327/band3/imaging_results/12M/G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal1.image.tt0
-global color=green dash=0 dashlist=8 3 delete=1 edit=1 fixed=0 font="helvetica 10 normal roman" highlite=1 include=1 move=1 select=1 source=1 width=1
-fk5
-box(-121.699638,-54.604335,16.95",14.87",0) # text={0.60mJy}
-box(-121.702533,-54.607222,23.23",16.23",0) # text={0.60mJy}
-box(-121.705088,-54.611496,27.47",23.50",0) # text={0.60mJy}
-box(-121.716068,-54.621587,11.11",7.27",0) # text={0.60mJy}
-box(-121.717123,-54.618323,23.38",12.51",0) # text={0.60mJy}
-box(-121.711075,-54.617407,34.19",15.04",0) # text={0.60mJy}
-box(-121.708559,-54.614073,35.94",18.09",0) # text={0.60mJy}
-box(-121.725972,-54.620326,44.84",28.33",0) # text={0.20mJy}
+# Region file format: DS9 CARTA 1.4
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+icrs
+box(238.300391, -54.604354, 16.9500", 14.8700", 0.0) # color=green width=1 text={0.60mJy}
+box(238.297472, -54.607232, 23.2300", 16.2300", 0.0) # color=green width=1 text={0.60mJy}
+box(238.294922, -54.611510, 27.4700", 23.5000", 0.0) # color=green width=1 text={0.60mJy}
+box(238.283942, -54.621602, 11.1100", 7.2700", 0.0) # color=green width=1 text={0.60mJy}
+box(238.282901, -54.618336, 23.3800", 12.5100", 0.0) # color=green width=1 text={0.60mJy}
+box(238.288946, -54.617422, 34.1900", 15.0400", 0.0) # color=green width=1 text={0.60mJy}
+box(238.291464, -54.614077, 35.9400", 18.0900", 0.0) # color=green width=1 text={0.60mJy}
+box(238.274035, -54.620338, 44.8400", 28.3300", 0.0) # color=green width=1 text={0.20mJy}
+ellipse(238.260434, -54.623344, 2.3383", 2.7635", 90.0) # color=#2EE6D6 width=2 text={0.6mJy}
+ellipse(238.251048, -54.626058, 2.1257", 2.7635", 90.0) # color=#2EE6D6 width=2 text={0.6mJy}

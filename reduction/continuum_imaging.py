@@ -28,6 +28,9 @@ USE_SELFCAL_MS is an environmental variable you can set if you want the imaging
 to be done using the selfcal.ms file instead of the default continuum MS file.
 It is primarily for debug purposes and you shouldn't need it.
 """
+raise ValueError("Generally, you should not be using this script for ALMA-IMF data; "
+                 "instead use continuum_imaging_selfcal.py.  If you have good reason "
+                 "to use this script, comment out this Exception and re-run it.")
 
 import os, sys, argparse
 
@@ -223,6 +226,7 @@ for continuum_ms in continuum_mses:
         impars = copy.copy(impars)
         dirty_impars = copy.copy(impars)
         dirty_impars['niter'] = 0
+        dirty_impars['usemask'] = 'pb' # we're not cleaning so we force the mask to pb
         if 'maskname' in dirty_impars:
             maskname = validate_mask_path(dirty_impars['maskname'][0],
                                           os.getenv('ALMAIMF_ROOTDIR'))

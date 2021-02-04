@@ -3,38 +3,278 @@ import warnings
 import json
 from astropy.table import Table,Column
 from astropy import units as u
+from astropy import wcs
 from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
+from radio_beam.beam import NoBeamException
+from spectral_cube import SpectralCube
+from spectral_cube.utils import NoBeamError, BeamWarning, StokesWarning
+import scipy
+import scipy.signal
+from scipy import ndimage
+import regions
 import os
 import glob
+from functools import reduce
+import operator
+import re
+
+warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning, append=True)
+warnings.filterwarnings('ignore', category=BeamWarning, append=True)
+warnings.filterwarnings('ignore', category=StokesWarning, append=True)
+np.seterr(all='ignore')
+
 
 
 def get_requested_sens():
     # use this file's path
     requested_fn = os.path.join(os.path.dirname(__file__), 'requested.txt')
+    if not os.path.exists(requested_fn):
+        requested_fn = '/orange/adamginsburg/ALMA_IMF/reduction/analysis/requested.txt'
     from astropy.io import ascii
     tbl = ascii.read(requested_fn, data_start=2)
     return tbl
 
-def imstats(fn):
-    fh = fits.open(fn)
+def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
+                       max_radial_extent=5*u.arcsec):
+    """ REDUNDANT with get_psf_secondpeak, but this one is better
 
-    bm = Beam.from_fits_header(fh[0].header)
+    Process:
+        1. Find the first minimum of the PSF by taking the radial profile within 50 pixels
+        2. Take the integral of the PSF within that range
+        3. Calculate the residual of the PSF minus the CASA-fitted Gaussian beam
+        4. Integrate that to get the fraction of flux outside the synthesized
+        beam in the main lobe of the dirty beam
+        5. Find the peak and the location of the peak residual
 
-    data = fh[0].data
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        cube = SpectralCube.read(fn,
+                                 format='casa_image' if not fn.endswith('.fits') else 'fits')
+    psfim = cube[0]
+
+    pixscale = wcs.utils.proj_plane_pixel_scales(cube.wcs.celestial)[0] * u.deg
+
+    center = np.unravel_index(np.argmax(psfim), psfim.shape)
+    cy, cx = center
+
+    cutout = psfim[cy-100:cy+101, cx-100:cx+101]
+    psfim = cutout
+    fullbeam = cube.beam.as_kernel(pixscale, x_size=201, y_size=201,)
+
+    shape = cutout.shape
+    sy, sx = shape
+
+    Y, X = np.mgrid[0:sy, 0:sx]
+
+    beam = cube.beam
+
+    center = np.unravel_index(np.argmax(cutout), cutout.shape)
+    cy, cx = center
+
+    # elliptical version...
+    dy = (Y - cy)
+    dx = (X - cx)
+    costh = np.cos(beam.pa)
+    sinth = np.sin(beam.pa)
+    rmajmin = beam.minor / beam.major
+
+    rr = ((dx * costh + dy * sinth)**2 / rmajmin**2 +
+          (dx * sinth - dy * costh)**2 / 1**2)**0.5
+
+    rbin = (rr).astype(np.int)
+
+    # assume the PSF first minimum is within 100 pixels of center
+    radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(100))
+
+    # find the first negative peak (approximately); we include anything
+    # within this radius as part of the main beam
+    first_min_ind = scipy.signal.find_peaks(-radial_mean)[0][0]
+
+    view = (slice(cy-first_min_ind.astype('int'), cy+first_min_ind.astype('int')+1),
+            slice(cx-first_min_ind.astype('int'), cx+first_min_ind.astype('int')+1))
+    data = cutout[view].value
+    bm = fullbeam.array[view]
+    # the data and beam must be concentric
+    # and there must be only one peak location
+    # (these checks are to avoid the even-kernel issue in which the center
+    # of the beam can have its flux spread over four pixels)
+    assert np.argmax(data) == np.argmax(bm)
+    assert (bm.max() == bm).sum() == 1
+
+    bmfit_residual = data-bm/bm.max()
+    radial_mask = rr[view] < first_min_ind
+
+    psf_integral_firstpeak = (data * radial_mask).sum()
+    psf_residual_integral = (bmfit_residual * radial_mask).sum()
+    residual_peak = bmfit_residual.max()
+    residual_peak_loc = rr[view].flat[bmfit_residual.argmax()]
+
+    peakloc_as = (residual_peak_loc * pixscale).to(u.arcsec)
+
+    # pl.figure(3).clf()
+    # bmradmean = ndimage.mean((fullbeam.array/fullbeam.array.max())**2, labels=rbin, index=np.arange(100))
+    # pl.plot(radial_mean)
+    # pl.plot(bmradmean)
+    # pl.figure(1)
+
+    if show_image:
+        import pylab as pl
+        #pl.clf()
+
+        # this finds the second peak
+        # (useful for display)
+        outside_first_peak_mask = (rr > first_min_ind) & (fullbeam.array < 1e-5)
+        #first_sidelobe_ind = scipy.signal.find_peaks(radial_mean * (np.arange(len(radial_mean)) > first_min_ind))[0][0]
+        max_sidelobe = cutout[outside_first_peak_mask].max()
+        max_sidelobe_loc = cutout[outside_first_peak_mask].argmax()
+        r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
+        #r_max_sidelobe = first_sidelobe_ind
+
+        if r_max_sidelobe * pixscale < min_radial_extent:
+            radial_extent = (min_radial_extent / pixscale).decompose().value
+        else:
+            radial_extent = r_max_sidelobe
+        if radial_extent * pixscale > max_radial_extent:
+            radial_extent = (max_radial_extent / pixscale).decompose().value
+
+        bm2 = cube.beam.as_kernel(pixscale,
+                                 x_size=radial_extent.astype('int')*2+1,
+                                 y_size=radial_extent.astype('int')*2+1,
+                                )
+        view = (slice(cy-radial_extent.astype('int'), cy+radial_extent.astype('int')+1),
+                slice(cx-radial_extent.astype('int'), cx+radial_extent.astype('int')+1))
+        bmfit_residual2 = cutout[view].value-bm2.array/bm2.array.max()
+
+        #extent = np.array([-first_min_ind, first_min_ind, -first_min_ind, first_min_ind])*pixscale.to(u.arcsec).value
+        extent = np.array([-radial_extent, radial_extent, -radial_extent, radial_extent])*pixscale.to(u.arcsec).value
+        pl.imshow(bmfit_residual2, origin='lower', interpolation='nearest',
+                  extent=extent, cmap='gray_r')
+        cb = pl.colorbar()
+        pl.matplotlib.colorbar.ColorbarBase.add_lines(self=cb,
+                                                      levels=[max_sidelobe],
+                                                      colors=[(0.1,0.7,0.1,0.9)],
+                                                      linewidths=1)
+        pl.contour(bm2.array/bm2.array.max(), levels=[0.1,0.5,0.9], colors=['r']*3, extent=extent)
+        pl.contour(rr[view], levels=[first_min_ind, r_max_sidelobe],
+                   linestyles=['--',':'],
+                   colors=[(0.2,0.2,1,0.5), (0.1,0.7,0.1,0.5)], extent=extent)
+        pl.xlabel("RA Offset [arcsec]")
+        pl.ylabel("Dec Offset [arcsec]")
+
+    return (residual_peak,
+            peakloc_as.value,
+            psf_residual_integral/psf_integral_firstpeak)
+
+
+
+
+
+
+def imstats(fn, reg=None):
+    try:
+        fh = fits.open(fn)
+        data = fh[0].data
+        ww = wcs.WCS(fh[0].header)
+    except IsADirectoryError:
+        cube = SpectralCube.read(fn, format='casa_image')
+        data = cube[0].value
+        ww = cube.wcs
+
 
     mad = mad_std(data, ignore_nan=True)
     peak = np.nanmax(data)
+    imsum = np.nansum(data)
+    sumgt5sig = np.nansum(data[data > 5*mad])
+    sumgt3sig = np.nansum(data[data > 3*mad])
 
-    return {'beam': bm.to_header_keywords(),
-            'bmaj': bm.major.to(u.arcsec).value,
-            'bmin': bm.minor.to(u.arcsec).value,
-            'bpa': bm.pa.value,
-            'mad': mad,
-            'peak': peak,
-            'peak/mad': peak/mad,
-           }
+    pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=UserWarning, append=True)
+        warnings.filterwarnings('ignore', category=RuntimeWarning, append=True)
+
+        if 'cube' in locals():
+            try:
+                bm = cube.beam
+                ppbeam = (bm.sr / pixscale).decompose()
+                assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+                ppbeam = ppbeam.value
+            except NoBeamError:
+                ppbeam = np.nan
+                bm = Beam(np.nan)
+        else:
+            try:
+                bm = Beam.from_fits_header(fh[0].header)
+                ppbeam = (bm.sr / pixscale).decompose()
+                assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+                ppbeam = ppbeam.value
+            except NoBeamException:
+                ppbeam = np.nan
+                bm = Beam(np.nan)
+
+
+        meta = {'beam': bm.to_header_keywords(),
+                'bmaj': bm.major.to(u.arcsec).value,
+                'bmin': bm.minor.to(u.arcsec).value,
+                'bpa': bm.pa.value,
+                'mad': mad,
+                'peak': peak,
+                'peak/mad': peak / mad,
+                'ppbeam': ppbeam,
+                'sum': imsum,
+                'fluxsum': imsum / ppbeam,
+                'sumgt5sig': sumgt5sig,
+                'sumgt3sig': sumgt3sig,
+               }
+
+    if reg is not None:
+        reglist = regions.read_ds9(reg)
+        data = data.squeeze()
+        composite_region = reduce(operator.or_, reglist)
+        if hasattr(composite_region, 'to_mask'):
+            msk = composite_region.to_mask()
+        else:
+            preg = composite_region.to_pixel(ww.celestial)
+            msk = preg.to_mask()
+        cutout_pixels = msk.cutout(data)[msk.data.astype('bool')]
+
+        meta['mad_sample'] = mad_std(cutout_pixels, ignore_nan=True)
+        meta['std_sample'] = np.nanstd(cutout_pixels)
+
+    if fn.endswith('.image.tt0') or fn.endswith('.image.tt0.fits') or fn.endswith('.image.tt0.pbcor.fits') or fn.endswith('.image.tt0.pbcor'):
+        psf_fn = fn.split(".image.tt0")[0] + ".psf.tt0"
+    elif fn.endswith('.model.tt0') or fn.endswith('.model.tt0.fits') or fn.endswith('.model.tt0.pbcor.fits') or fn.endswith('.model.tt0.pbcor'):
+        psf_fn = fn.split(".model.tt0")[0] + ".psf.tt0"
+    elif fn.endswith('.image') or fn.endswith('.image.fits') or fn.endswith('.image.pbcor.fits') or fn.endswith('.image.pbcor'):
+        psf_fn = fn.split(".image") + ".psf"
+    else:
+        raise IOError("Wrong image type passed to imstats: {fn}".format(fn=fn))
+
+    if os.path.exists(psf_fn):
+        psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction = get_psf_secondpeak(psf_fn)
+        meta['psf_secondpeak'] = psf_secondpeak
+        meta['psf_secondpeak_radius'] = psf_secondpeak_loc
+        meta['psf_secondpeak_sidelobefraction'] = psf_sidelobe1_fraction
+    else:
+        meta['psf_secondpeak'] = np.nan
+        meta['psf_secondpeak_radius'] = np.nan
+        meta['psf_secondpeak_sidelobefraction'] = np.nan
+
+    return meta
+
+"""
+We want to calculate the "epsilon" value from https://ui.adsabs.harvard.edu/abs/1995AJ....110.2037J/abstract
+
+epsilon = C1  / ( R2 - R1 )
+
+C1 is the model convolved with the synthesized beam, summed
+R1 is the residual, summed
+R2 is the dirty map.  It can be calculated as R1 + model convolved with dirty beam.
+epsion = C1 / D1
+"""
 
 def parse_fn(fn):
 
@@ -45,7 +285,8 @@ def parse_fn(fn):
     selfcal_entry = 'selfcal0'
     for entry in split:
         if 'selfcal' in entry and 'pre' not in entry:
-            selfcal_entry = entry
+            #selfcal_entry = entry
+            selfcal_entry = re.compile(".(image|residual|model).tt0(.pbcor)?(.fits)?").sub("", entry)
 
     robust_entry = 'robust999'
     for entry in split:
@@ -53,11 +294,21 @@ def parse_fn(fn):
             robust_entry = entry
 
 
-    selfcaliter = int(selfcal_entry.split('selfcal')[-1])
+    if selfcal_entry == 'postselfcal':
+        selfcaliter = 'Last'
+    else:
+        selfcaliter = int(selfcal_entry.split('selfcal')[-1])
     robust = float(robust_entry.split('robust')[-1])
+
+    # sanity check: I was getting a lot of sc0's
+    if 'finaliter' in fn:
+        assert selfcaliter != 0
+
+    muid = "_".join(split[2:3]+split[5:7])
 
     return {'region': split[0],
             'band': split[1],
+            'muid': muid,
             'array': '12Monly' if '12M' in split else '7M12M' if '7M12M' in split else '????',
             'selfcaliter': 'sc'+str(selfcaliter),
             'robust': 'r'+str(robust),
@@ -73,6 +324,11 @@ def assemble_stats(globstr, ditch_suffix=None):
     allstats = []
 
     for fn in ProgressBar(glob.glob(globstr)):
+        if fn.endswith('diff.fits'):
+            continue
+        if fn.count('.fits') > 1:
+            # these are diff images, or something like that
+            continue
         if ditch_suffix is not None:
             meta = parse_fn(fn.split(ditch_suffix)[0])
             # don't do this on the suffix-ditched version
@@ -80,10 +336,67 @@ def assemble_stats(globstr, ditch_suffix=None):
         else:
             meta = parse_fn(fn)
         meta['filename'] = fn
-        stats = imstats(fn)
+        stats = imstats(fn, reg=get_noise_region(meta['region'], meta['band']))
         allstats.append({'meta': meta, 'stats': stats})
 
     return allstats
+
+
+def get_noise_region(field, band):
+    # one directory up is "reduction"
+    try:
+        basepath = os.path.dirname(__file__) + "/../reduction/"
+        noisepath = os.path.join(basepath, 'noise_estimation_regions')
+        assert os.path.exists(noisepath)
+    except AssertionError:
+        noisepath = '/orange/adamginsburg/ALMA_IMF/reduction/reduction/noise_estimation_regions'
+
+
+    regfn = f"{noisepath}/{field}_{band}_noise_sampling.reg"
+
+    if os.path.exists(regfn):
+        return regfn
+
+
+
+def get_psf_secondpeak_old(fn, neighborhood_size=5, threshold=0.01):
+
+    from scipy import ndimage
+    from scipy.ndimage import filters
+
+    if fn.endswith('fits'):
+        data = fits.getdata(fn)
+    else:
+        from casatools import image
+        ia = image()
+        ia.open(fn)
+        data = ia.getchunk()
+        ia.close()
+
+    if data.ndim > 2:
+        data = data.squeeze()
+    if data.ndim > 2:
+        data = data[0,:,:]
+
+    data_max = filters.maximum_filter(data, neighborhood_size)
+
+    maxima = (data == data_max)
+    data_min = filters.minimum_filter(data, neighborhood_size)
+    diff = ((data_max - data_min) > threshold)
+    maxima[diff == 0] = 0
+
+    labeled, num_objects = ndimage.label(maxima)
+    slices = ndimage.find_objects(labeled)
+    pkval = [data[slc].max() for slc in slices]
+
+    if len(pkval) >= 2:
+        secondmax = sorted(pkval)[-2]
+        return secondmax
+    else:
+        return np.nan
+
+
+
 
 class MyEncoder(json.JSONEncoder):
     "https://stackoverflow.com/a/27050186/814354"
@@ -97,16 +410,40 @@ class MyEncoder(json.JSONEncoder):
         else:
             return super(MyEncoder, self).default(obj)
 
-def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_):
-    base_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true"
-    form_url_dict = {#"868884739":"{reviewer}",
-                     "639517087": "{field}",
-                     "400258516": "{band}",
-                     "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
-                     "312922422": "{array}",
-                     "678487127": "{robust}",
-                     #"1301985958": "{comment}",
-                    }
+def make_quicklook_analysis_form(filename, metadata, savepath, prev, next_,
+                                 base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true"):
+
+    if '1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug' in base_form_url:
+        #entry.868884739: reviwername
+        #entry.1301985958: comment
+        #entry.457220938.other_option_response: goodenoughforrelease
+        #entry.457220938: __other_option__
+        #entry.639517087: field
+        #entry.400258516: 3
+        #entry.841871158: selfcaliter
+        #entry.312922422: 12M
+        #entry.678487127: -2
+        #fvv: 1
+        #draftResponse: [null,null,"6280405489446951000"]
+        #pageHistory: 0
+        #fbzx: 6280405489446951000
+        form_url_dict = {#"868884739":"{reviewer}",
+                         "639517087": "{field}",
+                         "400258516": "{band}",
+                         "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
+                         "312922422": "{array}",
+                         "678487127": "{robust}",
+                         #"1301985958": "{comment}",
+                        }
+    elif '1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2' in base_form_url:
+        form_url_dict = {#"868884739":"{reviewer}",
+                         "639517087": "{field}",
+                         "400258516": "{band}",
+                         "841871158": "{selfcal}" if isinstance(metadata['selfcal'], int) else "preselfcal",
+                         "312922422": "{array}",
+                         "678487127": "{robust}",
+                         #"1301985958": "{comment}",
+                        }
     form_url = base_form_url + "".join(f'&entry.{key}={value}' for key,value in form_url_dict.items())
 
     template = """
@@ -150,7 +487,10 @@ def get_selfcal_number(fn):
     except:
         return 0
 
-def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
+def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/",
+                        base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true",
+                        dontskip_noresid=False
+                       ):
     import glob
     from diagnostic_images import load_images, show as show_images
     from astropy import visualization
@@ -164,8 +504,9 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         pass
 
 
+
     filedict = {(field, band, config, robust, selfcal):
-        glob.glob(f"{field}/B{band}/{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
+        glob.glob(f"{field}/B{band}/{imtype}{field}*_B{band}_*_{config}_robust{robust}*selfcal{selfcal}*.image.tt0*.fits")
                 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
                 for band in (3,6)
                 #for config in ('7M12M', '12M')
@@ -173,6 +514,7 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                 #for robust in (-2, 0, 2)
                 for robust in (0,)
                 for selfcal in ("",) + tuple(range(0,9))
+                for imtype in (('',) if 'October31' in basepath else ('cleanest/', 'bsens/'))
                }
     badfiledict = {key: val for key, val in filedict.items() if len(val) == 1}
     print(f"Bad files: {badfiledict}")
@@ -197,6 +539,8 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
 
         image = fn
         basename,suffix = image.split(".image.tt0")
+        if 'diff' in suffix:
+            continue
         outname = basename.split("/")[-1]
 
         if prev == outname+".html":
@@ -238,14 +582,16 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
         # (this call inplace-modifies logn, according to the docs)
         if 'residual' in imgs:
             norm(imgs['residual'][imgs['residual'] == imgs['residual']])
+            imnames_toplot = ('mask', 'model', 'image', 'residual')
+        elif 'image' in imgs and dontskip_noresid:
+            imnames_toplot = ('image', 'mask',)
+            norm(imgs['image'][imgs['image'] == imgs['image']])
         else:
-            print(f"Skipped {fn} because no residual was found.  imgs.keys={imgs.keys()}")
+            print(f"Skipped {fn} because no image OR residual was found.  imgs.keys={imgs.keys()}")
             continue
-        #elif 'image' in imgs:
-        #    norm(imgs['image'][imgs['image'] == imgs['image']])
         pl.close(1)
         pl.figure(1, figsize=(14,6))
-        show_images(imgs, norm=norm, imnames_toplot=('mask', 'model', 'image', 'residual'))
+        show_images(imgs, norm=norm, imnames_toplot=imnames_toplot)
 
         pl.savefig(f"{savepath}/{outname}.png",
                    dpi=150,
@@ -263,6 +609,7 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
                                      savepath=savepath,
                                      prev=prev,
                                      next_=next_,
+                                     base_form_url=base_form_url
                                     )
         metadata['outname'] = outname
         metadata['suffix'] = suffix
@@ -274,6 +621,8 @@ def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October3
 
     #make_rand_html(savepath)
     make_index(savepath, flist)
+
+    return flist
 
 def make_index(savepath, flist):
     css = """
@@ -312,9 +661,10 @@ def make_index(savepath, flist):
         for metadata in flist:
             filename = metadata['outname']+".html"
             meta_str = (f"{metadata['field']}_{metadata['band']}" +
-                        (f"_selfcal{metadata['selfcal']}"
-                         if isinstance(metadata['selfcal'], int) else
-                         "_preselfcal") +
+                        f"_selfcal{metadata['selfcal']}"
+                        # no preselfcal in quicklooks now... not sure what this is going to do
+                         #if isinstance(metadata['selfcal'], int) else
+                         #"_preselfcal") +
                         f"_{metadata['array']}_robust{metadata['robust']} "
                         f"{' finaliter' if metadata['finaliter'] else ''}"
                         f"{metadata['suffix']}")
@@ -371,20 +721,25 @@ document.write(newdocument)
 
 
 
-def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release"):
-    if 'October' in basepath:
-        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
+def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release",
+              suffix='image.tt0', filetype=".fits"):
+    if 'October31' in basepath:
+        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.{suffix}*{filetype}", ditch_suffix=f".{suffix[:-1]}")
     else:
         # extra layer: bsens, cleanest, etc
-        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
-    with open(f'{basepath}/metadata.json', 'w') as fh:
+        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.{suffix}*{filetype}", ditch_suffix=f".{suffix[:-1]}")
+    with open(f'{basepath}/tables/metadata_{suffix}.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
     requested = get_requested_sens()
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
                  'bsens', 'pbcor', 'filename']
-    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'peak/mad']
+    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'sum', 'fluxsum', 'sumgt3sig',
+                  'sumgt5sig', 'mad', 'mad_sample', 'std_sample', 'peak/mad',
+                  'psf_secondpeak', 'psf_secondpeak_radius',
+                  'psf_secondpeak_sidelobefraction',
+                 ]
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
 
@@ -396,7 +751,7 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
             print(f"Skipped {entry['meta']['region']}")
             continue
         rows += [[entry['meta'][key] for key in meta_keys] +
-                 [entry['stats'][key] for key in stats_keys] +
+                 [entry['stats'][key] if key in entry['stats'] else np.nan for key in stats_keys] +
                  [requested_this[key][0] for key in req_keys if band in key]
                 ]
 
@@ -406,19 +761,35 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     tbl.add_column(Column(name='SensVsReq', data=tbl['mad']*1e3/tbl['Req_Sens']))
     tbl.add_column(Column(name='BeamVsReq', data=(tbl['bmaj']*tbl['bmin'])**0.5/tbl['Req_Res']))
 
-    tbl.write(f'{basepath}/metadata.ecsv', overwrite=True)
-    tbl.write(f'{basepath}/metadata.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.ecsv', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.html',
               format='ascii.html', overwrite=True)
-    tbl.write(f'{basepath}/metadata.tex', overwrite=True)
-    tbl.write(f'{basepath}/metadata.js.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.tex', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.js.html',
               format='jsviewer')
 
     return tbl
 
 if __name__ == "__main__":
     import socket
+    cwd = os.getcwd()
     if 'ufhpc' in socket.gethostname():
-        for basepath in ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
-                         "/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/"):
+        for basepath,formid in (
+                #("/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/",
+                ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/",
+                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                #("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/",
+                #"1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                ("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/",
+                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
+                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+               #("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
+               ):
+
+            os.chdir(basepath)
+            modtbl = savestats(basepath=basepath, suffix='model.tt0', filetype="")
             tbl = savestats(basepath=basepath)
-            make_analysis_forms(basepath=basepath)
+            base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
+            flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2020' in basepath)
+    os.chdir(cwd)

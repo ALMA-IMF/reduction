@@ -1,0 +1,6 @@
+# Region file format: DS9 version 4.1
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+fk5
+box(16:40:33.875,-45:41:38.595,18.084",17.688",0) # text={5mJy}
+box(16:40:33.472,-45:42:07.767,18.084",17.688",0) # text={5mJy}
+box(16:40:36.250,-45:41:38.462,10.030",13.200",0) # text={5mJy}

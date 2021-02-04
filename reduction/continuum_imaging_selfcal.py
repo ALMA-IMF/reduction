@@ -121,7 +121,7 @@ from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
 
-from tasks import tclean, plotms, split
+from tasks import tclean, plotms, split, flagdata
 
 from clearcal_cli import clearcal_cli as clearcal
 from gaincal_cli import gaincal_cli as gaincal
@@ -266,6 +266,7 @@ for continuum_ms in continuum_mses:
         selfcal_ms = basename+"_"+arrayname+"_selfcal_bsens.ms"
     else:
         selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
+
     if not os.path.exists(selfcal_ms):
 
         logprint("Did not find selfcal ms.  Creating new one: "
@@ -312,6 +313,11 @@ for continuum_ms in continuum_mses:
 
     logprint("Selfcal MS is: "
              "{0}".format(selfcal_ms), origin='contim_selfcal')
+    assert os.path.exists(selfcal_ms)
+
+    flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
+    if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -535,7 +541,7 @@ for continuum_ms in continuum_mses:
                                   phasecenter, maskname,
                                   antennae)
 
-        logprint("Skipped completed file {0} (dirty),"
+        logprint("Skipped completed file {0},"
                  " populated model column".format(imname),
                  origin='almaimf_cont_selfcal')
 
@@ -570,11 +576,15 @@ for continuum_ms in continuum_mses:
 
     okfields_list = []
     cals = []
+    skipped_any = False
 
     for selfcaliter in selfcalpars.keys():
 
         logprint("Gaincal iteration {0}".format(selfcaliter),
                  origin='contim_selfcal')
+
+        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
+                                                              selfcaliter)
 
         # iteration #1 of phase-only self-calibration
         caltype = 'amp' if 'a' in selfcalpars[selfcaliter]['calmode'] else 'phase'
@@ -592,6 +602,7 @@ for continuum_ms in continuum_mses:
                      origin='contim_selfcal')
 
         cals.append(caltable)
+
 
         # set up the imaging parameters for this round, allowing for a flexible definition
         # with either, e.g. {'niter': 1000} or {'niter': {1:1000, 2:100000, 3:999999}} etc
@@ -621,6 +632,24 @@ for continuum_ms in continuum_mses:
                 del impars_thisiter[key]
 
 
+        if os.path.exists(imname+".image.tt0"):
+            with open(caltable+".fields", 'r') as fh:
+                okfields_str = fh.read()
+            okfields_list.append(okfields_str)
+            skipped_any = True
+            logprint("Skipped gaincal iteration {0} - already done".format(selfcaliter),
+                     origin='contim_selfcal')
+            impars_lastiter = impars_thisiter
+            continue
+        elif skipped_any:
+            if not dryrun:
+                imname_lastiter = contimagename+"_robust{0}_selfcal{1}".format(robust,
+                                                                               selfcaliter-1)
+                populate_model_column(imname_lastiter, selfcal_ms, field,
+                                      impars_lastiter, phasecenter, maskname,
+                                      antennae)
+
+
         # start from previous model to save time
         # (in principle, should converge anyway)
         if selfcaliter == 1:
@@ -630,20 +659,23 @@ for continuum_ms in continuum_mses:
             modelname = [contimagename+"_robust{0}_selfcal{1}.model.tt0".format(robust, selfcaliter-1),
                          contimagename+"_robust{0}_selfcal{1}.model.tt1".format(robust, selfcaliter-1)]
 
-        imname = contimagename+"_robust{0}_selfcal{1}".format(robust,
-                                                              selfcaliter)
 
         if not os.path.exists(imname+".image.tt0"):
 
             if 'minsnr' in selfcalpars[selfcaliter]:
-                minsnr = selfcalpars[selfcaliter]['minsnr']
+                minsnr = selfcalpars[selfcaliter].pop('minsnr')
             else:
                 minsnr = 5
 
-            okfields,notokfields = goodenough_field_solutions(caltable,
-                                                              minsnr=minsnr)
-            logprint("Fields {0} had min snr 5, fields {1} did not"
-                     .format(okfields, notokfields), origin='contim_selfcal')
+            if not selfcalpars[selfcaliter].get('ignore_selfcalheuristics'):
+                okfields,notokfields = goodenough_field_solutions(caltable,
+                                                                  minsnr=minsnr)
+                logprint("Fields {0} had min snr {2}, fields {1} did not"
+                         .format(okfields, notokfields, minsnr), origin='contim_selfcal')
+            else:
+                tb.open(caltable)
+                okfields = np.unique(tb.getcol('FIELD_ID'))
+                tb.close()
             if len(okfields) == 0:
                 if selfcal_field_id is None:
                     logprint("All fields flagged out of gaincal solns!",
@@ -666,11 +698,15 @@ for continuum_ms in continuum_mses:
                 fh.write(okfields_str)
             okfields_list.append(okfields_str)
 
+            # check that there is an appropriate number of okfield_lists and calibration tables
+            logprint("Using okfield_list = {0} matched with cals {1}".format(okfields_list, cals),
+                     origin='contim_selfcal')
+            assert len(okfields_list) == len(cals)
+
             if not dryrun:
                 clearcal(vis=selfcal_ms, addmodel=True)
                 # use gainfield so we interpolate the good solutions to the other
                 # fields
-                assert len(okfields_list) == len(cals)
                 applycal(vis=selfcal_ms,
                          gainfield=okfields_list,
                          gaintable=cals,
@@ -678,9 +714,12 @@ for continuum_ms in continuum_mses:
                          applymode='calonly',
                          calwt=False)
 
-            # do not run the clean if no mask exists
-            assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
+            if maskname:
+                # do not run the clean if no mask exists
+                assert os.path.exists(maskname), "Mask {0} was not found.".format(maskname)
 
+            # Note Sep 6, 2020: the comment below doesn't make sense to me;
+            # we are in a block that _will not_ be executed if image.tt0 exists.
             # do this even if the output file exists: we need to populate the
             # modelcolumn
             logprint("Imaging parameters are: {0} for image name {1}".format(impars_thisiter, imname),
@@ -728,11 +767,13 @@ for continuum_ms in continuum_mses:
                     populate_model_column(imname, selfcal_ms, field, impars_thisiter,
                                           phasecenter, maskname,
                                           antennae)
-
         else:
+            with open(caltable+".fields", 'r') as fh:
+                okfields_str = fh.read()
+            okfields_list.append(okfields_str)
             if not dryrun:
-                populate_model_column(imname, selfcal_ms, field, impars_thisiter,
-                                      phasecenter, maskname,
+                populate_model_column(imname, selfcal_ms, field,
+                                      impars_thisiter, phasecenter, maskname,
                                       antennae)
 
 
@@ -791,7 +832,7 @@ for continuum_ms in continuum_mses:
                  interp="linear", applymode='calonly', calwt=False)
 
 
-    for robust in (0, -2, 2):
+    for robust in (0, -2, 2, -1, 1, -0.5, 0.5):
         logprint("Imaging self-cal iter {0} (final) with robust {1}"
                  .format(selfcaliter, robust),
                  origin='contim_selfcal')
@@ -846,6 +887,7 @@ for continuum_ms in continuum_mses:
 
         for key, val in impars_finaliter.items():
             if isinstance(val, dict):
+                logprint("dictionary being updated from: {0}".format(val))  # DEBUG
                 impars_finaliter[key] = val['final'] if 'final' in val else val[selfcaliter]
 
         finaliterimname = contimagename+"_robust{0}_selfcal{1}_finaliter".format(robust,
@@ -935,8 +977,72 @@ for continuum_ms in continuum_mses:
             from astropy.io import fits
             fh = fits.open(imname+".image.tt0.fits")
             fh[0].data = post-pre
-            fh.writeto(imname.replace("post", "post-pre")+".fits")
+            fh.writeto(imname.replace("post", "post-pre")+".fits", overwrite=True)
 
+    # after all is done, use the final model as an input to the pre-selfcal model
+    # and run 0 iterations of clean so we can get a 'pure' comparison of the self-cal
+    # result to the original result
+    imname = contimagename+"_robust0_preselfcal_finalmodel"
+    if not os.path.exists(imname+".image.tt0"):
+        logprint("(finalmodel, preselfcal-) Imaging parameters are hard-coded",
+                 origin='almaimf_cont_selfcal')
+
+        startmodel = [contimagename+"_robust{0}_selfcal{1}_finaliter.model.tt0".format(0, selfcaliter),
+                      contimagename+"_robust{0}_selfcal{1}_finaliter.model.tt1".format(0, selfcaliter)]
+
+        pars_key = "{0}_{1}_{2}_robust{3}".format(field, band, arrayname, 0)
+        if do_bsens and (pars_key+"_bsens") in imaging_parameters:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key+"_bsens"])
+        else:
+            impars_finaliter = copy.copy(imaging_parameters[pars_key])
+
+        if not dryrun:
+            tclean(vis=selfcal_ms,
+                   field=field.encode(),
+                   imagename=imname,
+                   phasecenter=phasecenter,
+                   outframe='LSRK',
+                   veltype='radio',
+                   interactive=False,
+                   antenna=antennae,
+                   savemodel='none',
+                   datacolumn='data',
+                   pbcor=True,
+                   mask='',
+                   usemask=None,
+                   weighting='briggs',
+                   robust=0,
+                   specmode='mfs',
+                   deconvolver='mtmfs',
+                   gridder='mosaic',
+                   niter=0,
+                   pblimit=impars_finaliter['pblimit'],
+                   imsize=impars_finaliter['imsize'],
+                   cell=impars_finaliter['cell'],
+                   startmodel=startmodel,
+                  )
+            test_tclean_success()
+
+            ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
+            preselfcal_finalmodel_data = ia.getchunk()
+            ia.close()
+
+            finaliter_selfcal = contimagename+"_robust0_selfcal{0}_finaliter.image.tt0".format(selfcaliter)
+
+            ia.open(finaliter_selfcal)
+            finaliter_selfcal_data = ia.getchunk()
+            ia.close()
+
+            exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
+            exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
+
+            from astropy.io import fits
+            fh = fits.open(imname+".image.tt0.fits")
+            fh[0].data = finaliter_selfcal_data - preselfcal_finalmodel_data
+            fh.writeto(contimagename+"robust0_selfcal{0}_finaliter_minus_preselfcal.fits".format(selfcaliter), overwrite=True)
 
     logprint("Completed band {0}".format(band),
              origin='contim_selfcal')
