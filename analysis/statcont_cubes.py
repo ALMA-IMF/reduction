@@ -34,7 +34,7 @@ if __name__ == "__main__":
         memlim_total = int(os.getenv('SLURM_MEM_PER_NODE')) / 1024 # GB
         ntasks = int(os.getenv('SLURM_NTASKS'))
         memlim = memlim_total / ntasks
-        print(f"Memory limit is {memlim}")
+        print(f"Memory limit is {memlim} GB")
     else:
         memlim = 1
         ntasks = 8
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     # simpler approach
     #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-    filenames = [f'{basepath}/fn' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
+    filenames = [f'{basepath}/{fn}' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
 
     # use tbl, ignore 7m12m
     sizes = {ii: get_size(fn)
