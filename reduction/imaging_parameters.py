@@ -3046,7 +3046,7 @@ line_parameters = copy.deepcopy(line_parameters_default)
 line_parameters_custom = {
     "G008.67": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "60km/s"},
+        "sio": {"cubewidth": "80km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
