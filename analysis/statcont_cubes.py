@@ -40,9 +40,9 @@ if __name__ == "__main__":
         ntasks = 8
     client = Client(memory_limit=f'{memlim}GB', n_workers=ntasks)
     nworkers = len(client.scheduler_info()['workers'])
-    print(f"Client schedular info: {client.scheduler_info()['services']}")
-    print(f"Number of workers: {nworkers}")
-    print(f"Client schedular info: {client.scheduler_info()}")
+    print(f"Client scheduler info: {client.scheduler_info()['services']}")
+    print(f"Number of workers: {nworkers}  (should be equal to ntasks={ntasks})")
+    print(f"Client scheduler info: {client.scheduler_info()}")
     print(f"Client vers: {client.get_versions(check=True)}")
     if os.getenv('ENVIRONMENT') == 'BATCH':
         pass
