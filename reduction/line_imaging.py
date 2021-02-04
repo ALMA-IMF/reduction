@@ -140,7 +140,7 @@ def set_impars(impars, line_name, vis, linpars, spwnames=None):
         local_impars = {}
         if 'width' in linpars:
             local_impars['width'] = linpars['width']
-        else:
+        elif 'restfreq' in linpars:
             # calculate the channel width
             chanwidths = []
             for vv in vis:
@@ -172,6 +172,8 @@ def set_impars(impars, line_name, vis, linpars, spwnames=None):
             if np.any(np.array(chanwidths) - chanwidth > 1e-4):
                 raise ValueError("Varying channel widths.")
             local_impars['width'] = '{0:.2f}km/s'.format(np.round(chanwidth, 2))
+        else:
+            raise ValueError("linpars (the line-specific parameters) were not set correctly")
 
         local_impars['restfreq'] = linpars['restfreq']
         # calculate vstart
@@ -273,6 +275,7 @@ for band in band_list:
                 elif only_7m:
                     vis = [ms_ for ms_ in vis if is_7m(ms_)]
 
+            linpars = {}
             # load in the line parameter info
             if line_name not in ('full', ) + spwnames:
                 linpars = line_parameters[field][line_name]
