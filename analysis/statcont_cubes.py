@@ -34,6 +34,7 @@ if __name__ == "__main__":
         memlim_total = int(os.getenv('SLURM_MEM_PER_NODE')) / 1024 # GB
         ntasks = int(os.getenv('SLURM_NTASKS'))
         memlim = memlim_total / ntasks
+        print(f"Memory limit is {memlim}")
     else:
         memlim = 1
         ntasks = 8
