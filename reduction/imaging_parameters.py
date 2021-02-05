@@ -2890,8 +2890,10 @@ line_imaging_parameters_custom = {
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G338.93_B6_12M_robust0_sio": {
-        "threshold": "18mJy",  # typical rms in 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "18mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+        #"usemask":"user",
+        #"mask":"G338.93_B6_spw1_12M_sio.image_2sigma_e3_d8.mask",
     },
     "G351.77_B3_12M_robust0": {
         "threshold": "6mJy",
@@ -2989,11 +2991,18 @@ line_imaging_parameters_custom = {
 }
 
 
+linelist = ["h41a","ch3cnv8=1","13cs_2-1","n2hp","ch3cch_62-52","h2cs_312-211","oc33s_18-17","sio","h2co_303-202","c18o","so_6-5","12co","ocs_19-18","13cs_5-4","h30a"]
+
 for key in line_imaging_parameters_custom:
     if key in line_imaging_parameters:
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     else:
-        line_imaging_parameters[key] = line_imaging_parameters_custom[key]
+        for linename in linelist:
+            if linename in key:
+                key_noline = key.replace('_'+linename,'')
+                line_imaging_parameters[key] = line_imaging_parameters_default[key_noline]
+                line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
+        #line_imaging_parameters[key] = line_imaging_parameters_custom[key]
 
 
 default_lines = {
