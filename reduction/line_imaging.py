@@ -636,6 +636,15 @@ for band in band_list:
                 #         raise ValueError("Mask exists but not specified as user.")
                 if os.path.exists(lineimagename+".mask"):
                     impars['usemask'] = 'user'
+
+                    if 'mask' in impars and impars['mask'] != '':
+                        # this is to handle the case that a user has specified a mask:
+                        # tclean will fail if the imagname.mask exists (and we
+                        # know it does; see check above) but a mask is
+                        # specified
+                        shutil.rmtree(lineimagename+".mask")
+                        shutil.copytree(impars['mask'], lineimagename+".mask")
+
                     impars['mask'] = '' # the mask exists, so CASA can't be told to use it
 
                     if mask_out_endchannels:
@@ -661,7 +670,6 @@ for band in band_list:
                                     )
 
                         ia.close()
-
 
                 # SANITY CHECK:
                 if os.path.exists(lineimagename+".model"):
