@@ -1100,6 +1100,7 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         5: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         6: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
+        7: {"calmode": "ap", "gaintype": "T", "solint": "inf", "solnorm": False},
     },
     "G010.62_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1209,6 +1210,7 @@ selfcal_pars_custom = {
         3: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "300s", "solnorm": False},
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "300s", "solnorm": False},
         5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        6: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "G012.80_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1655,7 +1657,7 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "15s", "solnorm": False},
         3: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "5s", "solnorm": False},
         4: {"calmode": "p", "combine": "spw", "gaintype": "T", "solint": "int", "solnorm": False},
-        # 5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": True},
+        # 5: {"calmode": "ap", "combine": "spw", "gaintype": "T", "solint": "inf", "solnorm": False},
     },
     "G333.60_B6_7M12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2669,7 +2671,7 @@ selfcal_pars_custom = {
         5: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
         6: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
         7: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
-        8: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        8: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "W51-IRS2_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -3055,7 +3057,7 @@ line_parameters = copy.deepcopy(line_parameters_default)
 line_parameters_custom = {
     "G008.67": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "60km/s"},
+        "sio": {"cubewidth": "80km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
