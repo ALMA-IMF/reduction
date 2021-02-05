@@ -642,6 +642,10 @@ for band in band_list:
                         # tclean will fail if the imagname.mask exists (and we
                         # know it does; see check above) but a mask is
                         # specified
+                        # (This is only needed if dirty imaging is _not_ run)
+                        logprint("Found an existing mask, but a user mask {0} was specified,"
+                                 " so we are overwriting the existing mask.".format(impars['mask']),
+                                 origin='almaimf_line_imaging')
                         shutil.rmtree(lineimagename+".mask")
                         shutil.copytree(impars['mask'], lineimagename+".mask")
 
@@ -700,6 +704,11 @@ for band in band_list:
                     impars['startmodel'] = ''
                 else:
                     smod = ''
+                if 'mask' in impars:
+                    mask = impars['mask']
+                    impars['mask'] = ''
+                else:
+                    mask = ''
                 tclean(vis=concatvis,
                        imagename=lineimagename,
                        restoringbeam='',
@@ -708,6 +717,7 @@ for band in band_list:
                       )
                 impars['niter'] = niter
                 impars['startmodel'] = smod
+                impars['mask'] = mask
                 for suffix in ('image', 'residual', 'model'):
                     ia.open(lineimagename+"."+suffix)
                     ia.sethistory(origin='almaimf_line_imaging',
