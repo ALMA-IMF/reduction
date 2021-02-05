@@ -3020,7 +3020,8 @@ for key in line_imaging_parameters_custom:
         line_imaging_parameters[key] = line_imaging_parameters[noline_key]
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     else:
-        line_imaging_parameters[key] = line_imaging_parameters_custom[key]
+        raise ValueError("A key was found in the custom parameters that is not a line-specfic key.  "
+                         "This case probably needs custom code to be handled correctly.")
 
 
 default_lines = {
