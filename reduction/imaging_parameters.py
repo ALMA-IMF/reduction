@@ -2994,9 +2994,9 @@ line_imaging_parameters_custom = {
 for key in line_imaging_parameters_custom:
     if key in line_imaging_parameters:
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
-    elif "_".join(key.split(["_"])[:-1]) in line_imaging_parameters:
+    elif "_".join(key.split("_")[:-1]) in line_imaging_parameters:
         # special case - strip off the trailing SiO or N2H+ or whatever
-        noline_key = "_".join(key.split(["_"])[:-1])
+        noline_key = "_".join(key.split("_")[:-1])
         line_imaging_parameters[key] = line_imaging_parameters[noline_key]
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     else:
