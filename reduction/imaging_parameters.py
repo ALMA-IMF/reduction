@@ -160,7 +160,7 @@ imaging_parameters_nondefault = {
     },
     "G333.60_B3_12M_robust0": {
         "threshold": {0: "0.8mJy", 1: "0.8mJy", 2: "0.4mJy", 3: "0.2mJy", 4: "0.1mJy", 5: "0.07mJy"},
-            5: "mask_G333_B3_12m_0.0015.crtf",
+        5: "mask_G333_B3_12m_0.0015.crtf",
         "niter": {0: 3000, 1: 3000, 2: 10000, 3: 30000, 4: 90000, 5: 90000},
         "maskname": {
             0: "mask_G333_B3_12m_0.1.crtf",
@@ -286,8 +286,17 @@ imaging_parameters_nondefault = {
         "scales": {0: [0, 3, 9, 27, 100]},
     },
     "G012.80_B3_12M_robust0": {
-        "threshold": {0: "10.0mJy", 1: "10mJy", 2: "5mJy", 3: "3mJy", 4: "1mJy", 5: "0.25mJy"},
-        "niter": {0: 500, 1: 100, 2: 1000, 3: 3000, 4: 5000, 5: 7000},
+        "threshold": {
+            0: "10.0mJy",
+            1: "10mJy",
+            2: "5mJy",
+            3: "3mJy",
+            4: "1mJy",
+            5: "0.25mJy",
+            6: "0.25mJy",
+            7: "0.25mJy",
+        },
+        "niter": {0: 500, 1: 100, 2: 1000, 3: 3000, 4: 5000, 5: 7000, 6: 7000, 7: 7000},
     },
     "G012.80_B6_12M_robust0": {
         "threshold": {0: "3.0mJy", 1: "2mJy", 2: "1.5mJy", 3: "1mJy", 4: "1mJy", 5: "0.25mJy"},
@@ -352,6 +361,7 @@ imaging_parameters_nondefault = {
             6: "0.2mJy",
             7: "0.2mJy",
             8: "0.2mJy",
+            9: "0.2mJy",
         },
         "scales": [0, 3, 9, 27],
     },
@@ -633,6 +643,7 @@ imaging_parameters_nondefault = {
             5: "0.3mJy",
             6: "0.3mJy",
             7: "0.3mJy",
+            8: "0.3mJy",
         },
         "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000, 6: 15000, 7: 15000},
         "maskname": {
@@ -644,6 +655,7 @@ imaging_parameters_nondefault = {
             5: "G010.62_B3_01mJy.crtf",
             6: "G010.62_B3_iter6.crtf",
             7: "G010.62_B3_iter6.crtf",
+            8: "G010.62_B3_iter6.crtf",
         },
     },
     "G010.62_B6_12M_robust0": {
@@ -1104,7 +1116,8 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         5: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         6: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
-        7: {"calmode": "ap", "gaintype": "T", "solint": "inf", "solnorm": False},
+        7: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": False},
+        8: {"calmode": "a", "gaintype": "T", "solint": "inf", "solnorm": False},
     },
     "G010.62_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -1214,7 +1227,8 @@ selfcal_pars_custom = {
         3: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "300s", "solnorm": False},
         4: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "300s", "solnorm": False},
         5: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
-        6: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        6: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        7: {"calmode": "a", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "G012.80_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
@@ -2688,7 +2702,8 @@ selfcal_pars_custom = {
         5: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
         6: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
         7: {"calmode": "p", "combine": "", "gaintype": "T", "minsnr": 5, "solint": "60s", "solnorm": False},
-        8: {"calmode": "ap", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        8: {"calmode": "p", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
+        9: {"calmode": "a", "gaintype": "T", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "W51-IRS2_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
