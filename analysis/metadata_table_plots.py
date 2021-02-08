@@ -149,7 +149,7 @@ ax3.plot(wtbl_bsens['12Mshort_frac'][b6], wtbl_bsens['mad_sample_bsens'][b6]/wtb
 
 # theory line: noise ~ 1/sqrt(bw)
 axlims = ax3.axis()
-ax3.plot(np.linspace(0,1), np.linspace(0,1)**0.5, label=r'$\sigma\propto \Delta \nu^{-1/2}$')
+ax3.plot(np.linspace(0,1), np.linspace(0,1)**0.5, label=r'$\sigma\propto \Delta \nu^{-1/2}$', color='k', zorder=-10)
 ax3.axis(axlims)
 
 #ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
