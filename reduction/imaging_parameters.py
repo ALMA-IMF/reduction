@@ -2923,7 +2923,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G338.93_B6_12M_robust0_sio": {
-        "threshold": "18mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
         # "usemask":"user",
         # "mask":"G338.93_B6_spw1_12M_sio.image_2sigma_e3_d8.mask",
@@ -3024,31 +3024,13 @@ line_imaging_parameters_custom = {
 }
 
 
-linelist = [
-    "h41a",
-    "ch3cnv8=1",
-    "13cs_2-1",
-    "n2hp",
-    "ch3cch_62-52",
-    "h2cs_312-211",
-    "oc33s_18-17",
-    "sio",
-    "h2co_303-202",
-    "c18o",
-    "so_6-5",
-    "12co",
-    "ocs_19-18",
-    "13cs_5-4",
-    "h30a",
-]
-
 for key in line_imaging_parameters_custom:
     if key in line_imaging_parameters:
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     elif "_".join(key.split("_")[:-1]) in line_imaging_parameters:
         # special case - strip off the trailing SiO or N2H+ or whatever
         noline_key = "_".join(key.split("_")[:-1])
-        line_imaging_parameters[key] = line_imaging_parameters[noline_key]
+        line_imaging_parameters[key] = copy.deepcopy(line_imaging_parameters[noline_key])
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     else:
         raise ValueError(
