@@ -11,6 +11,7 @@ mask_threshold = 20 # In mJy
 erosion_dilation = True
 erosion_iter = 2
 dilation_iter = 2
+dilation_iter_2d = 0
 
 #######################################
 
@@ -64,6 +65,12 @@ if erosion_dilation == True:
 	# Use the code below to output an eroded/dilated mask
 	boolmask_e_d = scipy.ndimage.binary_dilation(scipy.ndimage.binary_erosion(boolmask, iterations=erosion_iter), iterations=dilation_iter)
 	print("Now opening the original mask to be rewritten")
+	if dilation_iter_2d:
+        # this might be slower - if needed we could add a progressbar
+        for layerid in np.arange(boolmask_e_d.shape[0]):
+            boolmask_e_d[layerid,:,:] = scipy.ndimage.binary_dilation(boolmask_e_d[layerid,:,:],
+                                                                      dilation_ter_2d)
+	
 	ia.open(mask_filename+'.mask')
 	print("Now defining the eroded/dilated mask to export")
 	boolmask_e_d_export = boolmask_e_d[:,None,:,:].T.astype('int')
