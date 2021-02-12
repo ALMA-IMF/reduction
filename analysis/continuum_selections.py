@@ -268,7 +268,8 @@ for fignum,band in enumerate((3,6)):
         #    # W41-MM1 B6 doesn't exist
         #    assert not np.any(frqmask[10,:])
 
-        ax = pl.subplot(1, nspw, spwn+1)
+        pl.figure(fig.number)
+        ax = fig.add_subplot(1, nspw, spwn+1)
         #print(ax,spwn)
         yticklocs = (np.arange(nfields*nconfigs) + np.arange(1, nfields*nconfigs+1))/2.
         tick_maps = list(zip(yticklocs, fields))
@@ -307,6 +308,7 @@ for fignum,band in enumerate((3,6)):
                                   (fieldnum+1)*nconfigs, color='b')
 
 
+    pl.figure(fig.number)
     pl.tight_layout()
     pl.subplots_adjust(wspace=0.05, hspace=0)
 
