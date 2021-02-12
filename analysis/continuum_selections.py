@@ -124,7 +124,9 @@ lb_threshold = {3: 750,
                 6: 780,}
 
 for fignum,band in enumerate((3,6)):
+    print()
     bandname = f'B{band}'
+    print(f"band {bandname} in figure {fignum}")
     pl.close(fignum)
     fig = pl.figure(fignum, figsize=(12,6))
 
@@ -163,7 +165,7 @@ for fignum,band in enumerate((3,6)):
                             for muid in muid_to_bl
                            }
             muid_configs.update({val:key for key,val in metadata[bandname][field]['muid_configs'].items()})
-            print(f"Loop info: ", band, field, muid_configs)
+            print(f"Loop info:  band={band}, field{field}, muid={muid_configs}, spw={spw}, spwn={spwn}")
 
             for muid in muids:
 
@@ -310,8 +312,8 @@ for fignum,band in enumerate((3,6)):
 
     fig.text(0.5, xlabel_offset[band], 'Frequency (GHz)', ha='center')
 
-    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
-    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
+    fig.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
+    fig.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
 
 #print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
 #print(included_bw)
