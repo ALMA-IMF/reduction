@@ -89,11 +89,11 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
 
 
 normpars = {'W51IRS2': {
-    'normpars_b3': {'max_percent': None, "min_percent": None, "min_cut":-0.0005, "max_cut":0.0005, 'stretch':'linear'},
+    'normpars_b3': {'max_percent': None, "min_percent": None, "min_cut":-0.5, "max_cut":0.5, 'stretch':'linear'},
     'normpars_b6': {'max_percent':99.99, "min_percent": 1, 'stretch':'linear'}
 },
     'W43MM2': {'normpars_b6': {'max_percent': 99.5}},
-    "G333": {'normpars_b6': {'max_percent': None, "min_percent": None, "min_cut":-0.007, "max_cut":0.007, 'stretch':'linear'},},
+    "G333": {'normpars_b6': {'max_percent': None, "min_percent": None, "min_cut":-7, "max_cut":7, 'stretch':'linear'},},
 }
 cutoutregions = {
     "G008": ("fk5; box(271.579, -21.6255, 30\",30\")",),
