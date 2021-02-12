@@ -64,7 +64,7 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
     fig = pl.figure(num=fignum, figsize=(6,6))
     fig.clf()
     ax = pl.subplot(1,1,1,label='B3', projection=diff_b3[0].wcs)
-    ax.imshow(diff_b3[0].to(u.mJy).value, norm=simple_norm(diff_b3[0].to(u.mJy).value, **normpars_b3), cmap='gray')
+    ax.imshow(diff_b3[0].to(u.mJy/u.beam).value, norm=simple_norm(diff_b3[0].to(u.mJy/u.beam).value, **normpars_b3), cmap='gray')
     ax.set_xlabel('Right Ascension')
     ax.set_ylabel('Declination')
     cb = pl.colorbar()
@@ -72,7 +72,7 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
 
     fig2 = pl.figure(num=fignum+1, figsize=(6,6))
     ax2 = pl.subplot(1,1,1,label='B6', projection=diff_b6[0].wcs)
-    ax2.imshow(diff_b6[0].value, norm=simple_norm(diff_b6[0].value, **normpars_b6), cmap='gray')
+    ax2.imshow(diff_b6[0].to(u.mJy/u.beam).value, norm=simple_norm(diff_b6[0].to(u.mJy/u.beam).value, **normpars_b6), cmap='gray')
     ax2.set_xlabel('Right Ascension')
     ax2.set_ylabel('Declination')
     cb = pl.colorbar()
