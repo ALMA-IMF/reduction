@@ -71,7 +71,7 @@ prefixes = {
         finaliter_prefix_b6="G012.80/B6/cleanest/G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",),
     'W51IRS2': dict(
         finaliter_prefix_b3="W51-IRS2/B3/cleanest/W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
-        finaliter_prefix_b6="W51-IRS2/B6/cleanest/W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8_finaliter",),
+        finaliter_prefix_b6="W51-IRS2/B6/cleanest/W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",),
     'G008': dict(
         finaliter_prefix_b3="G008.67/B3/cleanest/G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
         finaliter_prefix_b6="G008.67/B6/cleanest/G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",),
