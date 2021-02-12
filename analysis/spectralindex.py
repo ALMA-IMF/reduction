@@ -79,7 +79,7 @@ prefixes = {
         finaliter_prefix_b3="G327.29/B3/cleanest/G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
         finaliter_prefix_b6="G327.29/B6/cleanest/G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",),
     'G10': dict(
-        finaliter_prefix_b3="G010.62/B3/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal7_finaliter",
+        finaliter_prefix_b3="G010.62/B3/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal8_finaliter",
         finaliter_prefix_b6="G010.62/B6/cleanest/G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",),
     'G337': dict(
         finaliter_prefix_b3="G337.92/B3/cleanest/G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
