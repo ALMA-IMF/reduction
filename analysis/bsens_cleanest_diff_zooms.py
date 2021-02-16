@@ -153,7 +153,9 @@ if __name__ == "__main__":
     pl.rcParams['image.origin'] = 'lower'
     pl.rcParams['image.interpolation'] = 'none'
     pl.rcParams['figure.facecolor'] = 'w'
-    prefixes['G338']['finaliter_prefix_b6_bsens'] = 'G338.93/B6/bsens/G338.93_B6_uid___A001_X1296_X14f_continuum_merged_bsens_12M_robust0_selfcal4_finaliter'
+
+    # why did I add this override?  It's wrong (I had 4 instead of 6)
+    #prefixes['G338']['finaliter_prefix_b6_bsens'] = 'G338.93/B6/bsens/G338.93_B6_uid___A001_X1296_X14f_continuum_merged_bsens_12M_robust0_selfcal6_finaliter'
 
     for fieldid, pfxs in prefixes.items():
         fig1,fig2 = bsens_cleanest_diff(**pfxs, cutoutregion=cutoutregions[fieldid][0], **normpars.get(fieldid, {}))
