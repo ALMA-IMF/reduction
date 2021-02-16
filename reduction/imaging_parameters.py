@@ -3052,11 +3052,6 @@ for key in line_imaging_parameters_custom:
                 key_noline = key.replace("_" + linename, "")
                 line_imaging_parameters[key] = line_imaging_parameters_default[key_noline]
                 line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
-            else:
-                raise ValueError(
-                    "A key was found in the custom parameters that is not in the line list.  "
-                    "This case probably needs custom code to be handled correctly."
-                )
 
 field_vlsr = {
     "W51-E": "55km/s",
