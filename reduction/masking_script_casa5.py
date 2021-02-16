@@ -84,5 +84,5 @@ if erosion_dilation == True:
     ia.putchunk(pixels=boolmask_e_d_export)
     ia.close()
 
-    mask_e_d_filename = mask_filename+'_e'+str(erosion_iter)+'_d'+str(dilation_iter)
+    mask_e_d_filename = mask_filename+'_e'+str(erosion_iter)+'_d'+str(dilation_iter)+'_2dim_e'+str(erosion_iter_2d)+'_d'+str(dilation_iter_2d)
     os.rename(mask_filename+'.mask',mask_e_d_filename+'.mask')
