@@ -2855,11 +2855,11 @@ line_imaging_parameters_custom = {
     },
     "G333.60_B6_12M_robust0": {
         "threshold": "15.6mJy",  # "6mJy",#estimated noise: 4.3-5.2 mJy, from sio-only cube
-        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5",#_finaliter",
     },
     "G333.60_B6_12M_robust0_sio": {
-        "threshold": "15.6mJy",  # typical rms is 4.3-5.2 mJy, using 3sigma for threshold (14 Dec. 2020)
-        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "threshold": "10.4mJy",  # typical rms is 4.3-5.2 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5",#_finaliter",
     },
     "G337.92_B3_12M_robust0": {
         "threshold": "5mJy",
@@ -2894,8 +2894,8 @@ line_imaging_parameters_custom = {
     "G338.93_B6_12M_robust0_sio": {
         "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
-        # "usemask":"user",
-        # "mask":"G338.93_B6_spw1_12M_sio.image_2sigma_e3_d8.mask",
+        "usemask":"user",
+        "mask":"G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
     },
     "G351.77_B3_12M_robust0": {
         "threshold": "6mJy",
@@ -2971,7 +2971,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B6_12M_robust0_sio": {
-        "threshold": "12.3mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "8.2mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B6_12M_robust0_spw1": {
@@ -2987,23 +2987,26 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8_finaliter",
     },
     "W51-IRS2_B6_12M_robust0_sio": {
-        "threshold": "9.6mJy",  # typical rms is 2.7-3.2 mJy, using 3sigma for threshold (14 Dec. 2020)
-        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8_finaliter",
+        "threshold": "6.4mJy",  # typical rms is 2.7-3.2 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8",
     },
 }
 
 
+linelist = ["h41a","ch3cnv8=1","13cs_2-1","n2hp","ch3cch_62-52","h2cs_312-211","oc33s_18-17","sio","h2co_303-202","c18o","so_6-5","12co","ocs_19-18","13cs_5-4","h30a"]
+
 for key in line_imaging_parameters_custom:
     if key in line_imaging_parameters:
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
-    elif "_".join(key.split("_")[:-1]) in line_imaging_parameters:
-        # special case - strip off the trailing SiO or N2H+ or whatever
-        noline_key = "_".join(key.split("_")[:-1])
-        line_imaging_parameters[key] = copy.deepcopy(line_imaging_parameters[noline_key])
-        line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     else:
-        raise ValueError("A key was found in the custom parameters that is not a line-specfic key.  "
-                         "This case probably needs custom code to be handled correctly.")
+        for linename in linelist:
+            if linename in key:
+                key_noline = key.replace('_'+linename,'')
+                line_imaging_parameters[key] = line_imaging_parameters_default[key_noline]
+                line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
+            else:
+                raise ValueError("A key was found in the custom parameters that is not in the line list.  "
+                                 "This case probably needs custom code to be handled correctly.")
 
 
 default_lines = {
