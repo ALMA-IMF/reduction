@@ -70,12 +70,12 @@ if erosion_dilation == True:
         # this might be slower - if needed we could add a progressbar
         for layerid in np.arange(boolmask_e_d.shape[0]):
             boolmask_e_d[layerid,:,:] = scipy.ndimage.binary_erosion(boolmask_e_d[layerid,:,:],
-                                                                     erosion_iter_2d)
+                                                                     iterations=erosion_iter_2d)
     if dilation_iter_2d:
         # this might be slower - if needed we could add a progressbar
         for layerid in np.arange(boolmask_e_d.shape[0]):
             boolmask_e_d[layerid,:,:] = scipy.ndimage.binary_dilation(boolmask_e_d[layerid,:,:],
-                                                                      dilation_iter_2d)
+                                                                    iterations=dilation_iter_2d)
 
     ia.open(mask_filename+'.mask')
     print("Now defining the eroded/dilated mask to export")
