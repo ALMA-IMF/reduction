@@ -25,7 +25,7 @@ def make_robust_comparison_figures(fieldname, bandname,
     noisereg = regions.read_ds9(noiseregfn)
 
     baseimagename = '{imageresultspath}/{fieldname}_{bandname}_{uidname}_continuum_merged'.format(**locals())
-    
+
     fig = pl.figure(1, figsize=(20,10))
     fig.clf()
 
@@ -72,11 +72,11 @@ def make_robust_comparison_figures(fieldname, bandname,
     ax1 = pl.subplot(2,1,1)
     ax2 = pl.subplot(2,1,2)
     for array, marker in zip(arrays, 'sox'):
-        ax1.plot(robusts, [rms[(array, robust)].value for robust in robusts], label=array, marker=marker)
+        ax1.plot(robusts, [rms[(array, robust)].to(u.mJy).value for robust in robusts], label=array, marker=marker)
         ax2.plot(robusts, [beams[(array, robust)].major.to(u.arcsec).value for robust in robusts], label=array, marker=marker)
 
     ax2.set_xlabel("Robust Value")
-    ax1.set_ylabel("Noise Estimate (Jy)")
+    ax1.set_ylabel("Noise Estimate (mJy)")
     ax2.set_ylabel("Beam Major")
 
     pl.figure(2)
@@ -88,6 +88,7 @@ if __name__ == "__main__":
     from os import symlink, chdir, mkdir
     import glob
     releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/')
+    #releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/')
     basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 
     dirnames = {#'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',
