@@ -33,6 +33,7 @@ def make_robust_comparison_figures(fieldname, bandname,
 
     beams = {}
     rms = {}
+    dynamicrange = {}
 
 
     for ii,array in enumerate(arrays):
@@ -60,24 +61,40 @@ def make_robust_comparison_figures(fieldname, bandname,
                 ax.set_title("{array} r={robust}".format(**locals()))
                 beams[(array, robust)] = beam
                 noise = cube.subcube_from_regions(noisereg).std()
+                peak = cube.max()
                 rms[(array, robust)] = noise
+                dynamicrange[(array, robust)] = peak / noise
                 print("found {0}".format(imagename),ii,jj,array,robust)
             else:
                 rms[(array, robust)] = np.nan*u.Jy
+                dynamicrange[(array, robust)] = np.nan*u.Jy
                 beams[(array, robust)] = Beam(np.nan)
                 print("MISSING {0}".format(imagename),ii,jj,array,robust)
     pl.savefig("{baseimagename}_robust_comparison.png".format(**locals()), bbox_inches='tight')
 
     pl.figure(2).clf()
-    ax1 = pl.subplot(2,1,1)
-    ax2 = pl.subplot(2,1,2)
-    for array, marker in zip(arrays, 'sox'):
-        ax1.plot(robusts, [rms[(array, robust)].to(u.mJy).value for robust in robusts], label=array, marker=marker)
-        ax2.plot(robusts, [beams[(array, robust)].major.to(u.arcsec).value for robust in robusts], label=array, marker=marker)
+    ax3 = pl.subplot(3,1,1)
+    ax1 = pl.subplot(3,1,2)
+    ax2 = pl.subplot(3,1,3)
 
+    for array, marker in zip(arrays, 'sox'):
+        ax1.plot(robusts, [rms[(array, robust)].to(u.mJy).value for robust in
+                           robusts], label=array.replace("_"," "),
+                 marker=marker)
+        ax2.plot(robusts, [beams[(array, robust)].major.to(u.arcsec).value for
+                           robust in robusts], label=array.replace("_"," "),
+                 marker=marker)
+        ax3.plot(robusts, [dynamicrange[(array, robust)].value for robust in
+                           robusts], label=array.replace("_"," "),
+                 marker=marker)
+
+
+    ax3.set_xticklabels([])
+    ax1.set_xticklabels([])
     ax2.set_xlabel("Robust Value")
     ax1.set_ylabel("Noise Estimate (mJy)")
     ax2.set_ylabel("Beam Major")
+    ax3.set_ylabel("Dynamic Range")
 
     pl.figure(2)
     pl.legend(loc='best')
