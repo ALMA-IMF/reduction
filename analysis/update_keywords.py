@@ -1,3 +1,4 @@
+raise ValueError("This script was only needed for Feb2020 and earlier - all more recent should have these keywords included")
 from astropy.io import fits
 
 KEYWORDS = ["niter", "deconvolver", "scales", "pblimit", "weighting", "specmode", "nterms", "threshold", "robust", "gridder", "git_version", "git_date",]
