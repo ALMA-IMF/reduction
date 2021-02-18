@@ -13,7 +13,7 @@ import pylab as pl
 from compare_images import make_comparison_image
 
 cwd = os.getcwd()
-basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020'
+basepath = '/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020'
 os.chdir(basepath)
 
 import imstats
@@ -21,7 +21,7 @@ import imstats
 
 tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_7m12m', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='7m12mMaxDiff', data=[np.nan]*len(tbl)))
@@ -146,15 +146,15 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.ecsv',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.html',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.tex',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.js.html',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_7m12m_cleanest.js.html',
           #formats=formats,
           format='jsviewer')
 

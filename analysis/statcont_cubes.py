@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 
-    tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
+    tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/tables/cube_stats.ecsv')
 
     def get_size(start_path='.'):
         total_size = 0

@@ -24,7 +24,7 @@ import imstats
 
 # tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/July2020/tables/metadata.ecsv')
 tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
@@ -160,11 +160,11 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-if not os.path.exists('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/'):
-    os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/')
-    os.mkdir('/bio/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/')
+if not os.path.exists('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/'):
+    os.mkdir('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/July2020Release/')
+    os.mkdir('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/July2020Release/tables/')
 
-for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
+for bp in ('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
 
     tbl.write('{bp}/July2020Release/tables/metadata_sc.ecsv'.format(bp=bp),

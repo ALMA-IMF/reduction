@@ -18,16 +18,16 @@ from before_after_selfcal_quicklooks import get_selfcal_number
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
 os.chdir(basepath)
-sharepath = '/bio/web/secure/adamginsburg/ALMA-IMF/February2021Release/'
+sharepath = '/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021Release/'
 
 #import imstats
 
 
 # tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/February2021/tables/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021/tables/metadata.ecsv')
 tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata_image.tt0.ecsv')
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/February2021Release/tables/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*200]*len(tbl)))
@@ -176,7 +176,7 @@ if not os.path.exists(f'{sharepath}/tables/'):
     os.mkdir(sharepath)
     os.mkdir(f'{sharepath}/tables/')
 
-for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/',
+for bp in ('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
 
     tbl.write('{bp}/February2021Release/tables/metadata_sc.ecsv'.format(bp=bp),

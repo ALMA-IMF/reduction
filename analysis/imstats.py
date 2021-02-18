@@ -487,7 +487,7 @@ def get_selfcal_number(fn):
     except:
         return 0
 
-def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/",
+def make_analysis_forms(basepath="/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release/",
                         base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true",
                         dontskip_noresid=False
                        ):
@@ -721,7 +721,7 @@ document.write(newdocument)
 
 
 
-def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release",
+def savestats(basepath="/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release",
               suffix='image.tt0', filetype=".fits"):
     if 'October31' in basepath:
         stats = assemble_stats(f"{basepath}/*/*/*_12M_*.{suffix}*{filetype}", ditch_suffix=f".{suffix[:-1]}")
@@ -775,18 +775,18 @@ if __name__ == "__main__":
     cwd = os.getcwd()
     if 'ufhpc' in socket.gethostname():
         for basepath,formid in (
-                #("/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/",
+                #("/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October2020Release/",
                 ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
                 ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
                 #("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/",
                 #"1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                ("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/",
+                ("/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/May2020/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
+                ("/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-               #("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
+               #("/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
                ):
 
             os.chdir(basepath)
