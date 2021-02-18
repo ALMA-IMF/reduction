@@ -78,7 +78,7 @@ def make_robust_comparison_figures(fieldname, bandname,
     ax2 = pl.subplot(3,1,3)
 
     for array, marker in zip(arrays, 'sox'):
-        ax1.plot(robusts, [rms[(array, robust)].to(u.mJy).value for robust in
+        ax1.plot(robusts, [rms[(array, robust)].to(u.mJy/u.beam).value for robust in
                            robusts], label=array.replace("_"," "),
                  marker=marker)
         ax2.plot(robusts, [beams[(array, robust)].major.to(u.arcsec).value for
