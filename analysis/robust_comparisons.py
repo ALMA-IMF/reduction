@@ -63,7 +63,7 @@ def make_robust_comparison_figures(fieldname, bandname,
                 noise = cube.subcube_from_regions(noisereg).std()
                 peak = cube.max()
                 rms[(array, robust)] = noise
-                dynamicrange[(array, robust)] = peak / noise
+                dynamicrange[(array, robust)] = (peak / noise).decompose().value
                 print("found {0}".format(imagename),ii,jj,array,robust)
             else:
                 rms[(array, robust)] = np.nan*u.Jy/u.beam
@@ -89,7 +89,7 @@ def make_robust_comparison_figures(fieldname, bandname,
         ax2.plot(robusts, [beams[(array, robust)].major.to(u.arcsec).value for
                            robust in robusts], label=array.replace("_"," "),
                  marker=marker)
-        ax3.plot(robusts, [dynamicrange[(array, robust)].value for robust in
+        ax3.plot(robusts, [dynamicrange[(array, robust)] for robust in
                            robusts], label=array.replace("_"," "),
                  marker=marker)
 
