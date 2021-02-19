@@ -66,8 +66,8 @@ def make_robust_comparison_figures(fieldname, bandname,
                 dynamicrange[(array, robust)] = peak / noise
                 print("found {0}".format(imagename),ii,jj,array,robust)
             else:
-                rms[(array, robust)] = np.nan*u.Jy
-                dynamicrange[(array, robust)] = np.nan*u.Jy
+                rms[(array, robust)] = np.nan*u.Jy/u.beam
+                dynamicrange[(array, robust)] = np.nan
                 beams[(array, robust)] = Beam(np.nan)
                 print("MISSING {0}".format(imagename),ii,jj,array,robust)
     pl.savefig("{baseimagename}_robust_comparison.png".format(**locals()), bbox_inches='tight')
