@@ -643,8 +643,9 @@ imaging_parameters_nondefault = {
             6: "0.3mJy",
             7: "0.3mJy",
             8: "0.3mJy",
+            9: "0.3mJy",
         },
-        "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000, 6: 15000, 7: 15000, 8: 15000},
+        "niter": {0: 700, 1: 1300, 2: 2500, 3: 5000, 4: 10000, 5: 10000, 6: 15000, 7: 15000, 8: 15000, 9: 15000},
         "maskname": {
             0: "G010.62_centralBox_50_30.crtf",
             1: "G010.62_B3_50mJy.crtf",
@@ -655,6 +656,7 @@ imaging_parameters_nondefault = {
             6: "G010.62_B3_iter6.crtf",
             7: "G010.62_B3_iter6.crtf",
             8: "G010.62_B3_iter6.crtf",
+            9: "G010.62_B3_iter6.crtf",
         },
     },
     "G010.62_B6_12M_robust0": {
@@ -1117,6 +1119,7 @@ selfcal_pars_custom = {
         6: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         7: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": False},
         8: {"calmode": "a", "gaintype": "T", "solint": "inf", "solnorm": False},
+        9: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G010.62_B3_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},

@@ -12,12 +12,12 @@ from latex_info import (latexdict, format_float, round_to_n, rounded,
 latexdict = latexdict.copy()
 
 if datetime.datetime.today() > datetime.datetime(year=2021, month=1, day=10):
-    result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_sc.ecsv',
+    result = requests.get('https://data.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/February2021Release/tables/metadata_sc.ecsv',
                           auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
     with open('metadata_sc.ecsv', 'w') as fh:
         fh.write(result.text)
 
-    result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/tables/bandpass_fraction.ecsv',
+    result = requests.get('https://data.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/tables/bandpass_fraction.ecsv',
                           auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
     with open('bandpass_fraction.ecsv', 'w') as fh:
         fh.write(result.text)
