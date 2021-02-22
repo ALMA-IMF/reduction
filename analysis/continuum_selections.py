@@ -124,7 +124,9 @@ lb_threshold = {3: 750,
                 6: 780,}
 
 for fignum,band in enumerate((3,6)):
+    print()
     bandname = f'B{band}'
+    print(f"band {bandname} in figure {fignum}")
     pl.close(fignum)
     fig = pl.figure(fignum, figsize=(12,6))
 
@@ -163,7 +165,7 @@ for fignum,band in enumerate((3,6)):
                             for muid in muid_to_bl
                            }
             muid_configs.update({val:key for key,val in metadata[bandname][field]['muid_configs'].items()})
-            print(f"Loop info: ", band, field, muid_configs)
+            print(f"Loop info:  band={band}, field{field}, muid={muid_configs}, spw={spw}, spwn={spwn}")
 
             for muid in muids:
 
@@ -266,7 +268,8 @@ for fignum,band in enumerate((3,6)):
         #    # W41-MM1 B6 doesn't exist
         #    assert not np.any(frqmask[10,:])
 
-        ax = pl.subplot(1, nspw, spwn+1)
+        pl.figure(fig.number)
+        ax = fig.add_subplot(1, nspw, spwn+1)
         #print(ax,spwn)
         yticklocs = (np.arange(nfields*nconfigs) + np.arange(1, nfields*nconfigs+1))/2.
         tick_maps = list(zip(yticklocs, fields))
@@ -305,13 +308,14 @@ for fignum,band in enumerate((3,6)):
                                   (fieldnum+1)*nconfigs, color='b')
 
 
+    pl.figure(fig.number)
     pl.tight_layout()
     pl.subplots_adjust(wspace=0.05, hspace=0)
 
     fig.text(0.5, xlabel_offset[band], 'Frequency (GHz)', ha='center')
 
-    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
-    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
+    fig.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
+    fig.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
 
 #print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
 #print(included_bw)

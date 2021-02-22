@@ -64,15 +64,19 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
     fig = pl.figure(num=fignum, figsize=(6,6))
     fig.clf()
     ax = pl.subplot(1,1,1,label='B3', projection=diff_b3[0].wcs)
-    ax.imshow(diff_b3[0].value, norm=simple_norm(diff_b3[0].value, **normpars_b3), cmap='gray')
+    im = ax.imshow(diff_b3.to(u.mJy)[0].value, norm=simple_norm(diff_b3.to(u.mJy)[0].value, **normpars_b3), cmap='gray')
     ax.set_xlabel('Right Ascension')
     ax.set_ylabel('Declination')
+    cb = pl.colorbar(mappable=im)
+    cb.set_label("$S_\\nu$ [mJy beam$^{-1}$]")
 
     fig2 = pl.figure(num=fignum+1, figsize=(6,6))
     ax2 = pl.subplot(1,1,1,label='B6', projection=diff_b6[0].wcs)
-    ax2.imshow(diff_b6[0].value, norm=simple_norm(diff_b6[0].value, **normpars_b6), cmap='gray')
+    im = ax2.imshow(diff_b6.to(u.mJy)[0].value, norm=simple_norm(diff_b6.to(u.mJy)[0].value, **normpars_b6), cmap='gray')
     ax2.set_xlabel('Right Ascension')
     ax2.set_ylabel('Declination')
+    cb = pl.colorbar(mappable=im)
+    cb.set_label("$S_\\nu$ [mJy beam$^{-1}$]")
 
     # ax2.set_yticklabels([])
     # ax2.set_ylabel("")
@@ -85,11 +89,11 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
 
 
 normpars = {'W51IRS2': {
-    'normpars_b3': {'max_percent': None, "min_percent": None, "min_cut":-0.0005, "max_cut":0.0005, 'stretch':'linear'},
+    'normpars_b3': {'max_percent': None, "min_percent": None, "min_cut":-0.5, "max_cut":0.5, 'stretch':'linear'},
     'normpars_b6': {'max_percent':99.99, "min_percent": 1, 'stretch':'linear'}
 },
     'W43MM2': {'normpars_b6': {'max_percent': 99.5}},
-    "G333": {'normpars_b6': {'max_percent': None, "min_percent": None, "min_cut":-0.007, "max_cut":0.007, 'stretch':'linear'},},
+    "G333": {'normpars_b6': {'max_percent': None, "min_percent": None, "min_cut":-7, "max_cut":7, 'stretch':'linear'},},
 }
 cutoutregions = {
     "G008": ("fk5; box(271.579, -21.6255, 30\",30\")",),
