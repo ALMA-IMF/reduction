@@ -374,7 +374,7 @@ bandfrac_table = Table(bandfrac_flat)
 
 bandfrac_table.write
 
-tbldir = Path('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/tables')
+tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
 bandfrac_table.write(tbldir / 'bandpass_fraction.ecsv', overwrite=True)
 bandfrac_table.write(tbldir / 'bandpass_fraction.ipac', format='ascii.ipac', overwrite=True)
 bandfrac_table.write(tbldir / 'bandpass_fraction.html', format='ascii.html', overwrite=True)

@@ -60,7 +60,7 @@ def update_header_from_keywords(filename, keywords):
 
 
 if __name__ == "__main__":
-    basepath = '/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/'
+    basepath = '/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/'
 
     suffixes = ["alpha.error.fits", "alpha.fits", "image.tt0.pbcor.fits",
                 "image.tt1.fits", "image.tt1.pbcor.fits", "mask.fits",

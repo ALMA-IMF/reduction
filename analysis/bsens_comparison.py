@@ -14,7 +14,7 @@ from compare_images import make_comparison_image
 
 cwd = os.getcwd()
 #octoberpath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
-basepath = '/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021Release'
+basepath = '/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release'
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
 os.chdir(basepath)
 
@@ -23,7 +23,7 @@ import imstats
 
 #tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021Release/tables/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/tables/metadata.ecsv')
 tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
@@ -198,7 +198,7 @@ formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-for bp in ('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021Release',
+for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release'):
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.ecsv',
               overwrite=True)
