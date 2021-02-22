@@ -22,8 +22,8 @@ The list of additional files available upon request, but not reviewed by the dat
 """
 
 if __name__ == "__main__":
-    basepath = Path('/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/')
-    targetpath = Path('/bio/web/secure/adamginsburg/ALMA-IMF/May2020/')
+    basepath = Path('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/')
+    targetpath = Path('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/May2020/')
 
     import os
     for root, dirs, files in os.walk(basepath):

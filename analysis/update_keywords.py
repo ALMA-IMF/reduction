@@ -1,3 +1,4 @@
+raise ValueError("This script was only needed for Feb2020 and earlier - all more recent should have these keywords included")
 from astropy.io import fits
 
 KEYWORDS = ["niter", "deconvolver", "scales", "pblimit", "weighting", "specmode", "nterms", "threshold", "robust", "gridder", "git_version", "git_date",]
@@ -59,7 +60,7 @@ def update_header_from_keywords(filename, keywords):
 
 
 if __name__ == "__main__":
-    basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/'
+    basepath = '/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/'
 
     suffixes = ["alpha.error.fits", "alpha.fits", "image.tt0.pbcor.fits",
                 "image.tt1.fits", "image.tt1.pbcor.fits", "mask.fits",

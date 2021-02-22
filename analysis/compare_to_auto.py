@@ -12,7 +12,7 @@ from spectral_cube import SpectralCube
 
 from compare_images import make_comparison_image
 
-basepath = "/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/"
+basepath = "/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2021/"
 
 filelist = glob.glob(f"{basepath}/*/*/*/*.image.tt0.pbcor.fits")
 imresults = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'

@@ -13,14 +13,14 @@ import pylab as pl
 from before_after_selfcal_quicklooks import make_comparison_image, get_selfcal_number
 
 cwd = os.getcwd()
-os.chdir('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release')
+os.chdir('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release')
 
 import imstats
 
 
 #tbl = imstats.savestats()
 
-tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
@@ -112,15 +112,15 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.ecsv',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.html',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.tex',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.js.html',
+tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October31Release/tables/metadata_sc.js.html',
           #formats=formats,
           format='jsviewer')
 

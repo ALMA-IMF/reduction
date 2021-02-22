@@ -2887,11 +2887,11 @@ line_imaging_parameters_custom = {
     },
     "G333.60_B6_12M_robust0": {
         "threshold": "15.6mJy",  # "6mJy",#estimated noise: 4.3-5.2 mJy, from sio-only cube
-        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5",#_finaliter",
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5",  # _finaliter",
     },
     "G333.60_B6_12M_robust0_sio": {
         "threshold": "10.4mJy",  # typical rms is 4.3-5.2 mJy, using 3sigma for threshold (14 Dec. 2020)
-        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5",#_finaliter",
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5",  # _finaliter",
     },
     "G337.92_B3_12M_robust0": {
         "threshold": "5mJy",
@@ -2926,8 +2926,8 @@ line_imaging_parameters_custom = {
     "G338.93_B6_12M_robust0_sio": {
         "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
-        "usemask":"user",
-        "mask":"G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
+        "usemask": "user",
+        "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
     },
     "G351.77_B3_12M_robust0": {
         "threshold": "6mJy",
@@ -3053,7 +3053,10 @@ for key in line_imaging_parameters_custom:
                 line_imaging_parameters[key] = line_imaging_parameters_default[key_noline]
                 line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9ab61bf3e8d461ae07a97217155c12437963c557
 field_vlsr = {
     "W51-E": "55km/s",
     "W51-IRS2": "55km/s",
