@@ -3053,10 +3053,6 @@ for key in line_imaging_parameters_custom:
                 line_imaging_parameters[key] = line_imaging_parameters_default[key_noline]
                 line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 9ab61bf3e8d461ae07a97217155c12437963c557
 field_vlsr = {
     "W51-E": "55km/s",
     "W51-IRS2": "55km/s",
