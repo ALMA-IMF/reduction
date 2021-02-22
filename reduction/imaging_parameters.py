@@ -1117,8 +1117,8 @@ selfcal_pars_custom = {
         4: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         5: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
         6: {"calmode": "p", "gaintype": "T", "solint": "10s", "solnorm": True},
-        7: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": False},
-        8: {"calmode": "a", "gaintype": "T", "solint": "inf", "solnorm": False},
+        7: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
+        8: {"calmode": "ap", "gaintype": "T", "solint": "inf", "solnorm": False},
         9: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
     },
     "G010.62_B3_12M_robust2": {
