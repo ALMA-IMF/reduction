@@ -41,7 +41,7 @@ for scriptname in scripts:
     try:
         runpy.run_path(str(script_dir / scriptname), run_name="__main__")
     except Exception as ex:
-        print(ex)
+        print("Exception: ",ex)
     pl.close('all')
     print(f"script {scriptname} took {(time.time() - t0)/3600.:0.1f} hours")
 
