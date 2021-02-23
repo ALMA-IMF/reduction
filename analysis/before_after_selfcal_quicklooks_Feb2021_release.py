@@ -15,7 +15,9 @@ from compare_images import make_comparison_image
 
 from before_after_selfcal_quicklooks import get_selfcal_number
 
-from ..reduction import imaging_parameters
+import sys
+sys.path.append(f'{os.path.dirname(__file__)}/reduction')
+import imaging_parameters
 
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
