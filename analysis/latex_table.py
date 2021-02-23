@@ -72,9 +72,9 @@ cols_to_keep = {'region':'Region',
                 'dr_post': "DR$_{post}$",
                 'dr_improvement': "DR$_{post}$/DR$_{pre}$"}
 
-units = {'$S_{peak}$':u.Jy.to_string(u.format.LatexInline),
-         '$\sigma_{MAD}$':u.mJy.to_string(u.format.LatexInline),
-         '$\sigma_{req}$':u.mJy.to_string(u.format.LatexInline),
+units = {'$S_{peak}$':(u.Jy/u.beam).to_string(u.format.LatexInline),
+         '$\sigma_{MAD}$':(u.mJy/u.beam).to_string(u.format.LatexInline),
+         '$\sigma_{req}$':(u.mJy/u.beam).to_string(u.format.LatexInline),
          r'$\theta_{req}$':u.arcsec.to_string(u.format.LatexInline),
          r'$\theta_{maj}$':u.arcsec.to_string(u.format.LatexInline),
          r'$\theta_{min}$':u.arcsec.to_string(u.format.LatexInline),
@@ -130,8 +130,8 @@ latexdict['tablefoot'] = ("}\par\n"
                           "and $\\Omega_{syn}^{1/2}/\\Omega_{req}^{1/2}$ gives the ratio of the synthesized to the "
                           "requested beam area; larger numbers imply poorer resolution.  "
                           "$\sigma_{MAD}$ and $\sigma_{req}$ are the measured and requested "
-                          "RMS sensitivity, respectively, and $\sigma_{MAD}/\sigma{req}$ is the excess noise "
-                          "in the image over that requested.  "
+                          "RMS sensitivity, respectively, and $\sigma_{MAD}/\sigma_{req}$ is the excess noise "
+                          "in the image over that requested.  $\sigma_{MAD}$ is measured on the \\texttt{cleanest} images.  "
                           "$DR_{pre}$ and $DR_{post}$ are the dynamic range, $S_{peak} / \sigma_{MAD}$, for the "
                           "pre- and post-self-calibration data; $DR_{post}/DR_{pre}$ gives the improvement "
                           "factor."

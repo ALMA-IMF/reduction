@@ -33,6 +33,7 @@ tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Relea
 tbl.add_column(Column(name='casaversion_pre', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='has_amp', data=[False]*len(tbl)))
+tbl.add_column(Column(name='has_amp_impars', data=[False]*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*200]*len(tbl)))
 tbl.add_column(Column(name='post_fn', data=[' '*200]*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
@@ -163,7 +164,8 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                     tbl['casaversion_post'][matchrow] = fits.getheader(postselfcal_name)['ORIGIN']
 
                     scpars = imaging_parameters.selfcal_pars[f'{field}_B{band}_{config}_robust0']
-                    tbl['hasamp'][matchrow] = any('a' in scpars[key]['calpars'] for key in scpars)
+                    tbl['has_amp_impars'][matchrow] = any('a' in scpars[key]['calpars'] for key in scpars)
+                    tbl['has_amp'][matchrow] = diffstats['has_amp']
 
                     print(fns)
                     print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
