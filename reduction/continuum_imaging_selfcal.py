@@ -425,6 +425,9 @@ for continuum_ms in continuum_mses:
             ia.open(imname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
+                                   selfcalpars.items()])
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
                                    dirty_impars.items()])
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
@@ -502,6 +505,9 @@ for continuum_ms in continuum_mses:
                   )
             test_tclean_success()
             ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   selfcalpars.items()])
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    impars_thisiter.items()])
@@ -747,6 +753,9 @@ for continuum_ms in continuum_mses:
                 ia.open(imname+".image.tt0")
                 ia.sethistory(origin='almaimf_cont_selfcal',
                               history=["{0}: {1}".format(key, val) for key, val in
+                                       selfcalpars.items()])
+                ia.sethistory(origin='almaimf_cont_selfcal',
+                              history=["{0}: {1}".format(key, val) for key, val in
                                        impars_thisiter.items()])
                 ia.sethistory(origin='almaimf_cont_imaging',
                               history=["git_version: {0}".format(git_version),
@@ -927,6 +936,9 @@ for continuum_ms in continuum_mses:
             ia.open(finaliterimname+".image.tt0")
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
+                                   selfcalpars.items()])
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
                                    impars_finaliter.items()])
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
@@ -957,6 +969,9 @@ for continuum_ms in continuum_mses:
             test_tclean_success()
 
             ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   selfcalpars.items()])
             ia.sethistory(origin='almaimf_cont_selfcal',
                           history=["{0}: {1}".format(key, val) for key, val in
                                    dirty_impars.items()])
@@ -1024,6 +1039,9 @@ for continuum_ms in continuum_mses:
             test_tclean_success()
 
             ia.open(imname+".image.tt0")
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   selfcalpars.items()])
             ia.sethistory(origin='almaimf_cont_imaging',
                           history=["git_version: {0}".format(git_version),
                                    "git_date: {0}".format(git_date)])
