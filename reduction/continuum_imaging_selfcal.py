@@ -180,6 +180,27 @@ elif selfcal_field_id is not None:
     logprint("Using selfcal_field_id = {0}".format(selfcal_field_id),
              origin='contim_selfcal')
 
+def sethistory(prefix, selfcalpars=None, impars=None, selfcaliter=None):
+    for suffix in ('.image.tt0', 'image.tt0.pbcor', 'residual.tt0'):
+        ia.open(prefix+suffix)
+        if selfcalpars is not None:
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   selfcalpars.items()])
+        if impars is not None:
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   impars.items()])
+        if selfcaliter is not None:
+            ia.sethistory(origin='almaimf_cont_selfcal',
+                          history=["selfcaliter: {0}".format(selfcaliter)])
+        ia.sethistory(origin='almaimf_cont_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
+        ia.close()
+        ia.done()
+
+
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
          origin='contim_selfcal')
@@ -422,17 +443,7 @@ for continuum_ms in continuum_mses:
                   )
             test_tclean_success()
 
-            ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   selfcalpars.items()])
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   dirty_impars.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-            ia.close()
+            sethistory(imname, impars=dirty_impars, selfcalpars=selfcalpars, selfcaliter=0)
 
     if 'maskname' not in locals():
         # either use the reclean-based mask or the dirty mask
@@ -504,17 +515,7 @@ for continuum_ms in continuum_mses:
                    **impars_thisiter
                   )
             test_tclean_success()
-            ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   selfcalpars.items()])
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   impars_thisiter.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-            ia.close()
+            sethistory(imname, impars=impars_thisiter, selfcalpars=selfcalpars, selfcaliter=0)
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
@@ -750,17 +751,7 @@ for continuum_ms in continuum_mses:
                        **impars_thisiter
                       )
                 test_tclean_success()
-                ia.open(imname+".image.tt0")
-                ia.sethistory(origin='almaimf_cont_selfcal',
-                              history=["{0}: {1}".format(key, val) for key, val in
-                                       selfcalpars.items()])
-                ia.sethistory(origin='almaimf_cont_selfcal',
-                              history=["{0}: {1}".format(key, val) for key, val in
-                                       impars_thisiter.items()])
-                ia.sethistory(origin='almaimf_cont_imaging',
-                              history=["git_version: {0}".format(git_version),
-                                       "git_date: {0}".format(git_date)])
-                ia.close()
+                sethistory(imname, impars=impars_thisiter, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
                 # overwrite=True because these could already exist
                 exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
                 exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
@@ -933,17 +924,7 @@ for continuum_ms in continuum_mses:
                    **impars_finaliter
                   )
             test_tclean_success()
-            ia.open(finaliterimname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   selfcalpars.items()])
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   impars_finaliter.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-            ia.close()
+            sethistory(finaliterimname, impars=impars_finaliter, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
             # overwrite=True because these could already exist
             exportfits(finaliterimname+".image.tt0", finaliterimname+".image.tt0.fits", overwrite=True)
             exportfits(finaliterimname+".image.tt0.pbcor", finaliterimname+".image.tt0.pbcor.fits", overwrite=True)
@@ -968,17 +949,8 @@ for continuum_ms in continuum_mses:
                   )
             test_tclean_success()
 
+            sethistory(imname, impars=dirty_impars, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
             ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   selfcalpars.items()])
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   dirty_impars.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-
             post = ia.getchunk()
             ia.close()
 
@@ -1038,13 +1010,8 @@ for continuum_ms in continuum_mses:
                   )
             test_tclean_success()
 
+            sethistory(imname, impars=None, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
             ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   selfcalpars.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
             preselfcal_finalmodel_data = ia.getchunk()
             ia.close()
 
