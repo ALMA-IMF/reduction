@@ -166,7 +166,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                     tbl['casaversion_post'][matchrow] = fits.getheader(postselfcal_name)['ORIGIN']
 
                     scpars = imaging_parameters.selfcal_pars[f'{field}_B{band}_{config}_robust0']
-                    tbl['has_amp_impars'][matchrow] = any('a' in scpars[key]['calpars'] for key in scpars)
+                    tbl['has_amp_impars'][matchrow] = any('a' in scpars[key]['calmode'] for key in scpars)
                     tbl['has_amp'][matchrow] = diffstats['has_amp']
 
                     print(fns)
