@@ -1286,7 +1286,7 @@ selfcal_pars_custom = {
         2: {"calmode": "p", "gaintype": "G", "minsnr": 5, "solint": "inf", "solnorm": False},
         3: {"calmode": "p", "gaintype": "G", "minsnr": 5, "solint": "1200s", "solnorm": False},
         4: {"calmode": "p", "gaintype": "G", "minsnr": 4, "solint": "600s", "solnorm": False},
-        5: {"calmode": "p", "gaintype": "G", "minsnr": 5, "solint": "inf", "solnorm": False},
+        5: {"calmode": "ap", "gaintype": "G", "minsnr": 5, "solint": "inf", "solnorm": False},
     },
     "G012.80_B6_12M_robust2": {
         1: {"calmode": "p", "gaintype": "T", "solint": "inf", "solnorm": True},
