@@ -3107,7 +3107,7 @@ field_vlsr = {
     "G010.62": "-2km/s",
     "G353.41": "-18km/s",
     "W43-MM1": "97km/s",
-    "W43-MM2": "97km/s",
+    "W43-MM2": "90km/s",
     "W43-MM3": "97km/s",
     "G337.92": "-40km/s",
     "G338.93": "-62km/s",
@@ -3215,7 +3215,7 @@ line_parameters_custom = {
         "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "91km/s", "width": "0.37km/s"},
-        "13cs_2-1": {"cubewidth": "20km/s"},
+        "c18o": {"cubewidth": "80km/s"},
     },
     "W43-MM3": {
         "12co": {"cubewidth": "150km/s"},
