@@ -43,6 +43,7 @@ def make_anim(imname, nselfcaliter=8):
     ppbeam = (beam.sr / pixarea).decompose()
     kernel = beam.as_kernel(pixscale)
 
+    # PLACEHOLDERS to be overwritten
     norm1 = visualization.simple_norm(data=cube[0].value, stretch='asinh', min_percent=1, max_percent=99.00)
     im1 = ax1.imshow(cube[0].value, norm=norm1)
     cube = SpectralCube.read(f'{imname}_preselfcal.residual.tt0', format='casa_image')
@@ -51,6 +52,7 @@ def make_anim(imname, nselfcaliter=8):
     cube = SpectralCube.read(f'{imname}_preselfcal.model.tt0', format='casa_image')
     data = convolve_fft(cube[0].value, kernel, allow_huge=True) * ppbeam
     im3 = ax3.imshow(data, norm=norm1)
+
     # norm = visualization.simple_norm(data=data, stretch='asinh', min_percent=1, max_percent=99.00)
     # if data.max() > data.min():
     #     # ensure that vmax > vmin
@@ -79,7 +81,18 @@ def make_anim(imname, nselfcaliter=8):
                 title.set_text(f"Selfcal iteration {ii-1} (final clean)")
 
                 return (im1,im2,im3), (ax1,ax2,ax3)
-            if ii == 0:
+            elif ii == 0:
+                im1.set_data(cube[0].value)
+
+                cube = SpectralCube.read(f'{imname}_preselfcal.residual.tt0', format='casa_image')
+                im2.set_data(cube[0].value)
+
+                cube = SpectralCube.read(f'{imname}_preselfcal.model.tt0', format='casa_image')
+                data = convolve_fft(cube[0].value, kernel, allow_huge=True) * ppbeam
+                im3.set_data(data)
+
+                title.set_text("Before Selfcal")
+
                 return (im1,im2,im3), (ax1,ax2,ax3)
             else:
                 cube = SpectralCube.read(f'{imname}_selfcal{ii}.image.tt0', format='casa_image')
