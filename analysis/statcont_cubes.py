@@ -96,6 +96,8 @@ if __name__ == "__main__":
 
             cube = SpectralCube.read(fn)
             print(cube)
+            cube = cube.minimal_subcube()
+            print(cube)
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
@@ -114,3 +116,5 @@ if __name__ == "__main__":
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
             print(f"{fn} -> {outfn} in {time.time()-t0}s")
+        else:
+            print(f"Skipped {fn}")
