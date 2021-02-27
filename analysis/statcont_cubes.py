@@ -92,7 +92,7 @@ if __name__ == "__main__":
             with open(outfn, 'w') as fh:
                 fh.write("")
 
-            print(fn, sizes[ii]/1024**3)
+            print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
             cube = SpectralCube.read(fn)
             print(cube)
@@ -102,16 +102,20 @@ if __name__ == "__main__":
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 with cube.use_dask_scheduler('threads', num_workers=nworkers):
+                    print("Calculating noise")
                     if ii < len(tbl):
                         noise = tbl['std'].quantity[ii]
                     else:
                         noise = cube.std()
 
+                    print("Sigma clipping")
                     result = c_sigmaclip_scube(cube, noise,
                                                verbose=True,
                                                save_to_tmp_dir=True)
+                    print("Running the compute step")
                     data_to_write = result[1].compute()
 
+                    print(f"Writing to FITS {outfn}")
                     fits.PrimaryHDU(data=data_to_write,
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
