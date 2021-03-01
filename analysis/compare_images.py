@@ -89,8 +89,9 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if norm.vmax < 0.001:
         norm.vmax = 0.001
 
-    cm = pl.matplotlib.cm.gray
-    cm.set_bad('white', 0)
+    #cm = pl.matplotlib.cm.gray
+    #cm.set_bad('white', 0)
+    cm = pl.matplotlib.cm.viridis
 
     ax1 = pl.subplot(1,3,1)
     ax2 = pl.subplot(1,3,2)
