@@ -2839,7 +2839,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G012.80_B3_12M_robust0": {
-        "threshold": "6mJy",
+        "threshold": "18mJy", # ~2-sigma
         # "startmodel": "G012.80_B3_uid___A001_X1296_X1f9_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1fb instead of 1f9 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
