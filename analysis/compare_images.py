@@ -41,11 +41,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
-    data_pre = cube_pre[0].value
-    data_post = cube_post[0].value
+    data_pre = cube_pre[0].value * 1e3
+    data_post = cube_post[0].value * 1e3
 
-    data_pre[np.abs(data_pre) < 1e-7] = np.nan
-    data_post[np.abs(data_post) < 1e-7] = np.nan
+    #data_pre[np.abs(data_pre) < 1e-7] = np.nan
+    #data_post[np.abs(data_post) < 1e-7] = np.nan
 
     try:
         diff = (data_post - data_pre)
@@ -86,8 +86,8 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
                                      #min_percent=0.05, max_percent=99.995,)
                                      min_cut=minv, max_cut=maxv)
-    if norm.vmax < 0.001:
-        norm.vmax = 0.001
+    if norm.vmax < 1:
+        norm.vmax = 1
 
     #cm = pl.matplotlib.cm.gray
     #cm.set_bad('white', 0)
@@ -116,7 +116,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     cbax = fig.add_axes([0.91,0.18,0.03,0.64])
     cb = fig.colorbar(cax=cbax, mappable=im)
-    cb.set_label("S$_\\nu$ [Jy/beam]")
+    cb.set_label("S$_\\nu$ [mJy/beam]")
 
     meta = parse_fn(filename1)
 
