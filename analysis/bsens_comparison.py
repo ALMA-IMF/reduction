@@ -24,7 +24,7 @@ import imstats
 #tbl = imstats.savestats(basepath=basepath)
 
 #tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/tables/metadata.ecsv')
-tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata_image.tt0.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='bsens_fn', data=[' '*200]*len(tbl)))
