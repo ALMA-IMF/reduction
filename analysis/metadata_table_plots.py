@@ -164,7 +164,7 @@ pl.savefig("../datapaper/figures/bsens_rms_change.png", bbox_inches='tight')
 
 b3sc = wtbl_selfcal['band'] == 'B3'
 b6sc = wtbl_selfcal['band'] == 'B6'
-wtbl_selfcal['SensVsReqPost'] = wtbl_selfcal['mad_sample_post'] / wtbl_selfcal['Req_Sens'] * 1000
+wtbl_selfcal['SensVsReqPost'] = wtbl_selfcal['mad_sample_post'] / wtbl_selfcal['Req_Sens']
 
 
 fig1 = pl.figure(4, figsize=(10,5))
