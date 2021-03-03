@@ -125,7 +125,7 @@ latexdict['col_align'] = 'l'*len(fwtbl.columns)
 latexdict['tabletype'] = 'table*'
 latexdict['tablefoot'] = ("}\par\n"
                           "$n_{sc}$ is the number of self-calibration iterations adopted.  "
-                          "Those with a final iteration of amplitude self-calibration are denoted with the 'a' suffix.  "
+                          "Those with a final iteration of amplitude self-calibration are denoted with the `a' suffix.  "
                           "$\\theta_{maj}, \\theta_{min}$, and BPA give the major and minor full-width-half-maxima (FWHM) of the synthesized beams.  "
                           "$\\theta_{req}$ is the requested beam size, "
                           "and $\\Omega_{syn}^{1/2}/\\Omega_{req}^{1/2}$ gives the ratio of the synthesized to the "
