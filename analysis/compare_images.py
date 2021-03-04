@@ -83,7 +83,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if np.abs(minv) > maxv:
         minv = -maxv
 
-    norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
+    norm = visualization.simple_norm(data=diff.squeeze(), stretch='linear',
                                      #min_percent=0.05, max_percent=99.995,)
                                      min_cut=minv, max_cut=maxv)
     if norm.vmax < 1:
@@ -99,13 +99,13 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     for ax in (ax1,ax2,ax3):
         ax.cla()
 
-    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    ax1.imshow(np.arcsinh(data_pre), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax1.set_title(title1)
 
-    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    ax2.imshow(np.arcsinh(data_post), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax2.set_title(title2)
 
-    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    im = ax3.imshow(np.arcsinh(diff.squeeze()), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax3.set_title(f"{title2} - {title1}")
 
     for ax in (ax1,ax2,ax3):
@@ -117,6 +117,9 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     cbax = fig.add_axes([0.91,0.18,0.03,0.64])
     cb = fig.colorbar(cax=cbax, mappable=im)
     cb.set_label("S$_\\nu$ [mJy/beam]")
+    mn,mx = cb.get_ticks().min(), cb.get_ticks().max()
+    cb.set_ticks(ticks)
+    cb.set_ticklabels([f"{np.arcsinh(x):0.2f}" for x in ticks])
 
     meta = parse_fn(filename1)
 
