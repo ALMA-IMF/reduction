@@ -111,7 +111,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     ww = cube_pre.wcs.celestial
     cd = (ww.pixel_scale_matrix[1,1] * 3600)
     blc = np.array(diff.shape)*0.1
-    ax1.add_patch(matplotlib.patches.Rectangle([blc[1]*0.8, blc[0]*0.9], width=scalebarlength/cd*1.4, height=blc[0]*0.6, edgecolor='k', facecolor='w', alpha=0.5))
+    ax1.add_patch(matplotlib.patches.Rectangle([blc[1]*0.8, blc[0]*0.9],
+                                               width=scalebarlength/cd*1.4,
+                                               height=blc[0]*0.6,
+                                               edgecolor='k', facecolor='w',
+                                               alpha=0.5))
     ax1.plot([blc[1], blc[1]+scalebarlength/cd], [blc[0], blc[0]], color='k')
     tx = ax1.annotate(f'{scalebarlength}"', (blc[1]+scalebarlength/2/cd, blc[0]*1.1))
     tx.set_horizontalalignment('center')
