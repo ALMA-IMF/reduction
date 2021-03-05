@@ -101,7 +101,7 @@ if __name__ == "__main__":
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                with cube.use_dask_scheduler('threads', num_workers=8):
+                with cube.use_dask_scheduler('multiprocessing'):
                     print("Calculating noise")
                     if ii < len(tbl):
                         noise = tbl['std'].quantity[ii]
