@@ -16,7 +16,7 @@ from compare_images import make_comparison_image
 from before_after_selfcal_quicklooks import get_selfcal_number
 
 cwd = os.getcwd()
-basepath = '/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020'
+basepath = '/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020'
 os.chdir(basepath)
 
 import imstats
@@ -24,7 +24,7 @@ import imstats
 
 # tbl = imstats.savestats(basepath=basepath)
 
-tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*100]*len(tbl)))
@@ -159,15 +159,15 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_sc.ecsv',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/tables/metadata_sc.ecsv',
           overwrite=True)
-tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_sc.html',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/tables/metadata_sc.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_sc.tex',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/tables/metadata_sc.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/Feb2020/tables/metadata_sc.js.html',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/tables/metadata_sc.js.html',
           #formats=formats,
           format='jsviewer')
 

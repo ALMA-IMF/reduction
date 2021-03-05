@@ -135,7 +135,24 @@ chanchunks = int(os.getenv('CHANCHUNKS') or 16)
 # (TODO: check whether we actually want to continue sometimes)
 continue_imaging = False
 
+def sethistory(prefix, nsigma=None, impars=None, suffixes=('.image', '.residual', '.model')):
+    for suffix in suffixes:
+        ia.open(prefix+suffix)
+        if impars is not None:
+            ia.sethistory(origin='almaimf_line_imaging',
+                          history=["{0}: {1}".format(key, val) for key, val in
+                                   impars.items()])
+        if nsigma is not None:
+            ia.sethistory(origin='almaimf_line_imaging',
+                          history="nsigma: {0}".format(nsigma))
+        ia.sethistory(origin='almaimf_line_imaging',
+                      history=["git_version: {0}".format(git_version),
+                               "git_date: {0}".format(git_date)])
+        ia.close()
+        ia.done()
+
 def set_impars(impars, line_name, vis, linpars, spwnames=None):
+    impars = impars.copy()
     if line_name not in ('full', ) + spwnames:
         local_impars = {}
         if 'width' in linpars:
@@ -414,8 +431,8 @@ for band in band_list:
                 pars_key = pars_key+"_"+line_name
             impars = line_imaging_parameters[pars_key]
 
-            set_impars(impars=impars, line_name=line_name, vis=vis,
-                       linpars=linpars, spwnames=spwnames)
+            impars = set_impars(impars=impars, line_name=line_name, vis=vis,
+                                linpars=linpars, spwnames=spwnames)
 
             if 'imsize' not in impars:
                 impars['imsize'] = imsize
@@ -475,15 +492,7 @@ for band in band_list:
                        # it results in bad edge channels dominating the beam
                        **impars_dirty
                       )
-                for suffix in ('image', 'residual'):
-                    ia.open(lineimagename+"."+suffix)
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["{0}: {1}".format(key, val) for key, val in
-                                           impars_dirty.items()])
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["git_version: {0}".format(git_version),
-                                           "git_date: {0}".format(git_date)])
-                    ia.close()
+                sethistory(lineimagename, impars=impars_dirty, suffixes=(".image", ".residual"))
                 for suffix in ("mask", "model"):
                     bad_fn = lineimagename + "." + suffix
                     if os.path.exists(bad_fn):
@@ -718,17 +727,7 @@ for band in band_list:
                 impars['niter'] = niter
                 impars['startmodel'] = smod
                 impars['mask'] = mask
-                for suffix in ('image', 'residual', 'model'):
-                    ia.open(lineimagename+"."+suffix)
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["{0}: {1}".format(key, val) for key, val in
-                                           impars.items()])
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["nsigma: {0}".format(nsigma)])
-                    ia.sethistory(origin='almaimf_line_imaging',
-                                  history=["git_version: {0}".format(git_version),
-                                           "git_date: {0}".format(git_date)])
-                    ia.close()
+                sethistory(lineimagename, nsigma=nsigma, impars=impars)
 
                 impbcor(imagename=lineimagename+'.image',
                         pbimage=lineimagename+'.pb',

@@ -166,5 +166,5 @@ if __name__ == "__main__":
             for name in dirnames:
                 if name.endswith('.ms.split.cal'):
                     fullpath = (Path(root)/Path(name))
-                    print(fullpath)
+                    print("Plotting UV spectra of ",fullpath)
                     plot_uvspectra(str(fullpath))

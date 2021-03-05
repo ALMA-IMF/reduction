@@ -15,21 +15,27 @@ from compare_images import make_comparison_image
 
 from before_after_selfcal_quicklooks import get_selfcal_number
 
+import sys
+sys.path.append(f'{os.path.dirname(__file__)}/../reduction')
+import imaging_parameters
+
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
 os.chdir(basepath)
-sharepath = '/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021Release/'
+sharepath = '/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/'
 
 #import imstats
 
 
 # tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021/tables/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021/tables/metadata.ecsv')
 tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata_image.tt0.ecsv')
-#tbl = Table.read('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/February2021Release/tables/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/tables/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['                 ']*len(tbl)))
+tbl.add_column(Column(name='has_amp', data=[False]*len(tbl)))
+tbl.add_column(Column(name='has_amp_impars', data=[False]*len(tbl)))
 tbl.add_column(Column(name='pre_fn', data=[' '*200]*len(tbl)))
 tbl.add_column(Column(name='post_fn', data=[' '*200]*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
@@ -159,6 +165,10 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                     tbl['casaversion_pre'][matchrow] = fits.getheader(preselfcal_name)['ORIGIN']
                     tbl['casaversion_post'][matchrow] = fits.getheader(postselfcal_name)['ORIGIN']
 
+                    scpars = imaging_parameters.selfcal_pars[f'{field}_B{band}_{config}_robust0']
+                    tbl['has_amp_impars'][matchrow] = any('a' in scpars[key]['calmode'] for key in scpars)
+                    tbl['has_amp'][matchrow] = diffstats['has_amp']
+
                     print(fns)
                     print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
                 else:
@@ -176,7 +186,7 @@ if not os.path.exists(f'{sharepath}/tables/'):
     os.mkdir(sharepath)
     os.mkdir(f'{sharepath}/tables/')
 
-for bp in ('/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/',
+for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
 
     tbl.write('{bp}/February2021Release/tables/metadata_sc.ecsv'.format(bp=bp),

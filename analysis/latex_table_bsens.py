@@ -79,11 +79,11 @@ cols_to_keep = {'region':'Region',
                }
 
 
-units = {'$S_{peak}(bsens)$':u.Jy.to_string(u.format.LatexInline),
-         '$S_{peak}(cleanest)$':u.Jy.to_string(u.format.LatexInline),
-         '$\sigma_{MAD}(bsens)$':u.mJy.to_string(u.format.LatexInline),
-         '$\sigma_{MAD}(cleanest)$':u.mJy.to_string(u.format.LatexInline),
-         'Requested $\sigma$':u.mJy.to_string(u.format.LatexInline),
+units = {'$S_{peak}(bsens)$':(u.Jy/u.beam).to_string(u.format.LatexInline),
+         '$S_{peak}(cleanest)$':(u.Jy/u.beam).to_string(u.format.LatexInline),
+         '$\sigma_{MAD}(bsens)$':(u.mJy/u.beam).to_string(u.format.LatexInline),
+         '$\sigma_{MAD}(cleanest)$':(u.mJy/u.beam).to_string(u.format.LatexInline),
+         'Requested $\sigma$':(u.mJy/u.beam).to_string(u.format.LatexInline),
          #'$\sigma_{req}$':u.mJy.to_string(u.format.LatexInline),
          #r'$\theta_{req}$':u.arcsec.to_string(u.format.LatexInline),
          #r'$\theta_{maj}$':u.arcsec.to_string(u.format.LatexInline),
@@ -103,9 +103,9 @@ for old, new in cols_to_keep.items():
             wtbl[new].unit = units[new]
 
 for colname in ['$\sigma_{MAD}$(bsens)', '$\sigma_{MAD}$(cleanest)',]:
-    wtbl[colname].unit = u.mJy
+    wtbl[colname].unit = u.mJy/u.beam
 for colname in ['$S_{peak}$(bsens)', '$S_{peak}$(cleanest)',]:
-    wtbl[colname].unit = u.Jy
+    wtbl[colname].unit = u.Jy/u.beam
 
 
 float_cols =  ['$\\theta_{maj}$',

@@ -87,7 +87,7 @@ if __name__ == "__main__":
     tbl.sort(keys=['region', 'array', 'band', 'bsens', 'selfcaliter', ])
     tbl.write("fields_summary_table.ecsv", overwrite=True)
 
-    shutil.copy("fields_summary_table.ecsv", "/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/")
+    shutil.copy("fields_summary_table.ecsv", "/orange/adamginsburg/web/secure/ALMA-IMF/October2020Release/tables/")
 
 
 
@@ -112,5 +112,5 @@ if __name__ == "__main__":
 
                              )
 
-    ltbl.write("/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/selfcal_fields_table.tex",
+    ltbl.write("/orange/adamginsburg/web/secure/ALMA-IMF/October2020Release/tables/selfcal_fields_table.tex",
                overwrite=True, latexdict=latexdict)

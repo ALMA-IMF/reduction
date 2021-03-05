@@ -258,5 +258,5 @@ Files that have resulted in m/s parsing failures:
     ['G012.80_B3_spw0_7M12M_n2hp.contsub.image']
 """
 
-# for fn in /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/collapse/*/pngs; do out=${fn//*collapse\// }; out=${out/\//_}; outdir="/orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/cube_quicklooks/${out/ /}"; cp -v ${fn}/* ${outdir}; done
-# for fn in /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/collapse/*/pngs; do out=${fn//*collapse\// }; out=${out/\//_}; echo $out; mkdir /orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/cube_quicklooks/${out}; cp -v ${fn}/* /orange/adamginsburg/web/secure/adamginsburg/ALMA-IMF/cube_quicklooks/${out}/; done
+# for fn in /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/collapse/*/pngs; do out=${fn//*collapse\// }; out=${out/\//_}; outdir="/orange/adamginsburg/web/secure/ALMA-IMF/cube_quicklooks/${out/ /}"; cp -v ${fn}/* ${outdir}; done
+# for fn in /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/collapse/*/pngs; do out=${fn//*collapse\// }; out=${out/\//_}; echo $out; mkdir /orange/adamginsburg/web/secure/ALMA-IMF/cube_quicklooks/${out}; cp -v ${fn}/* /orange/adamginsburg/web/secure/ALMA-IMF/cube_quicklooks/${out}/; done
