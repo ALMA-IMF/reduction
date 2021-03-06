@@ -240,7 +240,7 @@ lims = ax1.axis()
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.plot([1,1], ax1.get_ylim(), 'k--')
 ax1.set_xlabel("Measured Noise / Requested Sensitivity")
-ax1.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
+ax1.set_ylabel("Recovered beam Major Axis / Requested beam major axis")
 ax1.axis(lims)
 
 b3bs = wtbl_bsens['band'] == 'B3'
@@ -254,7 +254,7 @@ lims = ax2.axis()
 ax2.plot(ax2.get_xlim(), [1,1], 'k--')
 ax2.plot([1,1], ax2.get_ylim(), 'k--')
 ax2.set_xlabel("Measured Noise / Requested Sensitivity")
-ax2.set_ylabel("Recovered Beam Major Axis / Requested beam major axis")
+ax2.set_ylabel("Recovered beam Major Axis / Requested beam major axis")
 ax2.axis(lims)
 
 pl.legend(loc='best')
