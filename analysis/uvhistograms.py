@@ -6,20 +6,26 @@ import pylab as pl
 from astropy import units as u
 
 def make_figure(data, wavelength, beam_to_bl, bins=50):
+    uvcts = np.concatenate([data[spw]['uvdist'][~data[spw]['flag'].any(axis=(0,1))] for spw in data]).ravel()
+    uvwts = np.concatenate([data[spw]['weight'].mean(axis=0)[~data[spw]['flag'].any(axis=(0,1))] for spw in data]).ravel()
+
     pl.figure(figsize=(8,4))
     ax1 = pl.subplot(1,2,1)
-    _=pl.hist(np.concatenate([data[spw]['uvdist'][~data[spw]['flag'].any(axis=(0,1))] for spw in data]).ravel(), bins=bins)
+    _=pl.hist(uvcts, bins=bins)
     _=pl.xlabel('Baseline Length (m)')
     _=pl.ylabel("Number of Visibilities")
     yl = pl.ylim()
+
     pl.fill_betweenx(yl, beam_to_bl[0].value, beam_to_bl[1].value, zorder=-5, color='orange', alpha=0.5)
+    pl.fill_betweenx(yl, np.percentile(uvcts, 25), np.percentile(uvcts, 75), zorder=-5, color='red', alpha=0.25)
+
     pl.ylim(yl)
     ax1t = ax1.secondary_xaxis('top', functions=(lambda x: x/1e3/wavelength.to(u.m).value, lambda x:x/1e3/wavelength.to(u.m).value))
     ax1t.set_xlabel("Baseline Length (k$\lambda$)")
     #ax1t.set_ticks(np.linspace(1000,100000,10))
     ax2 = pl.subplot(1,2,2)
-    _=pl.hist(np.concatenate([data[spw]['uvdist'][~data[spw]['flag'].any(axis=(0,1))] for spw in data]).ravel(),
-            weights=np.concatenate([data[spw]['weight'].mean(axis=0)[~data[spw]['flag'].any(axis=(0,1))] for spw in data]).ravel(),
+    _=pl.hist(uvcts,
+            weights=uvwts,
             bins=bins, density=True)
     _=pl.xlabel('Baseline Length (m)')
     _=pl.ylabel("Fractional Weight")
@@ -37,6 +43,7 @@ def make_figure(data, wavelength, beam_to_bl, bins=50):
         ax2t.set_ticks([10,2,1,0.8,0.7,0.6,0.2])
     yl = pl.ylim()
     pl.fill_betweenx(yl, beam_to_bl[0].value, beam_to_bl[1].value, zorder=-5, color='orange', alpha=0.5)
+    pl.fill_betweenx(yl, np.percentile(uvcts, 25), np.percentile(uvcts, 75), zorder=-5, color='red', alpha=0.25)
     pl.ylim(yl)
     #pl.subplots_adjust(wspace=0.3)
     pl.tight_layout()
@@ -78,5 +85,6 @@ if  __name__ == "__main__":
         beam = mslist[(region,band)]['beam']*u.arcsec
         beam_to_bl = (wavelength / beam).to(u.m, u.dimensionless_angles())
 
-        make_figure(data, wavelength, beam_to_bl)
+        with np.errstate(divide='ignore'):
+            make_figure(data, wavelength, beam_to_bl)
         pl.savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{region}_{band}_uvhistogram.pdf', bbox_inches='tight')
