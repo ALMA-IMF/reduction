@@ -132,7 +132,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                 try:
                     with warnings.catch_warnings():
                         warnings.filterwarnings('ignore')
-                        ax1, ax2, ax3, fig, diffstats = make_comparison_imagene(filename1=cleanest,
+                        ax1, ax2, ax3, fig, diffstats = make_comparison_image(filename1=cleanest,
                                                                               filename2=bsens,
                                                                               title1='cleanest',
                                                                               title2='bsens',
