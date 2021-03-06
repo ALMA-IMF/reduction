@@ -79,18 +79,18 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if fig.get_figwidth() != 14:
         fig.set_figwidth(14)
 
-    data_pre = np.arcsinh(data_pre*asinh_scaling_factor)
-    data_post = np.arcsinh(data_post*asinh_scaling_factor)
-    diff = np.arcsinh(diff*asinh_scaling_factor)
+    data_pre_display = np.arcsinh(data_pre*asinh_scaling_factor)
+    data_post_display = np.arcsinh(data_post*asinh_scaling_factor)
+    diff_display = np.arcsinh(diff*asinh_scaling_factor)
 
-    minv = np.nanpercentile(data_pre, 0.05)
-    maxv = np.nanpercentile(data_pre, 99.5)
+    minv = np.nanpercentile(data_pre_display, 0.05)
+    maxv = np.nanpercentile(data_pre_display, 99.5)
     if maxv > np.arcsinh(1000):
         maxv = np.arcsinh(1000)
     if np.abs(minv) > maxv:
         minv = -maxv
 
-    norm = visualization.simple_norm(data=diff.squeeze(), stretch='linear',
+    norm = visualization.simple_norm(data=diff_display.squeeze(), stretch='linear',
                                      #min_percent=0.05, max_percent=99.995,)
                                      min_cut=minv, max_cut=maxv)
 
@@ -104,7 +104,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     for ax in (ax1,ax2,ax3):
         ax.cla()
 
-    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    ax1.imshow(data_pre_display, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax1.set_title(title1)
 
     # scalebar
@@ -120,10 +120,10 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     tx = ax1.annotate(f'{scalebarlength}"', (blc[1]+scalebarlength/2/cd, blc[0]*1.1))
     tx.set_horizontalalignment('center')
 
-    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    ax2.imshow(data_post_display, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax2.set_title(title2)
 
-    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    im = ax3.imshow(diff_display.squeeze(), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax3.set_title(f"{title2} - {title1}")
 
     for ax in (ax1,ax2,ax3):
