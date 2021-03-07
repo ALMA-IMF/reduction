@@ -21,6 +21,7 @@ scripts = [
            'imstats.py',
            'before_after_selfcal_quicklooks_Feb2021release.py',
            'bsens_comparison.py',
+           'bsens_cleanest_diff_zooms.py',
            'psf_check_figures.py',
            'continuum_selections.py',
            'dirty_selfcal_compare.py',
