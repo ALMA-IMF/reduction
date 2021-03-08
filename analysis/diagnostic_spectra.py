@@ -23,20 +23,20 @@ os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
 if __name__ == "__main__":
     # need to be in main block for dask to work
-    from dask.distributed import Client
-    if os.getenv('SLURM_MEM_PER_NODE'):
-        memlim_total = int(os.getenv('SLURM_MEM_PER_NODE')) / 1024 # GB
-        ntasks = int(os.getenv('SLURM_NTASKS'))
-        memlim = memlim_total / ntasks
-    else:
-        memlim = 1
-        ntasks = 8
-    client = Client(memory_limit=f'{memlim}GB', n_workers=ntasks)
-    nworkers = len(client.scheduler_info()['workers'])
-    print(f"Client schedular info: {client.scheduler_info()['services']}")
-    print(f"Number of workers: {nworkers}")
-    print(f"Client schedular info: {client.scheduler_info()}")
-    print(f"Client vers: {client.get_versions(check=True)}")
+    #from dask.distributed import Client
+    #if os.getenv('SLURM_MEM_PER_NODE'):
+    #    memlim_total = int(os.getenv('SLURM_MEM_PER_NODE')) / 1024 # GB
+    #    ntasks = int(os.getenv('SLURM_NTASKS'))
+    #    memlim = memlim_total / ntasks
+    #else:
+    #    memlim = 1
+    #    ntasks = 8
+    #client = Client(memory_limit=f'{memlim}GB', n_workers=ntasks)
+    #nworkers = len(client.scheduler_info()['workers'])
+    #print(f"Client schedular info: {client.scheduler_info()['services']}")
+    #print(f"Number of workers: {nworkers}")
+    #print(f"Client schedular info: {client.scheduler_info()}")
+    #print(f"Client vers: {client.get_versions(check=True)}")
     if os.getenv('ENVIRONMENT') == 'BATCH':
         pass
     else:

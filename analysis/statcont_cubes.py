@@ -29,21 +29,21 @@ os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
 if __name__ == "__main__":
     # need to be in main block for dask to work
-    from dask.distributed import Client
-    if os.getenv('SLURM_MEM_PER_NODE'):
-        memlim_total = int(os.getenv('SLURM_MEM_PER_NODE')) / 1024 # GB
-        ntasks = int(os.getenv('SLURM_NTASKS'))
-        memlim = memlim_total / ntasks
-        print(f"Memory limit is {memlim} GB")
-    else:
-        memlim = 1
-        ntasks = 8
-    client = Client(memory_limit=f'{memlim}GB', n_workers=ntasks)
-    nworkers = len(client.scheduler_info()['workers'])
-    print(f"Client scheduler info: {client.scheduler_info()['services']}")
-    print(f"Number of workers: {nworkers}  (should be equal to ntasks={ntasks})")
-    print(f"Client scheduler info: {client.scheduler_info()}")
-    print(f"Client vers: {client.get_versions(check=True)}")
+    #from dask.distributed import Client
+    #if os.getenv('SLURM_MEM_PER_NODE'):
+    #    memlim_total = int(os.getenv('SLURM_MEM_PER_NODE')) / 1024 # GB
+    #    ntasks = int(os.getenv('SLURM_NTASKS'))
+    #    memlim = memlim_total / ntasks
+    #    print(f"Memory limit is {memlim} GB")
+    #else:
+    #    memlim = 1
+    #    ntasks = 8
+    #client = Client(memory_limit=f'{memlim}GB', n_workers=ntasks)
+    #nworkers = len(client.scheduler_info()['workers'])
+    #print(f"Client scheduler info: {client.scheduler_info()['services']}")
+    #print(f"Number of workers: {nworkers}  (should be equal to ntasks={ntasks})")
+    #print(f"Client scheduler info: {client.scheduler_info()}")
+    #print(f"Client vers: {client.get_versions(check=True)}")
     if os.getenv('ENVIRONMENT') == 'BATCH':
         pass
     else:
@@ -92,25 +92,33 @@ if __name__ == "__main__":
             with open(outfn, 'w') as fh:
                 fh.write("")
 
-            print(fn, sizes[ii]/1024**3)
+            print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
-            cube = SpectralCube.read(fn)
+            cube = SpectralCube.read(fn, target_chunk_size=1e6)
+            print(cube)
+            cube = cube.minimal_subcube()
             print(cube)
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                with cube.use_dask_scheduler('threads', num_workers=nworkers):
+                with cube.use_dask_scheduler('multiprocessing'):
+                    print("Calculating noise")
                     if ii < len(tbl):
                         noise = tbl['std'].quantity[ii]
                     else:
                         noise = cube.std()
 
+                    print("Sigma clipping")
                     result = c_sigmaclip_scube(cube, noise,
                                                verbose=True,
                                                save_to_tmp_dir=True)
+                    print("Running the compute step")
                     data_to_write = result[1].compute()
 
+                    print(f"Writing to FITS {outfn}")
                     fits.PrimaryHDU(data=data_to_write,
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
             print(f"{fn} -> {outfn} in {time.time()-t0}s")
+        else:
+            print(f"Skipped {fn}")

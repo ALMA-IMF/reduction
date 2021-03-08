@@ -32,7 +32,7 @@ echo ${jobid##* }
 
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_$(date +%Y-%m-%d_%H_%M_%S).log"
 export DO_BSENS=True
-jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
+jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
 echo ${jobid##* }
 export DO_BSENS=False
 
@@ -64,7 +64,7 @@ echo ${jobid##* }
 
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_$(date +%Y-%m-%d_%H_%M_%S).log"
 export DO_BSENS=True
-jobid=$(sbatch --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
+jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
 echo ${jobid##* }
 export DO_BSENS=False
 

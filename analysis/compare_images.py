@@ -4,6 +4,7 @@ from astropy import visualization
 from astropy.stats import mad_std
 from astropy import units as u
 import pylab as pl
+import matplotlib
 import numpy as np
 from astropy.io import fits
 from astropy import wcs
@@ -14,7 +15,8 @@ import operator
 from functools import reduce
 
 
-def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False):
+def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False, nticks=12,
+                          asinh_scaling_factor=10, scalebarlength=15):
     #fh_pre = fits.open()
     #fh_post = fits.open()
     cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image').with_spectral_unit(u.GHz)
@@ -41,11 +43,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
-    data_pre = cube_pre[0].value
-    data_post = cube_post[0].value
+    data_pre = cube_pre[0].value * 1e3
+    data_post = cube_post[0].value * 1e3
 
-    data_pre[np.abs(data_pre) < 1e-7] = np.nan
-    data_post[np.abs(data_post) < 1e-7] = np.nan
+    #data_pre[np.abs(data_pre) < 1e-7] = np.nan
+    #data_post[np.abs(data_post) < 1e-7] = np.nan
 
     try:
         diff = (data_post - data_pre)
@@ -77,20 +79,24 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if fig.get_figwidth() != 14:
         fig.set_figwidth(14)
 
+    data_pre_display = np.arcsinh(data_pre*asinh_scaling_factor)
+    data_post_display = np.arcsinh(data_post*asinh_scaling_factor)
+    diff_display = np.arcsinh(diff*asinh_scaling_factor)
 
-    minv = np.nanpercentile(data_pre, 0.05)
-    maxv = np.nanpercentile(data_pre, 99.5)
+    minv = np.nanpercentile(data_pre_display, 0.05)
+    maxv = np.nanpercentile(data_pre_display, 99.5)
+    if maxv > np.arcsinh(1000):
+        maxv = np.arcsinh(1000)
     if np.abs(minv) > maxv:
         minv = -maxv
 
-    norm = visualization.simple_norm(data=diff.squeeze(), stretch='asinh',
+    norm = visualization.simple_norm(data=diff_display.squeeze(), stretch='linear',
                                      #min_percent=0.05, max_percent=99.995,)
                                      min_cut=minv, max_cut=maxv)
-    if norm.vmax < 0.001:
-        norm.vmax = 0.001
 
-    cm = pl.matplotlib.cm.gray
-    cm.set_bad('white', 0)
+    #cm = pl.matplotlib.cm.gray
+    #cm.set_bad('white', 0)
+    cm = pl.matplotlib.cm.viridis
 
     ax1 = pl.subplot(1,3,1)
     ax2 = pl.subplot(1,3,2)
@@ -98,13 +104,26 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     for ax in (ax1,ax2,ax3):
         ax.cla()
 
-    ax1.imshow(data_pre, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    ax1.imshow(data_pre_display, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax1.set_title(title1)
 
-    ax2.imshow(data_post, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    # scalebar
+    ww = cube_pre.wcs.celestial
+    cd = (ww.pixel_scale_matrix[1,1] * 3600)
+    blc = np.array(diff.shape)*0.1
+    ax1.add_patch(matplotlib.patches.Rectangle([blc[1]*0.8, blc[0]*0.9],
+                                               width=scalebarlength/cd*1.4,
+                                               height=blc[0]*0.6,
+                                               edgecolor='k', facecolor='w',
+                                               alpha=0.5))
+    ax1.plot([blc[1], blc[1]+scalebarlength/cd], [blc[0], blc[0]], color='k')
+    tx = ax1.annotate(f'{scalebarlength}"', (blc[1]+scalebarlength/2/cd, blc[0]*1.1))
+    tx.set_horizontalalignment('center')
+
+    ax2.imshow(data_post_display, norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax2.set_title(title2)
 
-    im = ax3.imshow(diff.squeeze(), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
+    im = ax3.imshow(diff_display.squeeze(), norm=norm, origin='lower', interpolation='nearest', cmap=cm)
     ax3.set_title(f"{title2} - {title1}")
 
     for ax in (ax1,ax2,ax3):
@@ -115,7 +134,15 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     cbax = fig.add_axes([0.91,0.18,0.03,0.64])
     cb = fig.colorbar(cax=cbax, mappable=im)
-    cb.set_label("S$_\\nu$ [Jy/beam]")
+    cb.set_label("S$_\\nu$ [mJy/beam]")
+    mn,mx = cb.get_ticks().min(), cb.get_ticks().max()
+    ticklocs = np.concatenate([np.linspace(-norm.vmax, 0, nticks//2)[:-1], np.linspace(0, norm.vmax, nticks//2)])
+    ticks = np.sinh(ticklocs)
+    cb.update_normal(im)
+    cb.set_ticks(ticks)
+    ticklocs = cb.get_ticks()
+    ticklabels = [f"{np.sinh(x/asinh_scaling_factor):0.2f}" for x in ticklocs]
+    cb.set_ticklabels(ticklabels)
 
     meta = parse_fn(filename1)
 

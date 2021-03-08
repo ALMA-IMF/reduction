@@ -68,7 +68,7 @@ prefixes = {
         finaliter_prefix_b3="G333.60/B3/cleanest/G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",),
     'G12': dict(
         finaliter_prefix_b3="G012.80/B3/cleanest/G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
-        finaliter_prefix_b6="G012.80/B6/cleanest/G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",),
+        finaliter_prefix_b6="G012.80/B6/cleanest/G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",),
     'W51IRS2': dict(
         finaliter_prefix_b3="W51-IRS2/B3/cleanest/W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
         finaliter_prefix_b6="W51-IRS2/B6/cleanest/W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",),
@@ -79,7 +79,7 @@ prefixes = {
         finaliter_prefix_b3="G327.29/B3/cleanest/G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
         finaliter_prefix_b6="G327.29/B6/cleanest/G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",),
     'G10': dict(
-        finaliter_prefix_b3="G010.62/B3/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal8_finaliter",
+        finaliter_prefix_b3="G010.62/B3/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
         finaliter_prefix_b6="G010.62/B6/cleanest/G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",),
     'G337': dict(
         finaliter_prefix_b3="G337.92/B3/cleanest/G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -185,9 +185,15 @@ def compare_spectral_indices(finaliter_prefix_b3, finaliter_prefix_b6,
                              scalebarlength=5,
                              basepath='/home/adam/work/alma-imf/reduction/', ):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
-    image_tt1_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
+    try:
+        image_tt1_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
+    except FileNotFoundError:
+        image_tt1_b3 = SpectralCube.read(f'{finaliter_prefix_b3.replace("cleanest", "cleanest/extras")}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
-    image_tt1_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
+    try:
+        image_tt1_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
+    except FileNotFoundError:
+        image_tt1_b6 = SpectralCube.read(f'{finaliter_prefix_b6.replace("cleanest", "cleanest/extras")}.image.tt1', format='casa_image').subcube_from_ds9region(cutoutregion)
 
     image_b3 = image_b3 * u.beam / image_b3.beam.sr
     image_b6 = image_b6 * u.beam / image_b6.beam.sr
@@ -272,10 +278,12 @@ if __name__ == "__main__":
     import os
     try:
         os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults')
+        paperpath = '/orange/adamginsburg/ALMA_IMF/datapaper/'
+        basepath = '/orange/adamginsburg/ALMA_IMF/reduction/'
     except FileNotFoundError:
         os.chdir('/home/adam/Dropbox_UFL/ALMA-IMF/December2020Release/')
-
-    paperpath = '/home/adam/work/alma-imf/reduction/datapaper'
+        paperpath = '/home/adam/work/alma-imf/reduction/datapaper'
+        basepath = '/home/adam/work/alma-imf/reduction/'
 
     pl.rcParams['font.size'] = 14
     pl.rcParams['image.origin'] = 'lower'
@@ -283,11 +291,11 @@ if __name__ == "__main__":
     pl.rcParams['figure.facecolor'] = 'w'
 
     if not locals().get('skip_alphahist'):
-        mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**prefixes['G12'], las=5*u.arcsec)
+        mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**prefixes['G12'], las=5*u.arcsec, basepath=basepath)
 
         data = {}
         for fieldid, pfxs in prefixes.items():
-            mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**pfxs)
+            mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**pfxs, basepath=basepath)
             data[fieldid] = (mask, alpha_b3_b6)
             pl.savefig(f"{paperpath}/figures/alpha_histograms/{fieldid}_B3B6_alpha_histogram.pdf", bbox_inches='tight')
             
@@ -363,41 +371,43 @@ if __name__ == "__main__":
     compare_spectral_indices(
         finaliter_prefix_b3="G328.25/B3/cleanest/G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
         finaliter_prefix_b6="G328.25/B6/cleanest/G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
-        cutoutregion=cutoutregions['G328'][0])
+        cutoutregion=cutoutregions['G328'][0],
+        basepath=basepath
+        )
     pl.savefig(f"{paperpath}/figures/G328_B3B6_spectral_index.pdf", bbox_inches='tight')
 
-    compare_spectral_indices(finaliter_prefix_b6="G333.60/B6/cleanest/G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal5_finaliter",
-                             finaliter_prefix_b3="G333.60/B3/cleanest/G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal5_finaliter",
-                             cutoutregion=cutoutregions['G333'][0])
+    compare_spectral_indices(finaliter_prefix_b6="G333.60/B6/cleanest/G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+                             finaliter_prefix_b3="G333.60/B3/cleanest/G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+                             cutoutregion=cutoutregions['G333'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G333_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
-        finaliter_prefix_b3="G012.80/B3/cleanest/G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal5_finaliter",
-        finaliter_prefix_b6="G012.80/B6/cleanest/G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal5_finaliter",
-        cutoutregion=cutoutregions['G12'][0])
+        finaliter_prefix_b3="G012.80/B3/cleanest/G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+        finaliter_prefix_b6="G012.80/B6/cleanest/G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+        cutoutregion=cutoutregions['G12'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G12_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(finaliter_prefix_b3="W51-IRS2/B3/cleanest/W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
-                             finaliter_prefix_b6="W51-IRS2/B6/cleanest/W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal8_finaliter",
-                             cutoutregion=cutoutregions['W51IRS2'][0])
+                             finaliter_prefix_b6="W51-IRS2/B6/cleanest/W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+                             cutoutregion=cutoutregions['W51IRS2'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/W51IRS2_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="G008.67/B3/cleanest/G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
         finaliter_prefix_b6="G008.67/B6/cleanest/G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
-        cutoutregion=cutoutregions['G008'][0])
+        cutoutregion=cutoutregions['G008'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G008_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="G327.29/B3/cleanest/G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
         finaliter_prefix_b6="G327.29/B6/cleanest/G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
-        cutoutregion=cutoutregions['G327'][0])
+        cutoutregion=cutoutregions['G327'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G327_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
-        finaliter_prefix_b3="G010.62/B3/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal7_finaliter",
+        finaliter_prefix_b3="G010.62/B3/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
         finaliter_prefix_b6="G010.62/B6/cleanest/G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
-        cutoutregion=cutoutregions['G10'][0])
+        cutoutregion=cutoutregions['G10'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G10_B3B6_spectral_index.pdf", bbox_inches='tight')
 
 
@@ -405,55 +415,55 @@ if __name__ == "__main__":
     compare_spectral_indices(
         finaliter_prefix_b3="G337.92/B3/cleanest/G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
         finaliter_prefix_b6="G337.92/B6/cleanest/G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
-        cutoutregion=cutoutregions['G337'][0])
+        cutoutregion=cutoutregions['G337'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G337_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="G338.93/B3/cleanest/G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
         finaliter_prefix_b6="G338.93/B6/cleanest/G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
-        cutoutregion=cutoutregions['G338'][0])
+        cutoutregion=cutoutregions['G338'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G338_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="G351.77/B3/cleanest/G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
         finaliter_prefix_b6="G351.77/B6/cleanest/G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
-        cutoutregion=cutoutregions['G351'][0])
+        cutoutregion=cutoutregions['G351'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G351_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="G353.41/B3/cleanest/G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
         finaliter_prefix_b6="G353.41/B6/cleanest/G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
-        cutoutregion=cutoutregions['G353'][0])
+        cutoutregion=cutoutregions['G353'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/G353_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="W43-MM3/B3/cleanest/W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
         finaliter_prefix_b6="W43-MM3/B6/cleanest/W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
-        cutoutregion=cutoutregions['W43MM3'][0])
+        cutoutregion=cutoutregions['W43MM3'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/W43MM3_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="W43-MM2/B3/cleanest/W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         finaliter_prefix_b6="W43-MM2/B6/cleanest/W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
-        cutoutregion=cutoutregions['W43MM2'][0])
+        cutoutregion=cutoutregions['W43MM2'][0], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/W43MM2_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="W51-E/B3/cleanest/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         finaliter_prefix_b6="W51-E/B6/cleanest/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
         cutoutregion=cutoutregions['W51-E'][0],
-        scalebarlength=1)
+        scalebarlength=1, basepath=basepath)
     pl.savefig(f"{paperpath}/figures/W51Ee2_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="W51-E/B3/cleanest/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         finaliter_prefix_b6="W51-E/B6/cleanest/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
         cutoutregion=cutoutregions['W51-E'][1],
-        scalebarlength=1)
+        scalebarlength=1, basepath=basepath)
     pl.savefig(f"{paperpath}/figures/W51Ee8_B3B6_spectral_index.pdf", bbox_inches='tight')
 
     compare_spectral_indices(
         finaliter_prefix_b3="W51-E/B3/cleanest/W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         finaliter_prefix_b6="W51-E/B6/cleanest/W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
-        cutoutregion=cutoutregions['W51-E'][2])
+        cutoutregion=cutoutregions['W51-E'][2], basepath=basepath)
     pl.savefig(f"{paperpath}/figures/W51EIRS1_B3B6_spectral_index.pdf", bbox_inches='tight')
