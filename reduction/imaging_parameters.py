@@ -2937,11 +2937,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0": {
-        "threshold": "48mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
+        "threshold": "80mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {
-        "threshold": "48mJy",  # typical rms is 12-16 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "80mJy",  # typical rms is 12-16 mJy, using 5sigma for threshold (8 Mar 2021)
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G353.41_B3_12M_robust0": {
@@ -3192,7 +3192,7 @@ line_parameters_custom = {
     },
     "G351.77": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "80km/s"},
+        "sio": {"cubewidth": "100km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
         "h30a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
