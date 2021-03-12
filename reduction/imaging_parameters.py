@@ -2834,7 +2834,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
     },
     "G010.62_B6_12M_robust0": {
-        "threshold": "9.6mJy",  # "6mJy", #estimated noise: 2.8-3.2 mJy, from sio-only cube
+        "threshold": "25mJy",  # estimated noise: 2.8-3.2 mJy, from sio-only cube.  ~5 to 6 mJy, from full cube spw4.  bumped to 5-sigma
         # "startmodel": "G010.62_B6_uid___A001_X1296_X1df_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1db instead of 1df as of 10/16/2020 - this may change
         "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2938,7 +2938,7 @@ line_imaging_parameters_custom = {
         "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
     },
     "G351.77_B3_12M_robust0": {
-        "threshold": "6mJy",
+        "threshold": "30mJy",
         "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0": {
