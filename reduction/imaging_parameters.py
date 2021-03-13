@@ -2834,10 +2834,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
     },
     "G010.62_B6_12M_robust0": {
-        "threshold": "25mJy",  # estimated noise: 2.8-3.2 mJy, from sio-only cube.  ~5 to 6 mJy, from full cube spw4.  bumped to 5-sigma
+        "threshold": "30mJy",  # estimated noise: 2.8-3.2 mJy, from sio-only cube.  ~5 to 6 mJy, from full cube spw4.  bumped to 5-sigma
         # "startmodel": "G010.62_B6_uid___A001_X1296_X1df_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1db instead of 1df as of 10/16/2020 - this may change
         "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "perchanweightdensity": True, # change Mar 12, 2021, based on some old suggestions from Ryan Loomis and Jan-Willem Steeb
     },
     "G010.62_B6_12M_robust0_sio": {
         "threshold": "9.6mJy",  # typical rms is 2.8-3.2 mJy, using 3sigma for threshold (14 Dec. 2020)
