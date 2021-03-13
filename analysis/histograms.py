@@ -102,8 +102,10 @@ def flux_hist(finaliter_prefix_b3, finaliter_prefix_b6,
 if __name__ == "__main__":
     import os
     try:
+        basepath = '/orange/adamginsburg/ALMA_IMF/'
         os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults')
     except FileNotFoundError:
+        basepath = '/home/adam/work/alma-imf/reduction/'
         os.chdir('/home/adam/Dropbox_UFL/ALMA-IMF/December2020Release/')
 
     pl.rcParams['font.size'] = 14
@@ -113,9 +115,9 @@ if __name__ == "__main__":
 
     data = {}
     for fieldid, pfxs in prefixes.items():
-        flux_hist(**pfxs)
+        flux_hist(basepath=basepath, **pfxs)
         pl.savefig(f"../paper_figures/flux_histograms/{fieldid}_B3B6_flux_histogram.pdf", bbox_inches='tight')
-        
+
     """
     pl.figure(3, figsize=(16,10)).clf()
     xs = np.arange(-3,6)
