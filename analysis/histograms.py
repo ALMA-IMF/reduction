@@ -102,7 +102,7 @@ def flux_hist(finaliter_prefix_b3, finaliter_prefix_b6,
 if __name__ == "__main__":
     import os
     try:
-        basepath = '/orange/adamginsburg/ALMA_IMF/'
+        basepath = '/orange/adamginsburg/ALMA_IMF/reduction/'
         os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults')
     except FileNotFoundError:
         basepath = '/home/adam/work/alma-imf/reduction/'
