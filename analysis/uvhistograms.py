@@ -7,6 +7,10 @@ from astropy import units as u
 import scipy.stats
 import scipy
 
+def savefig(path, bbox_inches='tight', **kwargs):
+    pl.savefig(path, bbox_inches=bbox_inches, **kwargs)
+    pl.savefig(path.replace(".pdf", ".png"), bbox_inches=bbox_inches, **kwargs)
+
 def make_figure(data, wavelength, beam, bins=50):
     uvcts = np.concatenate([data[spw]['uvdist'][~data[spw]['flag'].any(axis=(0,1))] for spw in data]).ravel()
     uvwts = np.concatenate([data[spw]['weight'].mean(axis=0)[~data[spw]['flag'].any(axis=(0,1))] for spw in data]).ravel()
@@ -100,7 +104,7 @@ if  __name__ == "__main__":
 
         with np.errstate(divide='ignore'):
             pctiles,majpct,minpct = make_figure(data, wavelength, beam)
-        pl.savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{region}_{band}_uvhistogram.pdf', bbox_inches='tight')
+        savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{region}_{band}_uvhistogram.pdf', bbox_inches='tight')
 
         uvdata.append({
                        'region': region,

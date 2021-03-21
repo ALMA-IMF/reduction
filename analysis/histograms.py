@@ -17,6 +17,10 @@ np.seterr('ignore')
 
 from spectralindex import prefixes
 
+def savefig(path, bbox_inches='tight', **kwargs):
+    pl.savefig(path, bbox_inches=bbox_inches, **kwargs)
+    pl.savefig(path.replace(".pdf", ".png"), bbox_inches=bbox_inches, **kwargs)
+
 
 def flux_hist(finaliter_prefix_b3, finaliter_prefix_b6,
               basepath='/home/adam/work/alma-imf/reduction/', las=None):
@@ -116,7 +120,7 @@ if __name__ == "__main__":
     data = {}
     for fieldid, pfxs in prefixes.items():
         flux_hist(basepath=basepath, **pfxs)
-        pl.savefig(f"../paper_figures/flux_histograms/{fieldid}_B3B6_flux_histogram.pdf", bbox_inches='tight')
+        savefig(f"../paper_figures/flux_histograms/{fieldid}_B3B6_flux_histogram.pdf", bbox_inches='tight')
 
     """
     pl.figure(3, figsize=(16,10)).clf()
