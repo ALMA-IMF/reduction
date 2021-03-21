@@ -345,7 +345,7 @@ if __name__ == "__main__":
 
         data_las = {}
         for fieldid, pfxs in prefixes.items():
-            mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**pfxs, las=5*u.arcsec)
+            mask, alpha_b3_b6, image_b3_repr, image_b6_repr = alpha_hist(**pfxs, las=5*u.arcsec, basepath=basepath)
             data_las[fieldid] = (mask, alpha_b3_b6)
             savefig(f"{paperpath}/figures/alpha_histograms/{fieldid}_B3B6_alpha_histogram_5as_LAS.pdf", bbox_inches='tight')
 
