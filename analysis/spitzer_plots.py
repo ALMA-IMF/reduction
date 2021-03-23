@@ -25,7 +25,10 @@ np.seterr('ignore')
 
 
 
-glimpses=g_subsets=['glimpsei_0_6','glimpseii_0_6','glimpse3d_0_6','glimpse360_0_6','glimpse_cygx_0_6','glimpse_deepglimpse_0_6','glimpse_smog_0_6','glimpse_velacar_0_6']
+glimpses=g_subsets=['glimpsei_0_6', 'glimpseii_0_6', 'glimpse3d_0_6',
+                    'glimpse360_0_6', 'glimpse_cygx_0_6',
+                    'glimpse_deepglimpse_0_6', 'glimpse_smog_0_6',
+                    'glimpse_velacar_0_6', 'mipsgal_images']
 
 
 
