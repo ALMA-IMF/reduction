@@ -1,11 +1,11 @@
 import numpy as np
 from astropy.table import Table
+import scipy.stats
+import scipy
 from casatools import msmetadata, ms
 import glob
 import pylab as pl
 from astropy import units as u
-import scipy.stats
-import scipy
 
 def savefig(path, bbox_inches='tight', **kwargs):
     pl.savefig(path, bbox_inches=bbox_inches, **kwargs)
