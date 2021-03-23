@@ -41,7 +41,7 @@ def get_spitzer_data(crd, size):
 
         files = {}
 
-        if len(tbl) >= 4:
+        if (len(tbl) >= 4):
 
             fnames = tbl['fname']
             for fname in fnames:
@@ -51,8 +51,14 @@ def get_spitzer_data(crd, size):
 
                 fh = fits.open(irsa_url)
                 files[key] = fh
+                break
+        elif 'mipsgal' in spitzertbl:
+            fnames = tbl['fname']
+            for fname in fnames:
+                irsa_url = f"https://irsa.ipac.caltech.edu/ibe/data/spitzer/{spitzertbl}/{fname}?center={crd.ra.deg},{crd.dec.deg}&size={size.to(u.arcmin).value}arcmin"
+                files['MG'] = fh
 
-            return files
+    return files
 
 def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitzerpath='spitzer_datapath',
                         spitzer_display_args=dict(stretch='log', min_percent=1, max_percent=99.99, clip=True),
@@ -143,6 +149,9 @@ if __name__ == "__main__":
 
             spitzer_cube = np.array([spitzer_data['I4'][0].data, spitzer_data['I2'][0].data, spitzer_data['I1'][0].data, ])
             fits.PrimaryHDU(data=spitzer_cube, header=spitzer_data['I1'][0].header).writeto(spitzer_cubename, overwrite=True)
+
+            mips_cube = np.array([spitzer_data['M1'][0].data, spitzer_data['I4'][0].data, spitzer_data['I1'][0].data, ])
+            fits.PrimaryHDU(data=spitzer_cube, header=spitzer_data['I1'][0].header).writeto(spitzer_cubename.replace("spitzer", "mips"), overwrite=True)
 
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[100], 'B6': [100]})
         fig.savefig(f'spitzer_datapath/fov_plots/{fieldid}_field_of_view_plot.png', bbox_inches='tight')
