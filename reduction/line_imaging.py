@@ -101,7 +101,7 @@ if 'only_7m' not in locals():
 
 if os.getenv('LINE_NAME'):
     line_name = os.getenv('LINE_NAME').lower()
-else:
+elif 'line_name' not in locals():
     raise ValueError("line_name was not defined")
 
 if 'do_contsub' not in locals():
