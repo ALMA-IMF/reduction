@@ -13,6 +13,7 @@ from astropy import stats, convolution, wcs, coordinates
 from spectral_cube import SpectralCube
 import pylab as pl
 import spectral_cube
+import reproject
 
 from spectralindex import prefixes
 
@@ -147,7 +148,7 @@ if __name__ == "__main__":
 
         print(fieldid)
         spitzer_cubename = f'spitzer_datapath/{fieldid}_spitzer_images.fits'
-        if not os.path.exists(spitzer_cubename) or not os.path.exists(spitzer_cubename.replace("spitzer", "mips")):
+        if True:# not os.path.exists(spitzer_cubename) or not os.path.exists(spitzer_cubename.replace("spitzer", "mips")):
             cube = SpectralCube.read(pfxs['finaliter_prefix_b3']+".image.tt0.fits", format='fits', use_dask=False).minimal_subcube()
 
             size = np.abs(np.max(cube.shape[1:] * cube.wcs.pixel_scale_matrix.diagonal()[:2])*u.deg)*1.5
@@ -163,8 +164,12 @@ if __name__ == "__main__":
             spitzer_cube = np.array([spitzer_data['I4'][0].data, spitzer_data['I2'][0].data, spitzer_data['I1'][0].data, ])
             fits.PrimaryHDU(data=spitzer_cube, header=spitzer_data['I1'][0].header).writeto(spitzer_cubename, overwrite=True)
 
-            mips_cube = np.array([spitzer_data['MG'][0].data, spitzer_data['I4'][0].data, spitzer_data['I1'][0].data, ])
-            fits.PrimaryHDU(data=spitzer_cube, header=spitzer_data['I1'][0].header).writeto(spitzer_cubename.replace("spitzer", "mips"), overwrite=True)
+            mipsdata,_ = reproject.reproject_interp(spitzer_data['MG'][0], spitzer_data['I1'][0].header)
+            # "saturate" all saturated regions in MIPS?
+            mipsdata[np.isnan(mipsdata)] = np.nanmax(mipsdata)
+
+            mips_cube = np.array([mipsdata, spitzer_data['I4'][0].data, spitzer_data['I1'][0].data, ])
+            fits.PrimaryHDU(data=mips_cube, header=spitzer_data['I1'][0].header).writeto(spitzer_cubename.replace("spitzer", "mips"), overwrite=True)
 
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[100], 'B6': [100]})
         fig.savefig(f'spitzer_datapath/fov_plots/{fieldid}_field_of_view_plot.png', bbox_inches='tight')
@@ -174,6 +179,6 @@ if __name__ == "__main__":
 
 
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[100], 'B6': [100]}, mips=True)
-        fig.savefig(f'spitzer_datapath/fov_plots/{fieldid}_field_of_view_plot_mips.png', bbox_inches='tight')
+        fig.savefig(f'mips_datapath/fov_plots/{fieldid}_field_of_view_plot_mips.png', bbox_inches='tight')
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level=contour_levels[fieldid], mips=True)
-        fig.savefig(f'spitzer_datapath/fov_contour_plots/{fieldid}_field_of_view_contour_plot_mips.png', bbox_inches='tight', dpi=300)
+        fig.savefig(f'mips_datapath/fov_contour_plots/{fieldid}_field_of_view_contour_plot_mips.png', bbox_inches='tight', dpi=300)
