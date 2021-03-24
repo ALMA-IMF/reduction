@@ -69,10 +69,9 @@ def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitz
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0.fits', use_dask=False, format='fits')
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0.fits', use_dask=False, format='fits')
 
+    spitzfn = f'{spitzerpath}/{fieldid}_spitzer_images.fits'
     if mips:
-        spitzfn = f'{spitzerpath}/{fieldid}_mips_images.fits'
-    else:
-        spitzfn = f'{spitzerpath}/{fieldid}_spitzer_images.fits'
+        spitzfn = spitzfn.replace("spitzer", "mips")
     spitz = fits.open(spitzfn)[0]
 
     ww = wcs.WCS(spitz.header)
@@ -133,6 +132,12 @@ if __name__ == "__main__":
         os.mkdir('spitzer_datapath/fov_plots')
     if not os.path.exists('spitzer_datapath/fov_contour_plots'):
         os.mkdir('spitzer_datapath/fov_contour_plots')
+    if not os.path.exists('mips_datapath'):
+        os.mkdir('mips_datapath')
+    if not os.path.exists('mips_datapath/fov_plots'):
+        os.mkdir('mips_datapath/fov_plots')
+    if not os.path.exists('mips_datapath/fov_contour_plots'):
+        os.mkdir('mips_datapath/fov_contour_plots')
 
     prefixes['W43MM1'] = dict(
         finaliter_prefix_b3="W43-MM1/B3/cleanest/W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -142,7 +147,7 @@ if __name__ == "__main__":
 
         print(fieldid)
         spitzer_cubename = f'spitzer_datapath/{fieldid}_spitzer_images.fits'
-        if True: #not os.path.exists(spitzer_cubename):
+        if not os.path.exists(spitzer_cubename) or not os.path.exists(spitzer_cubename.replace("spitzer", "mips")):
             cube = SpectralCube.read(pfxs['finaliter_prefix_b3']+".image.tt0.fits", format='fits', use_dask=False).minimal_subcube()
 
             size = np.abs(np.max(cube.shape[1:] * cube.wcs.pixel_scale_matrix.diagonal()[:2])*u.deg)*1.5
