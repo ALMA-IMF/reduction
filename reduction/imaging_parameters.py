@@ -2779,7 +2779,7 @@ del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
 line_imaging_parameters_default = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
         "niter": 5000000,
-        "threshold": "5sigma",
+        "threshold": "10sigma",
         "robust": robust,
         "weighting": "briggs",
         "deconvolver": "multiscale",
@@ -2803,10 +2803,7 @@ line_imaging_parameters_default = {
     for contsub in ("", "_contsub")
 }
 
-for key in line_imaging_parameters_default:
-    line_imaging_parameters_default[key]['scales'] = [0,5,15,45]
-    line_imaging_parameters_default[key]['threshold'] = "10sigma"
-    line_imaging_parameters_default[key]['niter'] = 5000 # try to avoid divergence
+
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
 
@@ -2816,6 +2813,13 @@ line_imaging_parameters_custom = {
         # "startmodel": "G008.67_B3_uid___A001_X1296_X1bf_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1c1 instead of 1bf as of 10/23/2020
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B3_12M_robust0_h41a": {
+        "threshold": "7.5mJy", #noise ~ 2.5mJy in channels off line peak. 
+        "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0, 5, 10, 20, 40], #4.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
+        "gain": 0.08,         
     },
     "G008.67_B6_12M_robust0": {
         "threshold": "33mJy",  # "28mJy",#estimated noise: 9-11 mJy, from sio-only cube
@@ -2832,6 +2836,13 @@ line_imaging_parameters_custom = {
         # "startmodel": "G010.62_B3_uid___A001_X1296_X1e9_continuum_merged_12M_robust0_selfcal5_finaliter",
         # UF machine has 1e9 instead of 1e5 as of 10/14/2020 - this may change
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "G010.62_B3_12M_robust0_h41a": {
+        "threshold": "6mJy", #noise ~ 2mJy in channels off line peak. 
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0, 4, 8, 16, 32], #3.5pix per sqrt(bmaj*bmean), pix=0.14 arcsec, max scale ~ 4.5 arcsec
+        "gain": 0.08,         
     },
     "G010.62_B6_12M_robust0": {
         "threshold": "30mJy",  # estimated noise: 2.8-3.2 mJy, from sio-only cube.  ~5 to 6 mJy, from full cube spw4.  bumped to 5-sigma
@@ -2850,6 +2861,13 @@ line_imaging_parameters_custom = {
         # UF machine has 1fb instead of 1f9 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
+    "G012.80_B3_12M_robust0_h41a": {
+        "threshold": "13.5mJy", #noise ~ 4.5mJy in channels off line peak. 
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0, 5, 10, 20], #5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~ 7 arcsec
+        "gain": 0.08,     
+    },
     "G012.80_B6_12M_robust0": {
         "threshold": "39mJy",  # "24mJy", #estimated noise: 13 mJy, from sio-only cube
         # "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2865,6 +2883,13 @@ line_imaging_parameters_custom = {
         # "startmodel": "G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal2_finaliter",
         # UF machine has 17d instead of 17f as of 10/14/2020 - this may change
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+    },
+    "G327.29_B3_12M_robust0_h41a": {
+        "threshold": "7.5mJy", #noise ~ 2.5mJy in channels off line peak. 
+        "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0, 4, 8, 16, 32], #3.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 3.5 arcsec
+        "gain": 0.08, 
     },
     "G327.29_B6_12M_robust0": {
         "threshold": "34.5mJy",  # "6mJy", #estimated noise: 9.5-11.5 mJy, from sio-only cube
@@ -2982,6 +3007,12 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 13],  # >~ 4 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B3_12M_robust0_13cs_2-1_contsub": {"threshold": "4mJy", "deconvolver": "multiscale", "scales": [0, 4, 13]},
+    "W43-MM2_B3_12M_robust0_h2cs_322-221": {
+        "threshold": "4mJy",  # sigma in brighter channel ~ 1.3mJy
+        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0, 4, 12],  # 4 pixels per bmaj, not too extended emission
+    },
     "W43-MM2_B3_12M_robust0_h2cs_312-211": {
         "threshold": "4mJy",  # sigma in brighter channel ~ 1.3mJy
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -3085,6 +3116,7 @@ default_lines = {
     "13cs_2-1": "92.49430800GHz",
     "n2hp": "93.173700GHz",
     "ch3cch_62-52": "102.547983GHz",
+    "h2cs_322-221": "103.039927GHz",
     "h2cs_312-211": "104.617040GHz",
     "oc33s_18-17": "216.14735900GHz",
     "sio": "217.104984GHz",
@@ -3142,14 +3174,14 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-22km/s"}, # 43 - 65 = -22 km/s to accomodate He and C. 
         "h30a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
     },
     "G010.62": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "80km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-66km/s"}, # -1 - 65 = -66 km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
         "n2hp": {"cubewidth": "60km/s"},
     },
@@ -3157,14 +3189,14 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "35.5km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-29km/s"}, # 36 - 65 = -29 km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
     },
     "G327.29": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s", "vlsr": "-43km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-105km/s"}, # -40 - 65 = -105 km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
