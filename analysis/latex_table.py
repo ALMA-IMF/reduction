@@ -52,8 +52,8 @@ print(wtbl)
 wtbl['selfcaliter'] = Column(data=[row['selfcaliter'][2:]+("a" if row['has_amp'] else "") for row in wtbl])
 
 # SensVsReq can be populated with either pre- or post-; we want post
-wtbl['SensVsReqPost'] = wtbl['mad_sample_post'] / wtbl['Req_Sens'] * 1000
-wtbl['SensVsReqPre'] = wtbl['mad_sample_pre'] / wtbl['Req_Sens'] * 1000
+wtbl['SensVsReqPost'] = wtbl['mad_sample_post'] / wtbl['Req_Sens']
+wtbl['SensVsReqPre'] = wtbl['mad_sample_pre'] / wtbl['Req_Sens']
 
 cols_to_keep = {'region':'Region',
                 'band':'Band',
