@@ -2804,10 +2804,10 @@ line_imaging_parameters_default = {
 
 
 for key in line_imaging_parameters_default:
-    if '7M12M' in key:
-        line_imaging_parameters_default[key]['scales'] = [0,5,15,45]
-        line_imaging_parameters_default[key]['threshold'] = "10sigma"
-        line_imaging_parameters_default[key]['niter'] = 5000 # try to avoid divergence
+    if "7M12M" in key:
+        line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
+        line_imaging_parameters_default[key]["threshold"] = "10sigma"
+        line_imaging_parameters_default[key]["niter"] = 5000  # try to avoid divergence
 
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
