@@ -53,13 +53,24 @@ for ms in vis_list:
         tab_spws = tb.getcol('NAME')
         tb.close()
         
-        # TODO: now downselect on obsid_match....
-        raise NotImplementedError("I'm not done yet")
+        tb.open(tab)
+        spw_id_num = tb.getcol('SPECTRAL_WINDOW_ID')
+        obs_id_num = tb.getcol('OBSERVATION_ID')
+        tb.close()
+
         index_spw = np.where(tab_spws == vis_spwname)
-        index_spw = index_spw[0][0]
-        spwmap.append([index_spw])
+
+        
+        match = (obs_id_num == obsid_match) & (np.any([spw == spw_id_num for spw in index_spw], axis=0))
+        unique_spw_id = np.unique(spw_id_num[match])
+        if len(unique_spw_id) != 1:
+            raise ValueError("Found 0 or >1 SPW ids")
+
+        # unique_spw_id should be a length-1 array
+        spwmap.append(unique_spw_id)
         print('Index in cal table of spw corresponding to ms file is:')
-        print(index_spw)
+        print(unique_spw_id)
+
 
     #Clearcal with addmodel
     clearcal(vis=vis, addmodel=True)
