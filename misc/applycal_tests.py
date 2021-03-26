@@ -24,19 +24,37 @@ for ms in vis_list:
     vis = ms
     vhead_spw = vishead(vis=vis, mode='get', hdkey='spw_name')
     vis_spwname = vhead_spw[0][0]
+    vhead_spw = vishead(vis=vis, mode='get', hdkey='schedule')
+    vis_ebname = vhead_spw[0]['r1']
     print('Visibility spw name:')
     print(vis_spwname)
+    print('Visibility EB name:')
+    print(vis_ebname)
 
     spwmap = []
     for table in tab_list:
     
         # Extract spw index to use from calibration table 
         tab = table
+        
+        tb.open(tab+'/OBSERVATION')
+        obsid_schedule = tb.getcol('SCHEDULE')
+        tb.close()
+        
+        obsid_match = np.where(np.all(obsid_schedule == vis_ebname, axis=0))[0]
+        if len(obsid_match) == 1:
+            obsid_match = obsid_match[0]
+        else:
+            raise ValueError("Found multiple obsid matches, which shouldn't happen.")
+        
         tb.open(tab+'/SPECTRAL_WINDOW')
         print('\n Colnames in SPECTRAL_WINDOW table:')
         print(tb.colnames())
         tab_spws = tb.getcol('NAME')
         tb.close()
+        
+        # TODO: now downselect on obsid_match....
+        raise NotImplementedError("I'm not done yet")
         index_spw = np.where(tab_spws == vis_spwname)
         index_spw = index_spw[0][0]
         spwmap.append([index_spw])
