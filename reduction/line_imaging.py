@@ -119,10 +119,7 @@ else:
     contsub_suffix = ''
 
 # hacky approach to paralellism
-if os.getenv('MPICASA'):
-    parallel=True
-else:
-    parallel=False
+parallel = bool(os.getenv('MPICASA'))
 
 # TODO: make this optional
 do_export_fits = True
