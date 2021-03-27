@@ -149,7 +149,7 @@ if __name__ == "__main__":
         print(fieldid)
         spitzer_cubename = f'spitzer_datapath/{fieldid}_spitzer_images.fits'
         if True:# not os.path.exists(spitzer_cubename) or not os.path.exists(spitzer_cubename.replace("spitzer", "mips")):
-            cube = SpectralCube.read(pfxs['finaliter_prefix_b3']+".image.tt0.fits", format='fits', use_dask=False).minimal_subcube()
+            cube = SpectralCube.read(pfxs['finaliter_prefix_b3']+".image.tt0.fits", format='fits', use_dask=False)#.minimal_subcube()
 
             size = np.abs(np.max(cube.shape[1:] * cube.wcs.pixel_scale_matrix.diagonal()[:2])*u.deg)*1.5
 
