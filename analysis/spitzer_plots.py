@@ -13,6 +13,7 @@ from astropy import stats, convolution, wcs, coordinates
 from spectral_cube import SpectralCube
 import pylab as pl
 import spectral_cube
+import reproject
 
 from spectralindex import prefixes
 
@@ -25,22 +26,26 @@ np.seterr('ignore')
 
 
 
-glimpses=g_subsets=['glimpsei_0_6','glimpseii_0_6','glimpse3d_0_6','glimpse360_0_6','glimpse_cygx_0_6','glimpse_deepglimpse_0_6','glimpse_smog_0_6','glimpse_velacar_0_6']
-
+glimpses=g_subsets=['glimpsei_0_6', 'glimpseii_0_6', 'glimpse3d_0_6',
+                    'glimpse360_0_6', 'glimpse_cygx_0_6',
+                    'glimpse_deepglimpse_0_6', 'glimpse_smog_0_6',
+                    'glimpse_velacar_0_6', 'mipsgal_images']
 
 
 def get_spitzer_data(crd, size):
+    files = {}
     for spitzertbl in glimpses:
-        url = f"https://irsa.ipac.caltech.edu/IBE?table=spitzer.{spitzertbl}&POS={crd.ra.deg},{crd.dec.deg}&ct=csv&mcen&where=fname+like+'%.fits'"
+        if 'glimpse' in spitzertbl:
+            url = f"https://irsa.ipac.caltech.edu/IBE?table=spitzer.{spitzertbl}&POS={crd.ra.deg},{crd.dec.deg}&ct=csv&mcen&where=fname+like+'%.fits'"
+        else:
+            url = f"https://irsa.ipac.caltech.edu/IBE?table=spitzer.{spitzertbl}&POS={crd.ra.deg},{crd.dec.deg}&ct=csv&where=fname+like+'%.fits'"
         response = requests.get(url)
         response.raise_for_status()
         tbl = table.Table.read(io.BytesIO(response.content), format='ascii.csv')
 
-        files = {}
-
-        if len(tbl) >= 4:
-
+        if (len(tbl) >= 4) and 'I1' not in files:
             fnames = tbl['fname']
+
             for fname in fnames:
                 irsa_url = f"https://irsa.ipac.caltech.edu/ibe/data/spitzer/{spitzertbl}/{fname}?center={crd.ra.deg},{crd.dec.deg}&size={size.to(u.arcmin).value}arcmin"
 
@@ -48,16 +53,26 @@ def get_spitzer_data(crd, size):
 
                 fh = fits.open(irsa_url)
                 files[key] = fh
+        elif 'mipsgal' in spitzertbl:
+            fnames = tbl['fname']
+            for fname in fnames:
+                irsa_url = f"https://irsa.ipac.caltech.edu/ibe/data/spitzer/{spitzertbl}/{fname}?center={crd.ra.deg},{crd.dec.deg}&size={size.to(u.arcmin).value}arcmin"
+                if 'mosaics24' in irsa_url and 'covg' not in irsa_url and 'mask' not in irsa_url and 'std' not in irsa_url:
+                    fh = fits.open(irsa_url)
+                    files['MG'] = fh
+    return files
 
-            return files
 
 def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitzerpath='spitzer_datapath',
                         spitzer_display_args=dict(stretch='log', min_percent=1, max_percent=99.99, clip=True),
+                        mips=False,
                         contour_level={'B3':[0.01], 'B6':[0.01]}):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0.fits', use_dask=False, format='fits')
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0.fits', use_dask=False, format='fits')
 
     spitzfn = f'{spitzerpath}/{fieldid}_spitzer_images.fits'
+    if mips:
+        spitzfn = spitzfn.replace("spitzer", "mips")
     spitz = fits.open(spitzfn)[0]
 
     ww = wcs.WCS(spitz.header)
@@ -118,6 +133,12 @@ if __name__ == "__main__":
         os.mkdir('spitzer_datapath/fov_plots')
     if not os.path.exists('spitzer_datapath/fov_contour_plots'):
         os.mkdir('spitzer_datapath/fov_contour_plots')
+    if not os.path.exists('mips_datapath'):
+        os.mkdir('mips_datapath')
+    if not os.path.exists('mips_datapath/fov_plots'):
+        os.mkdir('mips_datapath/fov_plots')
+    if not os.path.exists('mips_datapath/fov_contour_plots'):
+        os.mkdir('mips_datapath/fov_contour_plots')
 
     prefixes['W43MM1'] = dict(
         finaliter_prefix_b3="W43-MM1/B3/cleanest/W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -127,8 +148,8 @@ if __name__ == "__main__":
 
         print(fieldid)
         spitzer_cubename = f'spitzer_datapath/{fieldid}_spitzer_images.fits'
-        if not os.path.exists(spitzer_cubename):
-            cube = SpectralCube.read(pfxs['finaliter_prefix_b3']+".image.tt0.fits", format='fits', use_dask=False).minimal_subcube()
+        if True:# not os.path.exists(spitzer_cubename) or not os.path.exists(spitzer_cubename.replace("spitzer", "mips")):
+            cube = SpectralCube.read(pfxs['finaliter_prefix_b3']+".image.tt0.fits", format='fits', use_dask=False)#.minimal_subcube()
 
             size = np.abs(np.max(cube.shape[1:] * cube.wcs.pixel_scale_matrix.diagonal()[:2])*u.deg)*1.5
 
@@ -136,13 +157,28 @@ if __name__ == "__main__":
                                           frame=wcs.utils.wcs_to_celestial_frame(cube.wcs))
 
             spitzer_data = get_spitzer_data(center, size)
+            assert 'I1' in spitzer_data
+            assert 'MG' in spitzer_data
 
 
             spitzer_cube = np.array([spitzer_data['I4'][0].data, spitzer_data['I2'][0].data, spitzer_data['I1'][0].data, ])
             fits.PrimaryHDU(data=spitzer_cube, header=spitzer_data['I1'][0].header).writeto(spitzer_cubename, overwrite=True)
+
+            mipsdata,_ = reproject.reproject_interp(spitzer_data['MG'][0], spitzer_data['I1'][0].header)
+            # "saturate" all saturated regions in MIPS?
+            mipsdata[np.isnan(mipsdata)] = np.nanmax(mipsdata)
+
+            mips_cube = np.array([mipsdata, spitzer_data['I4'][0].data, spitzer_data['I1'][0].data, ])
+            fits.PrimaryHDU(data=mips_cube, header=spitzer_data['I1'][0].header).writeto(spitzer_cubename.replace("spitzer", "mips"), overwrite=True)
 
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[100], 'B6': [100]})
         fig.savefig(f'spitzer_datapath/fov_plots/{fieldid}_field_of_view_plot.png', bbox_inches='tight')
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level=contour_levels[fieldid])
         fig.savefig(f'spitzer_datapath/fov_contour_plots/{fieldid}_field_of_view_contour_plot.png', bbox_inches='tight', dpi=300)
 
+
+
+        fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[100], 'B6': [100]}, mips=True)
+        fig.savefig(f'mips_datapath/fov_plots/{fieldid}_field_of_view_plot_mips.png', bbox_inches='tight')
+        fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level=contour_levels[fieldid], mips=True)
+        fig.savefig(f'mips_datapath/fov_contour_plots/{fieldid}_field_of_view_contour_plot_mips.png', bbox_inches='tight', dpi=300)

@@ -16,7 +16,7 @@ from functools import reduce
 
 
 def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False, nticks=12,
-                          asinh_scaling_factor=10, scalebarlength=15):
+                          asinh_scaling_factor=10, scalebarlength=15, diff_suffix='.preselfcal-diff'):
     #fh_pre = fits.open()
     #fh_post = fits.open()
     cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image').with_spectral_unit(u.GHz)
@@ -69,7 +69,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if writediff:
         fits.PrimaryHDU(data=diff,
                         header=cube_post.header).writeto(filename2.split(".fits")[0]
-                                                         + ".preselfcal-diff.fits",
+                                                         + diff_suffix + ".fits",
                                                          overwrite=True)
     fig = pl.figure(1, figsize=(14,6))
     fig.clf()
