@@ -2778,7 +2778,7 @@ del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
 
 line_imaging_parameters_default = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
-        "niter": 5000000,
+        "niter": 1, # HACK Apr 2, 2021 - do not merge this!
         "threshold": "5sigma",
         "robust": robust,
         "weighting": "briggs",
@@ -2807,7 +2807,7 @@ for key in line_imaging_parameters_default:
     if "7M12M" in key:
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
-        line_imaging_parameters_default[key]["niter"] = 5000  # try to avoid divergence
+        line_imaging_parameters_default[key]["niter"] = 1 # HACK 5000  # try to avoid divergence
 
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
