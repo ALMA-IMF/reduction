@@ -55,13 +55,15 @@ def make_zoom(fieldid, zoom_parameters,
               scalebar_loc=(0.1,0.1),
               scalebar_length=0.1*u.pc,
               beam_loc=(0.05, 0.05),
-              nsigma=5,
+              nsigma_asinh=5,
+              nsigma_max=10,
              ):
     
     pfxs = prefixes[fieldid]
+    wl = r'\mathrm{3mm}' if band.lower() == 'b3' else r'\mathrm{1mm}'
 
     finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
-    image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube()
+    image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube().to(u.mJy)
     print(image)
 
     fig = pl.figure(1, figsize=(10,10))
@@ -74,10 +76,11 @@ def make_zoom(fieldid, zoom_parameters,
     img[img==0] = np.nan
     mad = mad_std(img, ignore_nan=True)
 
-    if hasattr(norm.stretch, 'a') and nsigma is not None:
-        a_point = (np.nanmedian(img) + nsigma*mad) / norm.vmax
+    if hasattr(norm.stretch, 'a') and nsigma_asinh is not None:
+        norm.vmax = (np.nanmedian(img) + nsigma_max*mad)
+        a_point = (np.nanmedian(img) + nsigma_asinh*mad) / norm.vmax
         norm.stretch.a = a_point
-        print(f"numbers for norm: {np.nanmedian(img), nsigma, mad, nsigma*mad, norm.vmax, a_point}")
+        print(f"numbers for norm: {np.nanmedian(img), nsigma_asinh, mad, nsigma_asinh*mad, norm.vmax, a_point}")
     
     im = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
@@ -104,7 +107,7 @@ def make_zoom(fieldid, zoom_parameters,
 
         norm2 = simple_norm(img, **zp['vis_pars'])
 
-        axins.imshow(img[slc], extent=[xl,xr,yl,yu], cmap=inset_cmap, norm=norm2)
+        im_ins = axins.imshow(img[slc], extent=[xl,xr,yl,yu], cmap=inset_cmap, norm=norm2)
         mark_inset(parent_axes=ax, inset_axes=axins,
                    fc="none", ec="b", **zp['mark_inset_pars'])
         ra = axins.coords['ra']
@@ -119,6 +122,20 @@ def make_zoom(fieldid, zoom_parameters,
         dec.set_axislabel('')
         ra.ticklabels.set_visible(False)
         dec.ticklabels.set_visible(False)
+
+        caxins = inset_axes(axins,
+                 width="5%",  # width = 10% of parent_bbox width
+                 height="100%",  # height : 50%
+                 loc='lower left',
+                 bbox_to_anchor=(1.05, 0., 1, 1),
+                 bbox_transform=axins.transAxes,
+                 borderpad=0,
+                 )
+        cbins = pl.colorbar(mappable=im_ins, cax=caxins)
+        cbins.ax.tick_params(labelsize=14)
+        
+        cbins.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
+
         
     #print(ax.axis())
     if main_zoombox:
@@ -131,6 +148,8 @@ def make_zoom(fieldid, zoom_parameters,
                          ax.get_position().height])
     cb1 = pl.colorbar(mappable=im, cax=cax1)
     cb1.ax.tick_params(labelsize=14)
+    cb1.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
+    pl.setp(cb1.ax.yaxis.get_label(), backgroundcolor="white")
 
     left_side = coordinates.SkyCoord(*image.wcs.celestial.wcs_pix2world(scalebar_loc[1]*img.shape[1],
                                                                         scalebar_loc[0]*img.shape[0], 0)*u.deg, frame='fk5')
@@ -144,3 +163,17 @@ def make_zoom(fieldid, zoom_parameters,
 
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_inset_zooms_{band}.png', bbox_inches='tight')
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_inset_zooms_{band}.pdf', bbox_inches='tight')
+
+
+zoom_parameters = {}
+zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000, 
+                                    'inset_pars':{'loc': 1, 'width':3, 'height':3,  'bbox_to_anchor':(600, 0, 100,100)},
+                                    'mark_inset_pars':{'loc1':1, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'log'}
+                                   },
+                                   {'xl':700, 'xr':850, 'yl':1025, 'yu':1175, 
+                                    'inset_pars':{'loc': 3, 'width':3, 'height':3,  'bbox_to_anchor':(0, -120, 100,100)},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.9, 'min_percent': 2, 'stretch':'linear'}
+                                   },
+                                  ]
