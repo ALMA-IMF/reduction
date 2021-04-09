@@ -24,24 +24,53 @@ for ms in vis_list:
     vis = ms
     vhead_spw = vishead(vis=vis, mode='get', hdkey='spw_name')
     vis_spwname = vhead_spw[0][0]
+    vhead_spw = vishead(vis=vis, mode='get', hdkey='schedule')
+    vis_ebname = vhead_spw[0]['r1']
     print('Visibility spw name:')
     print(vis_spwname)
+    print('Visibility EB name:')
+    print(vis_ebname)
 
     spwmap = []
     for table in tab_list:
     
         # Extract spw index to use from calibration table 
         tab = table
+        
+        tb.open(tab+'/OBSERVATION')
+        obsid_schedule = tb.getcol('SCHEDULE')
+        tb.close()
+        
+        obsid_match = np.where(np.all(obsid_schedule == vis_ebname, axis=0))[0]
+        if len(obsid_match) == 1:
+            obsid_match = obsid_match[0]
+        else:
+            raise ValueError("Found multiple obsid matches, which shouldn't happen.")
+        
         tb.open(tab+'/SPECTRAL_WINDOW')
         print('\n Colnames in SPECTRAL_WINDOW table:')
         print(tb.colnames())
         tab_spws = tb.getcol('NAME')
         tb.close()
+        
+        tb.open(tab)
+        spw_id_num = tb.getcol('SPECTRAL_WINDOW_ID')
+        obs_id_num = tb.getcol('OBSERVATION_ID')
+        tb.close()
+
         index_spw = np.where(tab_spws == vis_spwname)
-        index_spw = index_spw[0][0]
-        spwmap.append([index_spw])
+
+        
+        match = (obs_id_num == obsid_match) & (np.any([spw == spw_id_num for spw in index_spw], axis=0))
+        unique_spw_id = np.unique(spw_id_num[match])
+        if len(unique_spw_id) != 1:
+            raise ValueError("Found 0 or >1 SPW ids")
+
+        # unique_spw_id should be a length-1 array
+        spwmap.append(unique_spw_id)
         print('Index in cal table of spw corresponding to ms file is:')
-        print(index_spw)
+        print(unique_spw_id)
+
 
     #Clearcal with addmodel
     clearcal(vis=vis, addmodel=True)
