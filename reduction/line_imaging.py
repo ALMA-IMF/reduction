@@ -471,7 +471,9 @@ for band in band_list:
                              "imaged this time; please check what is happening.  "
                              "(this warning issued /before/ dirty imaging)"
                              .format(lineimagename),
-                             origin='almaimf_line_imaging')
+                             origin='almaimf_line_imaging',
+                             priority='WARNING'
+                             )
                     continue
                 # first iteration makes a dirty image to estimate the RMS
                 impars_dirty = impars.copy()
@@ -526,7 +528,9 @@ for band in band_list:
                          "imaged this time; please check what is happening."
                          "(warning issued /after/ dirty imaging)"
                          .format(lineimagename),
-                         origin='almaimf_line_imaging')
+                         origin='almaimf_line_imaging',
+                         priority='WARNING'
+                         )
                 # just skip the rest here
                 continue
 

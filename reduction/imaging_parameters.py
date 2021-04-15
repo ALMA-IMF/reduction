@@ -2807,7 +2807,7 @@ for key in line_imaging_parameters_default:
     if "7M12M" in key:
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
-        line_imaging_parameters_default[key]["niter"] = 5000  # try to avoid divergence
+        line_imaging_parameters_default[key]["niter"] = 5000
 
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
@@ -3118,6 +3118,7 @@ line_imaging_parameters_custom = {
 default_lines = {
     "h41a": "92.034434GHz",
     "ch3cnv8=1": "92.26144GHz",
+    "ch3cn": "91.97", # range from 91.987 to 91.567
     "13cs_2-1": "92.49430800GHz",
     "n2hp": "93.173700GHz",
     "ch3cch_62-52": "102.547983GHz",
@@ -3172,6 +3173,7 @@ line_parameters_default = {
 for field in allfields:
     line_parameters_default[field]["12co"]["cubewidth"] = "150km/s"
     line_parameters_default[field]["ch3cnv8=1"]["cubewidth"] = "150km/s"  # is 150 wide enough?
+    line_parameters_default[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
 line_parameters = copy.deepcopy(line_parameters_default)
 
 line_parameters_custom = {

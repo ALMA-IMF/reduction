@@ -1,6 +1,5 @@
 """
-Continuum imaging self-calibration script.  This script expects that you have
-sucessfully run ``continuum_imaging.py`` first.
+Continuum imaging self-calibration script.  
 
 You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>
