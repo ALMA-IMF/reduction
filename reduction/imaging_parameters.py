@@ -3118,7 +3118,7 @@ line_imaging_parameters_custom = {
 default_lines = {
     "h41a": "92.034434GHz",
     "ch3cnv8=1": "92.26144GHz",
-    "ch3cn": "91.97", # range from 91.987 to 91.567
+    "ch3cn": "91.97GHz", # range from 91.987 to 91.567
     "13cs_2-1": "92.49430800GHz",
     "n2hp": "93.173700GHz",
     "ch3cch_62-52": "102.547983GHz",
