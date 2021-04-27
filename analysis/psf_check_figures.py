@@ -1,6 +1,7 @@
 import glob
 import os
 from astropy import units as u
+from astropy import log
 
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from imstats import get_psf_secondpeak
 
 import pylab as pl
 
-releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/')
+releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release')
 
 if not os.path.exists(releasepath / 'figures'):
     os.mkdir(releasepath / 'figures')
@@ -43,6 +44,7 @@ for jj, band in enumerate(('B3', 'B6')):
 
         ax = pl.subplot(3, 5, ii+1)
         ax.set_title(field)
+        log.info(f"{field} {band}")
         get_psf_secondpeak(psffn, show_image=True, min_radial_extent=2.5*u.arcsec,
                            max_radial_extent=5*u.arcsec
                           )
