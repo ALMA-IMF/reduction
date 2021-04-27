@@ -138,11 +138,14 @@ def make_zoom(fieldid, zoom_parameters,
         cbins.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
 
 
-        if 'asinh' in str(norm.stretch).lower():
+        if 'asinh' in str(norm2.stretch).lower():
             rounded_loc, rounded = determine_asinh_ticklocs(norm2.vmin, norm2.vmax, nticks=nticks_inset)
             cbins.set_ticks(rounded_loc)
             cbins.set_ticklabels(rounded)
-        #elif 'log' in str(norm.stretch).lower() or 
+        elif 'log' in str(norm2.stretch).lower():
+            rounded_loc, rounded = determine_asinh_ticklocs(norm2.vmin, norm2.vmax, nticks=nticks_inset, stretch='log')
+            cbins.set_ticks(rounded_loc)
+            cbins.set_ticklabels(rounded)
 
         
     #print(ax.axis())
@@ -261,11 +264,13 @@ def make_multifig(fieldid,
     # cb2.set_ticks(newticks)
     # cb2.set_ticklabels(newticklabels)
 
-    rounded_loc, rounded = determine_asinh_ticklocs(norm2.vmin, norm2.vmax, nticks=10)
-    cb2.set_ticks(rounded_loc)
-    cb2.set_ticklabels(rounded)
-    print(f"old ticks: {ticklabels}, new ticks: {rounded}")
+    if inner_stretch in ('asinh', 'log'):
+        rounded_loc, rounded = determine_asinh_ticklocs(norm2.vmin, norm2.vmax, nticks=10, stretch=inner_stretch)
+        cb2.set_ticks(rounded_loc)
+        cb2.set_ticklabels(rounded)
+        print(f"old ticks: {ticklabels}, new ticks: {rounded}")
 
+    cb2.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
 
     tick_fontsize=16
     ra = ax.coords['ra']
@@ -292,9 +297,16 @@ def make_multifig(fieldid,
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.png', bbox_inches='tight')
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.pdf', bbox_inches='tight')
 
-def determine_asinh_ticklocs(vmin, vmax, nticks):
-    arcsinh_range = np.arcsinh(vmin), np.arcsinh(vmax)
-    new_ticks = np.sinh(np.linspace(*arcsinh_range, nticks))
+def determine_asinh_ticklocs(vmin, vmax, nticks, stretch='asinh'):
+    if stretch == 'asinh':
+        arcsinh_range = np.arcsinh(vmin), np.arcsinh(vmax)
+        new_ticks = np.sinh(np.linspace(*arcsinh_range, nticks))
+    elif stretch == 'log':
+        if vmin > 0:
+            arcsinh_range = np.log10(vmin), np.log10(vmax)
+        else:
+            arcsinh_range = (-1, np.log10(vmax))
+        new_ticks = 10**(np.linspace(*arcsinh_range, nticks))
     rounded = [np.format_float_positional(x, 2, unique=False, fractional=False, trim='k') for x in new_ticks]
 
     rounded_loc = np.array(rounded).astype('float')

@@ -26,6 +26,7 @@ else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
 from parse_contdotdat import parse_contdotdat, contchannels_to_linechannels # noqa: E402
+from get_array_config import get_array_config
 
 msmd = msmdtool()
 ms = mstool()
@@ -164,6 +165,12 @@ for sg in science_goals:
                     metadata[band][field]['muid_configs'] = {array_config: muid}
                     metadata[band][field]['max_bl'] = {muid: max_bl}
 
+                # add the named array configurations to the metadata file
+                obstime, named_array_config = get_array_config(filename)
+                if 'array_config_name' in metadata[band][field]:
+                    metadata[band][field]['array_config_name'] = {obstime.strftime('%Y-%m-%d'): named_array_config}
+                else:
+                    metadata[band][field]['array_config_name'][obstime.strftime('%Y-%m-%d')] = named_array_config
 
                 # Custom cont.dat files:
                 # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used
