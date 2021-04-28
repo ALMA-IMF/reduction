@@ -43,7 +43,7 @@ def array_config_table(filename='config_table.csv'):
 
         stacked = vstack(tables)
 
-        stacked.writeto(filename)
+        stacked.write(filename)
     else:
         stacked = Table.read(filename)
 

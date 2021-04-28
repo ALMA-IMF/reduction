@@ -119,6 +119,20 @@ for sg in science_goals:
                     frqdict = {spw: ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws}
                 ms.close()
 
+                if os.path.exists(filename+"/ASDM_EXECBLOCK"):
+                    tb.open(filename+"/ASDM_EXECBLOCK")
+                    mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
+                    configname = str(tb.getcol('configName')[0])
+                    tb.close()
+                elif os.path.exists(filename.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK"):
+                    tb.open(filename.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK")
+                    mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
+                    configname = str(tb.getcol('configName')[0])
+                    tb.close()
+                else:
+                    mous = "Unknown"
+                    configname = "Unknown"
+
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
 
                 if field in metadata[band]:
@@ -127,12 +141,14 @@ for sg in science_goals:
                     metadata[band][field]['spws'].append(spws)
                     metadata[band][field]['freqs'].append(frqslims)
                     metadata[band][field]['muid'].append(muid)
+                    metadata[band][field]['arrayconfig'].append(configname)
                 else:
                     metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                              'vis': [fn],
                                              'spws': [spws],
                                              'freqs': [frqslims],
                                              'muid': [muid],
+                                             'arrayconfig': [configname],
                                             }
 
                 ran_findcont = False
