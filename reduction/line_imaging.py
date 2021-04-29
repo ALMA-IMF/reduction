@@ -17,6 +17,7 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         fields with this name (e.g., "W43-MM1", "W51-E", etc.)
     BAND_NUMBERS=<band(s)>
         Image this/these bands.  Can be "3", "6", or "3,6" (no quotes)
+        (you can specify this within python using "band_list=[3,6]" or "band_list=[3]"
     LINE_NAME=<name>
         Image only one line at each run.  Can be 'n2hp', 'CO' (Case insensitive)
     LOGFILENAME=<name>
@@ -80,7 +81,7 @@ if os.getenv('BAND_NUMBERS'):
         if BB not in to_image:
             raise ValueError("Band {0} was specified but is not in to_image.json"
                              .format(BB))
-else:
+elif 'band_list' not in locals():
     band_list = list(to_image.keys())
 
 imaging_root = "imaging_results"
