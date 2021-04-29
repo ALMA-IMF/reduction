@@ -3,7 +3,13 @@ Line imaging script.  There needs to be a to_image.json file in the directory
 this is run in.  The to_image.json file is produced by the split_windows.py
 script.
 
-You can set the following environmental variables for this script:
+If you want to modify any of the environmental variables from _within_ python,
+you must set them!  This can be done with, e.g.,
+
+import os
+os.environ['CHANCHUNKS'] = -1
+
+These are the environmental variables you can set for this script:
     CHANCHUNKS=<number>
         The chanchunks parameter for tclean.  Depending on the version, it may
         be acceptable to specify this as -1, or it has to be positive.  From inline
@@ -17,9 +23,10 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         fields with this name (e.g., "W43-MM1", "W51-E", etc.)
     BAND_NUMBERS=<band(s)>
         Image this/these bands.  Can be "3", "6", or "3,6" (no quotes)
-        (you can specify this within python using "band_list=[3,6]" or "band_list=[3]"
+        (you can specify this within python using "band_list=[3,6]" or "band_list=[3]")
     LINE_NAME=<name>
-        Image only one line at each run.  Can be 'n2hp', 'CO' (Case insensitive)
+        Image only one line at each run.  Can be 'n2hp', 'CO', or other
+        specified lines.   Can also a be a spw number (e.g., 'spw1'). (Case insensitive)
     LOGFILENAME=<name>
         Optional.  If specified, the logger will use this filenmae
     DO_CONTSUB=True / blank
