@@ -3142,7 +3142,7 @@ for key in line_imaging_parameters_custom:
         for linename in default_lines:
             if linename in key:
                 key_noline = key.replace("_" + linename, "")
-                line_imaging_parameters[key] = line_imaging_parameters_default[key_noline]
+                line_imaging_parameters[key] = copy.copy(line_imaging_parameters_default[key_noline])
                 line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
 
 field_vlsr = {

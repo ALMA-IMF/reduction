@@ -11,6 +11,8 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.table import Table
 from pathlib import Path
+import matplotlib.gridspec as gridspec
+
 
 
 # copy-pasted from parse_contdotdat
@@ -27,8 +29,8 @@ def parse_contdotdat(filepath):
     return ";".join(selections)
 
 xlabel_offset = {
-    3: 0.00,
-    6: 0.20,
+    3: 0.15,
+    6: 0.05,
 }
 
 lines_to_overplot = {
@@ -137,6 +139,11 @@ for fignum,band in enumerate((3,6)):
 
     nspw = len(fcov)
 
+    widths = [fcov[key][1] - fcov[key][0] for key in fcov]
+    width_ratios = np.array(widths) / min(widths)
+
+    gs = gridspec.GridSpec(1, nspw, width_ratios=width_ratios)
+
     included_bw[band] = {}
 
     for spwn,(spw,(minfrq, maxfrq, nfrqs)) in enumerate(fcov.items()):
@@ -223,7 +230,7 @@ for fignum,band in enumerate((3,6)):
                 specname = basepath / f'imaging_results/spectra/{field}_B{band}_spw{spw}_{"12M" if "12M" in config else "7M"}.image_mean.fits'
                 if os.path.exists(specname):
                     print(specname)
-                    pl.figure(4).clf()
+                    pl.figure(14).clf()
                     fh = fits.open(specname)
                     with warnings.catch_warnings():
                         warnings.simplefilter('ignore')
@@ -269,7 +276,8 @@ for fignum,band in enumerate((3,6)):
         #    assert not np.any(frqmask[10,:])
 
         pl.figure(fig.number)
-        ax = fig.add_subplot(1, nspw, spwn+1)
+        #ax = fig.add_subplot(1, nspw, spwn+1)
+        ax = fig.add_subplot(gs[spwn])
         #print(ax,spwn)
         yticklocs = (np.arange(nfields*nconfigs) + np.arange(1, nfields*nconfigs+1))/2.
         tick_maps = list(zip(yticklocs, fields))
@@ -281,9 +289,12 @@ for fignum,band in enumerate((3,6)):
             ax.set_yticks([])
 
         ax.set_xticks([minfrq, (minfrq+maxfrq)/2, maxfrq])
-        ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()])
         if spwn % 2 == 1:
             ax.xaxis.set_ticks_position('top')
+        if (maxfrq-minfrq) < 0.5:
+            ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()], rotation=45)
+        else:
+            ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()])
 
         # gnuplot: 
         # black -> zero
@@ -291,10 +302,17 @@ for fignum,band in enumerate((3,6)):
         # yellow -> 2 (covered, not-continuum)
         ax.imshow(frqmask, extent=[minfrq, maxfrq, nfields*nconfigs, 0],
                   interpolation='nearest', cmap='gnuplot')
-        ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
+        
+        #ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
+        if band == 3:
+            ax.set_aspect(1 / (nfields*nconfigs))
+        else:
+            ax.set_aspect(2 / (nfields*nconfigs))
+
 
         xmin, xmax = ax.get_xlim()
         ax.hlines(np.arange(nfields)*3, xmin, xmax, color='w', linestyle='-')
+        ax.hlines(np.arange(nfields*3), xmin, xmax, color='w', linestyle=':', linewidth=0.5)
 
         for linename,linefrq in lines_to_overplot.items():
             linefrq = u.Quantity(linefrq).to(u.GHz)
