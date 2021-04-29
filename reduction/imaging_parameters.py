@@ -3139,7 +3139,8 @@ for key in line_imaging_parameters_custom:
     if key in line_imaging_parameters:
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     else:
-        for linename in default_lines:
+        # loop over known lines _plus_ spws
+        for linename in tuple(default_lines.keys()) + tuple("spw"+str(ii) for ii in range(7)):
             if linename in key:
                 key_noline = key.replace("_" + linename, "")
                 line_imaging_parameters[key] = copy.copy(line_imaging_parameters_default[key_noline])
