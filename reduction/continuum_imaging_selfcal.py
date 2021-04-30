@@ -20,6 +20,10 @@ You can set the following environmental variables for this script:
         If this parameter is set, only image the selected band.
     DO_BSENS=<boolean>
         Do bsens?  If not, do cleanest.  Default is cleanest
+    EXCLUDE_CO=<boolean>
+        Should the spws containing 230.5 GHz (CO 2-1) be excluded?
+        This is most important if DO_BSENS=True.
+        This will add a _noco suffix
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
@@ -115,7 +119,7 @@ import numpy as np
 from getversion import git_date, git_version
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated, test_tclean_success,
-                            populate_model_column)
+                            populate_model_column, get_non_co_spws)
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
@@ -228,8 +232,14 @@ if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false
 else:
     do_bsens = False
 
+if 'exclude_co' in locals():
+    os.environ['EXCLUDE_CO'] = str(do_bsens)
+elif os.getenv('EXCLUDE_CO') is not None and os.getenv('EXCLUDE_CO').lower() != 'false':
+    exclude_co = True
+else:
+    exclude_co = False
 
-logprint("parameters are: do_bsens={do_bsens} only_7m={only_7m} "
+logprint("parameters are: do_bsens={do_bsens} only_7m={only_7m} exclude_co={exclude_co}"
          "exclude_7m={exclude_7m} selfcal_field_id={selfcal_field_id}".format(**locals()),
          origin='contim_selfcal')
 
@@ -384,6 +394,11 @@ for continuum_ms in continuum_mses:
         impars = imaging_parameters[pars_key+"_bsens"]
     else:
         impars = imaging_parameters[pars_key]
+
+    if exclude_co:
+        non_co_spws = get_non_co_spws(selfcal_ms)
+        impars['spw'] = ",".join(map(str(non_co_spws)))
+        contimagename = contimagename+"_noco"
 
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
