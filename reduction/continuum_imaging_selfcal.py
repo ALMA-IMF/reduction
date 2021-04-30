@@ -610,8 +610,9 @@ for continuum_ms in continuum_mses:
 
         # iteration #1 of phase-only self-calibration
         caltype = 'amp' if 'a' in selfcalpars[selfcaliter]['calmode'] else 'phase'
-        caltable = '{0}_{1}_{2}{3}_{4}.cal'.format(basename, arrayname, caltype, selfcaliter,
-                                                   selfcalpars[selfcaliter]['solint'])
+        cosuffix = '_noco' if exclude_co else ''
+        caltable = '{0}{5}_{1}_{2}{3}_{4}.cal'.format(basename, arrayname, caltype, selfcaliter,
+                                                      selfcalpars[selfcaliter]['solint'], cosuffix)
         if not os.path.exists(caltable):
             #check_model_is_populated(selfcal_ms)
             if not dryrun:
