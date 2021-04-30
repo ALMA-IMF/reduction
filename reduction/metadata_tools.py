@@ -513,7 +513,7 @@ def populate_model_column(imname, selfcal_ms, field, impars_thisiter,
     #                      "into the model column".format(imname))
 
 
-def get_non_co_spws(vis, frequency=230.538e9):
+def get_non_bright_spws(vis, frequency=230.538e9):
     """
     From a measurement set, return all spw numbers that do not contain the specified line
     
