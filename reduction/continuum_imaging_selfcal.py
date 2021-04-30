@@ -397,7 +397,7 @@ for continuum_ms in continuum_mses:
 
     if exclude_co:
         non_co_spws = get_non_co_spws(selfcal_ms)
-        impars['spw'] = ",".join(map(str(non_co_spws)))
+        impars['spw'] = ",".join(map(str, non_co_spws))
         contimagename = contimagename+"_noco"
 
     dirty_impars = copy.copy(impars)
