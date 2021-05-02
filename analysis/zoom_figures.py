@@ -59,7 +59,7 @@ def make_zoom(fieldid, zoom_parameters,
               nsigma_max=10,
               nticks_inset=7,
              ):
-    
+
     pfxs = prefixes[fieldid]
     wl = r'\mathrm{3mm}' if band.lower() == 'b3' else r'\mathrm{1mm}'
 
@@ -82,7 +82,7 @@ def make_zoom(fieldid, zoom_parameters,
         a_point = (np.nanmedian(img) + nsigma_asinh*mad) / norm.vmax
         norm.stretch.a = a_point
         print(f"numbers for norm: {np.nanmedian(img), nsigma_asinh, mad, nsigma_asinh*mad, norm.vmax, a_point}")
-    
+
     im = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
     tick_fontsize=16
@@ -96,7 +96,7 @@ def make_zoom(fieldid, zoom_parameters,
     dec.ticklabels.set_fontsize(tick_fontsize)
     dec.set_ticks(exclude_overlapping=True)
 
-    
+
     for zp in zoom_parameters:
 
         xl,xr = zp['xl'], zp['xr']
@@ -147,7 +147,7 @@ def make_zoom(fieldid, zoom_parameters,
             cbins.set_ticks(rounded_loc)
             cbins.set_ticklabels(rounded)
 
-        
+
     #print(ax.axis())
     if main_zoombox:
         ax.axis(main_zoombox)
@@ -167,7 +167,7 @@ def make_zoom(fieldid, zoom_parameters,
     length = (scalebar_length / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
     make_scalebar(ax, left_side, length, color='k', linestyle='-', label=f'{scalebar_length:0.1f}',
                   fontsize=16, text_offset=0.5*u.arcsec)
-    
+
     ell = image.beam.ellipse_to_plot(beam_loc[1]*img.shape[1], beam_loc[0]*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
     ax.add_patch(ell)
 
@@ -176,7 +176,7 @@ def make_zoom(fieldid, zoom_parameters,
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_inset_zooms_{band}.pdf', bbox_inches='tight')
 
 
-def make_multifig(fieldid, 
+def make_multifig(fieldid,
                   #overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'linear'},
                   overview_cmap='gray_r',
                   inner_stretch='log',
@@ -187,7 +187,7 @@ def make_multifig(fieldid,
                   nsigma_linear_min=5,
                   nsigma_asinh=15,
                   ):
-    
+
     pfxs = prefixes[fieldid]
 
     finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
@@ -207,10 +207,10 @@ def make_multifig(fieldid,
     norm = simple_norm(img, stretch='linear', min_cut=-nsigma_linear_min*mad, max_cut=nsigma_linear_max*mad,)
 
     im1 = ax.imshow(img, cmap=overview_cmap, norm=norm)
-    
+
     cm = pl.cm.hot
     cm.set_under((0,0,0,0))
-    
+
     vmin = norm.vmax*0.99
     norm2 = simple_norm(img, min_cut=vmin, stretch=inner_stretch, max_percent=inner_maxpct)
     norm2.vmin = vmin
@@ -220,10 +220,10 @@ def make_multifig(fieldid,
         a_point = (vmin + nsigma_asinh*mad) / (norm2.vmax - vmin)
         #print(f"a point before: {norm2.stretch.a}, after: {a_point}")
         norm2.stretch.a = a_point
-    
+
 
     im2 = ax.imshow(img, cmap=cm, norm=norm2, vmin=norm2.vmin)
-    
+
     # create an axes on the right side of ax. The width of cax will be 5%
     # of ax and the padding between cax and ax will be fixed at 0.05 inch.
     divider = make_axes_locatable(ax)
@@ -236,8 +236,8 @@ def make_multifig(fieldid,
     cax2 = fig.add_axes([ax.get_position().x1+0.08,
                          ax.get_position().y0,
                          0.02,
-                         ax.get_position().height])    
-    
+                         ax.get_position().height])
+
     cb2 = pl.colorbar(mappable=im2, cax=cax2)
     cb1 = pl.colorbar(mappable=im1, cax=cax1)
     cb1.ax.tick_params(labelsize=14)
@@ -282,18 +282,18 @@ def make_multifig(fieldid,
     ra.set_ticks(exclude_overlapping=True)
     dec.ticklabels.set_fontsize(tick_fontsize)
     dec.set_ticks(exclude_overlapping=True)
-    
+
     print(image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0))
     left_side = coordinates.SkyCoord(*image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0)*u.deg, frame='fk5')
     print(left_side)
     length = (0.1*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
     make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.1 pc',
                   fontsize=16, text_offset=0.5*u.arcsec)
-    
+
     ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
     ax.add_patch(ell)
 
-    
+
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.png', bbox_inches='tight')
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.pdf', bbox_inches='tight')
 
@@ -327,18 +327,20 @@ def determine_asinh_ticklocs(vmin, vmax, nticks, stretch='asinh'):
     else:
         rounded_loc[-1] = vmax
         rounded[-1] = np.format_float_positional(vmax, 2, unique=False, fractional=False, trim='k')
-    
+
     rounded = [str(x).rstrip('.') for x in rounded]
 
     return rounded_loc, rounded
 
+
+
 zoom_parameters = {}
-zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000, 
+zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000,
                                     'inset_pars':{'loc': 1, 'width':3, 'height':3,  'bbox_to_anchor':(600, 0, 100,100)},
                                     'mark_inset_pars':{'loc1':1, 'loc2':3,},
                                     'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'log'}
                                    },
-                                   {'xl':700, 'xr':850, 'yl':1025, 'yu':1175, 
+                                   {'xl':700, 'xr':850, 'yl':1025, 'yu':1175,
                                     'inset_pars':{'loc': 3, 'width':3, 'height':3,  'bbox_to_anchor':(0, -120, 100,100)},
                                     'mark_inset_pars':{'loc1':2, 'loc2':4,},
                                     'vis_pars':{'max_percent':99.9, 'min_percent': 2, 'stretch':'linear'}

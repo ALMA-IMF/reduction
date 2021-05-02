@@ -40,7 +40,13 @@ cores = os.getenv('SLURM_CPUS_ON_NODE')
 if cores is not None:
     cores = int(cores)
     nthreads = cores
-if cores > 1:
+
+nthreads = os.getenv('SLURM_STEP_NUM_TASKS')
+if nthreads is not None:
+    nthreads = int(nthreads)
+    dask.config.set(scheduler='threads')
+
+if cores > 2:
     from dask.distributed import Client
     #scheduler = 'threads'
     nnodes = os.getenv('SLURM_JOB_NUM_NODES')
@@ -53,6 +59,7 @@ if cores > 1:
     scheduler = client
 
 
+scheduler = dask.config.get('scheduler')
 print(f"Using {nthreads} threads with the {scheduler} scheduler")
 
 spws = {3: list(range(4)),
@@ -184,7 +191,9 @@ for band in (6,3):
                     dt(); print("Spatial mad_std")
                     pl.close('all')
                     pl.clf()
-                    stdspec = mcube.mad_std(axis=(1,2))#, how='slice')
+                    rcmcube = mcube.rechunk([16,'auto','auto'])
+                    print(rcmcube)
+                    stdspec = rcmcube.mad_std(axis=(1,2))#, how='slice')
                     stdspec.write("collapse/stdspec/{0}".format(fn.replace(suffix, "_std_spec.fits")), overwrite=True)
                     stdspec.quicklook("collapse/stdspec/pngs/{0}".format(fn.replace(suffix, "_std_spec.png")))
 
