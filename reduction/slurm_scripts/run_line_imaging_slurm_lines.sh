@@ -64,7 +64,7 @@ echo ${jobid##* }
 
 # export BAND_NUMBERS=3
 # export BAND_TO_IMAGE=B${BAND_NUMBERS}
-# for LINE_NAME in h41a ch3cn ch3cch; do
+# for LINE_NAME in h41a ch3cn 'ch3cnv8=1' ch3cch; do
 # 
 #     export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
 #     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"

@@ -511,3 +511,31 @@ def populate_model_column(imname, selfcal_ms, field, impars_thisiter,
     # if not success:
     #     raise ValueError("tclean failed to restore the model {0}.model* "
     #                      "into the model column".format(imname))
+
+
+def get_non_bright_spws(vis, frequency=230.538e9):
+    """
+    From a measurement set, return all spw numbers that do not contain the specified line
+    
+    Parameters
+    ----------
+    vis : str
+        Measurement set name
+    frequency : float
+        Frequency of the line to exclude
+    """
+    
+    msmd.open(vis)
+    
+    spws_ontarget = msmd.spwsforintent('OBSERVE_TARGET#ON_SOURCE')
+    
+    spws = []
+    
+    for spwnum in spws_ontarget:
+        frqs = msmd.chanfreqs(spwnum)
+        bws = msmd.chanwidths(spwnum)
+        
+        if ((frqs.min() - bws[0]) > frequency) or ((frqs.min().max() + bws[0]) < frequency):
+            spws.append(spwnum)
+    
+    return spws
