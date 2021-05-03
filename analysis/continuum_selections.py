@@ -1,4 +1,5 @@
 import os
+import warnings
 import pylab as pl
 import numpy as np
 import json
@@ -10,6 +11,8 @@ from astropy.io import fits
 from astropy.wcs import WCS
 from astropy.table import Table
 from pathlib import Path
+import matplotlib.gridspec as gridspec
+
 
 
 # copy-pasted from parse_contdotdat
@@ -26,8 +29,8 @@ def parse_contdotdat(filepath):
     return ";".join(selections)
 
 xlabel_offset = {
-    3: 0.00,
-    6: 0.20,
+    3: 0.15,
+    6: 0.05,
 }
 
 lines_to_overplot = {
@@ -123,7 +126,9 @@ lb_threshold = {3: 750,
                 6: 780,}
 
 for fignum,band in enumerate((3,6)):
+    print()
     bandname = f'B{band}'
+    print(f"band {bandname} in figure {fignum}")
     pl.close(fignum)
     fig = pl.figure(fignum, figsize=(12,6))
 
@@ -133,6 +138,11 @@ for fignum,band in enumerate((3,6)):
     fcov = frequency_coverage[bandname]
 
     nspw = len(fcov)
+
+    widths = [fcov[key][1] - fcov[key][0] for key in fcov]
+    width_ratios = np.array(widths) / min(widths)
+
+    gs = gridspec.GridSpec(1, nspw, width_ratios=width_ratios)
 
     included_bw[band] = {}
 
@@ -162,7 +172,7 @@ for fignum,band in enumerate((3,6)):
                             for muid in muid_to_bl
                            }
             muid_configs.update({val:key for key,val in metadata[bandname][field]['muid_configs'].items()})
-            print(f"Loop info: ", band, field, muid_configs)
+            print(f"Loop info:  band={band}, field{field}, muid={muid_configs}, spw={spw}, spwn={spwn}")
 
             for muid in muids:
 
@@ -217,20 +227,33 @@ for fignum,band in enumerate((3,6)):
 
                 robust = 0 # hard-code.... yike.
                 specname = basepath / f'imaging_results/spectra/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}.image_mean.fits'
+                specname = basepath / f'imaging_results/spectra/{field}_B{band}_spw{spw}_{"12M" if "12M" in config else "7M"}.image_mean.fits'
                 if os.path.exists(specname):
                     print(specname)
-                    pl.figure(4).clf()
+                    pl.figure(14).clf()
                     fh = fits.open(specname)
-                    ww = WCS(fh[0].header)
+                    with warnings.catch_warnings():
+                        warnings.simplefilter('ignore')
+                        ww = WCS(fh[0].header)
                     specfrq = ww.wcs_pix2world(np.arange(fh[0].data.squeeze().size), 0)[0] / 1e9
-                    pl.plot(specfrq, fh[0].data.squeeze())
+                    pl.plot(specfrq, fh[0].data.squeeze(), color='k', drawstyle='steps-mid', linewidth=0.8)
                     axlims = pl.axis()
-                    pl.plot(frqarr, frqmask[fieldnum*nconfigs + configid]-1)
+                    sptoplot = fh[0].data.squeeze().copy()
+
+                    # frqmask = 1 is continuum
+                    msk = np.interp(specfrq, frqarr.to_value(u.GHz), frqmask[fieldnum*nconfigs + configid])
+                    sptoplot[msk != 1.0] = np.nan
+                    pl.plot(specfrq, sptoplot, color='orange', drawstyle='steps-mid', linewidth=2, alpha=0.75)
+
+                    sptoplot = fh[0].data.squeeze().copy()
+                    sptoplot[msk > 0] = np.nan
+                    pl.plot(specfrq, sptoplot, color='red', drawstyle='steps-mid', linewidth=2, alpha=0.75)
+
                     pl.axis(axlims)
                     pl.xlabel("Frequency")
                     pl.ylabel("Flux [Jy/beam]")
                     pl.title(os.path.split(specname)[-1].replace(".fits", ""))
-                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_{"12M" if "12M" in config else "7M"}_B{band}_spw{spw}_robust{robust}_lines.image_mean.coverage.png',
+                    pl.savefig(basepath / f'imaging_results/spectra/pngs/{field}_B{band}_spw{spw}_{"12M" if "12M" in config else "7M"}_robust{robust}_lines.image_mean.coverage.png',
                                bbox_inches='tight')
 
 
@@ -252,7 +275,9 @@ for fignum,band in enumerate((3,6)):
         #    # W41-MM1 B6 doesn't exist
         #    assert not np.any(frqmask[10,:])
 
-        ax = pl.subplot(1, nspw, spwn+1)
+        pl.figure(fig.number)
+        #ax = fig.add_subplot(1, nspw, spwn+1)
+        ax = fig.add_subplot(gs[spwn])
         #print(ax,spwn)
         yticklocs = (np.arange(nfields*nconfigs) + np.arange(1, nfields*nconfigs+1))/2.
         tick_maps = list(zip(yticklocs, fields))
@@ -264,9 +289,12 @@ for fignum,band in enumerate((3,6)):
             ax.set_yticks([])
 
         ax.set_xticks([minfrq, (minfrq+maxfrq)/2, maxfrq])
-        ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()])
         if spwn % 2 == 1:
             ax.xaxis.set_ticks_position('top')
+        if (maxfrq-minfrq) < 0.5:
+            ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()], rotation=45)
+        else:
+            ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()])
 
         # gnuplot: 
         # black -> zero
@@ -274,10 +302,17 @@ for fignum,band in enumerate((3,6)):
         # yellow -> 2 (covered, not-continuum)
         ax.imshow(frqmask, extent=[minfrq, maxfrq, nfields*nconfigs, 0],
                   interpolation='nearest', cmap='gnuplot')
-        ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
+        
+        #ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
+        if band == 3:
+            ax.set_aspect(1 / (nfields*nconfigs))
+        else:
+            ax.set_aspect(2 / (nfields*nconfigs))
+
 
         xmin, xmax = ax.get_xlim()
         ax.hlines(np.arange(nfields)*3, xmin, xmax, color='w', linestyle='-')
+        ax.hlines(np.arange(nfields*3), xmin, xmax, color='w', linestyle=':', linewidth=0.5)
 
         for linename,linefrq in lines_to_overplot.items():
             linefrq = u.Quantity(linefrq).to(u.GHz)
@@ -291,13 +326,14 @@ for fignum,band in enumerate((3,6)):
                                   (fieldnum+1)*nconfigs, color='b')
 
 
+    pl.figure(fig.number)
     pl.tight_layout()
     pl.subplots_adjust(wspace=0.05, hspace=0)
 
     fig.text(0.5, xlabel_offset[band], 'Frequency (GHz)', ha='center')
 
-    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
-    pl.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
+    fig.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.png", bbox_inches='tight')
+    fig.savefig(f"{basepath}/paper_figures/continuum_selection_regions_band{band}.pdf", bbox_inches='tight')
 
 #print({k:v.sum(axis=1)/v.shape[1] for k,v in frqmasks.items()})
 #print(included_bw)
@@ -356,7 +392,7 @@ bandfrac_table = Table(bandfrac_flat)
 
 bandfrac_table.write
 
-tbldir = Path('/bio/web/secure/adamginsburg/ALMA-IMF/tables')
+tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
 bandfrac_table.write(tbldir / 'bandpass_fraction.ecsv', overwrite=True)
 bandfrac_table.write(tbldir / 'bandpass_fraction.ipac', format='ascii.ipac', overwrite=True)
 bandfrac_table.write(tbldir / 'bandpass_fraction.html', format='ascii.html', overwrite=True)

@@ -15,14 +15,14 @@ from before_after_selfcal_quicklooks import make_comparison_image, get_selfcal_n
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 os.chdir(basepath)
-prepostpath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020/comparisons/prepost/'
-octoberpath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020/'
+prepostpath = '/orange/adamginsburg/web/secure/ALMA-IMF/October2020/comparisons/prepost/'
+octoberpath = '/orange/adamginsburg/web/secure/ALMA-IMF/October2020/'
 
 import imstats
 
 tbl = imstats.savestats(basepath=octoberpath)
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/October2020/metadata.ecsv')
 tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
@@ -110,15 +110,15 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_sc_dirty.ecsv',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/October2020/tables/metadata_sc_dirty.ecsv',
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_sc_dirty.html',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/October2020/tables/metadata_sc_dirty.html',
           formats=formats,
           format='ascii.html', overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_sc_dirty.tex',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/October2020/tables/metadata_sc_dirty.tex',
           formats=formats,
           overwrite=True)
-tbl.write('/bio/web/secure/adamginsburg/ALMA-IMF/October2020/tables/metadata_sc_dirty.js.html',
+tbl.write('/orange/adamginsburg/web/secure/ALMA-IMF/October2020/tables/metadata_sc_dirty.js.html',
           #formats=formats,
           format='jsviewer')
 

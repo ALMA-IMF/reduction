@@ -4,22 +4,24 @@ from astropy import table
 import requests
 import keyring
 from astropy import units as u
+import datetime
 
 from latex_info import (latexdict, format_float, round_to_n, rounded,
                         rounded_arr, strip_trailing_zeros, exp_to_tex)
 
 latexdict = latexdict.copy()
 
-result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.ecsv',
-                      auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
-with open('metadata_bsens_cleanest.ecsv', 'w') as fh:
-    fh.write(result.text)
+if datetime.datetime.today() > datetime.datetime(year=2021, month=1, day=10):
+    result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata_bsens_cleanest.ecsv',
+                          auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
+    with open('metadata_bsens_cleanest.ecsv', 'w') as fh:
+        fh.write(result.text)
 
 
-result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/tables/bandpass_fraction.ecsv',
-                      auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
-with open('bandpass_fraction.ecsv', 'w') as fh:
-    fh.write(result.text)
+    result = requests.get('https://bio.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/tables/bandpass_fraction.ecsv',
+                          auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
+    with open('bandpass_fraction.ecsv', 'w') as fh:
+        fh.write(result.text)
 
 bp_tbl = Table.read('bandpass_fraction.ecsv')
 bp_tbl['band'] = [f'B{b}' for b in bp_tbl['band']]
@@ -77,11 +79,11 @@ cols_to_keep = {'region':'Region',
                }
 
 
-units = {'$S_{peak}(bsens)$':u.Jy.to_string(u.format.LatexInline),
-         '$S_{peak}(cleanest)$':u.Jy.to_string(u.format.LatexInline),
-         '$\sigma_{MAD}(bsens)$':u.mJy.to_string(u.format.LatexInline),
-         '$\sigma_{MAD}(cleanest)$':u.mJy.to_string(u.format.LatexInline),
-         'Requested $\sigma$':u.mJy.to_string(u.format.LatexInline),
+units = {'$S_{peak}(bsens)$':(u.Jy/u.beam).to_string(u.format.LatexInline),
+         '$S_{peak}(cleanest)$':(u.Jy/u.beam).to_string(u.format.LatexInline),
+         '$\sigma_{MAD}(bsens)$':(u.mJy/u.beam).to_string(u.format.LatexInline),
+         '$\sigma_{MAD}(cleanest)$':(u.mJy/u.beam).to_string(u.format.LatexInline),
+         'Requested $\sigma$':(u.mJy/u.beam).to_string(u.format.LatexInline),
          #'$\sigma_{req}$':u.mJy.to_string(u.format.LatexInline),
          #r'$\theta_{req}$':u.arcsec.to_string(u.format.LatexInline),
          #r'$\theta_{maj}$':u.arcsec.to_string(u.format.LatexInline),
@@ -101,9 +103,9 @@ for old, new in cols_to_keep.items():
             wtbl[new].unit = units[new]
 
 for colname in ['$\sigma_{MAD}$(bsens)', '$\sigma_{MAD}$(cleanest)',]:
-    wtbl[colname].unit = u.mJy
+    wtbl[colname].unit = u.mJy/u.beam
 for colname in ['$S_{peak}$(bsens)', '$S_{peak}$(cleanest)',]:
-    wtbl[colname].unit = u.Jy
+    wtbl[colname].unit = u.Jy/u.beam
 
 
 float_cols =  ['$\\theta_{maj}$',
@@ -132,7 +134,7 @@ wtbl['$\sigma_{MAD}$(bsens)'] *= 1000
 wtbl['$\sigma_{MAD}$(cleanest)'] *= 1000
 
 
-formats = {key: lambda x: ('{0:0.2f}'.format(round_to_n(x,2)))
+formats = {key: lambda x: strip_trailing_zeros(('{0:0.3f}'.format(round_to_n(x,2))))
            for key in float_cols}
 
 

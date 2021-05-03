@@ -128,7 +128,8 @@ for band in bands:
                 msmd.open(visfile)
                 ms.open(visfile)
                 Synth_HPBW = 0.3 #Smallest synth HPBW among target sample in arcsec
-                # values interpolated by Roberto from https://science.nrao.edu/facilities/vla/docs/manuals/oss2016A/performance/fov/bw-smearing
+                # values interpolated by Roberto from
+                # https://science.nrao.edu/facilities/vla/docs/manuals/oss2016A/performance/fov/bw-smearing
                 PB_HPBW = 21. * (300. / bands[band][0]) # PB HPBW at lowest band freq
                 # targetwidth = 10e6 # 10 MHz
                 targetwidth = 0.25 * (Synth_HPBW / PB_HPBW) * bands[band][0] * 1e9 # 98% BW smearing criterion

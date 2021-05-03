@@ -76,7 +76,7 @@ colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std
 rows = []
 
 spectra_dir = basepath / "spectra"
-os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
 for field in "G353.41 G008.67 G337.92 W51-E W43-MM3 G328.25 G351.77 W43-MM1 G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93".split():
     for band in (3,6):

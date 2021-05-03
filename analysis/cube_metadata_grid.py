@@ -161,7 +161,7 @@ columns = list(map(list, zip(*rows)))
 tbl = Table(columns, names=colnames)
 print(tbl)
 from pathlib import Path
-tbldir = Path('/bio/web/secure/adamginsburg/ALMA-IMF/tables')
+tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
 tbl.write(tbldir / 'cube_metadata.ecsv', overwrite=True)
 tbl.write(tbldir / 'cube_metadata.ipac', format='ascii.ipac', overwrite=True)
 tbl.write(tbldir / 'cube_metadata.html', format='ascii.html', overwrite=True)

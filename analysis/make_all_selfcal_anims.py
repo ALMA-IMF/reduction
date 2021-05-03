@@ -15,5 +15,5 @@ for fn in glob.glob("*_12M_robust0_*finaliter*.image.tt0.fits"):
 
     pl.close('all')
 
-    shutil.copy(f'{imname}_selfcal_anim.gif', '/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/selfcal_animations/')
-    #shutil.copy(f'{imname}_image_selfcal_anim.gif', '/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/selfcal_animations/')
+    shutil.copy(f'{imname}_selfcal_anim.gif', '/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/selfcal_animations/')
+    #shutil.copy(f'{imname}_image_selfcal_anim.gif', '/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/selfcal_animations/')

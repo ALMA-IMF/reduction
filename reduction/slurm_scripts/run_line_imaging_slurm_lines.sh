@@ -42,9 +42,14 @@ else
 fi
 echo "Contsub = ${suffix_contsub}"
 
+MEM=32gb
+case $FIELD_ID in
+W43-MM2|W51-IRS2) #B3 B6
+    export MEM=64gb ;;
+esac
+
 echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
 
-MEM=32gb
 export NTASKS=8
 export SLURM_NTASKS=$NTASKS
 
@@ -59,7 +64,7 @@ echo ${jobid##* }
 
 # export BAND_NUMBERS=3
 # export BAND_TO_IMAGE=B${BAND_NUMBERS}
-# for LINE_NAME in h41a ch3cn ch3cch; do
+# for LINE_NAME in h41a ch3cn 'ch3cnv8=1' ch3cch; do
 # 
 #     export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
 #     export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"

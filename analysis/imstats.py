@@ -3,11 +3,14 @@ import warnings
 import json
 from astropy.table import Table,Column
 from astropy import units as u
+from astropy import log
 from astropy import wcs
 from astropy.io import fits
 from astropy.stats import mad_std
 from radio_beam import Beam
+from radio_beam.beam import NoBeamException
 from spectral_cube import SpectralCube
+from spectral_cube.utils import NoBeamError, BeamWarning, StokesWarning
 import scipy
 import scipy.signal
 from scipy import ndimage
@@ -19,6 +22,9 @@ import operator
 import re
 
 warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning, append=True)
+warnings.filterwarnings('ignore', category=BeamWarning, append=True)
+warnings.filterwarnings('ignore', category=StokesWarning, append=True)
+np.seterr(all='ignore')
 
 
 
@@ -122,18 +128,26 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
         # this finds the second peak
         # (useful for display)
         outside_first_peak_mask = (rr > first_min_ind) & (fullbeam.array < 1e-5)
-        #first_sidelobe_ind = scipy.signal.find_peaks(radial_mean * (np.arange(len(radial_mean)) > first_min_ind))[0][0]
+        first_sidelobe_ind = scipy.signal.find_peaks(radial_mean *
+                              (np.arange(len(radial_mean)) > first_min_ind))[0][0]
         max_sidelobe = cutout[outside_first_peak_mask].max()
         max_sidelobe_loc = cutout[outside_first_peak_mask].argmax()
         r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
         #r_max_sidelobe = first_sidelobe_ind
 
+        # decide how big to make the plot
         if r_max_sidelobe * pixscale < min_radial_extent:
             radial_extent = (min_radial_extent / pixscale).decompose().value
         else:
             radial_extent = r_max_sidelobe
         if radial_extent * pixscale > max_radial_extent:
             radial_extent = (max_radial_extent / pixscale).decompose().value
+
+        log.info(f"radial extent = {radial_extent},  "
+                 f"r_max_sidelobe = {r_max_sidelobe}, "
+                 "********" if r_max_sidelobe >  radial_extent else ""
+                 f"first_sidelobe_ind={first_sidelobe_ind}, "
+                 f"first_min_ind = {first_min_ind}")
 
         bm2 = cube.beam.as_kernel(pixscale,
                                  x_size=radial_extent.astype('int')*2+1,
@@ -169,38 +183,65 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
 
 def imstats(fn, reg=None):
-    fh = fits.open(fn)
+    try:
+        fh = fits.open(fn)
+        data = fh[0].data
+        ww = wcs.WCS(fh[0].header)
+    except IsADirectoryError:
+        cube = SpectralCube.read(fn, format='casa_image')
+        data = cube[0].value
+        ww = cube.wcs
 
-    bm = Beam.from_fits_header(fh[0].header)
-
-    data = fh[0].data
 
     mad = mad_std(data, ignore_nan=True)
     peak = np.nanmax(data)
     imsum = np.nansum(data)
+    sumgt5sig = np.nansum(data[data > 5*mad])
+    sumgt3sig = np.nansum(data[data > 3*mad])
 
-    ww = wcs.WCS(fh[0].header)
     pixscale = wcs.utils.proj_plane_pixel_area(ww)*u.deg**2
-    ppbeam = (bm.sr / pixscale).decompose()
-    assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
-    ppbeam = ppbeam.value
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', category=UserWarning, append=True)
+        warnings.filterwarnings('ignore', category=RuntimeWarning, append=True)
+
+        if 'cube' in locals():
+            try:
+                bm = cube.beam
+                ppbeam = (bm.sr / pixscale).decompose()
+                assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+                ppbeam = ppbeam.value
+            except NoBeamError:
+                ppbeam = np.nan
+                bm = Beam(np.nan)
+        else:
+            try:
+                bm = Beam.from_fits_header(fh[0].header)
+                ppbeam = (bm.sr / pixscale).decompose()
+                assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
+                ppbeam = ppbeam.value
+            except NoBeamException:
+                ppbeam = np.nan
+                bm = Beam(np.nan)
 
 
-    meta = {'beam': bm.to_header_keywords(),
-            'bmaj': bm.major.to(u.arcsec).value,
-            'bmin': bm.minor.to(u.arcsec).value,
-            'bpa': bm.pa.value,
-            'mad': mad,
-            'peak': peak,
-            'peak/mad': peak / mad,
-            'ppbeam': ppbeam,
-            'sum': imsum,
-            'fluxsum': imsum / ppbeam,
-           }
+        meta = {'beam': bm.to_header_keywords(),
+                'bmaj': bm.major.to(u.arcsec).value,
+                'bmin': bm.minor.to(u.arcsec).value,
+                'bpa': bm.pa.value,
+                'mad': mad,
+                'peak': peak,
+                'peak/mad': peak / mad,
+                'ppbeam': ppbeam,
+                'sum': imsum,
+                'fluxsum': imsum / ppbeam,
+                'sumgt5sig': sumgt5sig,
+                'sumgt3sig': sumgt3sig,
+               }
 
     if reg is not None:
         reglist = regions.read_ds9(reg)
-        data = fh[0].data.squeeze()
+        data = data.squeeze()
         composite_region = reduce(operator.or_, reglist)
         if hasattr(composite_region, 'to_mask'):
             msk = composite_region.to_mask()
@@ -214,6 +255,8 @@ def imstats(fn, reg=None):
 
     if fn.endswith('.image.tt0') or fn.endswith('.image.tt0.fits') or fn.endswith('.image.tt0.pbcor.fits') or fn.endswith('.image.tt0.pbcor'):
         psf_fn = fn.split(".image.tt0")[0] + ".psf.tt0"
+    elif fn.endswith('.model.tt0') or fn.endswith('.model.tt0.fits') or fn.endswith('.model.tt0.pbcor.fits') or fn.endswith('.model.tt0.pbcor'):
+        psf_fn = fn.split(".model.tt0")[0] + ".psf.tt0"
     elif fn.endswith('.image') or fn.endswith('.image.fits') or fn.endswith('.image.pbcor.fits') or fn.endswith('.image.pbcor'):
         psf_fn = fn.split(".image") + ".psf"
     else:
@@ -230,6 +273,17 @@ def imstats(fn, reg=None):
         meta['psf_secondpeak_sidelobefraction'] = np.nan
 
     return meta
+
+"""
+We want to calculate the "epsilon" value from https://ui.adsabs.harvard.edu/abs/1995AJ....110.2037J/abstract
+
+epsilon = C1  / ( R2 - R1 )
+
+C1 is the model convolved with the synthesized beam, summed
+R1 is the residual, summed
+R2 is the dirty map.  It can be calculated as R1 + model convolved with dirty beam.
+epsion = C1 / D1
+"""
 
 def parse_fn(fn):
 
@@ -442,7 +496,7 @@ def get_selfcal_number(fn):
     except:
         return 0
 
-def make_analysis_forms(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/",
+def make_analysis_forms(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Release/",
                         base_form_url="https://docs.google.com/forms/d/e/1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ/viewform?embedded=true",
                         dontskip_noresid=False
                        ):
@@ -676,22 +730,24 @@ document.write(newdocument)
 
 
 
-def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release"):
+def savestats(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Release",
+              suffix='image.tt0', filetype=".fits"):
     if 'October31' in basepath:
-        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
+        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.{suffix}*{filetype}", ditch_suffix=f".{suffix[:-1]}")
     else:
         # extra layer: bsens, cleanest, etc
-        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.image.tt0*.fits", ditch_suffix=".image.tt")
-    with open(f'{basepath}/tables/metadata.json', 'w') as fh:
+        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.{suffix}*{filetype}", ditch_suffix=f".{suffix[:-1]}")
+    with open(f'{basepath}/tables/metadata_{suffix}.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
     requested = get_requested_sens()
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
                  'bsens', 'pbcor', 'filename']
-    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'mad', 'mad_sample',
-                  'std_sample', 'peak/mad', 'psf_secondpeak',
-                  'psf_secondpeak_radius', 'psf_secondpeak_sidelobefraction',
+    stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'sum', 'fluxsum', 'sumgt3sig',
+                  'sumgt5sig', 'mad', 'mad_sample', 'std_sample', 'peak/mad',
+                  'psf_secondpeak', 'psf_secondpeak_radius',
+                  'psf_secondpeak_sidelobefraction',
                  ]
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']
@@ -714,11 +770,11 @@ def savestats(basepath="/bio/web/secure/adamginsburg/ALMA-IMF/October31Release")
     tbl.add_column(Column(name='SensVsReq', data=tbl['mad']*1e3/tbl['Req_Sens']))
     tbl.add_column(Column(name='BeamVsReq', data=(tbl['bmaj']*tbl['bmin'])**0.5/tbl['Req_Res']))
 
-    tbl.write(f'{basepath}/tables/metadata.ecsv', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.ecsv', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.html',
               format='ascii.html', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata.tex', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata.js.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.tex', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix}.js.html',
               format='jsviewer')
 
     return tbl
@@ -728,20 +784,25 @@ if __name__ == "__main__":
     cwd = os.getcwd()
     if 'ufhpc' in socket.gethostname():
         for basepath,formid in (
-                #("/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/",
-                ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/",
+                #("/orange/adamginsburg/web/secure/ALMA-IMF/October2020Release/",
+                ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                #("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/",
-                #"1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                ("/bio/web/secure/adamginsburg/ALMA-IMF/May2020/",
-                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-                ("/bio/web/secure/adamginsburg/ALMA-IMF/Feb2020/",
-                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
-               #("/bio/web/secure/adamginsburg/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
+                ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/",
+                 "null"),
+                #("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/",
+                # "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                ##("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/",
+                ##"1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                #("/orange/adamginsburg/web/secure/ALMA-IMF/May2020/",
+                # "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+                #("/orange/adamginsburg/web/secure/ALMA-IMF/Feb2020/",
+                # "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
+               #("/orange/adamginsburg/web/secure/ALMA-IMF/October31Release/", "1FAIpQLSczsBdB3Am4znOio2Ky5GZqAnRYDrYTD704gspNu7fAMm2-NQ")
                ):
 
             os.chdir(basepath)
+            modtbl = savestats(basepath=basepath, suffix='model.tt0', filetype="")
             tbl = savestats(basepath=basepath)
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
-            flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2020' in basepath)
+            flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='February2021' in basepath)
     os.chdir(cwd)

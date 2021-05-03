@@ -13,9 +13,9 @@ import pylab as pl
 from compare_images import make_comparison_image
 
 cwd = os.getcwd()
-#octoberpath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/'
-basepath = '/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release'
-basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/'
+#octoberpath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
+basepath = '/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release'
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
 os.chdir(basepath)
 
 import imstats
@@ -23,8 +23,8 @@ import imstats
 
 #tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release/tables/metadata.ecsv')
-tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release/tables/metadata.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata_image.tt0.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='bsens_fn', data=[' '*200]*len(tbl)))
@@ -79,7 +79,11 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 filepath = fn.split("bsens")[0]
 
-                bsens_fh = fits.open(bsens)
+                try:
+                    bsens_cube = SpectralCube.read(bsens, format='fits' if 'fits' in bsens else 'casa_image')
+                except Exception as ex:
+                    log.error(f"Failed to open 'bsens' image {bsens}")
+                    raise ex
 
                 if not os.path.exists(cleanest):
                     # hackaround for mismatched UID names, which shouldn't happen but did
@@ -110,7 +114,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                         log.warn(f"Found too many matches: {cfns}")
 
                 try:
-                    clean_fh = fits.open(cleanest)
+                    clean_cube = SpectralCube.read(cleanest, format='fits' if 'fits' in cleanest else 'casa_image')
                 except Exception as ex:
                     log.error(f"Failed to open 'cleanest' image {cleanest} (check for a bsens-cleanest mismatch)")
                     print(ex)
@@ -133,6 +137,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                                                                               title1='cleanest',
                                                                               title2='bsens',
                                                                               allow_reproj=allow_reproj,
+                                                                              writediff=True,
+                                                                              diff_suffix='.bsens-cleanest'
                                                                              )
                 except IndexError:
                     raise
@@ -194,8 +200,8 @@ formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-for bp in ('/bio/web/secure/adamginsburg/ALMA-IMF/October2020Release',
-           '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/October2020Release'):
+for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release',
+           '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release'):
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.ecsv',
               overwrite=True)
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.html',

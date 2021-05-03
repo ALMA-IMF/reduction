@@ -9,27 +9,35 @@ from spectral_cube import SpectralCube
 from astropy.stats import mad_std
 from astropy import log
 import pylab as pl
-import subprocess
+import shutil
 
 from compare_images import make_comparison_image
 
 from before_after_selfcal_quicklooks import get_selfcal_number
 
-cwd = os.getcwd()
-basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/'
-os.chdir(basepath)
+import sys
+sys.path.append(f'{os.path.dirname(__file__)}/../reduction')
+import imaging_parameters
 
-import imstats
+cwd = os.getcwd()
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/'
+os.chdir(basepath)
+sharepath = '/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/'
+
+#import imstats
 
 
 # tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/July2020/tables/metadata.ecsv')
-tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/July2020Release/tables/metadata.ecsv')
-tbl.add_column(Column(name='casaversion_pre', data=['             ']*len(tbl)))
-tbl.add_column(Column(name='casaversion_post', data=['             ']*len(tbl)))
-tbl.add_column(Column(name='pre_fn', data=[' '*100]*len(tbl)))
-tbl.add_column(Column(name='post_fn', data=[' '*100]*len(tbl)))
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata_image.tt0.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/tables/metadata.ecsv')
+tbl.add_column(Column(name='casaversion_pre', data=['                 ']*len(tbl)))
+tbl.add_column(Column(name='casaversion_post', data=['                 ']*len(tbl)))
+tbl.add_column(Column(name='has_amp', data=[False]*len(tbl)))
+tbl.add_column(Column(name='has_amp_impars', data=[False]*len(tbl)))
+tbl.add_column(Column(name='pre_fn', data=[' '*200]*len(tbl)))
+tbl.add_column(Column(name='post_fn', data=[' '*200]*len(tbl)))
 tbl.add_column(Column(name='scMaxDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMinDiff', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='scMADDiff', data=[np.nan]*len(tbl)))
@@ -53,9 +61,11 @@ tbl.add_column(Column(name='std_sample_pre', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='std_sample_post', data=[np.nan]*len(tbl)))
 tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
-for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+pl.close('all')
+
+for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W43-MM2 G333.60 G338.93 G353.41".split():
     for band in (3,6):
-        for imtype in ('cleanest', 'bsens', '7m12m', ):
+        for imtype in ('cleanest', 'bsens', ):#'7m12m', ):
             for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits'):
 
                 # for not all-in-the-same-place stuff
@@ -66,14 +76,14 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
 
                 if any(fns):
-                    print("Found hits for ",field, band, imtype)
+                    print("Found hits for ",field, band, imtype, suffix)
                     selfcal_nums = [get_selfcal_number(fn) for fn in fns]
 
                     last_selfcal = max(selfcal_nums)
 
                     postselfcal_name = [x for x in fns if f'selfcal{last_selfcal}' in x if 'diff' not in x][0]
 
-                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal")
+                    preselfcal_name = postselfcal_name.replace(f"_selfcal{last_selfcal}","_preselfcal_finalmodel")
                     if "_finaliter" in preselfcal_name:
                         preselfcal_name = preselfcal_name.replace("_finaliter","")
                     if not os.path.exists(preselfcal_name) and '_v0.1' in preselfcal_name:
@@ -93,6 +103,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     if fig.get_figwidth() != 14:
                         fig.set_figwidth(14)
 
+                    bsens = '_bsens' if 'bsens' in postselfcal_name else ''
 
 
                     try:
@@ -105,13 +116,18 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                                                                                   writediff=True)
                         if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
                             os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
-                        pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                        if not os.path.exists(f"{sharepath}/comparison_images/"):
+                            os.mkdir(f"{sharepath}/comparison_images/")
+                        fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                        shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png",
+                                    f"{sharepath}/comparison_images/")
                     except IndexError:
                         raise
                     except Exception as ex:
                         log.error(f"Failure for pre={preselfcal_name} post={postselfcal_name}")
                         log.error((field, band, config, imtype, ex))
-                        continue
+                        raise ex
+                        #continue
 
                     matchrow = ((tbl['region'] == field) &
                                 (tbl['band'] == f'B{band}') &
@@ -120,6 +136,8 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                                 (tbl['bsens'] if 'bsens' in imtype else ~tbl['bsens']) &
                                 (tbl['pbcor'] if 'pbcor' in suffix else ~tbl['pbcor'])
                                )
+                    if matchrow.sum() == 0:
+                        raise ValueError(f"No matches for field={field} band={band} config={config} imtype={imtype} suffix={suffix}")
                     tbl['scMaxDiff'][matchrow] = diffstats['max']
                     tbl['scMinDiff'][matchrow] = diffstats['min']
                     tbl['scMADDiff'][matchrow] = diffstats['mad']
@@ -147,6 +165,10 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                     tbl['casaversion_pre'][matchrow] = fits.getheader(preselfcal_name)['ORIGIN']
                     tbl['casaversion_post'][matchrow] = fits.getheader(postselfcal_name)['ORIGIN']
 
+                    scpars = imaging_parameters.selfcal_pars[f'{field}_B{band}_{config}_robust0']
+                    tbl['has_amp_impars'][matchrow] = any('a' in scpars[key]['calmode'] for key in scpars)
+                    tbl['has_amp'][matchrow] = diffstats['has_amp']
+
                     print(fns)
                     print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
                 else:
@@ -160,22 +182,22 @@ formats = {'dr_improvement': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-if not os.path.exists('/orange/adamginsburg/web/secure/ALMA-IMF/July2020Release/tables/'):
-    os.mkdir('/orange/adamginsburg/web/secure/ALMA-IMF/July2020Release/')
-    os.mkdir('/orange/adamginsburg/web/secure/ALMA-IMF/July2020Release/tables/')
+if not os.path.exists(f'{sharepath}/tables/'):
+    os.mkdir(sharepath)
+    os.mkdir(f'{sharepath}/tables/')
 
 for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/',
            '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/'):
 
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.ecsv'.format(bp=bp),
+    tbl.write('{bp}/February2021Release/tables/metadata_sc.ecsv'.format(bp=bp),
               overwrite=True)
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.html'.format(bp=bp),
+    tbl.write('{bp}/February2021Release/tables/metadata_sc.html'.format(bp=bp),
               formats=formats,
               format='ascii.html', overwrite=True)
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.tex'.format(bp=bp),
+    tbl.write('{bp}/February2021Release/tables/metadata_sc.tex'.format(bp=bp),
               formats=formats,
               overwrite=True)
-    tbl.write('{bp}/July2020Release/tables/metadata_sc.js.html'.format(bp=bp),
+    tbl.write('{bp}/February2021Release/tables/metadata_sc.js.html'.format(bp=bp),
               #formats=formats,
               format='jsviewer')
 

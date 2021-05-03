@@ -1,6 +1,5 @@
 """
-Continuum imaging self-calibration script.  This script expects that you have
-sucessfully run ``continuum_imaging.py`` first.
+Continuum imaging self-calibration script.  
 
 You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>
@@ -21,6 +20,11 @@ You can set the following environmental variables for this script:
         If this parameter is set, only image the selected band.
     DO_BSENS=<boolean>
         Do bsens?  If not, do cleanest.  Default is cleanest
+    EXCLUDE_BRIGHT_SPW=<boolean>
+        Should the spws containing 230.5 GHz (CO 2-1) be excluded?
+        (for B3, specifying this parameter will exclude the 93.173 GHz Diazenylium (N2H+) line)
+        This is most important if DO_BSENS=True.
+        This will add a _noco (or _no2hp) suffix
 
 The environmental variable ``ALMAIMF_ROOTDIR`` should be set to the directory
 containing this file.
@@ -116,7 +120,7 @@ import numpy as np
 from getversion import git_date, git_version
 from metadata_tools import (determine_imsize, determine_phasecenter, logprint,
                             check_model_is_populated, test_tclean_success,
-                            populate_model_column)
+                            populate_model_column, get_non_bright_spws)
 from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
@@ -180,6 +184,28 @@ elif selfcal_field_id is not None:
     logprint("Using selfcal_field_id = {0}".format(selfcal_field_id),
              origin='contim_selfcal')
 
+def sethistory(prefix, selfcalpars=None, impars=None, selfcaliter=None):
+    for suffix in ('.image.tt0', '.image.tt0.pbcor', '.residual.tt0'):
+        if os.path.exists(prefix+suffix):
+            ia.open(prefix+suffix)
+            if selfcalpars is not None:
+                ia.sethistory(origin='almaimf_cont_selfcal',
+                              history=["{0}: {1}".format(key, val) for key, val in
+                                       selfcalpars.items()])
+            if impars is not None:
+                ia.sethistory(origin='almaimf_cont_selfcal',
+                              history=["{0}: {1}".format(key, val) for key, val in
+                                       impars.items()])
+            if selfcaliter is not None:
+                ia.sethistory(origin='almaimf_cont_selfcal',
+                              history=["selfcaliter: {0}".format(selfcaliter)])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
+            ia.close()
+            ia.done()
+
+
 
 logprint("Beginning selfcal script with exclude_7m={0} and only_7m={1}".format(exclude_7m, only_7m),
          origin='contim_selfcal')
@@ -207,8 +233,14 @@ if os.getenv('DO_BSENS') is not None and os.getenv('DO_BSENS').lower() != 'false
 else:
     do_bsens = False
 
+if 'exclude_bright_spw' in locals():
+    os.environ['EXCLUDE_BRIGHT_SPW'] = str(do_bsens)
+elif os.getenv('EXCLUDE_BRIGHT_SPW') is not None and os.getenv('EXCLUDE_BRIGHT_SPW').lower() != 'false':
+    exclude_bright_spw = True
+else:
+    exclude_bright_spw = False
 
-logprint("parameters are: do_bsens={do_bsens} only_7m={only_7m} "
+logprint("parameters are: do_bsens={do_bsens} only_7m={only_7m} exclude_bright_spw={exclude_bright_spw}"
          "exclude_7m={exclude_7m} selfcal_field_id={selfcal_field_id}".format(**locals()),
          origin='contim_selfcal')
 
@@ -364,6 +396,20 @@ for continuum_ms in continuum_mses:
     else:
         impars = imaging_parameters[pars_key]
 
+    if exclude_bright_spw:
+        if band == 'B6':
+            non_bright_spws = get_non_bright_spws(selfcal_ms)
+            brightlinesuffix = '_noco'
+        elif band == 'B3':
+            non_bright_spws = get_non_bright_spws(selfcal_ms, frequency=93.173e9)
+            brightlinesuffix = '_non2hp'
+        else:
+            raise ValueError("Invalid band specified: {band}".format(band=band))
+        contimagename = contimagename+brightlinesuffix
+        impars['spw'] = ",".join(map(str, non_bright_spws))
+    else:
+        brightlinesuffix = ''
+
     dirty_impars = copy.copy(impars)
     dirty_impars['niter'] = 0
     dirty_impars['usemask'] = 'pb' # we're not cleaning so we force the mask to pb
@@ -422,14 +468,7 @@ for continuum_ms in continuum_mses:
                   )
             test_tclean_success()
 
-            ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   dirty_impars.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-            ia.close()
+            sethistory(imname, impars=dirty_impars, selfcalpars=selfcalpars, selfcaliter=0)
 
     if 'maskname' not in locals():
         # either use the reclean-based mask or the dirty mask
@@ -501,14 +540,7 @@ for continuum_ms in continuum_mses:
                    **impars_thisiter
                   )
             test_tclean_success()
-            ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   impars_thisiter.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-            ia.close()
+            sethistory(imname, impars=impars_thisiter, selfcalpars=selfcalpars, selfcaliter=0)
 
             exportfits(imname+".image.tt0", imname+".image.tt0.fits")
             exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits")
@@ -588,8 +620,8 @@ for continuum_ms in continuum_mses:
 
         # iteration #1 of phase-only self-calibration
         caltype = 'amp' if 'a' in selfcalpars[selfcaliter]['calmode'] else 'phase'
-        caltable = '{0}_{1}_{2}{3}_{4}.cal'.format(basename, arrayname, caltype, selfcaliter,
-                                                   selfcalpars[selfcaliter]['solint'])
+        caltable = '{0}{5}_{1}_{2}{3}_{4}.cal'.format(basename, arrayname, caltype, selfcaliter,
+                                                      selfcalpars[selfcaliter]['solint'], brightlinesuffix)
         if not os.path.exists(caltable):
             #check_model_is_populated(selfcal_ms)
             if not dryrun:
@@ -744,14 +776,7 @@ for continuum_ms in continuum_mses:
                        **impars_thisiter
                       )
                 test_tclean_success()
-                ia.open(imname+".image.tt0")
-                ia.sethistory(origin='almaimf_cont_selfcal',
-                              history=["{0}: {1}".format(key, val) for key, val in
-                                       impars_thisiter.items()])
-                ia.sethistory(origin='almaimf_cont_imaging',
-                              history=["git_version: {0}".format(git_version),
-                                       "git_date: {0}".format(git_date)])
-                ia.close()
+                sethistory(imname, impars=impars_thisiter, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
                 # overwrite=True because these could already exist
                 exportfits(imname+".image.tt0", imname+".image.tt0.fits", overwrite=True)
                 exportfits(imname+".image.tt0.pbcor", imname+".image.tt0.pbcor.fits", overwrite=True)
@@ -924,14 +949,7 @@ for continuum_ms in continuum_mses:
                    **impars_finaliter
                   )
             test_tclean_success()
-            ia.open(finaliterimname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   impars_finaliter.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-            ia.close()
+            sethistory(finaliterimname, impars=impars_finaliter, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
             # overwrite=True because these could already exist
             exportfits(finaliterimname+".image.tt0", finaliterimname+".image.tt0.fits", overwrite=True)
             exportfits(finaliterimname+".image.tt0.pbcor", finaliterimname+".image.tt0.pbcor.fits", overwrite=True)
@@ -956,14 +974,8 @@ for continuum_ms in continuum_mses:
                   )
             test_tclean_success()
 
+            sethistory(imname, impars=dirty_impars, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
             ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_selfcal',
-                          history=["{0}: {1}".format(key, val) for key, val in
-                                   dirty_impars.items()])
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
-
             post = ia.getchunk()
             ia.close()
 
@@ -1016,16 +1028,15 @@ for continuum_ms in continuum_mses:
                    deconvolver='mtmfs',
                    gridder='mosaic',
                    niter=0,
+                   pblimit=impars_finaliter['pblimit'],
                    imsize=impars_finaliter['imsize'],
                    cell=impars_finaliter['cell'],
                    startmodel=startmodel,
                   )
             test_tclean_success()
 
+            sethistory(imname, impars=None, selfcalpars=selfcalpars, selfcaliter=selfcaliter)
             ia.open(imname+".image.tt0")
-            ia.sethistory(origin='almaimf_cont_imaging',
-                          history=["git_version: {0}".format(git_version),
-                                   "git_date: {0}".format(git_date)])
             preselfcal_finalmodel_data = ia.getchunk()
             ia.close()
 

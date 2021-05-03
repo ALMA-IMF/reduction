@@ -13,13 +13,15 @@ assert 'SCRIPT_DIR' in os.environ
 script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = [
-           'make_oct2020release.py',
+           'make_feb2021release.py',
+           #'make_oct2020release.py',
            # don't do this any more 'link_files.py',
            'link_files_restructured.py',
            'delivery_status.py',
            'imstats.py',
-           'before_after_selfcal_quicklooks_Oct2020release.py',
+           'before_after_selfcal_quicklooks_Feb2021release.py',
            'bsens_comparison.py',
+           'bsens_cleanest_diff_zooms.py',
            'psf_check_figures.py',
            'continuum_selections.py',
            'dirty_selfcal_compare.py',
@@ -40,7 +42,7 @@ for scriptname in scripts:
     try:
         runpy.run_path(str(script_dir / scriptname), run_name="__main__")
     except Exception as ex:
-        print(ex)
+        print("Exception: ",ex)
     pl.close('all')
     print(f"script {scriptname} took {(time.time() - t0)/3600.:0.1f} hours")
 
