@@ -3088,11 +3088,8 @@ line_imaging_parameters_custom = {
         "threshold": "8.5mJy",   #sig 1.5-2 mJy
    	"deconvolver": "multiscale",        
    	"scales": [0, 6, 18, 54],
-	"smallscalebias": -0.4,
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1372, 1372],
-	#"usemask": "pb",
-        #"mask": "imaging_results/W43-MM2_B6_spw5_12M_12co_multi_2.5sigma_e2_d5.mask"
     },
     "W43-MM2_B6_12M_robust0_sio": {
         "threshold": "6.8mJy", #sig 2.7 mJy, before 8.5 mJy
@@ -3100,8 +3097,6 @@ line_imaging_parameters_custom = {
         "scales": [0, 6, 18, 36],
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [1372, 1372],
-        "usemask": "user",
-        "mask": "imaging_results/W43-MM2_B6_spw1_12M_sio_multi_2sigma_e2_d5.mask"
     },
     "W43-MM2_B6_12M_robust0_contsub": {
         "threshold": "8.5mJy",
