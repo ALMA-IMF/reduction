@@ -1,16 +1,13 @@
-# Pylab requires this to have a visual component, so if using pylab, this should be ran from an xpra GUI session
+## Pylab requires this to have a visual component, so if using pylab, this should be ran from an xpra GUI session
 from spectral_cube import SpectralCube
 from astropy import units as u
 import os
 
 ######## Input parameters here ########
 
-#viewer('/lustre/roberto/ALMA_IMF/lines/imaging_results/W43-MM2_B6_spw1_12M_sio.residual')
-
-#image_filename = '/lustre/roberto/ALMA_IMF/lines/imaging_results/W43-MM2_B6_spw1_12M_sio.image'
-image_filename = '/lustre/roberto/ALMA_IMF/lines/imaging_results/W43-MM2-old/multiscale/W43-MM2_B6_spw5_12M_12co.image'
-mask_filename = '/lustre/roberto/ALMA_IMF/lines/imaging_results/W43-MM2_B6_spw5_12M_12co_multi_2sigma' # Don't include .mask
-mask_threshold = 3.0 # In mJy sigma_sio_MM2=2.5 12co_MM2=1.5 
+image_filename = 'G008.67_B6_spw1_12M_sio.image'
+mask_filename = 'G008.67_B6_spw1_12M_sio_2sigma' # Don't include .mask
+mask_threshold = 20 # In mJy
 erosion_dilation = True
 erosion_iter = 2
 erosion_iter_2d = 0
