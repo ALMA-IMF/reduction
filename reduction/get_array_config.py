@@ -1,6 +1,4 @@
 import os
-import requests
-from bs4 import BeautifulSoup
 from astropy.table import Table, vstack
 from astropy.io import ascii
 from astropy.time import Time
@@ -14,6 +12,9 @@ except ImportError:
 
 
 def array_config_table(filename='config_table.csv'):
+    import requests
+    from bs4 import BeautifulSoup
+
     if not os.path.exists(filename):
         url = "https://almascience.eso.org/observing/observing-configuration-schedule/prior-cycle-observing-and-configuration-schedule"
 
@@ -49,7 +50,7 @@ def array_config_table(filename='config_table.csv'):
 
     return stacked
 
-def get_array_config(vis, filename='config_table.csv'):
+def get_array_config(vis):
     stacked = get_array_config()
 
     start_times = Time(stacked['Start date'])
