@@ -119,20 +119,6 @@ for sg in science_goals:
                     frqdict = {spw: ms.cvelfreqs(spwids=[spw], outframe='LSRK') for spw in spws}
                 ms.close()
 
-                if os.path.exists(filename+"/ASDM_EXECBLOCK"):
-                    tb.open(filename+"/ASDM_EXECBLOCK")
-                    mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
-                    configname = str(tb.getcol('configName')[0])
-                    tb.close()
-                elif os.path.exists(filename.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK"):
-                    tb.open(filename.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK")
-                    mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
-                    configname = str(tb.getcol('configName')[0])
-                    tb.close()
-                else:
-                    mous = "Unknown"
-                    configname = "Unknown"
-
                 frqslims = [(frq.min(), frq.max()) for frq in frqs]
 
                 if field in metadata[band]:
@@ -141,14 +127,12 @@ for sg in science_goals:
                     metadata[band][field]['spws'].append(spws)
                     metadata[band][field]['freqs'].append(frqslims)
                     metadata[band][field]['muid'].append(muid)
-                    metadata[band][field]['arrayconfig'].append(configname)
                 else:
                     metadata[band][field] = {'path': [os.path.abspath(dirpath)],
                                              'vis': [fn],
                                              'spws': [spws],
                                              'freqs': [frqslims],
                                              'muid': [muid],
-                                             'arrayconfig': [configname],
                                             }
 
                 ran_findcont = False
@@ -182,11 +166,17 @@ for sg in science_goals:
                     metadata[band][field]['max_bl'] = {muid: max_bl}
 
                 # add the named array configurations to the metadata file
-                obstime, named_array_config = get_array_config(filename)
+                try:
+                    obstime, named_array_config = get_array_config(filename)
+                    obstime = obstime.strftime('%Y-%m-%d')
+                except Exception as ex:
+                    print(ex)
+                    obstime = 'never'
+                    named_array_config = 'unknown'
                 if 'array_config_name' in metadata[band][field]:
-                    metadata[band][field]['array_config_name'][obstime.strftime('%Y-%m-%d')] = named_array_config
+                    metadata[band][field]['array_config_name'] = {obstime: named_array_config}
                 else:
-                    metadata[band][field]['array_config_name'] = {obstime.strftime('%Y-%m-%d'): named_array_config}
+                    metadata[band][field]['array_config_name'][obstime] = named_array_config
 
                 # Custom cont.dat files:
                 # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used
