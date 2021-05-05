@@ -8,8 +8,9 @@ try:
     msmd = msmetadata()
     tb = table()
 except ImportError:
-    from taskinit import msmdtool, tb
+    from taskinit import msmdtool, tbtool
     msmd = msmdtool()
+    tb = tbtool()
 
 
 def array_config_table(filename='config_table.csv'):
