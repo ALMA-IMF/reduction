@@ -182,11 +182,17 @@ for sg in science_goals:
                     metadata[band][field]['max_bl'] = {muid: max_bl}
 
                 # add the named array configurations to the metadata file
-                obstime, named_array_config = get_array_config(filename)
+                try:
+                    obstime, named_array_config = get_array_config(filename)
+                    obstime = obstime.strftime('%Y-%m-%d')
+                except Exception as ex:
+                    print(ex)
+                    obstime = 'never'
+                    named_array_config = 'unknown'
                 if 'array_config_name' in metadata[band][field]:
-                    metadata[band][field]['array_config_name'][obstime.strftime('%Y-%m-%d')] = named_array_config
+                    metadata[band][field]['array_config_name'][obstime] = named_array_config
                 else:
-                    metadata[band][field]['array_config_name'] = {obstime.strftime('%Y-%m-%d'): named_array_config}
+                    metadata[band][field]['array_config_name'] = {obstime: named_array_config}
 
                 # Custom cont.dat files:
                 # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used
