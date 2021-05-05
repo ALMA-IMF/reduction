@@ -70,7 +70,10 @@ def get_array_config(vis, filename='config_table.csv'):
 def get_array_config(vis):
     msmd.open(vis)
     obstime = Time(msmd.timerangeforobs(0)['begin']['m0']['value'], format='mjd')
-    antennadiameter = msmd.antennadiameter()['0']['value']
+    try:
+        antennadiameter = msmd.antennadiameter()['0']['value']
+    except RuntimeError:
+        antennadiameter = msmd.antennadiameter(0)['value']
     msmd.close()
     
     if antennadiameter == 12:
@@ -85,4 +88,4 @@ def get_array_config(vis):
         configname = '7M'
         mous = '7M'
 
-    return obstime,configname
+    return obstime.datetime, configname
