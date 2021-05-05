@@ -157,10 +157,14 @@ for band in bands:
             for alpha in alphas:
                 bsensfreqs = np.hstack([freqs[spw] for spw in freqs])
                 cleanestfreqs = np.hstack([freqs[spw][cont_selected[spw]] for spw in freqs])
+                chwids_bsens = np.hstack([np.ones_like(freqs[spw]) *
+                                          np.abs(np.mean(np.diff(freqs[spw])))
+                                          for spw in freqs])
+                chwids_cleanest = chwids_bsens[np.hstack([cont_selected[spw] for spw in freqs])]
 
-                avgfreqs[band][field]['bsens'][alpha] = np.average(bsensfreqs, weights=bsensfreqs**alpha)
-                avgfreqs[band][field]['cleanest'][alpha] = np.average(cleanestfreqs, weights=cleanestfreqs**alpha)
-            print(avgfreqs)
+                avgfreqs[band][field]['bsens'][alpha] = np.average(bsensfreqs, weights=chwids_bsens*bsensfreqs**alpha)
+                avgfreqs[band][field]['cleanest'][alpha] = np.average(cleanestfreqs, weights=chwids_cleanest*cleanestfreqs**alpha)
+            print(band, field, avgfreqs[band][field])
 
 
 
