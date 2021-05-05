@@ -50,8 +50,8 @@ def array_config_table(filename='config_table.csv'):
 
     return stacked
 
-def get_array_config(vis):
-    stacked = get_array_config()
+def get_array_config(vis, filename='config_table.csv'):
+    stacked = array_config_table(filename=filename)
 
     start_times = Time(stacked['Start date'])
     end_times = Time(stacked['End date'])
@@ -67,4 +67,22 @@ def get_array_config(vis):
     else:
         return obstime, '7m'
 
+def get_array_config(vis):
+    msmd.open(vis)
+    obstime = Time(msmd.timerangeforobs(0)['begin']['m0']['value'], format='mjd')
+    antennadiameter = msmd.antennadiameter()['0']['value']
+    msmd.close()
+    
+    if antennadiameter == 12:
+        if os.path.exists(vis+"/ASDM_EXECBLOCK"):
+            tb.open(vis+"/ASDM_EXECBLOCK")
+        else:
+            tb.open(vis.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK")
+        mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
+        configname = str(tb.getcol('configName')[0])
+        tb.close()
+    else:
+        configname = '7M'
+        mous = '7M'
 
+    return obstime,configname
