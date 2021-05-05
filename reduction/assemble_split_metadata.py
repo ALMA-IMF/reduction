@@ -174,9 +174,9 @@ for sg in science_goals:
                     obstime = 'never'
                     named_array_config = 'unknown'
                 if 'array_config_name' in metadata[band][field]:
-                    metadata[band][field]['array_config_name'] = {obstime: named_array_config}
-                else:
                     metadata[band][field]['array_config_name'][obstime] = named_array_config
+                else:
+                    metadata[band][field]['array_config_name'] = {obstime: named_array_config}
 
                 # Custom cont.dat files:
                 # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used
