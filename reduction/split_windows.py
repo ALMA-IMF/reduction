@@ -87,6 +87,6 @@ for scriptname in scripts:
     except NameError:
         runpy.run_path(fullpath, run_name="__main__")
     except Exception as ex:
-        print(ex)
+        raise ex
     print("script {scriptname} took ".format(scriptname=scriptname),
           (time.time() - t0)/3600," hours")

@@ -1,19 +1,22 @@
 import os
-import requests
-from bs4 import BeautifulSoup
 from astropy.table import Table, vstack
 from astropy.io import ascii
 from astropy.time import Time
 
 try:
-    from casatools import msmetadata
+    from casatools import msmetadata, table
     msmd = msmetadata()
+    tb = table()
 except ImportError:
-    from taskinit import msmdtool
+    from taskinit import msmdtool, tbtool
     msmd = msmdtool()
+    tb = tbtool()
 
 
 def array_config_table(filename='config_table.csv'):
+    import requests
+    from bs4 import BeautifulSoup
+
     if not os.path.exists(filename):
         url = "https://almascience.eso.org/observing/observing-configuration-schedule/prior-cycle-observing-and-configuration-schedule"
 
@@ -50,7 +53,7 @@ def array_config_table(filename='config_table.csv'):
     return stacked
 
 def get_array_config(vis, filename='config_table.csv'):
-    stacked = get_array_config()
+    stacked = array_config_table(filename=filename)
 
     start_times = Time(stacked['Start date'])
     end_times = Time(stacked['End date'])
@@ -66,4 +69,22 @@ def get_array_config(vis, filename='config_table.csv'):
     else:
         return obstime, '7m'
 
+def get_array_config(vis):
+    msmd.open(vis)
+    obstime = Time(msmd.timerangeforobs(0)['begin']['m0']['value'], format='mjd')
+    antennadiameter = msmd.antennadiameter(0)['value']
+    msmd.close()
+    
+    if antennadiameter == 12:
+        if os.path.exists(vis+"/ASDM_EXECBLOCK"):
+            tb.open(vis+"/ASDM_EXECBLOCK")
+        else:
+            tb.open(vis.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK")
+        mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
+        configname = str(tb.getcol('configName')[0])
+        tb.close()
+    else:
+        configname = '7M'
+        mous = '7M'
 
+    return obstime.datetime, configname

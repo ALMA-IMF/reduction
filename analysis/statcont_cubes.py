@@ -15,6 +15,7 @@ import warnings
 from astropy.table import Table
 from spectral_cube import SpectralCube
 from astropy.io import fits
+import dask
 
 from statcont.cont_finding import c_sigmaclip_scube
 
@@ -26,6 +27,7 @@ import os
 
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
+
 
 if __name__ == "__main__":
     # need to be in main block for dask to work
@@ -50,6 +52,16 @@ if __name__ == "__main__":
         from dask.diagnostics import ProgressBar
         pbar = ProgressBar()
         pbar.register()
+
+    nthreads = os.getenv('SLURM_NTASKS')
+    if nthreads is not None:
+        nthreads = int(nthreads)
+        dask.config.set(scheduler='threads')
+    else:
+        dask.config.set(schulder='synchronous')
+
+    scheduler = dask.config.get('scheduler')
+    print(f"Using {nthreads} threads with the {scheduler} scheduler")
 
     assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 

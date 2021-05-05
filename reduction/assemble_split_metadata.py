@@ -184,9 +184,9 @@ for sg in science_goals:
                 # add the named array configurations to the metadata file
                 obstime, named_array_config = get_array_config(filename)
                 if 'array_config_name' in metadata[band][field]:
-                    metadata[band][field]['array_config_name'] = {obstime.strftime('%Y-%m-%d'): named_array_config}
-                else:
                     metadata[band][field]['array_config_name'][obstime.strftime('%Y-%m-%d')] = named_array_config
+                else:
+                    metadata[band][field]['array_config_name'] = {obstime.strftime('%Y-%m-%d'): named_array_config}
 
                 # Custom cont.dat files:
                 # <field>.<band>.<array>.cont.dat takes priority; if that exists, it will be used

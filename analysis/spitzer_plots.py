@@ -66,6 +66,7 @@ def get_spitzer_data(crd, size):
 def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitzerpath='spitzer_datapath',
                         spitzer_display_args=dict(stretch='log', min_percent=1, max_percent=99.99, clip=True),
                         mips=False,
+                        figsize=(10,10),
                         contour_level={'B3':[0.01], 'B6':[0.01]}):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0.fits', use_dask=False, format='fits')
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0.fits', use_dask=False, format='fits')
@@ -77,7 +78,7 @@ def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitz
 
     ww = wcs.WCS(spitz.header)
 
-    fig = pl.figure(1, figsize=(10,10))
+    fig = pl.figure(1, figsize=figsize)
     fig.clf()
     ax = fig.add_subplot(projection=ww.celestial)
 
