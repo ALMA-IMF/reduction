@@ -4,10 +4,11 @@ from astropy.io import ascii
 from astropy.time import Time
 
 try:
-    from casatools import msmetadata
+    from casatools import msmetadata, table
     msmd = msmetadata()
+    tb = table()
 except ImportError:
-    from taskinit import msmdtool
+    from taskinit import msmdtool, tb
     msmd = msmdtool()
 
 
