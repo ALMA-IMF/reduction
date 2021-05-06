@@ -167,25 +167,27 @@ for band in bands:
             print(band, field, avgfreqs[band][field])
 
 
+tabledir = os.environ['ALMAIMF_ROOTDIR']+"../../datapaper"
 
-with open('band_freqs.tex', 'w') as fh:
+alphas = (0, 2, 3, 3.5, 4)
+with open(f'{tabledir}/band_freqs.tex', 'w') as fh:
 
     fh.write(r"""
-\begin{table}
+\begin{table*}
 \caption{Central Frequencies}
-
-\begin{tabular}{ccc}
-\label{tab:centralfreqs}
 """)
     nalpha = len(alphas)
+    fh.write(f"\\begin{{tabular}}{{{'l'+'r'*(nalpha*2)}}}\n")
+    fh.write(r"\label{tab:centralfreqs}\n")
     fh.write(f"& \\multicolumn{{{nalpha*2}}}{{c}}{{\\bsens}} \\\\\n")
     fh.write(f"& \\multicolumn{{{nalpha}}}{{c}}{{B3}} & \\multicolumn{{{nalpha}}}{{c}}{{B6}} \\\\\n")
     fh.write("Field & " + " & ".join(map(str,alphas * 2)) + "\\\\\n")
     fh.write(r"\hline\\" + "\n")
     for field in all_fields:
         fh.write(" & ".join([f"{field:12s}"] +
-                            [f"{avgfreqs['B3'][field]['bsens'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B3'] else [" "*10]*5 +
-                            [f"{avgfreqs['B6'][field]['bsens'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B6'] else [" "*10]*5)
+                            ([f"{avgfreqs['B3'][field]['bsens'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B3'] else [" "*10]*5) +
+                            ([f"{avgfreqs['B6'][field]['bsens'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B6'] else [" "*10]*5)
+                           )
                  + "\\\\\n")
 
     fh.write(r"\hline\\" + "\n")
@@ -196,11 +198,12 @@ with open('band_freqs.tex', 'w') as fh:
     fh.write(r"\hline\\" + "\n")
     for field in all_fields:
         fh.write(" & ".join([f"{field:12s}"] +
-                            [f"{avgfreqs['B3'][field]['cleanest'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B3'] else [" "*10]*5 +
-                            [f"{avgfreqs['B6'][field]['cleanest'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B6'] else [" "*10]*5)
+                            ([f"{avgfreqs['B3'][field]['cleanest'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B3'] else [" "*10]*5) +
+                            ([f"{avgfreqs['B6'][field]['cleanest'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B6'] else [" "*10]*5)
+                           )
                  + "\\\\\n")
 
     fh.write("\end{tabular}\n")
     fh.write("\par All frequencies given in GHz.  Headings give the spectral index $\\alpha$.\n")
-    fh.write("\end{table}\n")
+    fh.write("\end{table*}\n")
 
