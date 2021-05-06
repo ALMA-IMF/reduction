@@ -179,6 +179,7 @@ with open(f'{tabledir}/band_freqs.tex', 'w') as fh:
     nalpha = len(alphas)
     fh.write(f"\\begin{{tabular}}{{{'l'+'r'*(nalpha*2)}}}\n")
     fh.write(r"\label{tab:centralfreqs}"+"\n")
+    fh.write("\\\\ \n")
     fh.write("\\hline \n")
     fh.write(f"& \\multicolumn{{{nalpha*2}}}{{c}}{{\\bsens}} \\\\\n")
     fh.write(f"& \\multicolumn{{{nalpha}}}{{c}}{{B3}} & \\multicolumn{{{nalpha}}}{{c}}{{B6}} \\\\\n")
@@ -191,8 +192,8 @@ with open(f'{tabledir}/band_freqs.tex', 'w') as fh:
                            )
                  + "\\\\\n")
 
-    fh.write(r"\hline\\" + "\n")
-    fh.write(r"\hline\\" + "\n")
+    fh.write(r"\hline" + "\n")
+    fh.write(r"\hline" + "\n")
     fh.write(f"& \\multicolumn{{{nalpha*2}}}{{c}}{{\\cleanest}} \\\\\n")
     fh.write(f"& \\multicolumn{{{nalpha}}}{{c}}{{B3}} & \\multicolumn{{{nalpha}}}{{c}}{{B6}} \\\\\n")
     fh.write("Field & " + " & ".join(map(str,alphas * 2)) + "\\\\\n")
