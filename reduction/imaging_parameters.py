@@ -2815,21 +2815,17 @@ line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
 line_imaging_parameters_custom = {
     "G008.67_B3_12M_robust0": {
         "threshold": "8mJy",
-        # "startmodel": "G008.67_B3_uid___A001_X1296_X1bf_continuum_merged_12M_robust0_selfcal5_finaliter",
-        # UF machine has 1c1 instead of 1bf as of 10/23/2020
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G008.67_B3_12M_robust0_h41a": {
-        "threshold": "7.5mJy",  # noise ~ 2.5mJy in channels off line peak.
+        "threshold": "12.5mJy", #noise ~ 2.5mJy in channels off line peak. 
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 5, 10, 20, 40],  # 4.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
-        "gain": 0.08,
+        "scales": [0,5,10,20,40], #4.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
+        "gain": 0.08,         
     },
     "G008.67_B6_12M_robust0": {
         "threshold": "33mJy",  # "28mJy",#estimated noise: 9-11 mJy, from sio-only cube
-        # "startmodel": "G008.67_B6_uid___A001_X1296_X1b9_continuum_merged_12M_robust0_selfcal5_finaliter",
-        # UF machine has 1b9 instead of 1b7 as of 10/14/2020 - this may change
         "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G008.67_B6_12M_robust0_sio": {
@@ -2838,21 +2834,17 @@ line_imaging_parameters_custom = {
     },
     "G010.62_B3_12M_robust0": {
         "threshold": "6mJy",
-        # "startmodel": "G010.62_B3_uid___A001_X1296_X1e9_continuum_merged_12M_robust0_selfcal5_finaliter",
-        # UF machine has 1e9 instead of 1e5 as of 10/14/2020 - this may change
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
     },
     "G010.62_B3_12M_robust0_h41a": {
-        "threshold": "6mJy",  # noise ~ 2mJy in channels off line peak.
-        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter", 
         "deconvolver": "multiscale",
-        "scales": [0, 4, 8, 16, 32],  # 3.5pix per sqrt(bmaj*bmean), pix=0.14 arcsec, max scale ~ 4.5 arcsec
-        "gain": 0.08,
+        "scales": [0,4,8,16,32], #3.5pix per sqrt(bmaj*bmean), pix=0.14 arcsec, max scale ~ 4.5 arcsec
+        "gain": 0.08,         
     },
     "G010.62_B6_12M_robust0": {
         "threshold": "30mJy",  # estimated noise: 2.8-3.2 mJy, from sio-only cube.  ~5 to 6 mJy, from full cube spw4.  bumped to 5-sigma
-        # "startmodel": "G010.62_B6_uid___A001_X1296_X1df_continuum_merged_12M_robust0_selfcal5_finaliter",
-        # UF machine has 1db instead of 1df as of 10/16/2020 - this may change
         "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
         "perchanweightdensity": True,  # change Mar 12, 2021, based on some old suggestions from Ryan Loomis and Jan-Willem Steeb
     },
@@ -2862,21 +2854,17 @@ line_imaging_parameters_custom = {
     },
     "G012.80_B3_12M_robust0": {
         "threshold": "18mJy",  # ~2-sigma
-        # "startmodel": "G012.80_B3_uid___A001_X1296_X1f9_continuum_merged_12M_robust0_selfcal5_finaliter",
-        # UF machine has 1fb instead of 1f9 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "G012.80_B3_12M_robust0_h41a": {
-        "threshold": "13.5mJy",  # noise ~ 4.5mJy in channels off line peak.
-        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "threshold": "16mJy", #noise ~ 4.0mJy in channels off line peak. 
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter", 
         "deconvolver": "multiscale",
-        "scales": [0, 5, 10, 20],  # 5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~ 7 arcsec
-        "gain": 0.08,
+        "scales": [0,5,10,20], #5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~ 7 arcsec
+        "gain": 0.08,     
     },
     "G012.80_B6_12M_robust0": {
         "threshold": "39mJy",  # "24mJy", #estimated noise: 13 mJy, from sio-only cube
-        # "startmodel": "G012.80_B6_uid___A001_X1296_X1f1_continuum_merged_12M_robust0_selfcal5_finaliter",
-        # UF machine has 1ef instead of 1f1 as of 10/16/2020 - this may change
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G012.80_B6_12M_robust0_sio": {
@@ -2885,16 +2873,14 @@ line_imaging_parameters_custom = {
     },
     "G327.29_B3_12M_robust0": {
         "threshold": "6mJy",
-        # "startmodel": "G327.29_B3_uid___A001_X1296_X17f_continuum_merged_12M_robust0_selfcal2_finaliter",
-        # UF machine has 17d instead of 17f as of 10/14/2020 - this may change
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G327.29_B3_12M_robust0_h41a": {
-        "threshold": "7.5mJy",  # noise ~ 2.5mJy in channels off line peak.
+        "threshold": "10mJy", #noise ~ 2.5mJy in channels off line peak. 
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 4, 8, 16, 32],  # 3.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 3.5 arcsec
-        "gain": 0.08,
+        "scales": [0,4,8,16,32,64], #3.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7 arcsec
+        "gain": 0.08, 
     },
     "G327.29_B6_12M_robust0": {
         "threshold": "34.5mJy",  # "6mJy", #estimated noise: 9.5-11.5 mJy, from sio-only cube
@@ -2904,15 +2890,19 @@ line_imaging_parameters_custom = {
         "threshold": "34.5mJy",  # typical rms 9.5-11.5 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
-    #   Missing startmodel continuum B3 image
-    # 	"G328.25_B3_12M_robust0": {
-    # 		"threshold": "6mJy",
-    # 		"startmodel": ""
-    # 	},
+    "G328.25_B3_12M_robust0": {
+        "threshold": "6mJy",
+     	"startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter"
+     	},
+    "G328.25_B3_12M_robust0_h41a": {
+        "threshold": "14mJy", #noise ~ 3.5mJy in channels off line peak. 
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,5,10,20,40], #5.6pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
+        "gain": 0.08, 
+    },
     "G328.25_B6_12M_robust0": {
         "threshold": "63mJy",  # "6mJy", #estimated noise: 15-21 mJy, from sio-only cube
-        # "startmodel": "G328.25_B6_uid___A001_X1296_X161_continuum_merged_12M_robust0_selfcal5_finaliter",
-        # UF machine has 163 instead of 161 as of 10/14/2020 - this may change
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_sio": {
@@ -2921,8 +2911,14 @@ line_imaging_parameters_custom = {
     },
     "G333.60_B3_12M_robust0": {
         "threshold": "6mJy",
-        # never correct "startmodel": "G333.60_B3__continuum_merged_12M_robust0_selfcal5_finaliter.image",
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B3_12M_robust0_h41a": {
+        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32,64], #4.6pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7arcsec
+        "gain": 0.08, 
     },
     "G333.60_B6_12M_robust0": {
         "threshold": "15.6mJy",  # "6mJy",#estimated noise: 4.3-5.2 mJy, from sio-only cube
@@ -2934,9 +2930,14 @@ line_imaging_parameters_custom = {
     },
     "G337.92_B3_12M_robust0": {
         "threshold": "5mJy",
-        # "startmodel": "G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust0_selfcal4_finaliter",
-        # UF machine has 147 instead of 145 as of 10/14/2020 - this may change
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B3_12M_robust0_h41a": {
+        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
+        "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32,64], #3.7pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7arcsec
+        "gain": 0.08, 
     },
     "G337.92_B6_12M_robust0": {
         "threshold": "16.8mJy",  # "12mJy", #estimated noise: 4.8-5.6 mJy, from sio-only cube
@@ -2948,14 +2949,17 @@ line_imaging_parameters_custom = {
     },
     "G338.93_B3_12M_robust0": {
         "threshold": "5mJy",
-        # "startmodel": "G338.93_B3_uid___A001_X1296_X15b_continuum_merged_12M_robust0_selfcal2_finaliter",
-        # UF machine has 159 instead of 15b as of 10/16/2020 - this may change
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+    },
+    "G338.93_B3_12M_robust0_h41a": {
+        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
+        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32], #4.2pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 3.5arcsec
+        "gain": 0.08, 
     },
     "G338.93_B3_12M_robust0_n2hp": {
         "threshold": "5mJy",
-        # "startmodel": "G338.93_B3_uid___A001_X1296_X15b_continuum_merged_12M_robust0_selfcal2_finaliter",
-        # UF machine has 159 instead of 15b as of 10/16/2020 - this may change
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
     },
     "G338.93_B6_12M_robust0": {
@@ -2972,6 +2976,13 @@ line_imaging_parameters_custom = {
         "threshold": "30mJy",
         "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
+    "G351.77_B3_12M_robust0_h41a": {
+        "threshold": "16mJy", #noise ~ 4mJy in channels off line peak. 
+        "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,5,10,20], #5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~7arcsec
+        "gain": 0.08, 
+    },
     "G351.77_B6_12M_robust0": {
         "threshold": "80mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -2982,13 +2993,17 @@ line_imaging_parameters_custom = {
     },
     "G353.41_B3_12M_robust0": {
         "threshold": "6mJy",
-        # UF machine has selfcal 6, not selfcal 3 - this will probably not change
         "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B3_12M_robust0_h41a": {
+        "threshold": "16mJy", #noise ~4mJy in channels off line peak. 
+        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,5,10,20], #4.8pix per sqrt(bmaj*bmean), pix= 0.35arcsec, max scale ~7arcsec
+        "gain": 0.08, 
     },
     "G353.41_B6_12M_robust0": {
         "threshold": "48mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
-        # "startmodel": "G353.41_B6_uid___A001_X1296_X1cb_continuum_merged_12M_robust0_selfcal3_finaliter",
-        # UF machine has 1c9 selfcal6 instead of 1cb selfcal3 as of 10/15/2020 - this may change
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G353.41_B6_12M_robust0_sio": {
@@ -2997,13 +3012,25 @@ line_imaging_parameters_custom = {
     },
     "W43-MM1_B3_12M_robust0": {
         "threshold": "6mJy",
-        # "startmodel": "W43-MM1_B3_uid___A001_X1296_X1ad_continuum_merged_12M_robust0_selfcal4_finaliter",
-        # UF machine has 1af selfcal4 instead of 1ad selfcal4 as of 11/3/2020 - this may change
         "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM1_B3_12M_robust0_h41a": {
+        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32], #4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
+        "gain": 0.08, 
     },
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM2_B3_12M_robust0_h41a": {
+        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32,64], #3.7pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5.1arcsec
+        "gain": 0.08, 
     },
     "W43-MM2_B3_12M_robust0_13cs_2-1": {
         "threshold": "2mJy",  # sigma in brighter channel ~ 1mJy
@@ -3073,6 +3100,13 @@ line_imaging_parameters_custom = {
         "threshold": "6mJy",
         "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
+    "W43-MM3_B3_12M_robust0_h41a": {
+        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32,64], #3.6pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~7arcsec
+        "gain": 0.08, 
+    },
     "W43-MM3_B6_12M_robust0": {
         "threshold": "9.3mJy",  # "6mJy", #estimated noise: 3.1 mJy, from sio-only cube
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -3086,6 +3120,13 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
         "pblimit": 0.05,  # per Nov 6 telecon
+    },
+    "W51-E_B3_12M_robust0_h41a": {
+        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32,64], #3.8pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5arcsec
+        "gain": 0.08, 
     },
     "W51-E_B6_12M_robust0": {
         "pblimit": 0.1,
@@ -3103,6 +3144,13 @@ line_imaging_parameters_custom = {
     "W51-IRS2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W51-IRS2_B3_12M_robust0_h41a": {
+        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "deconvolver": "multiscale",
+        "scales": [0,4,8,16,32,64], #3.8pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5arcsec
+        "gain": 0.08, 
     },
     "W51-IRS2_B6_12M_robust0": {
         "threshold": "9.6mJy",  # "6mJy", #estimated noise: 3.2 mJy, from sio-only cube
@@ -3182,14 +3230,14 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-22km/s"},  # 43 - 65 = -22 km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-22km/s"},  # 43 - 65 = -22km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
     },
     "G010.62": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "80km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-66km/s"},  # -1 - 65 = -66 km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-66km/s"},  # -1 - 65 = -66km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
         "n2hp": {"cubewidth": "60km/s"},
     },
@@ -3197,22 +3245,22 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "100km/s", "vlsr": "35.5km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-29km/s"},  # 36 - 65 = -29 km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-29km/s"},  # 36 - 65 = -29km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
     },
     "G327.29": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s", "vlsr": "-43km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-105km/s"},  # -40 - 65 = -105 km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-105km/s"},  # -40 - 65 = -105km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-37km/s"},
-        "h30a": {"cubewidth": "120km/s", "vlsr": "-37km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.  
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-43km/s"},
     },
     "G333.60": {
         "12co": {"cubewidth": "150km/s"},
@@ -3221,65 +3269,65 @@ line_parameters_custom = {
             "vlsr": "-48km/s",
         },  # unclear if cube needs to be widened as it diverges in a few places - 100 km/s width is based on cube widths for other sources (5 March 2021, apmtowner)
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-44km/s"},
-        "h30a": {"cubewidth": "120km/s", "vlsr": "-44km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-110km/s"}, # -45 - 65 = -110km/s to accomodate He and C. 
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-45km/s"},
     },
     "G337.92": {
         "sio": {"cubewidth": "100km/s", "vlsr": "-39km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-36km/s"},
-        "h30a": {"cubewidth": "120km/s", "vlsr": "-36km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-100km/s"}, # -35 - 65 = -100km/s to accomodate He and C. 
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-35km/s"},
     },
     "G338.93": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "80km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-63km/s"},
-        "h30a": {"cubewidth": "120km/s", "vlsr": "-63km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-127km/s"}, # -62 - 65 = -127km/s to accomodate He and C.
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-62km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "100km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
-        "h30a": {"cubewidth": "120km/s", "vlsr": "-3.0km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-67km/s"}, # -2 - 65 = -67km/s to accomodate He and C.
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
         "sio": {"cubewidth": "80km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "-17km/s"},
-        "h30a": {"cubewidth": "120km/s", "vlsr": "-17km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"}, # -16 - 65 = -81km/s to accomodate He and C.
+        "h30a": {"cubewidth": "120km/s", "vlsr": "-16km/s"},
         "n2hp": {"cubewidth": "32km/s"},
     },
     "W43-MM1": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"}, # 100 - 65 = 35km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
         "sio": {"cubewidth": "120km/s", "vlsr": "91km/s", "width": "0.37km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
-        "h30a": {"cubewidth": "120km/s", "vlsr": "103km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"}, # 100 - 65 = 35km/s to accomodate He and C.
+        "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
         "c18o": {"cubewidth": "80km/s"},
     },
     "W43-MM3": {
         "sio": {"cubewidth": "100km/s", "vlsr": "93km/s", "width": "0.37km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "25km/s"}, # 90 - 65 = 25km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
     },
     "W51-E": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-6km/s"}, # 59 - 65 = -6km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
         "n2hp": {"cubewidth": "60km/s"},
     },
@@ -3287,7 +3335,7 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s", "vlsr": "60km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-9km/s"}, # 56 - 65 = -9km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
     },
 }
