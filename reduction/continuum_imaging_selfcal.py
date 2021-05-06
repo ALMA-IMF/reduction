@@ -857,6 +857,7 @@ for continuum_ms in continuum_mses:
                  interp="linear", applymode='calonly', calwt=False)
 
 
+    #for robust in (0, -2, 2, -1, 1, -0.5, 0.5):
     for robust in (0, -2, 2, -1, 1, -0.5, 0.5):
         logprint("Imaging self-cal iter {0} (final) with robust {1}"
                  .format(selfcaliter, robust),
