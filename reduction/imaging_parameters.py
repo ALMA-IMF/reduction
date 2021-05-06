@@ -2818,11 +2818,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G008.67_B3_12M_robust0_h41a": {
-        "threshold": "12.5mJy", #noise ~ 2.5mJy in channels off line peak. 
+        "threshold": "12.5mJy",  # noise ~ 2.5mJy in channels off line peak.
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,5,10,20,40], #4.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
-        "gain": 0.08,         
+        "scales": [0, 5, 10, 20, 40],  # 4.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
+        "gain": 0.08,
     },
     "G008.67_B6_12M_robust0": {
         "threshold": "33mJy",  # "28mJy",#estimated noise: 9-11 mJy, from sio-only cube
@@ -2837,11 +2837,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
     },
     "G010.62_B3_12M_robust0_h41a": {
-        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
-        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter", 
+        "threshold": "8mJy",  # noise ~ 2mJy in channels off line peak.
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32], #3.5pix per sqrt(bmaj*bmean), pix=0.14 arcsec, max scale ~ 4.5 arcsec
-        "gain": 0.08,         
+        "scales": [0, 4, 8, 16, 32],  # 3.5pix per sqrt(bmaj*bmean), pix=0.14 arcsec, max scale ~ 4.5 arcsec
+        "gain": 0.08,
     },
     "G010.62_B6_12M_robust0": {
         "threshold": "30mJy",  # estimated noise: 2.8-3.2 mJy, from sio-only cube.  ~5 to 6 mJy, from full cube spw4.  bumped to 5-sigma
@@ -2857,11 +2857,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "G012.80_B3_12M_robust0_h41a": {
-        "threshold": "16mJy", #noise ~ 4.0mJy in channels off line peak. 
-        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter", 
+        "threshold": "16mJy",  # noise ~ 4.0mJy in channels off line peak.
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,5,10,20], #5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~ 7 arcsec
-        "gain": 0.08,     
+        "scales": [0, 5, 10, 20],  # 5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~ 7 arcsec
+        "gain": 0.08,
     },
     "G012.80_B6_12M_robust0": {
         "threshold": "39mJy",  # "24mJy", #estimated noise: 13 mJy, from sio-only cube
@@ -2876,11 +2876,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G327.29_B3_12M_robust0_h41a": {
-        "threshold": "10mJy", #noise ~ 2.5mJy in channels off line peak. 
+        "threshold": "10mJy",  # noise ~ 2.5mJy in channels off line peak.
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32,64], #3.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7 arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32, 64],  # 3.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7 arcsec
+        "gain": 0.08,
     },
     "G327.29_B6_12M_robust0": {
         "threshold": "34.5mJy",  # "6mJy", #estimated noise: 9.5-11.5 mJy, from sio-only cube
@@ -2892,14 +2892,14 @@ line_imaging_parameters_custom = {
     },
     "G328.25_B3_12M_robust0": {
         "threshold": "6mJy",
-     	"startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter"
-     	},
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
     "G328.25_B3_12M_robust0_h41a": {
-        "threshold": "14mJy", #noise ~ 3.5mJy in channels off line peak. 
+        "threshold": "14mJy",  # noise ~ 3.5mJy in channels off line peak.
         "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,5,10,20,40], #5.6pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
-        "gain": 0.08, 
+        "scales": [0, 5, 10, 20, 40],  # 5.6pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
+        "gain": 0.08,
     },
     "G328.25_B6_12M_robust0": {
         "threshold": "63mJy",  # "6mJy", #estimated noise: 15-21 mJy, from sio-only cube
@@ -2914,11 +2914,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G333.60_B3_12M_robust0_h41a": {
-        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
+        "threshold": "8mJy",  # noise ~ 2mJy in channels off line peak.
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32,64], #4.6pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32, 64],  # 4.6pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7arcsec
+        "gain": 0.08,
     },
     "G333.60_B6_12M_robust0": {
         "threshold": "15.6mJy",  # "6mJy",#estimated noise: 4.3-5.2 mJy, from sio-only cube
@@ -2933,11 +2933,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G337.92_B3_12M_robust0_h41a": {
-        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
+        "threshold": "8mJy",  # noise ~ 2mJy in channels off line peak.
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32,64], #3.7pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32, 64],  # 3.7pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7arcsec
+        "gain": 0.08,
     },
     "G337.92_B6_12M_robust0": {
         "threshold": "16.8mJy",  # "12mJy", #estimated noise: 4.8-5.6 mJy, from sio-only cube
@@ -2952,11 +2952,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
     },
     "G338.93_B3_12M_robust0_h41a": {
-        "threshold": "8mJy", #noise ~ 2mJy in channels off line peak. 
+        "threshold": "8mJy",  # noise ~ 2mJy in channels off line peak.
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32], #4.2pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 3.5arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32],  # 4.2pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 3.5arcsec
+        "gain": 0.08,
     },
     "G338.93_B3_12M_robust0_n2hp": {
         "threshold": "5mJy",
@@ -2977,11 +2977,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B3_12M_robust0_h41a": {
-        "threshold": "16mJy", #noise ~ 4mJy in channels off line peak. 
+        "threshold": "16mJy",  # noise ~ 4mJy in channels off line peak.
         "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,5,10,20], #5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~7arcsec
-        "gain": 0.08, 
+        "scales": [0, 5, 10, 20],  # 5pix per sqrt(bmaj*bmean), pix=0.35 arcsec, max scale ~7arcsec
+        "gain": 0.08,
     },
     "G351.77_B6_12M_robust0": {
         "threshold": "80mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
@@ -2996,11 +2996,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G353.41_B3_12M_robust0_h41a": {
-        "threshold": "16mJy", #noise ~4mJy in channels off line peak. 
+        "threshold": "16mJy",  # noise ~4mJy in channels off line peak.
         "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,5,10,20], #4.8pix per sqrt(bmaj*bmean), pix= 0.35arcsec, max scale ~7arcsec
-        "gain": 0.08, 
+        "scales": [0, 5, 10, 20],  # 4.8pix per sqrt(bmaj*bmean), pix= 0.35arcsec, max scale ~7arcsec
+        "gain": 0.08,
     },
     "G353.41_B6_12M_robust0": {
         "threshold": "48mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
@@ -3015,22 +3015,22 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W43-MM1_B3_12M_robust0_h41a": {
-        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "threshold": "4mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32], #4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32],  # 4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
+        "gain": 0.08,
     },
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W43-MM2_B3_12M_robust0_h41a": {
-        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "threshold": "4mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32,64], #3.7pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5.1arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32, 64],  # 3.7pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5.1arcsec
+        "gain": 0.08,
     },
     "W43-MM2_B3_12M_robust0_13cs_2-1": {
         "threshold": "2mJy",  # sigma in brighter channel ~ 1mJy
@@ -3101,11 +3101,11 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "W43-MM3_B3_12M_robust0_h41a": {
-        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "threshold": "4mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32,64], #3.6pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~7arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32, 64],  # 3.6pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~7arcsec
+        "gain": 0.08,
     },
     "W43-MM3_B6_12M_robust0": {
         "threshold": "9.3mJy",  # "6mJy", #estimated noise: 3.1 mJy, from sio-only cube
@@ -3122,11 +3122,11 @@ line_imaging_parameters_custom = {
         "pblimit": 0.05,  # per Nov 6 telecon
     },
     "W51-E_B3_12M_robust0_h41a": {
-        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "threshold": "4mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32,64], #3.8pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32, 64],  # 3.8pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5arcsec
+        "gain": 0.08,
     },
     "W51-E_B6_12M_robust0": {
         "pblimit": 0.1,
@@ -3146,11 +3146,11 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W51-IRS2_B3_12M_robust0_h41a": {
-        "threshold": "4mJy", #noise ~1mJy in channels off line peak. 
+        "threshold": "4mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0,4,8,16,32,64], #3.8pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5arcsec
-        "gain": 0.08, 
+        "scales": [0, 4, 8, 16, 32, 64],  # 3.8pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5arcsec
+        "gain": 0.08,
     },
     "W51-IRS2_B6_12M_robust0": {
         "threshold": "9.6mJy",  # "6mJy", #estimated noise: 3.2 mJy, from sio-only cube
@@ -3166,7 +3166,7 @@ line_imaging_parameters_custom = {
 default_lines = {
     "h41a": "92.034434GHz",
     "ch3cnv8=1": "92.26144GHz",
-    "ch3cn": "91.97GHz", # range from 91.987 to 91.567
+    "ch3cn": "91.97GHz",  # range from 91.987 to 91.567
     "13cs_2-1": "92.49430800GHz",
     "n2hp": "93.173700GHz",
     "ch3cch_62-52": "102.547983GHz",
@@ -3188,7 +3188,7 @@ for key in line_imaging_parameters_custom:
         line_imaging_parameters[key].update(line_imaging_parameters_custom[key])
     else:
         # loop over known lines _plus_ spws
-        for linename in tuple(default_lines.keys()) + tuple("spw"+str(ii) for ii in range(7)):
+        for linename in tuple(default_lines.keys()) + tuple("spw" + str(ii) for ii in range(7)):
             if linename in key:
                 key_noline = key.replace("_" + linename, "")
                 line_imaging_parameters[key] = copy.copy(line_imaging_parameters_default[key_noline])
@@ -3259,7 +3259,7 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.  
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-43km/s"},
     },
     "G333.60": {
@@ -3269,21 +3269,21 @@ line_parameters_custom = {
             "vlsr": "-48km/s",
         },  # unclear if cube needs to be widened as it diverges in a few places - 100 km/s width is based on cube widths for other sources (5 March 2021, apmtowner)
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-110km/s"}, # -45 - 65 = -110km/s to accomodate He and C. 
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-110km/s"},  # -45 - 65 = -110km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-45km/s"},
     },
     "G337.92": {
         "sio": {"cubewidth": "100km/s", "vlsr": "-39km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-100km/s"}, # -35 - 65 = -100km/s to accomodate He and C. 
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-100km/s"},  # -35 - 65 = -100km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-35km/s"},
     },
     "G338.93": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "80km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-127km/s"}, # -62 - 65 = -127km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-127km/s"},  # -62 - 65 = -127km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-62km/s"},
         "sio": {"cubewidth": "120km/s"},
     },
@@ -3291,28 +3291,28 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "100km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-67km/s"}, # -2 - 65 = -67km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-67km/s"},  # -2 - 65 = -67km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
         "sio": {"cubewidth": "80km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"}, # -16 - 65 = -81km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-16km/s"},
         "n2hp": {"cubewidth": "32km/s"},
     },
     "W43-MM1": {
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"}, # 100 - 65 = 35km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"},  # 100 - 65 = 35km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
         "sio": {"cubewidth": "120km/s", "vlsr": "91km/s", "width": "0.37km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"}, # 100 - 65 = 35km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"},  # 100 - 65 = 35km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
         "c18o": {"cubewidth": "80km/s"},
     },
@@ -3320,14 +3320,14 @@ line_parameters_custom = {
         "sio": {"cubewidth": "100km/s", "vlsr": "93km/s", "width": "0.37km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "25km/s"}, # 90 - 65 = 25km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "25km/s"},  # 90 - 65 = 25km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
     },
     "W51-E": {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-6km/s"}, # 59 - 65 = -6km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-6km/s"},  # 59 - 65 = -6km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
         "n2hp": {"cubewidth": "60km/s"},
     },
@@ -3335,7 +3335,7 @@ line_parameters_custom = {
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "120km/s", "vlsr": "60km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
-        "h41a": {"cubewidth": "270km/s", "vlsr": "-9km/s"}, # 56 - 65 = -9km/s to accomodate He and C.
+        "h41a": {"cubewidth": "270km/s", "vlsr": "-9km/s"},  # 56 - 65 = -9km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
     },
 }
