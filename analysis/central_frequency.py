@@ -179,7 +179,6 @@ with open(f'{tabledir}/band_freqs.tex', 'w') as fh:
     nalpha = len(alphas)
     fh.write(f"\\begin{{tabular}}{{{'l'+'r'*(nalpha*2)}}}\n")
     fh.write(r"\label{tab:centralfreqs}"+"\n")
-    fh.write("\\\\\n")
     fh.write("\\hline \n")
     fh.write(f"& \\multicolumn{{{nalpha*2}}}{{c}}{{\\bsens}} \\\\\n")
     fh.write(f"& \\multicolumn{{{nalpha}}}{{c}}{{B3}} & \\multicolumn{{{nalpha}}}{{c}}{{B6}} \\\\\n")
@@ -196,7 +195,7 @@ with open(f'{tabledir}/band_freqs.tex', 'w') as fh:
     fh.write(r"\hline\\" + "\n")
     fh.write(f"& \\multicolumn{{{nalpha*2}}}{{c}}{{\\cleanest}} \\\\\n")
     fh.write(f"& \\multicolumn{{{nalpha}}}{{c}}{{B3}} & \\multicolumn{{{nalpha}}}{{c}}{{B6}} \\\\\n")
-    fh.write("Field & " + " & ".join(map(str,alphas)) * 2 + "\\\\\n")
+    fh.write("Field & " + " & ".join(map(str,alphas * 2)) + "\\\\\n")
     fh.write(r"\hline\\" + "\n")
     for field in all_fields:
         fh.write(" & ".join([f"{field:12s}"] +
@@ -204,6 +203,8 @@ with open(f'{tabledir}/band_freqs.tex', 'w') as fh:
                             ([f"{avgfreqs['B6'][field]['cleanest'][alpha]/1e9:10.3f}" for alpha in alphas] if field in avgfreqs['B6'] else [" "*10]*5)
                            )
                  + "\\\\\n")
+    fh.write("\\hline \n")
+    fh.write("\\hline \n")
 
     fh.write("\end{tabular}\n")
     fh.write("\par All frequencies given in GHz.  Headings give the spectral index $\\alpha$.\n")

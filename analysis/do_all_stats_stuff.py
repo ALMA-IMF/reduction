@@ -24,6 +24,7 @@ scripts = [
            'bsens_cleanest_diff_zooms.py',
            'psf_check_figures.py',
            'continuum_selections.py',
+           'central_frequency.py',
            'dirty_selfcal_compare.py',
            'robust_comparisons.py',
            'selfcal_field_data.py',
