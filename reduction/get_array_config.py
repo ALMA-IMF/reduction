@@ -73,12 +73,16 @@ def get_array_config(vis):
     obstime = Time(msmd.timerangeforobs(0)['begin']['m0']['value'], format='mjd')
     antennadiameter = msmd.antennadiameter(0)['value']
     msmd.close()
-    
+
     if antennadiameter == 12:
         if os.path.exists(vis+"/ASDM_EXECBLOCK"):
             tb.open(vis+"/ASDM_EXECBLOCK")
         else:
-            tb.open(vis.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK")
+            asdm_execblock = vis.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK"
+            if os.path.exists(asdm_execblock):
+                tb.open(asdm_execblock)
+            else:
+                raise IOError("No ASDM_EXECBLOCK")
         mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
         configname = str(tb.getcol('configName')[0])
         tb.close()
