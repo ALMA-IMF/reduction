@@ -82,7 +82,7 @@ def get_array_config(vis):
             if os.path.exists(asdm_execblock):
                 tb.open(asdm_execblock)
             else:
-                raise IOError("No ASDM_EXECBLOCK")
+                raise IOError("No ASDM_EXECBLOCK found for vis " + vis)
         mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
         configname = str(tb.getcol('configName')[0])
         tb.close()
