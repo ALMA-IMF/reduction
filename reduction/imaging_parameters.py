@@ -445,6 +445,61 @@ imaging_parameters_nondefault = {
         "cell": ["0.0375arcsec", "0.0375arcsec"],
         "imsize": [4800, 4800],
     },
+    "W43-MM1_B6_12M_robust0": {
+        "threshold": {
+            0: "10.0mJy",
+            1: "10.0mJy",
+            2: "8mJy",
+            3: "5mJy",
+            4: "3mJy",
+            "final": "1mJy",
+        },
+        "niter": {0: 1000, 1: 5000, 2:5000, 3:5000, 4:5000, "final":10000},
+        "scales": {
+            0: [0, 3, 9, 27],
+            1: [0, 3, 9, 27],
+            2: [0, 3, 9, 27],
+            3: [0, 3, 9, 27],
+            4: [0, 3, 9, 27],
+            "final": [0, 3, 9, 27, 54],
+        },
+        "maskname": {
+            0: "W43-MM1_B6_dirty_12M.crtf",
+            1: "W43-MM1_B6_early-iter_12M.crtf",
+            2: "W43-MM1_B6_early-iter_12M.crtf",
+            3: "W43-MM1_B6_late-iter_12M.crtf",
+            4: "W43-MM1_B6_last-iter_12M.crtf",
+            "final": "W43-MM1_B6_final_12M.crtf",
+        },
+    },
+    "W43-MM1_B6_12M_robust0_bsens": {
+        "threshold": {
+            0: "10.0mJy",
+            1: "10.0mJy",
+            2: "8mJy",
+            3: "5mJy",
+            4: "3mJy",
+            "final": "1mJy",
+        },
+        "niter": {0: 1000, 1: 5000, 2:5000, 3:5000, 4:5000, "final":10000},
+        "scales": {
+            0: [0, 3, 9, 27],
+            1: [0, 3, 9, 27],
+            2: [0, 3, 9, 27],
+            3: [0, 3, 9, 27],
+            4: [0, 3, 9, 27],
+            "final": [0, 3, 9, 27, 54],
+        },
+        "maskname": {
+            0: "W43-MM1_B6_dirty_12M.crtf",
+            1: "W43-MM1_B6_early-iter_12M.crtf",
+            2: "W43-MM1_B6_early-iter_12M.crtf",
+            3: "W43-MM1_B6_late-iter_12M.crtf",
+            4: "W43-MM1_B6_last-iter_12M.crtf",
+            "final": "W43-MM1_B6_final_12M.crtf",
+        },
+    },
+ 
     "W43-MM2_B6_12M_robust0": {
         "threshold": {
             0: "2.0mJy",
@@ -3053,14 +3108,41 @@ line_imaging_parameters_custom = {
     },
     "W43-MM2_B6_12M_robust0": {
         "threshold": "8.1mJy",  # "6mJy", #estimated noise: 2.7 mJy, from sio-only cube
-        # NOTE: 111/113 name ambiguous
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
-        "imsize": [1280, 1280],
+        "imsize": [1372, 1372],
     },
-    "W43-MM2_B6_12M_robust0_contsub": {"imsize": [1280, 1280]},
-    "W43-MM2_B6_12M_robust0_sio": {
-        "threshold": "8.1mJy",  # typical rms: 2.3-2.7 mJy, using 3sigma for threshold (14 Dec. 2020)
+    "W43-MM2_B6_12M_robust0_12co": {
+        "threshold": "8.5mJy",   #sig 1.5-2 mJy
+   	"scales": [0, 6, 18, 54],
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "imsize": [1372, 1372],
+	#"usemask": "pb",
+        #"mask": "imaging_results/W43-MM2_B6_spw5_12M_12co_multi_2.5sigma_e2_d5.mask"
+    },
+    "W43-MM2_B6_12M_robust0_sio": {
+        "threshold": "6.8mJy", #sig 2.7 mJy, before 8.5 mJy
+        "deconvolver": "multiscale",        
+        "scales": [0, 6, 18, 36],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "imsize": [1372, 1372],
+    },
+    "W43-MM2_B6_12M_robust0_contsub": {
+        "threshold": "8.5mJy",
+	"deconvolver": "multiscale",        
+	"scales": [0, 6, 18, 36],
+        "imsize": [1372, 1372],
+    },
+    "W43-MM2_B6_7M12M_robust0": {
+        "threshold": "13mJy",
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "pbmask": 0.2,
+        "imsize": [1372, 1372],
+    },
+     "W43-MM2_B6_7M12M_robust2": {
+        "threshold": "13mJy",
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "pbmask": 0.2,
+        "imsize": [1372, 1372],
     },
     "W43-MM2_B6_12M_robust0_c18o": {
         "threshold": "15mJy",  # sigma in empty channel ~ 5mJy
@@ -3108,14 +3190,24 @@ line_imaging_parameters_custom = {
         "gain": 0.08,
     },
     "W43-MM3_B6_12M_robust0": {
-        "threshold": "9.3mJy",  # "6mJy", #estimated noise: 3.1 mJy, from sio-only cube
+        "threshold": "10mJy",  
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
-        "imsize": [1280, 1280],
+        "imsize": [960, 960],
+    },
+    "W43-MM3_B6_12M_robust0_12co": {
+        "threshold": "6mJy",  #estimated noise: 2 mJy
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+        "imsize": [960, 960],
+	"deconvolver": "multiscale",        
+	"scales": [0, 4, 12, 24],
     },
     "W43-MM3_B6_12M_robust0_sio": {
-        "threshold": "9.3mJy",  # typical rms is 2.7-3.1 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "8.4mJy",  # typical rms is 2.7-3.1 mJy, using 3sigma=9.3 for threshold (14 Dec. 2020)
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
-    },
+ 	"imsize": [960, 960],
+	"deconvolver": "multiscale",        
+	"scales": [0, 4, 12],
+},
     "W51-E_B3_12M_robust0": {
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         "threshold": "4mJy",  # sigma is ~0.8 mJy
@@ -3369,16 +3461,18 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
-        "sio": {"cubewidth": "120km/s", "vlsr": "91km/s", "width": "0.37km/s"},
-        "12co": {"cubewidth": "150km/s"},
+        "sio": {"cubewidth": "140km/s", "vlsr": "91km/s", "width": "0.37km/s"},
+        "12co": {"cubewidth": "240km/s", "vlsr": "91km/s"},
+        #"12co": {"cubewidth": "240km/s", "vlsr": "91km/s", "width": "2km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"},  # 100 - 65 = 35km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
         "c18o": {"cubewidth": "80km/s"},
     },
     "W43-MM3": {
-        "sio": {"cubewidth": "100km/s", "vlsr": "93km/s", "width": "0.37km/s"},
-        "12co": {"cubewidth": "150km/s"},
+        "sio": {"cubewidth": "120km/s", "vlsr": "93km/s", "width": "0.37km/s"},
+        "12co": {"cubewidth": "190km/s", "vlsr": "93km/s"},
+        #"12co": {"cubewidth": "190km/s", "vlsr": "93km/s", "width": "2km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "25km/s"},  # 90 - 65 = 25km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "90km/s"},
