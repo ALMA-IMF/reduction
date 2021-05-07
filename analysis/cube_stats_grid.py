@@ -10,6 +10,7 @@ import numpy as np
 from astropy.io import fits
 from astropy import units as u
 from astropy.stats import mad_std
+from astropy.table import Table
 from astropy import log
 import pylab as pl
 import radio_beam
@@ -30,9 +31,11 @@ if os.getenv('NO_PROGRESSBAR') is None and not (os.getenv('ENVIRON') == 'BATCH')
 
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
-if os.getenv('DASK_THREADS') is not None:
+threads = os.getenv('DASK_THREADS') or os.getenv('SLURM_NTASKS')
+
+if threads:
     try:
-        nthreads = int(os.getenv('DASK_THREADS'))
+        nthreads = int(threads)
         if nthreads > 1:
             scheduler = 'threads'
         else:
@@ -43,6 +46,8 @@ if os.getenv('DASK_THREADS') is not None:
 else:
     nthreads = 1
     scheduler = 'synchronous'
+
+target_chunk_size = int(1e4)
 
 print(f"Using scheduler {scheduler} with {nthreads} threads")
 
@@ -59,11 +64,6 @@ spws = {3: list(range(4)),
 
 suffix = '.image'
 
-cwd = os.getcwd()
-basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
-os.chdir(basepath)
-print(f"Changed from {cwd} to {basepath}, now running cube stats assembly")
-
 global then
 then = time.time()
 def dt():
@@ -72,132 +72,171 @@ def dt():
     print(f"Elapsed: {now-then}")
     then = now
 
+if __name__ == "__main__":
+    cwd = os.getcwd()
+    basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
+    os.chdir(basepath)
+    print(f"Changed from {cwd} to {basepath}, now running cube stats assembly")
 
-colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
-colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
-colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std sum mean'.split()]
+    colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
+    colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
+    colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std sum mean'.split()]
 
-cache_stats_file = open(tbldir / "cube_stats.txt", 'w')
+    colnames = colnames_apriori+colnames_fromheader+colnames_stats
 
-rows = []
+    def try_qty(x):
+        try:
+            return u.Quantity(x)
+        except:
+            return list(x)
 
-for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1".split():
-    for band in (3,6):
-        for config in ('12M',): # '7M12M', 
-            for line in spws[band] + list(default_lines.keys()):
-                for suffix in (".image", ".contsub.image"):
+    def save_tbl(rows, colnames):
+        columns = list(map(try_qty, zip(*rows)))
+        tbl = Table(columns, names=colnames)
+        tbl.write(tbldir / 'cube_stats.ecsv', overwrite=True)
+        tbl.write(tbldir / 'cube_stats.ipac', format='ascii.ipac', overwrite=True)
+        tbl.write(tbldir / 'cube_stats.html', format='ascii.html', overwrite=True)
+        tbl.write(tbldir / 'cube_stats.tex', overwrite=True)
+        tbl.write(tbldir / 'cube_stats.js.html', format='jsviewer')
+        return tbl
 
-                    if line not in default_lines:
-                        spw = line
-                        line = 'none'
-                        globblob = f"{field}_B{band}_spw{spw}_{config}_spw{spw}{suffix}"
-                    else:
-                        globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
+    start_from_cached = True # TODO: make a parameter
+    tbl = None
+    if start_from_cached and os.path.exists(tbldir / 'cube_stats.ecsv'):
+        tbl = Table.read(tbldir / 'cube_stats.ecsv')
+        print(tbl)
+        rows = [list(row) for row in tbl]
+    else:
+        rows = []
 
-
-                    fn = glob.glob(globblob)
-
-                    if any(fn):
-                        print(f"Found some matches for fn {fn}, using {fn[0]}.")
-                        fn = fn[0]
-                    else:
-                        print(f"Found no matches for glob {globblob}")
-                        continue
-
-                    modfn = fn.replace(".image", ".model")
-                    if os.path.exists(fn) and not os.path.exists(modfn):
-                        log.error(f"File {fn} is missing its model {modfn}")
-                        continue
-
-                    if line in default_lines:
-                        spw = int(fn.split('spw')[1][0])
-
-                    print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}")
-
-                    ia.open(fn)
-                    history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
-                    ia.close()
-
-                    if os.path.exists(fn+".fits"):
-                        cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
-                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
-                    else:
-                        cube = SpectralCube.read(fn, format='casa_image')
-                        cube.use_dask_scheduler(scheduler, num_workers=nthreads)
-                        cube = cube.rechunk(save_to_tmp_dir=True)
-
-                    if hasattr(cube, 'beam'):
-                        beam = cube.beam
-                    else:
-                        beams = cube.beams
-                        # use the middle-ish beam
-                        beam = beams[len(beams)//2]
-
-                    print(cube)
-
-                    minfreq = cube.spectral_axis.min()
-                    maxfreq = cube.spectral_axis.max()
-                    restfreq = cube.wcs.wcs.restfrq
-
-                    stats = cube.statistics()
-                    min = stats['min']
-                    max = stats['max']
-                    std = stats['sigma']
-                    sum = stats['sum']
-                    mean = stats['mean']
+    cache_stats_file = open(tbldir / "cube_stats.txt", 'w')
 
 
-                    #min = cube.min()
-                    #max = cube.max()
-                    ##mad = cube.mad_std()
-                    #std = cube.std()
-                    #sum = cube.sum()
-                    #mean = cube.mean()
+    for field in "G010.62 W51-IRS2 G012.80 G333.60 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 G328.25 G351.77 W43-MM1".split():
+        for band in (3,6):
+            for config in ('12M',): # '7M12M', 
+                for line in spws[band] + list(default_lines.keys()):
+                    for suffix in (".image", ".contsub.image"):
 
-                    del cube
+                        if line not in default_lines:
+                            spw = line
+                            line = 'none'
+                            globblob = f"{field}_B{band}_spw{spw}_{config}_spw{spw}{suffix}"
+                        else:
+                            globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
 
-                    if os.path.exists(modfn+".fits"):
-                        modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
-                    else:
-                        modcube = SpectralCube.read(modfn, format='casa_image')
-                        modcube = modcube.rechunk(save_to_tmp_dir=True)
+                            
+                        if tbl is not None:
+                            row_matches = ((tbl['Field'] == field) &
+                                           (tbl['Band'] == band) &
+                                           (tbl['Config'] == config) &
+                                           (tbl['line'] == line) &
+                                           (tbl['spw'] == spw) &
+                                           (tbl['suffix'] == suffix))
+                            if any(row_matches):
+                                print(f"Skipping {globblob} as complete: {tbl[row_matches]}")
+                                continue
 
-                    modstats = modcube.statistics()
-                    modmin = modstats['min']
-                    modmax = modstats['max']
-                    modstd = modstats['sigma']
-                    modsum = modstats['sum']
-                    modmean = modstats['mean']
 
-                    del modcube
 
-                    row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
-                           [history[key] if key in history else '' for key in colnames_fromheader] +
-                           [min, max, std, sum, mean] +
-                           [modmin, modmax, modstd, modsum, modmean])
-                    rows.append(row)
+                        fn = glob.glob(globblob)
 
-                    cache_stats_file.write(" ".join(map(str, row)) + "\n")
-                    cache_stats_file.flush()
+                        if any(fn):
+                            print(f"Found some matches for fn {fn}, using {fn[0]}.")
+                            fn = fn[0]
+                        else:
+                            print(f"Found no matches for glob {globblob}")
+                            continue
 
-cache_stats_file.close()
+                        modfn = fn.replace(".image", ".model")
+                        if os.path.exists(fn) and not os.path.exists(modfn):
+                            log.error(f"File {fn} is missing its model {modfn}")
+                            continue
 
-from astropy.table import Table
-colnames = colnames_apriori+colnames_fromheader+colnames_stats
+                        if line in default_lines:
+                            spw = int(fn.split('spw')[1][0])
 
-def try_qty(x):
-    try:
-        return u.Quantity(x)
-    except:
-        return list(x)
+                        print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}")
 
-columns = list(map(try_qty, zip(*rows)))
-tbl = Table(columns, names=colnames)
-print(tbl)
-tbl.write(tbldir / 'cube_stats.ecsv', overwrite=True)
-tbl.write(tbldir / 'cube_stats.ipac', format='ascii.ipac', overwrite=True)
-tbl.write(tbldir / 'cube_stats.html', format='ascii.html', overwrite=True)
-tbl.write(tbldir / 'cube_stats.tex', overwrite=True)
-tbl.write(tbldir / 'cube_stats.js.html', format='jsviewer')
+                        ia.open(fn)
+                        history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history(list=False)}
+                        ia.close()
 
-os.chdir(cwd)
+                        if os.path.exists(fn+".fits"):
+                            cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
+                            cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                        else:
+                            cube = SpectralCube.read(fn, format='casa_image', target_chunk_size=target_chunk_size)
+                            cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            print(f"Rechunking {cube} to tmp dir")
+                            cube = cube.rechunk(save_to_tmp_dir=True)
+                            cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+
+                        if hasattr(cube, 'beam'):
+                            beam = cube.beam
+                        else:
+                            beams = cube.beams
+                            # use the middle-ish beam
+                            beam = beams[len(beams)//2]
+
+                        print(cube)
+
+                        minfreq = cube.spectral_axis.min()
+                        maxfreq = cube.spectral_axis.max()
+                        restfreq = cube.wcs.wcs.restfrq
+
+                        print("Computing cube statistics")
+                        stats = cube.statistics()
+                        min = stats['min']
+                        max = stats['max']
+                        std = stats['sigma']
+                        sum = stats['sum']
+                        mean = stats['mean']
+
+
+                        #min = cube.min()
+                        #max = cube.max()
+                        ##mad = cube.mad_std()
+                        #std = cube.std()
+                        #sum = cube.sum()
+                        #mean = cube.mean()
+
+                        del cube
+
+                        if os.path.exists(modfn+".fits"):
+                            modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
+                            modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                        else:
+                            modcube = SpectralCube.read(modfn, format='casa_image', target_chunk_size=target_chunk_size)
+                            modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            print(f"Rechunking {modcube} to tmp dir")
+                            modcube = modcube.rechunk(save_to_tmp_dir=True)
+                            modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+
+                        print(modcube)
+                        print("Computing model cube statistics")
+                        modstats = modcube.statistics()
+                        modmin = modstats['min']
+                        modmax = modstats['max']
+                        modstd = modstats['sigma']
+                        modsum = modstats['sum']
+                        modmean = modstats['mean']
+
+                        del modcube
+
+                        row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
+                            [history[key] if key in history else '' for key in colnames_fromheader] +
+                            [min, max, std, sum, mean] +
+                            [modmin, modmax, modstd, modsum, modmean])
+                        rows.append(row)
+
+                        cache_stats_file.write(" ".join(map(str, row)) + "\n")
+                        cache_stats_file.flush()
+                        tbl = save_tbl(rows, colnames)
+
+    cache_stats_file.close()
+
+
+    print(tbl)
+
+    os.chdir(cwd)

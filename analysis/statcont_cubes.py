@@ -106,8 +106,10 @@ if __name__ == "__main__":
 
             print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
-            cube = SpectralCube.read(fn, target_chunk_size=1e6)
-            print(cube)
+            target_chunk_size = int(1e5)
+            print("Target chunk size is {target_chunk_size}")
+            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size)
+            print(f"Minimizing {cube}")
             cube = cube.minimal_subcube()
             print(cube)
 

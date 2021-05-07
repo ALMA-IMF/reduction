@@ -13,7 +13,7 @@ assert 'SCRIPT_DIR' in os.environ
 script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = [
-           'make_feb2021release.py',
+           'make_may2021release.py',
            #'make_oct2020release.py',
            # don't do this any more 'link_files.py',
            'link_files_restructured.py',
@@ -35,6 +35,7 @@ scripts = [
            'plot_uvspectra.py',
            'fullcube_quicklooks.py',
            '7m12m_comparison.py',
+           'cube_stats_grid.py',
           ]
 
 for scriptname in scripts:

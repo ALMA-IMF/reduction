@@ -36,31 +36,33 @@ scheduler = 'synchronous'
 use_temp_dir = os.getenv('USE_TEMP_ZARR')
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
-cores = os.getenv('SLURM_CPUS_ON_NODE')
-if cores is not None:
-    cores = int(cores)
-    nthreads = cores
+nnodes = int(os.getenv('SLURM_JOB_NUM_NODES') or os.getenv('SLURM_NNODES') or 1)
+nthreads = int(os.getenv('SLURM_STEP_NUM_TASKS') or os.getenv('SLURM_NTASKS') or 1)
 
-nthreads = os.getenv('SLURM_STEP_NUM_TASKS')
-if nthreads is not None:
-    nthreads = int(nthreads)
-    dask.config.set(scheduler='threads')
+if nnodes > 2:
+    from dask.distributed import Client, LocalCluster
+    from dask_jobqueue import SLURMCluster
 
-if cores > 2:
-    from dask.distributed import Client
-    #scheduler = 'threads'
-    nnodes = os.getenv('SLURM_JOB_NUM_NODES')
-    nnodes = int(nnodes) if nnodes is not None else 1
+    ntasks_per_node = int(os.getenv('SLURM_TASKS_PER_NODE').split("(")[0])
+
     mem = os.getenv('SLURM_MEM_PER_NODE')
     if mem is not None:
         mem = f'{int(mem) // 1024}GB'
-    client = Client(memory_limit=mem, processes=False,
-                    n_workers=nnodes, threads_per_worker=cores)
-    scheduler = client
 
-
-scheduler = dask.config.get('scheduler')
-print(f"Using {nthreads} threads with the {scheduler} scheduler")
+    cluster = LocalCluster(n_workers=nnodes,
+                           threads_per_worker=ntasks_per_node,
+                           memory_limit=mem)
+    client = Client(cluster)
+    client.start_workers(8)
+    scheduler = dask.config.get('scheduler')
+    print(f"Using scheduler {scheduler} with {nnodes} nodes and {ntasks_per_node} cores per node")
+elif nthreads is not None:
+    dask.config.set(scheduler='threads')
+    scheduler = dask.config.get('scheduler')
+    print(f"Using {nthreads} threads with the {scheduler} scheduler")
+else:
+    scheduler = dask.config.get('scheduler')
+    print(f"Using {nthreads} threads with the {scheduler} scheduler")
 
 spws = {3: list(range(4)),
         6: list(range(7)),}
