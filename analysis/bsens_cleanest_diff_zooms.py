@@ -28,14 +28,16 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
                         finaliter_prefix_b6_bsens=None,
                         normpars_b3=None,
                         normpars_b6=None,
+                        noco="",
+                        non2hp="",
                         basepath='/home/adam/work/alma-imf/reduction/', ):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     if finaliter_prefix_b3_bsens is None:
-        finaliter_prefix_b3_bsens = finaliter_prefix_b3.replace("cleanest","bsens").replace("merged_12M","merged_bsens_12M")
+        finaliter_prefix_b3_bsens = finaliter_prefix_b3.replace("cleanest","bsens").replace("merged_12M", f"merged_bsens{non2hp}_12M")
     bsens_b3 = SpectralCube.read(f'{finaliter_prefix_b3_bsens}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     if finaliter_prefix_b6_bsens is None:
-        finaliter_prefix_b6_bsens = finaliter_prefix_b6.replace("cleanest","bsens").replace("merged_12M","merged_bsens_12M")
+        finaliter_prefix_b6_bsens = finaliter_prefix_b6.replace("cleanest","bsens").replace("merged_12M", f"merged_bsens{noco}_12M")
     bsens_b6 = SpectralCube.read(f'{finaliter_prefix_b6_bsens}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
 
     # image_b3 = image_b3 * u.beam / image_b3.beam.sr
@@ -161,3 +163,8 @@ if __name__ == "__main__":
         fig1,fig2 = bsens_cleanest_diff(**pfxs, cutoutregion=cutoutregions[fieldid][0], **normpars.get(fieldid, {}))
         fig1.savefig(f'bsens_diff_zooms/{fieldid}_bsens_diff_zoom_B3.png', bbox_inches='tight', dpi=300)
         fig2.savefig(f'bsens_diff_zooms/{fieldid}_bsens_diff_zoom_B6.png', bbox_inches='tight', dpi=300)
+
+        fig1,fig2 = bsens_cleanest_diff(**pfxs, cutoutregion=cutoutregions[fieldid][0], **normpars.get(fieldid, {}),
+                                        noco='_noco', non2hp='_non2hp')
+        fig1.savefig(f'bsens_diff_zooms/{fieldid}_bsens_non2hp_diff_zoom_B3.png', bbox_inches='tight', dpi=300)
+        fig2.savefig(f'bsens_diff_zooms/{fieldid}_bsens_noco_diff_zoom_B6.png', bbox_inches='tight', dpi=300)

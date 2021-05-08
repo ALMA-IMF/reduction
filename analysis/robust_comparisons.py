@@ -110,7 +110,7 @@ if __name__ == "__main__":
     from os import symlink, chdir, mkdir
     import glob
     releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/')
-    #releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/')
+    #releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/')
     basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 
     dirnames = {#'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',

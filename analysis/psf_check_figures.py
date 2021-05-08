@@ -9,7 +9,7 @@ from imstats import get_psf_secondpeak
 
 import pylab as pl
 
-releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release')
+releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release')
 
 if not os.path.exists(releasepath / 'figures'):
     os.mkdir(releasepath / 'figures')
@@ -36,7 +36,7 @@ for jj, band in enumerate(('B3', 'B6')):
             raise ValueError("Too many files")
         elif len(files) == 0:
             if field == 'W43-MM1' and band == 'B6':
-                continue
+                raise ValueError("W43-MM1 is still missing! (but it should exist now)")
             else:
                 raise ValueError("Not enough files")
 

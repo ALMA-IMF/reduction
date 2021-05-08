@@ -785,6 +785,8 @@ if __name__ == "__main__":
     if 'ufhpc' in socket.gethostname():
         for basepath,formid in (
                 #("/orange/adamginsburg/web/secure/ALMA-IMF/October2020Release/",
+                ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/",
+                 "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
                 ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/",
                  "1FAIpQLSc3QnQWNDl97B8XeTFRNMWRqU5rlxNPqIC2i1jMr5nAjcHDug"),
                 ("/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/",
@@ -804,5 +806,5 @@ if __name__ == "__main__":
             modtbl = savestats(basepath=basepath, suffix='model.tt0', filetype="")
             tbl = savestats(basepath=basepath)
             base_form_url=f"https://docs.google.com/forms/d/e/{formid}/viewform?embedded=true"
-            flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='February2021' in basepath)
+            flist = make_analysis_forms(basepath=basepath, base_form_url=base_form_url, dontskip_noresid='May2021' in basepath)
     os.chdir(cwd)
