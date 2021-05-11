@@ -3255,7 +3255,7 @@ line_imaging_parameters_custom = {
     },
     "G328.25_B3_12M_robust0_n2hp": {
         "scales": [0, 8, 16, 32, 48, 64],
-        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0_n2hp": {
         "scales": [0, 7, 14, 28, 42, 56, 70],
