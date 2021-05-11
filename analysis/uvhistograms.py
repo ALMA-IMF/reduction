@@ -138,13 +138,12 @@ if  __name__ == "__main__":
             "med": row['50%'][0],
             "q1": row['25%'][0],
             "q3": row['75%'][0],
-            "whislo": row['10%'][0],
-            "whishi": row['90%'][0],
+            "whislo": row['5%'][0],
+            "whishi": row['95%'][0],
             "fliers": [],
-            } for key,row in rows.items() if len(row)>0]
+            } for key,row in rows.items() if len(row)>0][::-1]
 
         fig, axes = pl.subplots(nrows=1, ncols=1, figsize=(12, 12), sharey=True)
-        fig.clf()
         axes.bxp(stats, vert=False)
         #axes.set_title(f'{band} UV distribution overview', fontsize=fontsize)
         axes.set_xlabel("Angular Scale (\")", fontsize=fontsize)
@@ -154,5 +153,5 @@ if  __name__ == "__main__":
             return rad_to_as / x / 1000
         ax1t = axes.secondary_xaxis('top', functions=(fcn, fcn))
         ax1t.set_xlabel("Baseline Length (k$\lambda$)")
-        ax1t.set_ticks([20, 30, 50, 100, 400])
+        ax1t.set_ticks([15, 20, 30, 50, 100, 400])
         savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{band}_summary_uvdistribution.pdf', bbox_inches='tight')

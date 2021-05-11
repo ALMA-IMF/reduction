@@ -189,6 +189,7 @@ def make_multifig(fieldid,
                   ):
 
     pfxs = prefixes[fieldid]
+    wl = r'\mathrm{3mm}' if band.lower() == 'b3' else r'\mathrm{1mm}'
 
     finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
     image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube().to(u.mJy)
@@ -208,7 +209,7 @@ def make_multifig(fieldid,
 
     im1 = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
-    cm = pl.cm.hot
+    cm = pl.cm.get_cmap(inset_cmap)
     cm.set_under((0,0,0,0))
 
     vmin = norm.vmax*0.99
@@ -335,14 +336,428 @@ def determine_asinh_ticklocs(vmin, vmax, nticks, stretch='asinh'):
 
 
 zoom_parameters = {}
-zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000,
-                                    'inset_pars':{'loc': 1, 'width':3, 'height':3,  'bbox_to_anchor':(600, 0, 100,100)},
+zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000, 
+                                    'inset_pars':{'loc': 1, 'width':3, 'height':3,  'bbox_to_anchor':(550, 0, 100,100)},
                                     'mark_inset_pars':{'loc1':1, 'loc2':3,},
-                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'log'}
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 1, 'stretch':'log'}
                                    },
-                                   {'xl':700, 'xr':850, 'yl':1025, 'yu':1175,
+                                   {'xl':700, 'xr':850, 'yl':1025, 'yu':1175, 
                                     'inset_pars':{'loc': 3, 'width':3, 'height':3,  'bbox_to_anchor':(0, -120, 100,100)},
                                     'mark_inset_pars':{'loc1':2, 'loc2':4,},
                                     'vis_pars':{'max_percent':99.9, 'min_percent': 2, 'stretch':'linear'}
                                    },
                                   ]
+zoom_parameters[('G338', 'B3')] = [{'xl':1050, 'xr':1300, 'yl':1050, 'yu':1300, 
+                                    'inset_pars':{'loc': 1, 'width':3, 'height':3, 'bbox_to_anchor':(830,540,100,100)},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                   {'xl':1050, 'xr':1350, 'yl':575, 'yu':875, 
+                                    'inset_pars':{'loc': 1, 'width':3, 'height':3, 'bbox_to_anchor':(830,160,100,100),},
+                                    'mark_inset_pars':{'loc1':1, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                  ]
+zoom_parameters[('G328', 'B3')] = [{'xl':925, 'xr':1350, 'yl':1850, 'yu':2050, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':3, 'bbox_to_anchor':(480,760,100,100)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                   {'xl':950, 'xr':1350, 'yl':1050, 'yu':1600, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':6, 'bbox_to_anchor':(1000,300,100,300),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                  ]
+zoom_parameters[('G12', 'B3')] = [
+                                   {'xl':290, 'xr':450, 'yl':300, 'yu':545, 
+                                    'inset_pars':{'loc': 3, 'width':7, 'height':7, 'bbox_to_anchor':(670,100,100,300),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                  ]
+zoom_parameters[('W51IRS2', 'B3')] = [{'xl':1425, 'xr':1700, 'yl':1475, 'yu':1750, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':3, 'bbox_to_anchor':(460,760,100,100)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                   {'xl':850, 'xr':1200, 'yl':850, 'yu':1400, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':6, 'bbox_to_anchor':(1000,200,100,300),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                      {'xl':1850, 'xr':2000, 'yl':1000, 'yu':1200, 
+                                    'inset_pars':{'loc': 1, 'width':5, 'height':5, 'bbox_to_anchor':(970,800,100,100)},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':2,},
+                                    'vis_pars':{'max_percent':99.0, 'min_percent': 0, 'stretch':'linear'}
+                                   },
+                                  ]
+zoom_parameters[('G327', 'B3')] = [{'xl':800, 'xr':1600, 'yl':900, 'yu':1300, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':3, 'bbox_to_anchor':(460,760,100,100)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                   
+                                  ]
+zoom_parameters[('G10', 'B3')] = [{'xl':900, 'xr':1400, 'yl':980, 'yu':1250, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':3, 'bbox_to_anchor':(460,760,100,100)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.9995, 'min_percent': 0.5, 'stretch':'log'}
+                                   },
+                                  ]
+zoom_parameters[('G337', 'B3')] = [{'xl':1000, 'xr':1300, 'yl':600, 'yu':1250, 
+                                    'inset_pars':{'loc': 4, 'width':8, 'height':8, 'bbox_to_anchor':[1080,50,100,100]},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':2,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'asinh'}
+                                   },
+                                  ]
+zoom_parameters[('G353', 'B3')] = [{'xl':260, 'xr':520, 'yl':345, 'yu':475, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':6, 'bbox_to_anchor':[480,870,100,100]},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.5, 'stretch':'log'}
+                                   },
+                                  ]
+zoom_parameters[('W51-E', 'B3')] = [{'xl':2050, 'xr':2350, 'yl':1650, 'yu':2300, 
+                                    'inset_pars':{'loc': 2, 'width':6, 'height':4, 'bbox_to_anchor':(-50,330,0,300), },
+                                    'mark_inset_pars':{'loc1':3, 'loc2':1,},
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.5, 'stretch':'log'}
+                                   },
+                                   {'xl':2600, 'xr':3300, 'yl':1700, 'yu':3000, 
+                                    'inset_pars':{'loc': 1, 'width':8, 'height':8, 'bbox_to_anchor':(1100,350,100,300),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':2,},
+                                    'vis_pars':{'max_percent':99.99, 'min_percent': 0.05, 'stretch':'asinh'}
+                                   },
+                                   #   {'xl':1850, 'xr':2000, 'yl':1000, 'yu':1200, 
+                                   # 'inset_pars':{'loc': 1, 'width':5, 'height':5, 'bbox_to_anchor':(970,800,100,100)},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':2,},
+                                   # 'vis_pars':{'max_percent':99.0, 'min_percent': 0, 'stretch':'linear'}
+                                   #},
+                                  ]
+zoom_parameters[('W43MM2', 'B3')] = [{'xl':2075, 'xr':2350, 'yl':500, 'yu':775, 
+                                    'inset_pars':{'loc': 4, 'width':4, 'height':4, 'bbox_to_anchor':(1050,50,0,300), },
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.0, 'stretch':'asinh'}
+                                   },
+                                   {'xl':350, 'xr':650, 'yl':2200, 'yu':2500, 
+                                    'inset_pars':{'loc': 2, 'width':3, 'height':3, 'bbox_to_anchor':(150,540,100,300)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.0, 'stretch':'asinh'}
+                                   },
+                                    {'xl':1875, 'xr':2075, 'yl':1600, 'yu':1950, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':6, 'bbox_to_anchor':(1010,540,100,300)},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
+                                   },
+                                  ]
+zoom_parameters[('G333', 'B3')] = [{'xl':1000, 'xr':1600, 'yl':900, 'yu':1550, 
+                                    'inset_pars':{'loc': 3, 'width':5, 'height':5, 'bbox_to_anchor':(150,625,300,300)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 1, 'stretch':'log'}
+                                   },
+                                  ]
+zoom_parameters[('G351', 'B3')] = [{'xl':325, 'xr':475, 'yl':325, 'yu':475, 
+                                    'inset_pars':{'loc': 2, 'width':2.5, 'height':2.5,},# 'bbox_to_anchor':(150,625,300,300)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':1,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 1, 'stretch':'log'}
+                                   },
+                                  ]
+zoom_parameters[('W43MM3', 'B3')] = [{'xl':1275, 'xr':1500, 'yl':1225, 'yu':1450, 
+                                    'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1050,50,0,600), },
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.0, 'stretch':'asinh'}
+                                   },
+                                   {'xl':2325, 'xr':2600, 'yl':775, 'yu':1050, 
+                                    'inset_pars':{'loc': 4, 'width':4, 'height':4, 'bbox_to_anchor':(1050,50,0,600)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':2,},
+                                    'vis_pars':{'max_percent':99.87, 'min_percent': 1.0, 'stretch':'asinh'}
+                                   },
+
+                                  ]
+zoom_parameters[('W43MM1', 'B3')] = [{'xl':1300, 'xr':1700, 'yl':1225, 'yu':1650, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':6, 'bbox_to_anchor':(1175,25,0,550), },
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.0, 'stretch':'asinh'}
+                                   },
+                                  #{'xl':2325, 'xr':2600, 'yl':775, 'yu':1050, 
+                                  # 'inset_pars':{'loc': 4, 'width':4, 'height':4, 'bbox_to_anchor':(1050,50,0,600)},
+                                  # 'mark_inset_pars':{'loc1':3, 'loc2':2,},
+                                  # 'vis_pars':{'max_percent':99.87, 'min_percent': 1.0, 'stretch':'asinh'}
+                                  #},
+
+                                  ]                                  
+zoom_parameters[('W43MM1', 'B6')] = [{'xl':700, 'xr':1100, 'yl':775, 'yu':1175, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':6, 'bbox_to_anchor':(1175,25,0,550), },
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                  ]     
+
+
+zoom_parameters[('G351', 'B6')] = [{'xl':320, 'xr':500, 'yl':360, 'yu':550, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(800, 20, 300, 700),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   ]
+
+#zoom_parameters[('G338', 'B6')] = [{'xl':400, 'xr':600, 'yl':400, 'yu':575, 
+#                                    'inset_pars':{'loc': 1, 'width':3, 'height':3,},
+#                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+#                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+#                                   },
+#                                   {'xl':435, 'xr':550, 'yl':150, 'yu':265, 
+#                                    'inset_pars':{'loc': 3, 'width':3, 'height':3,},
+#                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+#                                    'vis_pars':{'max_percent':99.995, 'min_percent': 1, 'stretch':'log'}
+#                                   },
+#                                  ]
+zoom_parameters[('G338', 'B6')] = [{'xl':365, 'xr':625, 'yl':160, 'yu':570, 
+                                    'inset_pars':{'loc': 4, 'width':7, 'height':7, 'bbox_to_anchor':(820, 100, 300, 700),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+zoom_parameters[('G328', 'B6')] = [{'xl':450, 'xr':600, 'yl':500, 'yu':800, 
+                                    'inset_pars':{'loc': 4, 'width':7, 'height':7, 'bbox_to_anchor':(1030, 120, 100, 100),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   {'xl':435, 'xr':650, 'yl':920, 'yu':1030, 
+                                    'inset_pars':{'loc': 1, 'width':5, 'height':5, 'bbox_to_anchor':(450, 850, 100,100),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.95, 'min_percent': 0, 'stretch':'linear'}
+                                   },
+                                  ]
+zoom_parameters[('G333', 'B6')] = [{'xl':450, 'xr':1000, 'yl':475, 'yu':830, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(240, 280, 300, 700),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':435, 'xr':650, 'yl':920, 'yu':1030, 
+                                   # 'inset_pars':{'loc': 1, 'width':3, 'height':3, 'bbox_to_anchor':(450, 850, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                   # 'vis_pars':{'max_percent':99.95, 'min_percent': 0, 'stretch':'linear'}
+                                   #},
+                                  ]
+zoom_parameters[('G12', 'B6')] = [{'xl':270, 'xr':450, 'yl':340, 'yu':460, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(250, 280, 300, 700),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':435, 'xr':650, 'yl':920, 'yu':1030, 
+                                   # 'inset_pars':{'loc': 1, 'width':3, 'height':3, 'bbox_to_anchor':(450, 850, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                   # 'vis_pars':{'max_percent':99.95, 'min_percent': 0, 'stretch':'linear'}
+                                   #},
+                                  ]
+zoom_parameters[('W51IRS2', 'B6')] = [{'xl':335, 'xr':550, 'yl':460, 'yu':630, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(850, 100, 300, 700),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   {'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                    'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   },
+                                  ]
+zoom_parameters[('G327', 'B6')] = [{'xl':335, 'xr':575, 'yl':460, 'yu':630, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(270, 300, 300, 700),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+
+zoom_parameters[('G10', 'B6')] = [{'xl':365, 'xr':625, 'yl':360, 'yu':570, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(270, 300, 300, 700),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+zoom_parameters[('G337', 'B6')] = [{'xl':365, 'xr':625, 'yl':160, 'yu':570, 
+                                    'inset_pars':{'loc': 1, 'width':7, 'height':7, 'bbox_to_anchor':(550, 0, 600, 630),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+
+zoom_parameters[('G351', 'B6')] = [{'xl':320, 'xr':500, 'yl':330, 'yu':550, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(820, 0, 300, 600),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+zoom_parameters[('G353', 'B6')] = [{'xl':220, 'xr':520, 'yl':360, 'yu':550, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(300, 260, 300, 700),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+
+zoom_parameters[('W43MM2', 'B6')] = [{'xl':520, 'xr':720, 'yl':550, 'yu':790, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(780, 0, 300, 550),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':2,},
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+zoom_parameters[('W43MM3', 'B6')] = [{'xl':330, 'xr':500, 'yl':450, 'yu':580, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(260, 300, 300, 700),},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+zoom_parameters[('W51-E', 'B6')] = [{'xl':750, 'xr':950, 'yl':620, 'yu':1050, 
+                                    'inset_pars':{'loc': 1, 'width':7, 'height':7, 'bbox_to_anchor':(810, 0, 300, 600),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
+zoom_parameters[('G008', 'B6')] = [{'xl':750, 'xr':1000, 'yl':250, 'yu':500, 
+                                    'inset_pars':{'loc': 1, 'width':2.5, 'height':2.5, 'bbox_to_anchor':(0,0,560,580)},
+                                    'mark_inset_pars':{'loc1':3, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 3, 'stretch':'log'}
+                                   },
+                                   {'xl':250, 'xr':350, 'yl':475, 'yu':650, 
+                                    'inset_pars':{'loc': 3, 'width':2.55, 'height':2.5,},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'vis_pars':{'max_percent':99.95, 'min_percent': 3, 'stretch':'log'}
+                                   },
+                                  ]                                  
+
+
+if __name__ == "__main__":
+    import os
+    import warnings
+
+    os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/')
+    
+    for band in ('B3','B6'):
+        for fieldid in prefixes:
+            print(fieldid, band)
+            make_multifig(fieldid, band=band, inner_stretch='asinh')
+
+                
+    make_zoom('W43MM1', zoom_parameters[('W43MM1', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15)
+    make_zoom('W43MM3', zoom_parameters[('W43MM3', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15)
+    make_zoom('G351', zoom_parameters[('G351', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=25)
+    make_zoom('G333', zoom_parameters[('G333', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
+    make_zoom('W43MM2', zoom_parameters[('W43MM2', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15)
+    make_zoom('W51-E', zoom_parameters[('W51-E', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
+    make_zoom('G353', zoom_parameters[('G353', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
+    make_zoom('G337', zoom_parameters[('G337', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
+
+    make_zoom('G10', zoom_parameters[('G10', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
+    make_zoom('G327', zoom_parameters[('G327', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
+    make_zoom('W51IRS2', zoom_parameters[('W51IRS2', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
+    make_zoom('G12', zoom_parameters[('G12', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
+    make_zoom('G328', zoom_parameters[('G328', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
+    make_zoom('G338', zoom_parameters[('G338', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
+    make_zoom('G008', zoom_parameters[('G008', 'B3')], band='B3',
+            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'},)
+    make_zoom('G008', zoom_parameters[('G008', 'B6')], band='B6')
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G338', zoom_parameters[('G338', 'B6')], band='B6',)# main_zoombox=(-200,1050,-200,1050))            
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G328', zoom_parameters[('G328', 'B6')], band='B6', nsigma_max=45)# main_zoombox=(0,1600,0,1110))4
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G333', zoom_parameters[('G333', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G12', zoom_parameters[('G12', 'B6')], band='B6', nsigma_max=45)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('W51IRS2', zoom_parameters[('W51IRS2', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G327', zoom_parameters[('G327', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G10', zoom_parameters[('G10', 'B6')], band='B6', nsigma_max=35)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G337', zoom_parameters[('G337', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G338', zoom_parameters[('G338', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G351', zoom_parameters[('G351', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('G353', zoom_parameters[('G353', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('W43MM2', zoom_parameters[('W43MM2', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('W43MM3', zoom_parameters[('W43MM3', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        make_zoom('W51-E', zoom_parameters[('W51-E', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
+
+        make_zoom('W43MM1', zoom_parameters[('W43MM1', 'B6')], band='B6',
+                  overview_vis_pars={'max_percent':99.75,
+                                     'min_percent':1.5, 'stretch':'asinh'},
+                  nsigma_max=45)        

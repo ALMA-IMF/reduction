@@ -548,7 +548,7 @@ def make_analysis_forms(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/Octob
 
         image = fn
         basename,suffix = image.split(".image.tt0")
-        if 'diff' in suffix:
+        if 'diff' in suffix or 'bsens-cleanest' in suffix:
             continue
         outname = basename.split("/")[-1]
 
