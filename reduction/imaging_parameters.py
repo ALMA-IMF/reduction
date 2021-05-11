@@ -446,7 +446,14 @@ imaging_parameters_nondefault = {
         "imsize": [4800, 4800],
     },
     "W43-MM1_B6_12M_robust0": {
-        "threshold": {0: "10.0mJy", 1: "10.0mJy", 2: "8mJy", 3: "5mJy", 4: "3mJy", "final": "1mJy",},
+        "threshold": {
+            0: "10.0mJy",
+            1: "10.0mJy",
+            2: "8mJy",
+            3: "5mJy",
+            4: "3mJy",
+            "final": "1mJy",
+        },
         "niter": {0: 1000, 1: 5000, 2: 5000, 3: 5000, 4: 5000, "final": 10000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -466,7 +473,14 @@ imaging_parameters_nondefault = {
         },
     },
     "W43-MM1_B6_12M_robust0_bsens": {
-        "threshold": {0: "10.0mJy", 1: "10.0mJy", 2: "8mJy", 3: "5mJy", 4: "3mJy", "final": "1mJy",},
+        "threshold": {
+            0: "10.0mJy",
+            1: "10.0mJy",
+            2: "8mJy",
+            3: "5mJy",
+            4: "3mJy",
+            "final": "1mJy",
+        },
         "niter": {0: 1000, 1: 5000, 2: 5000, 3: 5000, 4: 5000, "final": 10000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -3296,6 +3310,861 @@ line_imaging_parameters_custom = {
     "W51-IRS2_B3_12M_robust0_n2hp": {
         "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G008.67_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 7, 14, 28, 56],
+        "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G008.67_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "G010.62_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "G010.62_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "G010.62_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G010.62_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G010.62_B6_uid___A001_X1296_X1db_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G012.80_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "G012.80_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "G012.80_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "G012.80_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G327.29_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20, 40],
+        "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+    },
+    "G327.29_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+    },
+    "G327.29_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+    },
+    "G327.29_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G327.29_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "G328.25_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 7, 14, 28, 56],
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+    },
+    "G328.25_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20, 40],
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+    },
+    "G328.25_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20, 40],
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+    },
+    "G328.25_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20, 40],
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+    },
+    "G328.25_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G328.25_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G328.25_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G328.25_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G328.25_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G328.25_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G328.25_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G328.25_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G333.60_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 7, 14, 28, 56],
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G337.92_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20, 40],
+        "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G337.92_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G338.93_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20, 40],
+        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+    },
+    "G338.93_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+    },
+    "G338.93_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+    },
+    "G338.93_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G338.93_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G351.77_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G351.77_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "G353.41_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20],
+        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8],
+        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10],
+        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G353.41_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24],
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "W43-MM1_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM1_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM1_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM1_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM2_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM2_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM2_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM2_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W43-MM2_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 5, 10, 20, 40],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM2_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 7, 14, 28, 56],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM2_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM2_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM2_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM2_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM2_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 6, 12, 24, 48],
+        "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W43-MM3_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
+    "W51-E_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-E_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+    },
+    "W51-IRS2_B3_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W51-IRS2_B3_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32, 64],
+        "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W51-IRS2_B3_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W51-IRS2_B3_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 3, 6, 12, 24, 48],
+        "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw0": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw1": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw2": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw3": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw4": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw5": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw6": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
+    },
+    "W51-IRS2_B6_12M_robust0_spw7": {
+        "threshold": "5sigma",
+        "scales": [0, 4, 8, 16, 32],
+        "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
     },
 }
 
