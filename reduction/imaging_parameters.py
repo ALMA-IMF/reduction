@@ -446,14 +446,7 @@ imaging_parameters_nondefault = {
         "imsize": [4800, 4800],
     },
     "W43-MM1_B6_12M_robust0": {
-        "threshold": {
-            0: "10.0mJy",
-            1: "10.0mJy",
-            2: "8mJy",
-            3: "5mJy",
-            4: "3mJy",
-            "final": "1mJy",
-        },
+        "threshold": {0: "10.0mJy", 1: "10.0mJy", 2: "8mJy", 3: "5mJy", 4: "3mJy", "final": "1mJy"},
         "niter": {0: 1000, 1: 5000, 2: 5000, 3: 5000, 4: 5000, "final": 10000},
         "scales": {
             0: [0, 3, 9, 27],
@@ -473,14 +466,7 @@ imaging_parameters_nondefault = {
         },
     },
     "W43-MM1_B6_12M_robust0_bsens": {
-        "threshold": {
-            0: "10.0mJy",
-            1: "10.0mJy",
-            2: "8mJy",
-            3: "5mJy",
-            4: "3mJy",
-            "final": "1mJy",
-        },
+        "threshold": {0: "10.0mJy", 1: "10.0mJy", 2: "8mJy", 3: "5mJy", 4: "3mJy", "final": "1mJy"},
         "niter": {0: 1000, 1: 5000, 2: 5000, 3: 5000, 4: 5000, "final": 10000},
         "scales": {
             0: [0, 3, 9, 27],
