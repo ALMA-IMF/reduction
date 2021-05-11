@@ -51,7 +51,7 @@ def array_config_table(filename='config_table.csv'):
 
     return stacked
 
-def get_array_config(vis, filename='config_table.csv'):
+def old_get_array_config(vis, filename='config_table.csv'):
     stacked = array_config_table(filename=filename)
 
     start_times = Time(stacked['Start date'])

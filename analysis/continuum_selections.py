@@ -147,13 +147,14 @@ for fignum,band in enumerate((3,6)):
     included_bw[band] = {}
 
     for spwn,(spw,(minfrq, maxfrq, nfrqs)) in enumerate(fcov.items()):
-        frqmask = np.zeros([nfields * nconfigs, nfrqs], dtype='int8')
+        frqmask = np.zeros([nfields * nconfigs, nfrqs*2], dtype='int8')
 
         included_bw[band][spw] = {}
 
         for fieldnum,field in fields_and_numbers:
-            frqarr = np.linspace(minfrq, maxfrq, nfrqs)*u.GHz
-            dnu = (maxfrq-minfrq)/nfrqs
+
+            frqarr = np.linspace(minfrq, maxfrq, nfrqs*2)*u.GHz
+            dnu = (maxfrq-minfrq)/(nfrqs*2)
 
             included_bw[band][spw][field] = {config: None for config in configmap}
 
@@ -199,7 +200,7 @@ for fignum,band in enumerate((3,6)):
                 muid_ind = metadata[bandname][field]['muid'].index(muid)
                 frqrange_covered_perspw = metadata[bandname][field]['freqs'][muid_ind]*u.Hz
                 for freq_ind,(fmin,fmax) in enumerate(frqrange_covered_perspw):
-                    if fmax > frqarr[nfrqs//2] > fmin:
+                    if fmax > frqarr[nfrqs//4] > fmin:
                         break
                 covered_freqs = (frqarr > fmin) & (frqarr < fmax)
 
@@ -269,7 +270,7 @@ for fignum,band in enumerate((3,6)):
         if 6 in included_bw:
             assert not np.isnan(included_bw[6][0]['W43-MM3']['12Mshort'])
 
-        assert frqmask.sum() > 0
+        #assert frqmask.sum() > 0
 
         #if band == 6:
         #    # W41-MM1 B6 doesn't exist
@@ -291,7 +292,7 @@ for fignum,band in enumerate((3,6)):
         ax.set_xticks([minfrq, (minfrq+maxfrq)/2, maxfrq])
         if spwn % 2 == 1:
             ax.xaxis.set_ticks_position('top')
-        if (maxfrq-minfrq) < 0.5:
+        if (maxfrq-minfrq) < 1:
             ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()], rotation=45)
         else:
             ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()])
@@ -300,19 +301,31 @@ for fignum,band in enumerate((3,6)):
         # black -> zero
         # red -> 1 (included)
         # yellow -> 2 (covered, not-continuum)
-        ax.imshow(frqmask, extent=[minfrq, maxfrq, nfields*nconfigs, 0],
+        true_maxfrq = 233.45
+        if maxfrq > true_maxfrq:
+            msk = frqarr < true_maxfrq*u.GHz
+            rescalefrq = (maxfrq - minfrq) / (true_maxfrq - minfrq)
+            print(rescalefrq)
+            maxfrq = true_maxfrq
+        else:
+            msk = slice(None)
+            rescalefrq = 1
+        ax.imshow(frqmask[:,msk], extent=[minfrq, maxfrq, nfields*nconfigs, 0],
                   interpolation='nearest', cmap='gnuplot')
         
         #ax.set_aspect((maxfrq-minfrq)*2 / (nfields*nconfigs))
         if band == 3:
             ax.set_aspect(1 / (nfields*nconfigs))
         else:
-            ax.set_aspect(2 / (nfields*nconfigs))
-
+            aspect = 2 / rescalefrq / (nfields*nconfigs)
+            print(f"aspect ratio={aspect}")
+            ax.set_aspect(aspect)
 
         xmin, xmax = ax.get_xlim()
         ax.hlines(np.arange(nfields)*3, xmin, xmax, color='w', linestyle='-')
         ax.hlines(np.arange(nfields*3), xmin, xmax, color='w', linestyle=':', linewidth=0.5)
+        if rescalefrq != 1:
+            ax.set_xticks(np.linspace(xmin, xmax, 3))
 
         for linename,linefrq in lines_to_overplot.items():
             linefrq = u.Quantity(linefrq).to(u.GHz)

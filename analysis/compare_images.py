@@ -232,8 +232,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     mad_diff = mad_std(diff, ignore_nan=True)
     diffmask = np.abs(diff) > 3*mad_diff
 
-    history = cube_post.header['HISTORY']
-    hasamp = any("'calmode': 'ap'" in x for x in history) or any("'calmode': 'a'" in x for x in history)
+    if 'HISTORY' in cube_post.header:
+        history = cube_post.header['HISTORY']
+        hasamp = any("'calmode': 'ap'" in x for x in history) or any("'calmode': 'a'" in x for x in history)
+    else:
+        hasamp = False
 
     diffstats = {'mean': np.nanmean(diff),
                  'max': np.nanmax(diff),
