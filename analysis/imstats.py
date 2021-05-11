@@ -333,7 +333,7 @@ def assemble_stats(globstr, ditch_suffix=None):
     allstats = []
 
     for fn in ProgressBar(glob.glob(globstr)):
-        if fn.endswith('diff.fits'):
+        if fn.endswith('diff.fits') or fn.endswith('bsens-cleanest.fits'):
             continue
         if fn.count('.fits') > 1:
             # these are diff images, or something like that

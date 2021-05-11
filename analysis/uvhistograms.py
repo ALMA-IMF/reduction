@@ -100,7 +100,7 @@ if  __name__ == "__main__":
             data[spw] = ms.getdata(items=['weight', 'uvdist', 'flag'])
             ms.close()
 
-        beam = mslist[(region,band)]['beam']*u.arcsec
+        beam = mslist[(region,band)]['beam']#*u.arcsec
 
         with np.errstate(divide='ignore'):
             pctiles,majpct,minpct = make_figure(data, wavelength, beam)
@@ -122,7 +122,37 @@ if  __name__ == "__main__":
                        'beam_minor': beam[1],
                        'beam_major_pctile': majpct,
                        'beam_minor_pctile': minpct,
+                       'wavelength': wavelength.to(u.um).value,
                        })
         print(uvdata[-1])
-    uvtbl = Table(uvdata)
-    uvtbl.write('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/uvspacings.ecsv', overwrite=True)
+    uvtbl = Table(uvdata, units={'beam_major':u.arcsec, 'beam_minor':u.arcsec, 'wavelength':u.um, '1%':u.arcsec, '5%':u.arcsec, '10%':u.arcsec, '25%':u.arcsec, '50%':u.arcsec, '75%':u.arcsec, '90%':u.arcsec, '95%':u.arcsec, '99%':u.arcsec})
+    uvtbl.write('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/tables/uvspacings.ecsv', overwrite=True)
+
+    fontsize=16
+    pl.rcParams['font.size'] = fontsize
+
+    for band in ('B3','B6'):
+        rows = {key: uvtbl[(uvtbl['region']==key) & (uvtbl['band'] == band)] for key in sorted(uvtbl['region'])}
+        stats = [{
+            "label": key,
+            "med": row['50%'][0],
+            "q1": row['25%'][0],
+            "q3": row['75%'][0],
+            "whislo": row['10%'][0],
+            "whishi": row['90%'][0],
+            "fliers": [],
+            } for key,row in rows.items() if len(row)>0]
+
+        fig, axes = pl.subplots(nrows=1, ncols=1, figsize=(12, 12), sharey=True)
+        fig.clf()
+        axes.bxp(stats, vert=False)
+        #axes.set_title(f'{band} UV distribution overview', fontsize=fontsize)
+        axes.set_xlabel("Angular Scale (\")", fontsize=fontsize)
+        axes.set_xlim(0.1,15)
+        rad_to_as = u.radian.to(u.arcsec)
+        def fcn(x):
+            return rad_to_as / x / 1000
+        ax1t = axes.secondary_xaxis('top', functions=(fcn, fcn))
+        ax1t.set_xlabel("Baseline Length (k$\lambda$)")
+        ax1t.set_ticks([20, 30, 50, 100, 400])
+        savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{band}_summary_uvdistribution.pdf', bbox_inches='tight')
