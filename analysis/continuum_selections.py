@@ -200,7 +200,7 @@ for fignum,band in enumerate((3,6)):
                 muid_ind = metadata[bandname][field]['muid'].index(muid)
                 frqrange_covered_perspw = metadata[bandname][field]['freqs'][muid_ind]*u.Hz
                 for freq_ind,(fmin,fmax) in enumerate(frqrange_covered_perspw):
-                    if fmax > frqarr[nfrqs//4] > fmin:
+                    if fmax > frqarr[nfrqs] > fmin:
                         break
                 covered_freqs = (frqarr > fmin) & (frqarr < fmax)
 
