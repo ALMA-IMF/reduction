@@ -325,7 +325,9 @@ for fignum,band in enumerate((3,6)):
         ax.hlines(np.arange(nfields)*3, xmin, xmax, color='w', linestyle='-')
         ax.hlines(np.arange(nfields*3), xmin, xmax, color='w', linestyle=':', linewidth=0.5)
         if rescalefrq != 1:
-            ax.set_xticks(np.linspace(xmin, xmax, 3))
+            #ax.set_xticks(np.linspace(xmin, xmax, 3))
+            ax.set_xticks([minfrq, (minfrq+maxfrq)/2, maxfrq])
+            ax.set_xticklabels([f"{frq:0.2f}" for frq in ax.get_xticks()])
 
         for linename,linefrq in lines_to_overplot.items():
             linefrq = u.Quantity(linefrq).to(u.GHz)
