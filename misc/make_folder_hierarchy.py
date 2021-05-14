@@ -1,10 +1,11 @@
-import glob
-import os
-import shutil
-
 '''
 Script that recreates the original folder hierarchy of the entire ALMA-IMF program and moves the renormalization delivery .ms.split.cal files into it. 
 '''
+
+
+import glob
+import os
+import shutil
 
 
 original_path = "/lustre/roberto/ALMA_IMF/lines/science*/group*/member*"
