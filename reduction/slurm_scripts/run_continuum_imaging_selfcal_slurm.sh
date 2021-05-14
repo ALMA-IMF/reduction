@@ -5,7 +5,7 @@
 #SBATCH --mem=12gb                     # Job memory request
 #SBATCH --nodes=1
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
-#SBATCH --qos=adamginsburg
+#SBATCH --qos=adamginsburg-b
 #SBATCH --account=adamginsburg
 pwd; hostname; date
 

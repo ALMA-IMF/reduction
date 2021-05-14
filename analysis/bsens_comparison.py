@@ -214,3 +214,21 @@ for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/May2021Release',
               format='jsviewer')
 
 os.chdir(cwd)
+
+
+# paper figure
+config='12M'
+band=6
+field='G351.77'
+cleanest = f'{basepath}/{field}/B{band}/cleanest/{field}_B{band}_uid___A001_X1296_X201_continuum_merged_12M_robust0_preselfcal_finalmodel.image.tt0'
+bsens = f'{basepath}/{field}/B{band}/bsens/{field}_B{band}_uid___A001_X1296_X201_continuum_merged_bsens_12M_robust0_selfcal4_finaliter.image.tt0'
+
+ax1, ax2, ax3, fig, diffstats = make_comparison_image(filename1=cleanest,
+                                                      filename2=bsens,
+                                                      title1='cleanest',
+                                                      title2='bsens',
+                                                      writediff=True,
+                                                      diff_suffix='.bsens-cleanest'
+                                                     )
+pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.png",
+           bbox_inches='tight', dpi=200)

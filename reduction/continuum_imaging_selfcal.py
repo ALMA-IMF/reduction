@@ -125,7 +125,10 @@ from make_custom_mask import make_custom_mask
 from imaging_parameters import imaging_parameters, selfcal_pars
 from selfcal_heuristics import goodenough_field_solutions
 
-from tasks import tclean, plotms, split, flagdata
+try:
+    from tasks import tclean, plotms, split, flagdata
+except ImportError:
+    from taskinit import tclean, plotms, split, flagdata
 
 from clearcal_cli import clearcal_cli as clearcal
 from gaincal_cli import gaincal_cli as gaincal

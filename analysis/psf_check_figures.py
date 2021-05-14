@@ -29,7 +29,7 @@ for jj, band in enumerate(('B3', 'B6')):
         itpath = releasepath / field / band / imtype
         suffix = 'psf.tt0'
 
-        globstr = (f"{field}*_{band}_*{itgl}*robust0_*selfcal[0-9]*finaliter.{suffix}")
+        globstr = (f"{field}*_{band}_*{itgl}_robust0_*selfcal[0-9]*finaliter.{suffix}")
 
         files = glob.glob(str(itpath / globstr))
         if len(files) > 1:

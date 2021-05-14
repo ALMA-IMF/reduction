@@ -201,4 +201,29 @@ for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/',
               #formats=formats,
               format='jsviewer')
 
+
+
+
+
+bsens=""
+last_selfcal=9
+config='12M'
+band=3
+field='G010.62'
+preselfcal_name = f'{basepath}/{field}/B{band}/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_preselfcal_finalmodel.image.tt0'
+postselfcal_name = f'{basepath}/{field}/B{band}/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter.image.tt0'
+
+ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name,
+                                                      postselfcal_name,
+                                                      title1='Preselfcal',
+                                                      title2='Postselfcal',
+                                                      sigma_scale=5,
+                                                      writediff=True)
+fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png",
+            f"{sharepath}/comparison_images/")
+
+
+
+
 os.chdir(cwd)
