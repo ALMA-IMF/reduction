@@ -127,21 +127,32 @@ from selfcal_heuristics import goodenough_field_solutions
 
 try:
     from tasks import tclean, plotms, split, flagdata
+
+    from clearcal_cli import clearcal_cli as clearcal
+    from gaincal_cli import gaincal_cli as gaincal
+    from rmtables_cli import rmtables_cli as rmtables
+    from applycal_cli import applycal_cli as applycal
+    from exportfits_cli import exportfits_cli as exportfits
+    from ft_cli import ft_cli as ft
+
+    from taskinit import msmdtool, iatool, tbtool, mstool
+
+    msmd = msmdtool()
+    ia = iatool()
+    tb = tbtool()
+    ms = mstool()
 except ImportError:
-    from taskinit import tclean, plotms, split, flagdata
+    from casatasks import tclean, split, flagdata
+    import casaplotms as plotms
 
-from clearcal_cli import clearcal_cli as clearcal
-from gaincal_cli import gaincal_cli as gaincal
-from rmtables_cli import rmtables_cli as rmtables
-from applycal_cli import applycal_cli as applycal
-from exportfits_cli import exportfits_cli as exportfits
-from ft_cli import ft_cli as ft
+    from casatasks import clearcal, gaincal, rmtables, applycal, exportfits
 
-from taskinit import msmdtool, iatool, tbtool, mstool
-msmd = msmdtool()
-ia = iatool()
-tb = tbtool()
-ms = mstool()
+    from casatools import msmetadata, image, table, ms
+    msmd = msmetadata()
+    ia = image()
+    tb = table()
+    ms = ms()
+
 
 imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
