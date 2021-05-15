@@ -64,7 +64,11 @@ def make_zoom(fieldid, zoom_parameters,
     wl = r'\mathrm{3mm}' if band.lower() == 'b3' else r'\mathrm{1mm}'
 
     finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
-    image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube().to(u.mJy)
+    image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube()
+    try:
+        image = image.to(u.mJy)
+    except u.UnitConversionError:
+        image = image.to(u.mJy/u.beam)
     print(image)
 
     fig = pl.figure(1, figsize=(10,10))
@@ -108,7 +112,10 @@ def make_zoom(fieldid, zoom_parameters,
 
         norm2 = simple_norm(img, **zp['vis_pars'])
 
-        im_ins = axins.imshow(img[slc], extent=[xl,xr,yl,yu], cmap=inset_cmap, norm=norm2)
+        inset_cm = pl.cm.get_cmap(inset_cmap)
+        inset_cm.set_bad(inset_cm(0))
+
+        im_ins = axins.imshow(img[slc], extent=[xl,xr,yl,yu], cmap=inset_cm, norm=norm2)
         mark_inset(parent_axes=ax, inset_axes=axins,
                    fc="none", ec="b", **zp['mark_inset_pars'])
         ra = axins.coords['ra']
@@ -137,8 +144,11 @@ def make_zoom(fieldid, zoom_parameters,
         cbins.ax.tick_params(labelsize=14)
         cbins.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
 
-
-        if 'asinh' in str(norm2.stretch).lower():
+        if 'tick_locs' in zp:
+            cbins.set_ticks(zp['tick_locs'])
+            if 'tick_labels' in zp:
+                cbins.set_ticklabels(zp['tick_labels'])
+        elif 'asinh' in str(norm2.stretch).lower():
             rounded_loc, rounded = determine_asinh_ticklocs(norm2.vmin, norm2.vmax, nticks=nticks_inset)
             cbins.set_ticks(rounded_loc)
             cbins.set_ticklabels(rounded)
@@ -199,9 +209,13 @@ def make_multifig(fieldid,
     wl = r'\mathrm{3mm}' if band.lower() == 'b3' else r'\mathrm{1mm}'
 
     finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
-    image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube().to(u.mJy)
+    image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube()
+    try:
+        image = image.to(u.mJy)
+    except u.UnitConversionError:
+        image = image.to(u.mJy/u.beam)
 
-    fig = pl.figure(1, figsize=(10,10))
+    fig = pl.figure(1, figsize=(12,10))
     fig.clf()
     ax = fig.add_subplot(projection=image.wcs.celestial)
 
@@ -384,7 +398,7 @@ zoom_parameters[('G12', 'B3')] = [
                                    },
                                   ]
 zoom_parameters[('W51IRS2', 'B3')] = [{'xl':1425, 'xr':1700, 'yl':1475, 'yu':1750, 
-                                    'inset_pars':{'loc': 1, 'width':6, 'height':3, 'bbox_to_anchor':(460,760,100,100)},
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':3.4, 'bbox_to_anchor':(460,760,100,140)},
                                     'mark_inset_pars':{'loc1':3, 'loc2':4,},
                                     'vis_pars':{'max_percent':99.995, 'min_percent': 0, 'stretch':'asinh'}
                                    },
@@ -397,6 +411,19 @@ zoom_parameters[('W51IRS2', 'B3')] = [{'xl':1425, 'xr':1700, 'yl':1475, 'yu':175
                                     'inset_pars':{'loc': 1, 'width':5, 'height':5, 'bbox_to_anchor':(970,800,100,100)},
                                     'mark_inset_pars':{'loc1':2, 'loc2':2,},
                                     'vis_pars':{'max_percent':99.0, 'min_percent': 0, 'stretch':'linear'}
+                                   },
+                                  ]
+zoom_parameters[('W51IRS2', 'B6')] = [{'xl':335, 'xr':550, 'yl':460, 'yu':630, 
+                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(850, 100, 300, 650),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
+                                    'tick_locs': [-0.5, 0, 0.5, 5, 30, 100, 445],
+                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   {'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                    'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,50),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'tick_locs': [-0.33, -0.1, 0, 0.5, 1, 5, 26],
+                                    'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
                                    },
                                   ]
 zoom_parameters[('G327', 'B3')] = [{'xl':800, 'xr':1600, 'yl':900, 'yu':1300, 
@@ -424,9 +451,22 @@ zoom_parameters[('G353', 'B3')] = [{'xl':260, 'xr':520, 'yl':345, 'yu':475,
                                     'vis_pars':{'max_percent':99.995, 'min_percent': 0.5, 'stretch':'log'}
                                    },
                                   ]
+zoom_parameters[('W51-E', 'B6')] = [{'xl':750, 'xr':950, 'yl':620, 'yu':1050, 
+                                    'inset_pars':{'loc': 1, 'width':8, 'height':8, 'bbox_to_anchor':(810, 0, 330, 650),},
+                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                    'tick_locs': [-1.5, -0.5, 0, 0.5, 5, 10, 50, 100, 336],
+                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
+                                   },
+                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
+                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
+                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
+                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
+                                   #},
+                                  ]
 zoom_parameters[('W51-E', 'B3')] = [{'xl':2050, 'xr':2350, 'yl':1650, 'yu':2300, 
                                     'inset_pars':{'loc': 2, 'width':6, 'height':4, 'bbox_to_anchor':(-50,330,0,300), },
                                     'mark_inset_pars':{'loc1':3, 'loc2':1,},
+                                    'tick_locs': [-0.2, -0.1, 0, 0.5, 1, 10, 50, 109],
                                     'vis_pars':{'max_percent':99.999, 'min_percent': 0.5, 'stretch':'log'}
                                    },
                                    {'xl':2600, 'xr':3300, 'yl':1700, 'yu':3000, 
@@ -562,17 +602,6 @@ zoom_parameters[('G12', 'B6')] = [{'xl':270, 'xr':450, 'yl':340, 'yu':460,
                                    # 'vis_pars':{'max_percent':99.95, 'min_percent': 0, 'stretch':'linear'}
                                    #},
                                   ]
-zoom_parameters[('W51IRS2', 'B6')] = [{'xl':335, 'xr':550, 'yl':460, 'yu':630, 
-                                    'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(850, 100, 300, 700),},
-                                    'mark_inset_pars':{'loc1':2, 'loc2':4,},
-                                    'vis_pars':{'max_percent':99.995, 'min_percent': 0.1, 'stretch':'log'}
-                                   },
-                                   {'xl':550, 'xr':750, 'yl':160, 'yu':360, 
-                                    'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
-                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
-                                    'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
-                                   },
-                                  ]
 zoom_parameters[('G327', 'B6')] = [{'xl':335, 'xr':575, 'yl':460, 'yu':630, 
                                     'inset_pars':{'loc': 1, 'width':6, 'height':5, 'bbox_to_anchor':(270, 300, 300, 700),},
                                     'mark_inset_pars':{'loc1':3, 'loc2':4,},
@@ -653,26 +682,19 @@ zoom_parameters[('W43MM3', 'B6')] = [{'xl':330, 'xr':500, 'yl':450, 'yu':580,
                                    # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
                                    #},
                                   ]
-zoom_parameters[('W51-E', 'B6')] = [{'xl':750, 'xr':950, 'yl':620, 'yu':1050, 
-                                    'inset_pars':{'loc': 1, 'width':7, 'height':7, 'bbox_to_anchor':(810, 0, 300, 600),},
-                                    'mark_inset_pars':{'loc1':2, 'loc2':3,},
-                                    'vis_pars':{'max_percent':99.999, 'min_percent': 0.1, 'stretch':'log'}
-                                   },
-                                   #{'xl':550, 'xr':750, 'yl':160, 'yu':360, 
-                                   # 'inset_pars':{'loc': 1, 'width':4, 'height':4, 'bbox_to_anchor':(1000, 300, 100,100),},
-                                   # 'mark_inset_pars':{'loc1':2, 'loc2':3,},
-                                   # 'vis_pars':{'max_percent':99.7, 'min_percent': 1, 'stretch':'log'}
-                                   #},
-                                  ]
 zoom_parameters[('G008', 'B6')] = [{'xl':750, 'xr':1000, 'yl':250, 'yu':500, 
-                                    'inset_pars':{'loc': 1, 'width':2.5, 'height':2.5, 'bbox_to_anchor':(0,0,560,580)},
+                                    'inset_pars':{'loc': 1, 'width':2.5, 'height':2.5, 'bbox_to_anchor':(0,0,560,580),
+                                                  },
+                                    'tick_locs': [-0.7, -0.4, 0, 1, 3, 10, 30, 165],
                                     'mark_inset_pars':{'loc1':3, 'loc2':4,},
                                     'vis_pars':{'max_percent':99.995, 'min_percent': 3, 'stretch':'log'}
                                    },
                                    {'xl':250, 'xr':350, 'yl':475, 'yu':650, 
                                     'inset_pars':{'loc': 3, 'width':2.55, 'height':2.5,},
+                                    'tick_locs': [-0.5, -0.25, 0, 0.5, 2, 10, 45],
+                                    'tick_labels': [-0.5, -0.25, 0, 0.5, 2, 10, 45],
                                     'mark_inset_pars':{'loc1':2, 'loc2':4,},
-                                    'vis_pars':{'max_percent':99.95, 'min_percent': 3, 'stretch':'log'}
+                                    'vis_pars':{'max_cut':45.0, 'min_cut': -0.5, 'stretch':'log'}
                                    },
                                   ]                                  
 
@@ -683,12 +705,14 @@ if __name__ == "__main__":
 
     os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/')
     
+    pl.close(1)
     for band in ('B3','B6'):
         for fieldid in prefixes:
             print(fieldid, band)
             make_multifig(fieldid, band=band, inner_stretch='asinh')
 
                 
+    pl.close('all')
     make_zoom('W43MM1', zoom_parameters[('W43MM1', 'B3')], band='B3',
             overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15)
     make_zoom('W43MM3', zoom_parameters[('W43MM3', 'B3')], band='B3',
