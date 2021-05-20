@@ -161,6 +161,7 @@ latexdict['tablefoot'] = ("}\par\n"
 
                          )
 
+wtbl.sort('Band')
 wtbl.sort('Region')
 
 wtbl.write("../datapaper/bsens_cleanest_diff.tex", formats=formats,

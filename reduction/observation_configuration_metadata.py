@@ -20,6 +20,14 @@ results = {}
 mses = glob.glob('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L_scigoals/*/*/*/calibrated/*.split.cal')
 mses += glob.glob('/orange/adamginsburg/ALMA_IMF/2013.1.01365.S/*/*/*/calibrated/*.split.cal')
 
+def getref(vis):
+    tb.open(vis)
+    mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
+    configname = str(tb.getcol('configName')[0])
+    tb.close()
+
+    return mous, configname
+
 for vis in mses:
     msmd.open(vis)
 
@@ -38,12 +46,12 @@ for vis in mses:
 
     if antennadiameter == 12:
         if os.path.exists(vis+"/ASDM_EXECBLOCK"):
-            tb.open(vis+"/ASDM_EXECBLOCK")
+            mous,configname = getref(vis+"/ASDM_EXECBLOCK")
+        elif os.path.exists(vis.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK"):
+            mous,configname = getref(vis.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK")
         else:
-            tb.open(vis.replace("calibrated","calibrated_pipeline")+"/ASDM_EXECBLOCK")
-        mous = tb.getcol('sessionReference')[0].split('"')[1].split("/")[-1]
-        configname = str(tb.getcol('configName')[0])
-        tb.close()
+            mous,configname='unknown', 'unknown'
+            print(f"WARNING: NO ASDM_EXECLBOCK FOR {vis}")
     else:
         configname = '7M'
         mous = '7M'
@@ -69,6 +77,8 @@ for vis in mses:
 
     if antennadiameter == 12:
         array_config = stacked[(obstime > start_times) & (obstime < end_times)]['Approx\xa0Config.']
+        if len(array_config) == 0:
+            array_config=['unknown']
     else:
         TM = array_config = '7M'
     key = obstime.strftime('%Y-%m-%d')
@@ -117,6 +127,10 @@ for field in results:
                                                 )])
 
         print(f"{field} {mous} {band} {TM} \n{results[field]['total']}")
+
+for key in results['W43-MM1']:
+    if 'array' in results['W43-MM1'][key] and hasattr(results['W43-MM1'][key]['array'], 'mask'):
+        results['W43-MM1'][key]['array'] = 'unknown'
 
 with open('/orange/adamginsburg/ALMA_IMF/reduction/array_configurations.json', 'w') as fh:
     json.dump(results, fh)

@@ -203,21 +203,30 @@ def make_multifig(fieldid,
                   nsigma_linear_max=15,
                   nsigma_linear_min=5,
                   nsigma_asinh=15,
+                  pfxs=None,
+                  finaliter_prefix=None,
+                  region=None,
+                  fig=None,
+                  ax=None,
                   ):
 
-    pfxs = prefixes[fieldid]
+    if pfxs is None:
+        pfxs = prefixes[fieldid]
     wl = r'\mathrm{3mm}' if band.lower() == 'b3' else r'\mathrm{1mm}'
 
-    finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
+    if finaliter_prefix is None:
+        finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
     image = SpectralCube.read(f'{finaliter_prefix}.image.tt0.fits', use_dask=False, format='fits').minimal_subcube()
     try:
         image = image.to(u.mJy)
     except u.UnitConversionError:
         image = image.to(u.mJy/u.beam)
 
-    fig = pl.figure(1, figsize=(12,10))
-    fig.clf()
-    ax = fig.add_subplot(projection=image.wcs.celestial)
+    if fig is None:
+        fig = pl.figure(1, figsize=(12,10))
+        fig.clf()
+    if ax is None:
+        ax = fig.add_subplot(projection=image.wcs.celestial)
 
     img = image[0].value
 
@@ -355,6 +364,155 @@ def determine_asinh_ticklocs(vmin, vmax, nticks, rms=None, stretch='asinh'):
     return rounded_loc, rounded
 
 
+def make_robust_comparison(fieldid,
+                  #overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'linear'},
+                  overview_cmap='gray_r',
+                  inner_stretch='log',
+                  inner_maxpct=100,
+                  inset_cmap='inferno',
+                  band='B3',
+                  nsigma_linear_max=15,
+                  nsigma_linear_min=5,
+                  nsigma_asinh=15,
+                  pfxs=None,
+                  finaliter_prefix=None,
+                  region=None,
+                  fig=None,
+                  ):
+
+    if pfxs is None:
+        pfxs = prefixes[fieldid]
+    wl = r'\mathrm{3mm}' if band.lower() == 'b3' else r'\mathrm{1mm}'
+
+    if finaliter_prefix is None:
+        finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
+
+    base_filename = f'{finaliter_prefix}.image.tt0.fits'
+    image = SpectralCube.read(base_filename, use_dask=False, format='fits').minimal_subcube()
+    try:
+        image = image.to(u.mJy)
+    except u.UnitConversionError:
+        image = image.to(u.mJy/u.beam)
+
+    if fig is None:
+        fig = pl.figure(1, figsize=(16,6))
+        fig.clf()
+    img = image[0].value
+
+    img[img==0] = np.nan
+    mad = mad_std(img, ignore_nan=True)
+
+    norm = simple_norm(img, stretch='linear', min_cut=-nsigma_linear_min*mad, max_cut=nsigma_linear_max*mad,)
+    vmin = norm.vmax*0.99
+    norm2 = simple_norm(img, min_cut=vmin, stretch=inner_stretch, max_percent=inner_maxpct)
+    norm2.vmin = vmin
+
+
+    robusts = (-2,0,2)
+
+    for ii, robust in enumerate(robusts):
+        image = SpectralCube.read(base_filename.replace('robust0',f'robust{robust}'),
+                                  use_dask=False, format='fits').minimal_subcube()
+        if region is not None:
+            image = image.subcube_from_regions(region)
+        try:
+            image = image.to(u.mJy)
+        except u.UnitConversionError:
+            image = image.to(u.mJy/u.beam)
+
+        ax = fig.add_subplot(1, len(robusts), ii+1,
+                             projection=image.wcs.celestial)
+
+        im1 = ax.imshow(img, cmap=overview_cmap, norm=norm)
+
+        cm = pl.cm.get_cmap(inset_cmap)
+        cm.set_under((0,0,0,0))
+
+        if hasattr(norm2.stretch, 'a') and nsigma_asinh is not None:
+            #norm2.vmax = (np.nanmedian(img) + nsigma_max*mad)
+            a_point = (vmin + nsigma_asinh*mad) / (norm2.vmax - vmin)
+            #print(f"a point before: {norm2.stretch.a}, after: {a_point}")
+            norm2.stretch.a = a_point
+
+
+        im2 = ax.imshow(img, cmap=cm, norm=norm2, vmin=norm2.vmin)
+
+        if ii == len(robusts) - 1:
+            # create an axes on the right side of ax. The width of cax will be 5%
+            # of ax and the padding between cax and ax will be fixed at 0.05 inch.
+            divider = make_axes_locatable(ax)
+            #cax1 = divider.append_axes("right", size="5%", pad=0.05)
+            #cax2 = divider.append_axes("right", size="5%", pad=0.1)
+            cax1 = fig.add_axes([ax.get_position().x1+0.01,
+                                 ax.get_position().y0,
+                                 0.02,
+                                 ax.get_position().height])
+            cax2 = fig.add_axes([ax.get_position().x1+0.08,
+                                 ax.get_position().y0,
+                                 0.02,
+                                 ax.get_position().height])
+
+            cb2 = pl.colorbar(mappable=im2, cax=cax2)
+            cb1 = pl.colorbar(mappable=im1, cax=cax1)
+            cb1.ax.tick_params(labelsize=14)
+            cb2.ax.tick_params(labelsize=14)
+
+            ticklabels = cb2.ax.get_ymajorticklabels()
+            ticks = list(cb2.get_ticks())
+
+            # max_tick_fig1 = cb1.get_ticks()[-1]
+
+            # toptickval = np.round(max_tick_fig1, 1)
+            # minVal = norm2.vmin #np.round(norm2.vmin, 1)
+
+            # mintickval = min(map(float, ticklabels))
+
+            # if toptickval > minVal:
+            #     print("toptick was greater")
+            #     newticks = [minVal, toptickval] + ticks
+            #     newticklabels = [f"{minVal:0.2f}",f"{toptickval:0.2f}"] + [x.get_text() for x in ticklabels]
+            # else:
+            #     newticks = [minVal, ] + ticks
+            #     newticklabels = [f"{minVal:0.2f}",] + [x.get_text() for x in ticklabels]
+            # print(f"new ticks: {newticks}, {newticklabels} norm2vmin = {norm2.vmin}")
+            # cb2.set_ticks(newticks)
+            # cb2.set_ticklabels(newticklabels)
+
+            if inner_stretch in ('asinh', 'log'):
+                rounded_loc, rounded = determine_asinh_ticklocs(norm2.vmin, norm2.vmax, nticks=10, stretch=inner_stretch)
+                cb2.set_ticks(rounded_loc)
+                cb2.set_ticklabels(rounded)
+                print(f"old ticks: {ticklabels}, new ticks: {rounded}")
+
+            cb2.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
+
+        tick_fontsize=16
+        if ii == 0:
+            ra = ax.coords['ra']
+            ra.set_major_formatter('hh:mm:ss.s')
+            ra.set_axislabel("RA (J2000)", fontsize=20)
+            ra.ticklabels.set_fontsize(tick_fontsize)
+            ra.set_ticks(exclude_overlapping=True)
+        else:
+            ra.set_visible(False)
+        dec = ax.coords['dec']
+        dec.set_axislabel("Dec (J2000)", fontsize=20, minpad=0.0)
+        dec.ticklabels.set_fontsize(tick_fontsize)
+        dec.set_ticks(exclude_overlapping=True)
+
+        #print(image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0))
+        left_side = coordinates.SkyCoord(*image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0)*u.deg, frame='fk5')
+        #print(left_side)
+        length = (0.1*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
+        make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.1 pc',
+                      fontsize=16, text_offset=0.5*u.arcsec)
+
+        ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
+        ax.add_patch(ell)
+
+
+    pl.savefig(f'/orange/adamginsburg/web/secure/ALMA-IMF/diagnostic_plots/robust_comparisons/{fieldid}_multicolor_robusts_{band}.png', bbox_inches='tight')
+    pl.savefig(f'/orange/adamginsburg/web/secure/ALMA-IMF/diagnostic_plots/robust_comparisons/{fieldid}_multicolor_robusts_{band}.pdf', bbox_inches='tight')
 
 zoom_parameters = {}
 zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000, 
