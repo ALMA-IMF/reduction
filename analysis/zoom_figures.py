@@ -395,7 +395,7 @@ def make_robust_comparison(fieldid,
         image = image.to(u.mJy/u.beam)
 
     if fig is None:
-        fig = pl.figure(1, figsize=(16,6))
+        fig = pl.figure(1, figsize=(16,5))
         fig.clf()
     img = image[0].value
 
@@ -411,7 +411,9 @@ def make_robust_comparison(fieldid,
     robusts = (-2,0,2)
 
     for ii, robust in enumerate(robusts):
-        image = SpectralCube.read(base_filename.replace('robust0',f'robust{robust}'),
+        imfilename = base_filename.replace('robust0',f'robust{robust}')
+        print(imfilename)
+        image = SpectralCube.read(imfilename,
                                   use_dask=False, format='fits').minimal_subcube()
         if region is not None:
             image = image.subcube_from_regions(region)
@@ -419,6 +421,9 @@ def make_robust_comparison(fieldid,
             image = image.to(u.mJy)
         except u.UnitConversionError:
             image = image.to(u.mJy/u.beam)
+
+        img = image[0].value
+        img[img==0] = np.nan
 
         ax = fig.add_subplot(1, len(robusts), ii+1,
                              projection=image.wcs.celestial)
@@ -487,18 +492,20 @@ def make_robust_comparison(fieldid,
             cb2.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
 
         tick_fontsize=16
-        if ii == 0:
-            ra = ax.coords['ra']
-            ra.set_major_formatter('hh:mm:ss.s')
-            ra.set_axislabel("RA (J2000)", fontsize=20)
-            ra.ticklabels.set_fontsize(tick_fontsize)
-            ra.set_ticks(exclude_overlapping=True)
-        else:
-            ra.set_visible(False)
+        ra = ax.coords['ra']
+        ra.set_major_formatter('hh:mm:ss.s')
+        ra.set_axislabel("RA (J2000)", fontsize=20)
+        ra.ticklabels.set_fontsize(tick_fontsize)
+        ra.set_ticks(exclude_overlapping=True)
         dec = ax.coords['dec']
-        dec.set_axislabel("Dec (J2000)", fontsize=20, minpad=0.0)
-        dec.ticklabels.set_fontsize(tick_fontsize)
-        dec.set_ticks(exclude_overlapping=True)
+        if ii == 0:
+            dec.set_axislabel("Dec (J2000)", fontsize=20, minpad=0.0)
+            dec.ticklabels.set_fontsize(tick_fontsize)
+            dec.set_ticks(exclude_overlapping=True)
+        else:
+            dec.set_ticks_visible(False)
+            dec.set_ticklabel_visible(False)
+            dec.set_axislabel("")
 
         #print(image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0))
         left_side = coordinates.SkyCoord(*image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0)*u.deg, frame='fk5')
@@ -950,3 +957,14 @@ if __name__ == "__main__":
                   overview_vis_pars={'max_percent':99.75,
                                      'min_percent':1.5, 'stretch':'asinh'},
                   nsigma_max=45)        
+
+
+
+    for band in ('B3','B6'):
+        for fieldid in prefixes:
+            print(fieldid, band)
+            for robust0fn in glob.glob('/orange/adamginsburg/ALMA_IMF/RestructuredImagingResults/{fieldid}/{band}/cleanest/{fieldid}_{band}_uid___A001_X1296_*_continuum_merged_12M_robust0_selfcal*_finaliter.image.tt0'):
+                pfx = robust0fn.replace(".image.tt0","")
+
+                make_robust_comparison(pfx, band=band, nsigma_linear_max=15, inner_stretch='asinh',
+                                       finaliter_prefix=pfx)
