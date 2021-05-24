@@ -16,7 +16,20 @@ else
         suffix12m="7M12M"
     fi
 fi
-echo "Exclude 7m = ${EXCLUDE_7M}"
+
+if [ -z $ONLY_7M ]; then
+    ONLY_7M=False
+else
+    if [ $ONLY_7M == "True" ]; then
+        suffix12m="7M"
+        echo "only 7m is True"
+        if [ $EXCLUDE_7M == "True" ]; then
+            exit 1
+        fi
+    fi
+fi
+echo "Exclude 7m = ${EXCLUDE_7M};  Only 7m = ${ONLY_7M}  suffix=${suffix12m}"
+    
 
 if [ -z $QOS ]; then
     export QOS=adamginsburg-b
@@ -48,7 +61,7 @@ W43-MM2|W51-IRS2) #B3 B6
     export MEM=64gb ;;
 esac
 
-echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
+echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M only_7m=$ONLY_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
 
 export NTASKS=8
 export SLURM_NTASKS=$NTASKS

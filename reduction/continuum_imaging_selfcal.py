@@ -917,6 +917,7 @@ for continuum_ms in continuum_mses:
         elif os.path.exists(regfn):
             # note that imname is from the final self-calibration iteration
             if not dryrun:
+                logprint("Creating mask from region {regfn}".format(regfn=regfn), origin='contim_selfcal')
                 maskname = make_custom_mask(field, imname+".image.tt0",
                                             almaimf_rootdir,
                                             band,
