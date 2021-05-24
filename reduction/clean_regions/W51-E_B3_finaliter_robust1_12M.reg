@@ -1,0 +1,16 @@
+# Region file format: DS9 CARTA 1.4
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+icrs
+box(290.932964, 14.507861, 8.0870", 18.9730", 6.80825e-06) # color=green width=1 text={1mJy}
+box(290.924425, 14.515736, 2.4880", 2.6960", 6.80825e-06) # color=green width=1 text={0.5mJy}
+box(290.929340, 14.509469, 105.5611", 131.7080", 6.80825e-06) # color=green width=1 text={0.5mJy}
+box(290.927249, 14.514803, 36.9250", 9.0430", 336.578) # color=green width=1 text={0.5mJy}
+box(290.922626, 14.514386, 7.2350", 6.7850", 6.80825e-06) # color=green width=1 text={0.5mJy}
+box(290.936666, 14.496853, 83.1900", 20.1550", 6.80825e-06) # color=green width=1 text={0.5mJy}
+box(290.924115, 14.517361, 2.4880", 2.6960", 6.80825e-06) # color=green width=1 text={0.5mJy}
+box(290.926035, 14.501528, 23.2420", 14.5150", 7.04275e-06) # color=green width=1 text={0.5mJy}
+box(290.931742, 14.513411, 16.6150", 10.1390", 6.80825e-06) # color=green width=1 text={0.5mJy}
+box(290.932740, 14.511236, 2.4880", 2.6960", 6.80825e-06) # color=green width=1 text={0.5mJy}
+circle(290.940461, 14.508250, 4.1980") # color=green width=1 text={0.5mJy}
+circle(290.917961, 14.517932, 8.6450") # color=green width=1 text={1mJy}
+ellipse(290.921490, 14.520348, 7.2750", 2.5500", 18.070984) # color=green width=1 text={0.5mJy}
