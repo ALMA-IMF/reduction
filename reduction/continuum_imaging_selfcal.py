@@ -827,6 +827,9 @@ for continuum_ms in continuum_mses:
                                                                selfcaliter),
                      origin='contim_selfcal')
         elif os.path.exists(regfn):
+            logprint("Using mask {0} for iteration {1}".format(regfn,
+                                                               selfcaliter),
+                     origin='contim_selfcal')
             if not dryrun:
                 maskname = make_custom_mask(field, imname+".image.tt0",
                                             almaimf_rootdir,

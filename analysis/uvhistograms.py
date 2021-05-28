@@ -7,6 +7,11 @@ import glob
 import pylab as pl
 from astropy import units as u
 
+import sys,os
+sys.path.append(os.path.split(__file__)[0])
+sys.path.append(os.path.split(__file__)[0]+"/../reduction")
+from distances import distances
+
 def savefig(path, bbox_inches='tight', **kwargs):
     pl.savefig(path, bbox_inches=bbox_inches, **kwargs)
     pl.savefig(path.replace(".pdf", ".png"), bbox_inches=bbox_inches, **kwargs)
@@ -155,3 +160,31 @@ if  __name__ == "__main__":
         ax1t.set_xlabel("Baseline Length (k$\lambda$)")
         ax1t.set_ticks([15, 20, 30, 50, 100, 400])
         savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{band}_summary_uvdistribution.pdf', bbox_inches='tight')
+
+
+        # distances are stored in kpc
+        #distance = distances[key]*1000
+
+        stats = [{
+            "label": key,
+            "med": row['50%'][0] * distances[key]*1000,
+            "q1": row['25%'][0] * distances[key]*1000,
+            "q3": row['75%'][0] * distances[key]*1000,
+            "whislo": row['5%'][0] * distances[key]*1000,
+            "whishi": row['95%'][0] * distances[key]*1000,
+            "fliers": [],
+            } for key,row in rows.items() if len(row)>0][::-1]
+
+        fig, axes = pl.subplots(nrows=1, ncols=1, figsize=(12, 12), sharey=True)
+        axes.bxp(stats, vert=False)
+        #axes.set_title(f'{band} UV distribution overview', fontsize=fontsize)
+        axes.set_xlabel("Physical Scale (au)", fontsize=fontsize)
+        axes.set_xlim(0, 50000)
+        axes.set_xticks([0, 2000, 10000, 20000, 30000, 40000, 50000])
+        rad_to_as = u.radian.to(u.arcsec)
+        def fcn(x):
+            return x / rad_to_as
+        ax1t = axes.secondary_xaxis('top', functions=(fcn, fcn))
+        ax1t.set_xlabel("Physical Scale (pc)")
+        ax1t.set_ticks([0.005, 0.1, 0.2])
+        savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{band}_summary_uvdistribution_physicalscale.pdf', bbox_inches='tight')

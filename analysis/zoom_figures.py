@@ -6,6 +6,7 @@ from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from mpl_toolkits.axes_grid1.inset_locator import TransformedBbox, BboxPatch, BboxConnector
 import astropy.visualization.wcsaxes
 from spectral_cube import SpectralCube
+from spectral_cube.utils import NoBeamError
 from astropy import units as u
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -378,6 +379,8 @@ def make_robust_comparison(fieldid,
                   finaliter_prefix=None,
                   region=None,
                   fig=None,
+                  suffix="image.tt0.fits",
+                  fileformat='fits',
                   ):
 
     if pfxs is None:
@@ -387,11 +390,14 @@ def make_robust_comparison(fieldid,
     if finaliter_prefix is None:
         finaliter_prefix = pfxs[f'finaliter_prefix_{band}'.lower()]
 
-    base_filename = f'{finaliter_prefix}.image.tt0.fits'
-    image = SpectralCube.read(base_filename, use_dask=False, format='fits').minimal_subcube()
-    try:
+    base_filename = f'{finaliter_prefix}.{suffix}'
+    image = SpectralCube.read(base_filename, format=fileformat).minimal_subcube()
+    if image.unit.is_equivalent(u.mJy):
         image = image.to(u.mJy)
-    except u.UnitConversionError:
+    elif image.unit.is_equivalent(u.mJy/u.pix):
+        # CASA residuals, models
+        image = image.to(u.mJy/u.pix)
+    elif image.unit.is_equivalent(u.mJy/u.beam):
         image = image.to(u.mJy/u.beam)
 
     if fig is None:
@@ -414,12 +420,15 @@ def make_robust_comparison(fieldid,
         imfilename = base_filename.replace('robust0',f'robust{robust}')
         print(imfilename)
         image = SpectralCube.read(imfilename,
-                                  use_dask=False, format='fits').minimal_subcube()
+                                  format=fileformat).minimal_subcube()
         if region is not None:
             image = image.subcube_from_regions(region)
-        try:
+        if image.unit.is_equivalent(u.mJy):
             image = image.to(u.mJy)
-        except u.UnitConversionError:
+        elif image.unit.is_equivalent(u.mJy/u.pix):
+            # CASA residuals, models
+            image = image.to(u.mJy/u.pix)
+        elif image.unit.is_equivalent(u.mJy/u.beam):
             image = image.to(u.mJy/u.beam)
 
         img = image[0].value
@@ -514,12 +523,15 @@ def make_robust_comparison(fieldid,
         make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.1 pc',
                       fontsize=16, text_offset=0.5*u.arcsec)
 
-        ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
-        ax.add_patch(ell)
+        try:
+            ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
+            ax.add_patch(ell)
+        except NoBeamError:
+            pass
 
 
-    pl.savefig(f'/orange/adamginsburg/web/secure/ALMA-IMF/diagnostic_plots/robust_comparisons/{fieldid}_multicolor_robusts_{band}.png', bbox_inches='tight')
-    pl.savefig(f'/orange/adamginsburg/web/secure/ALMA-IMF/diagnostic_plots/robust_comparisons/{fieldid}_multicolor_robusts_{band}.pdf', bbox_inches='tight')
+    pl.savefig(f'/orange/adamginsburg/web/secure/ALMA-IMF/diagnostic_plots/robust_comparisons/{fieldid}_multicolor_robusts_{band}_{suffix}.png', bbox_inches='tight')
+    pl.savefig(f'/orange/adamginsburg/web/secure/ALMA-IMF/diagnostic_plots/robust_comparisons/{fieldid}_multicolor_robusts_{band}_{suffix}.pdf', bbox_inches='tight')
 
 zoom_parameters = {}
 zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000, 

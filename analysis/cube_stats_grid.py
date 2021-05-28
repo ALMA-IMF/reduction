@@ -29,7 +29,11 @@ if os.getenv('NO_PROGRESSBAR') is None and not (os.getenv('ENVIRON') == 'BATCH')
     pbar = ProgressBar()
     pbar.register()
 
-os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+if os.environ.get('SLURM_TMPDIR'):
+    os.environ['TMPDIR'] = os.environ.get("SLURM_TMPDIR")
+elif not os.environ.get("TMPDIR"):
+    os.environ['TMPDIR'] ='/blue/adamginsburg/adamginsburg/tmp/'
+print(f"TMPDIR = {os.environ.get('TMPDIR')}")
 
 threads = os.getenv('DASK_THREADS') or os.getenv('SLURM_NTASKS')
 
@@ -211,6 +215,7 @@ if __name__ == "__main__":
                         #mean = cube.mean()
 
                         del cube
+                        del stats
 
                         if os.path.exists(modfn+".fits"):
                             modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
@@ -232,6 +237,7 @@ if __name__ == "__main__":
                         modmean = modstats['mean']
 
                         del modcube
+                        del modstats
 
                         row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
                             [history[key] if key in history else '' for key in colnames_fromheader] +

@@ -19,7 +19,7 @@ from zoom_figures import determine_asinh_ticklocs
 
 def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False, nticks=9,
                           asinh_scaling_factor=10, scalebarlength=15, diff_suffix='.preselfcal-diff',
-                          sigma_scale=15, cm='gray_r', inset_cm='inferno'):
+                          sigma_scale=15, cm='gray_r', inset_cm='inferno', allow_zero_diff=False):
     #fh_pre = fits.open()
     #fh_post = fits.open()
     cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image').with_spectral_unit(u.GHz)
@@ -96,8 +96,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     #if np.abs(minv) > maxv:
     #    minv = -maxv
 
-    stddev = mad_std(diff, ignore_nan=True)
-    assert stddev > 0
+    if allow_zero_diff:
+        stddev = mad_std(data_pre)
+    else:
+        stddev = mad_std(diff, ignore_nan=True)
+        assert stddev > 0
 
     linear_norm = visualization.simple_norm(data=diff_display.squeeze(), stretch='linear',
                                             #min_percent=0.05, max_percent=99.995,)

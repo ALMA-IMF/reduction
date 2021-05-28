@@ -1,4 +1,3 @@
-
 import glob
 import os
 import shutil
@@ -24,29 +23,31 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                            "image.tt0", "model.tt0", "image.tt1", "model.tt1", "psf.tt0",
                            "psf.tt1", "residual.tt0", "residual.tt1", "mask"):
 
-                for globstr in (f"{field}*_{band}_*{itgl}*robust0_*selfcal[0-9]*finaliter.{suffix}",
-                                f"{field}*_{band}_*{itgl}*robust0_*preselfcal.{suffix}",
-                                f"{field}*_{band}_*{itgl}*robust0_*preselfcal_finalmodel.{suffix}",
-                                f"{field}_{band}_*_robust0_12M_mask.{suffix}", # use suffix here to avoid re-copying
-                               ):
+                for robust in (-2,-1,-0.5,0,0.5,1,2):
 
-                    files = glob.glob(str(basepath / globstr))
-                    for fn in files:
-                        basefn = os.path.basename(fn)
-                        try:
-                            if os.path.exists(itpath / basefn) and not overwrite:
-                                pass
-                            else:
-                                shutil.copy(fn, itpath)
-                                print(f"{fn} -> {itpath}")
-                        except IsADirectoryError:
-                            target = itpath / basefn
+                    for globstr in (f"{field}*_{band}_*{itgl}*robust{robust}_*selfcal[0-9]*finaliter.{suffix}",
+                                    f"{field}*_{band}_*{itgl}*robust{robust}_*preselfcal.{suffix}",
+                                    f"{field}*_{band}_*{itgl}*robust{robust}_*preselfcal_finalmodel.{suffix}",
+                                    f"{field}_{band}_*_robust{robust}_12M_mask.{suffix}", # use suffix here to avoid re-copying
+                                   ):
 
-                            # EITHER: Rewrite or Continue
-                            if os.path.isdir(target):
-                                if overwrite:
-                                    shutil.rmtree(target)
+                        files = glob.glob(str(basepath / globstr))
+                        for fn in files:
+                            basefn = os.path.basename(fn)
+                            try:
+                                if os.path.exists(itpath / basefn) and not overwrite:
+                                    pass
                                 else:
-                                    continue
-                            print(f"{fn} -> {target}")
-                            shutil.copytree(fn, target)
+                                    shutil.copy(fn, itpath)
+                                    print(f"{fn} -> {itpath}")
+                            except IsADirectoryError:
+                                target = itpath / basefn
+
+                                # EITHER: Rewrite or Continue
+                                if os.path.isdir(target):
+                                    if overwrite:
+                                        shutil.rmtree(target)
+                                    else:
+                                        continue
+                                print(f"{fn} -> {target}")
+                                shutil.copytree(fn, target)
