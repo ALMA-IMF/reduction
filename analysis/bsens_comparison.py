@@ -13,8 +13,8 @@ import pylab as pl
 from compare_images import make_comparison_image
 
 cwd = os.getcwd()
-basepath = '/orange/adamginsburg/web/secure/ALMA-IMF/May2021Release'
-basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/'
+basepath = '/orange/adamginsburg/web/secure/ALMA-IMF/June2021Release'
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release/'
 os.chdir(basepath)
 
 import imstats
@@ -22,8 +22,8 @@ import imstats
 
 #tbl = imstats.savestats(basepath=basepath)
 
-#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/May2021Release/tables/metadata.ecsv')
-tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/tables/metadata_image.tt0.ecsv')
+#tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/June2021Release/tables/metadata.ecsv')
+tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release/tables/metadata_image.tt0.ecsv')
 tbl.add_column(Column(name='casaversion_bsens', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_cleanest', data=['             ']*len(tbl)))
 tbl.add_column(Column(name='bsens_fn', data=[' '*200]*len(tbl)))
@@ -199,8 +199,8 @@ formats = {'dr_improvement_bsens': lambda x: '{0:0.2f}'.format(x),
            'BeamVsReq': lambda x: f'{x:0.2f}',
           }
 
-for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/May2021Release',
-           '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release'):
+for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/June2021Release',
+           '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release'):
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.ecsv',
               overwrite=True)
     tbl.write(f'{bp}/tables/metadata_bsens_cleanest.html',

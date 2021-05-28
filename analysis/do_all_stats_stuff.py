@@ -13,14 +13,16 @@ assert 'SCRIPT_DIR' in os.environ
 script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = [
-           'make_may2021release.py',
+           'make_june2021release.py',
+           #'make_may2021release.py',
            #'make_oct2020release.py',
            # don't do this any more 'link_files.py',
            'link_files_restructured.py',
            'delivery_status.py',
            'imstats.py',
            #'before_after_selfcal_quicklooks_Feb2021release.py',
-           'before_after_selfcal_quicklooks_May2021release.py',
+           #'before_after_selfcal_quicklooks_May2021release.py',
+           'before_after_selfcal_quicklooks_June2021release.py',
            'bsens_comparison.py',
            'bsens_cleanest_diff_zooms.py',
            'psf_check_figures.py',
