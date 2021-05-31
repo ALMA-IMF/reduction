@@ -38,7 +38,7 @@ def get_requested_sens():
     return tbl
 
 def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
-                       max_radial_extent=5*u.arcsec):
+                       max_radial_extent=5*u.arcsec, max_npix_peak=100):
     """ REDUNDANT with get_psf_secondpeak, but this one is better
 
     Process:
@@ -61,9 +61,11 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     center = np.unravel_index(np.argmax(psfim), psfim.shape)
     cy, cx = center
 
-    cutout = psfim[cy-100:cy+101, cx-100:cx+101]
+    npix = max_npix_peak
+
+    cutout = psfim[cy-npix:cy+npix+1, cx-npix:cx+npix+1]
     psfim = cutout
-    fullbeam = cube.beam.as_kernel(pixscale, x_size=201, y_size=201,)
+    fullbeam = cube.beam.as_kernel(pixscale, x_size=npix*2+1, y_size=npix*2+1,)
 
     shape = cutout.shape
     sy, sx = shape
@@ -88,7 +90,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     rbin = (rr).astype(np.int)
 
     # assume the PSF first minimum is within 100 pixels of center
-    radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(100))
+    radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(max_npix_peak))
 
     # find the first negative peak (approximately); we include anything
     # within this radius as part of the main beam
@@ -263,7 +265,10 @@ def imstats(fn, reg=None):
         raise IOError("Wrong image type passed to imstats: {fn}".format(fn=fn))
 
     if os.path.exists(psf_fn):
-        psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction = get_psf_secondpeak(psf_fn)
+        try:
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction = get_psf_secondpeak(psf_fn)
+        except IndexError:
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction = get_psf_secondpeak(psf_fn, max_npix_peak=200)
         meta['psf_secondpeak'] = psf_secondpeak
         meta['psf_secondpeak_radius'] = psf_secondpeak_loc
         meta['psf_secondpeak_sidelobefraction'] = psf_sidelobe1_fraction

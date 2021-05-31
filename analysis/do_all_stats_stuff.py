@@ -8,6 +8,7 @@ import pylab as pl
 import os
 import time
 from pathlib import Path
+from astropy import log
 
 assert 'SCRIPT_DIR' in os.environ
 script_dir = Path(os.environ['SCRIPT_DIR'])
@@ -23,6 +24,7 @@ scripts = [
            #'before_after_selfcal_quicklooks_Feb2021release.py',
            #'before_after_selfcal_quicklooks_May2021release.py',
            'before_after_selfcal_quicklooks_June2021release.py',
+           'compare_June2021_to_May2021.py',
            'bsens_comparison.py',
            'bsens_cleanest_diff_zooms.py',
            'psf_check_figures.py',
@@ -43,12 +45,14 @@ scripts = [
 
 for scriptname in scripts:
     t0 = time.time()
+    log.info(f"script={scriptname}, fullpath={script_dir / scriptname}")
     print(f"script={scriptname}, fullpath={script_dir / scriptname}")
     try:
         runpy.run_path(str(script_dir / scriptname), run_name="__main__")
     except Exception as ex:
         print("Exception: ",ex)
     pl.close('all')
+    log.info(f"script {scriptname} took {(time.time() - t0)/3600.:0.1f} hours")
     print(f"script {scriptname} took {(time.time() - t0)/3600.:0.1f} hours")
 
 

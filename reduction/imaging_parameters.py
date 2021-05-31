@@ -3540,22 +3540,22 @@ line_imaging_parameters_custom = {
     "G328.25_B3_12M_robust0_spw0": {
         "threshold": "5sigma",
         "scales": [0, 7, 14, 28, 56],
-        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B3_12M_robust0_spw1": {
         "threshold": "5sigma",
         "scales": [0, 5, 10, 20, 40],
-        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B3_12M_robust0_spw2": {
         "threshold": "5sigma",
         "scales": [0, 5, 10, 20, 40],
-        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B3_12M_robust0_spw3": {
         "threshold": "5sigma",
         "scales": [0, 5, 10, 20, 40],
-        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter.model.tt0",
+        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_spw0": {
         "threshold": "5sigma",
