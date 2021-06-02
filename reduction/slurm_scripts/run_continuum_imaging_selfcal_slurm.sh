@@ -30,7 +30,7 @@ export CASA=/orange/adamginsburg/casa/casa-release-5.7.0-134.el7/bin/casa
 
 cd ${WORK_DIR}
 echo ${WORK_DIR}
-echo FIELD=${FIELD_ID}  BAND=${BAND_TO_IMAGE}  EXCLUDE_7M=${EXCLUDE_7M}
+echo FIELD=${FIELD_ID}  BAND=${BAND_TO_IMAGE}  EXCLUDE_7M=${EXCLUDE_7M}  ONLY_7M=${ONLY_7M}
 
 export PYTHONPATH=$ALMAIMF_ROOTDIR
 
