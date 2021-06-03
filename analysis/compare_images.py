@@ -97,10 +97,10 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     #    minv = -maxv
 
     if allow_zero_diff:
-        stddev = mad_std(data_pre)
+        stddev = mad_std(data_pre, ignore_nan=True)
     else:
         stddev = mad_std(diff, ignore_nan=True)
-        assert stddev > 0
+    assert stddev > 0
 
     linear_norm = visualization.simple_norm(data=diff_display.squeeze(), stretch='linear',
                                             #min_percent=0.05, max_percent=99.995,)

@@ -36,8 +36,8 @@ dirnames = {'fullcubes_12m': ('spw[0-9]_12M_spw[0-9]',),
                       '12M_robust0*_mask.mask', '12M_robust2*_mask.mask', '12M_robust-2*_mask.mask'),
             '7m12m': ('merged_7M12M*.tt0',),
             '7m12m_bsens': ('bsens_7M12M*.tt0',),
-            '7m': ('merged_7M_*.tt0',),
-            '7m_bsens': ('bsens_7M_*.tt0',),
+            '7m': ('merged_7M_*.tt0', '7M_mask.mask'),
+            '7m_bsens': ('bsens_7M_*.tt0', '7M_mask.mask',),
            }
 
 

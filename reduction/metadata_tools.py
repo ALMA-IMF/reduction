@@ -539,3 +539,27 @@ def get_non_bright_spws(vis, frequency=230.538e9):
             spws.append(spwnum)
     
     return spws
+
+
+def sethistory(prefix, selfcalpars=None, impars=None, selfcaliter=None):
+    from getversion import git_date, git_version
+    for suffix in ('.image.tt0', '.image.tt0.pbcor', '.residual.tt0'):
+        if os.path.exists(prefix+suffix):
+            ia.open(prefix+suffix)
+            if selfcalpars is not None:
+                ia.sethistory(origin='almaimf_cont_selfcal',
+                              history=["{0}: {1}".format(key, val) for key, val in
+                                       selfcalpars.items()])
+            if impars is not None:
+                ia.sethistory(origin='almaimf_cont_selfcal',
+                              history=["{0}: {1}".format(key, val) for key, val in
+                                       impars.items()])
+            if selfcaliter is not None:
+                ia.sethistory(origin='almaimf_cont_selfcal',
+                              history=["selfcaliter: {0}".format(selfcaliter)])
+            ia.sethistory(origin='almaimf_cont_imaging',
+                          history=["git_version: {0}".format(git_version),
+                                   "git_date: {0}".format(git_date)])
+            ia.close()
+            ia.done()
+

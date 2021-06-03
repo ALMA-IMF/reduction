@@ -20,7 +20,7 @@ scripts = [
            # don't do this any more 'link_files.py',
            'link_files_restructured.py',
            'delivery_status.py',
-           'imstats.py',
+           'imstats_june2021.py', # full imstats will often break
            #'before_after_selfcal_quicklooks_Feb2021release.py',
            #'before_after_selfcal_quicklooks_May2021release.py',
            'before_after_selfcal_quicklooks_June2021release.py',
@@ -41,6 +41,7 @@ scripts = [
            'fullcube_quicklooks.py',
            '7m12m_comparison.py',
            'cube_stats_grid.py',
+           'imstats.py',
           ]
 
 for scriptname in scripts:

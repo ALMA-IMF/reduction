@@ -736,12 +736,12 @@ document.write(newdocument)
 
 
 def savestats(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Release",
-              suffix='image.tt0', filetype=".fits"):
+              suffix='image.tt0*', filetype=".fits"):
     if 'October31' in basepath:
-        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.{suffix}*{filetype}", ditch_suffix=f".{suffix[:-1]}")
+        stats = assemble_stats(f"{basepath}/*/*/*_12M_*.{suffix}{filetype}", ditch_suffix=f".{suffix[:-1]}")
     else:
         # extra layer: bsens, cleanest, etc
-        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.{suffix}*{filetype}", ditch_suffix=f".{suffix[:-1]}")
+        stats = assemble_stats(f"{basepath}/*/*/*/*_12M_*.{suffix}{filetype}", ditch_suffix=f".{suffix[:-1]}")
     with open(f'{basepath}/tables/metadata_{suffix}.json', 'w') as fh:
         json.dump(stats, fh, cls=MyEncoder)
 
