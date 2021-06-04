@@ -342,7 +342,7 @@ for continuum_ms in continuum_mses:
     assert os.path.exists(selfcal_ms)
 
     flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
-    if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+    if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
         raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
@@ -482,6 +482,9 @@ for continuum_ms in continuum_mses:
                 # Force PB mask
                 impars_finaliter['usemask'] = 'pb'
                 impars_finaliter['mask'] = 'pb'
+
+            # force more major cycles
+            impars_finaliter['cyclefactor'] = 2.0
 
             if os.path.exists(finaliterimname+".model.tt0"):
                 # if there is already a model with this name on disk, we're continuing from that

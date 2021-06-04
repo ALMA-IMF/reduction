@@ -362,7 +362,7 @@ for continuum_ms in continuum_mses:
     assert os.path.exists(selfcal_ms)
 
     flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
-    if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+    if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
         raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
@@ -919,7 +919,7 @@ for continuum_ms in continuum_mses:
                      origin='contim_selfcal')
         elif os.path.exists(regfn):
             # note that imname is from the final self-calibration iteration
-            if not dryrun:
+           if not dryrun:
                 logprint("Creating mask from region {regfn}".format(regfn=regfn), origin='contim_selfcal')
                 maskname = make_custom_mask(field, imname+".image.tt0",
                                             almaimf_rootdir,
