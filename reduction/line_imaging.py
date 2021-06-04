@@ -43,14 +43,20 @@ import shutil
 import numpy as np
 import astropy.units as u
 from astropy import constants
+import re
 try:
     from tasks import tclean, uvcontsub, impbcor, concat, flagdata
     from taskinit import casalog
     from exportfits_cli import exportfits_cli as exportfits
+    from casa_system_defaults import casa
+    version = map(int, re.split("[-.]", casa['version']))
 except ImportError:
     # futureproofing: CASA 6 imports this way
     from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata
     from casatasks import casalog
+    import casatools
+    version = casatools.version()
+versionstring = ".".join(map(str, version))
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint as logprint_
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
@@ -153,6 +159,8 @@ def sethistory(prefix, nsigma=None, impars=None, suffixes=('.image', '.residual'
         ia.sethistory(origin='almaimf_line_imaging',
                       history=["git_version: {0}".format(git_version),
                                "git_date: {0}".format(git_date)])
+        ia.sethistory(origin='almaimf_line_imaging',
+                      history=['CASA version: {0}'.format(versionstring)])
         ia.close()
         ia.done()
 
@@ -217,6 +225,10 @@ def set_impars(impars, line_name, vis, linpars, spwnames=None):
         while impars['nchan'] % cc > 0:
             cc -= 1
         impars['chanchunks'] = cc
+
+    # support for chanchunks forcibly removed in casa 5.8 / 6.2
+    if (version[0] == 5 and version[1] >= 8) or (version[0] == 6 and version[1] >= 2):
+        del impars['chanchunks']
 
     return impars
 

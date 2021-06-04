@@ -27,6 +27,7 @@ WORK_DIR='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
 #export CASA=/blue/adamginsburg/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
 #export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 export CASA=/orange/adamginsburg/casa/casa-release-5.7.0-134.el7/bin/casa
+#export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa 
 
 cd ${WORK_DIR}
 echo ${WORK_DIR}
@@ -40,4 +41,4 @@ echo "ALMAIMF_ROOTDIR: ${ALMAIMF_ROOTDIR}"
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
 xvfb-run -d ${CASA} --logfile=${LOGFILENAME}  --nogui --nologger -c "execfile('$ALMAIMF_ROOTDIR/continuum_imaging_selfcal.py')"
-xvfb-run -d ${CASA} --logfile=${LOGFILENAME}  --nogui --nologger -c "execfile('$ALMAIMF_ROOTDIR/continuum_imaging_selfcal_finaliter.py')"
+xvfb-run -d ${CASA} --logfile=${LOGFILENAME}  --nogui --nologger -c "execfile('$ALMAIMF_ROOTDIR/continuum_imaging_finaliter.py')"

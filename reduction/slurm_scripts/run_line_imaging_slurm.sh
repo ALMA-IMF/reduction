@@ -24,6 +24,7 @@ echo $?
 
 export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
+export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
