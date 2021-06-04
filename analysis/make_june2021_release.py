@@ -15,7 +15,7 @@ overwrite = False
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
     for band in ('B3','B6'):
         for imtype,itgl in zip(('cleanest', 'bsens', 'bsens_nobright', 'bsens_nobright'),
-                               ('continuum_merged_12M', 'bsens_12M', 'bsens_noco_12M', 'bsens_non2hp_12M')):
+                               ('continuum_merged_12M', 'bsens_12M', 'bsens_12M_noco', 'bsens_12M_non2h')):
             itpath = releasepath / field / band / imtype
             itpath.mkdir(parents=True, exist_ok=True)
 

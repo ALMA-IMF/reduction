@@ -185,6 +185,15 @@ for band in (3,6):
                     mn_K.quicklook('collapse/min/pngs/{0}'.format(fn.replace(suffix,"_min_K.png")))
 
 
+                    if hasattr(cube, 'beams'):
+                        print("Beams")
+                        pl.clf()
+                        dt()
+                        beams = mcube.beams
+                        pl.plot(cube.spectral_axis, beams.major.value, label='major')
+                        pl.plot(cube.spectral_axis, beams.minor.value, label='minor')
+                        pl.savefig("collapse/beams/pngs/{0}".format(fn.replace(suffix, "_beams.png")), bbox_inches='tight')
+
                     pl.clf()
                     dt()
                     print("Spatial max (peak spectrum)")
