@@ -14,7 +14,7 @@ assert 'SCRIPT_DIR' in os.environ
 script_dir = Path(os.environ['SCRIPT_DIR'])
 
 scripts = [
-           'make_june2021release.py',
+           'make_june2021_release.py',
            #'make_may2021release.py',
            #'make_oct2020release.py',
            # don't do this any more 'link_files.py',
