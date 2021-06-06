@@ -338,7 +338,7 @@ def determine_asinh_ticklocs(vmin, vmax, nticks, rms=None, stretch='asinh'):
         else:
             arcsinh_range = (np.log10(rms), np.log10(vmax))
             new_ticks = np.concatenate([[-rms, 0,], np.linspace(*arcsinh_range, nticks-2)])
-        print(f"log-based asinh range={arcsinh_range}, vmin={vmin}, vmax={vmax}")
+        #print(f"log-based asinh range={arcsinh_range}, vmin={vmin}, vmax={vmax}")
     rounded = [np.format_float_positional(x, 2, unique=False, fractional=False, trim='k') for x in new_ticks]
 
     rounded_loc = np.array(rounded).astype('float')
