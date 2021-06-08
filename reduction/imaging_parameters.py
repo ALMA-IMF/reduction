@@ -2832,7 +2832,7 @@ line_imaging_parameters_default = {
         "pblimit": 0.05,
         "pbmask": 0.1,
         "perchanweightdensity": False,
-        "interactive": False,
+        "interactive": 0, # returns a dict (False doesn't...)
         "mask_out_endchannels": 2,
     }
     for field in allfields
@@ -3029,6 +3029,11 @@ line_imaging_parameters_custom = {
     },
     "G351.77_B6_12M_robust0_sio": {
         "threshold": "80mJy",  # typical rms is 12-16 mJy, using 5sigma for threshold (8 Mar 2021)
+        "cyclefactor": 2.0,
+        'interactive': 0,
+        "fastnoise": False,
+        "nsigma": 3,
+        "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G353.41_B3_12M_robust0": {
@@ -3048,6 +3053,11 @@ line_imaging_parameters_custom = {
     },
     "G353.41_B6_12M_robust0_sio": {
         "threshold": "48mJy",  # typical rms is 12.5-16 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "cyclefactor": 2.0,
+        'interactive': 0,
+        "fastnoise": False,
+        "nsigma": 3,
+        "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "W43-MM1_B3_12M_robust0": {
