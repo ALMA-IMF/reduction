@@ -72,6 +72,8 @@ def make_zoom(fieldid, zoom_parameters,
         image = image.to(u.mJy/u.beam)
     print(image)
 
+    radesys = image.wcs.wcs.radesys.upper()
+
     fig = pl.figure(1, figsize=(10,10))
     fig.clf()
     ax = fig.add_subplot(projection=image.wcs.celestial)
@@ -94,8 +96,8 @@ def make_zoom(fieldid, zoom_parameters,
     ra = ax.coords['ra']
     ra.set_major_formatter('hh:mm:ss.s')
     dec = ax.coords['dec']
-    ra.set_axislabel("RA (J2000)", fontsize=20)
-    dec.set_axislabel("Dec (J2000)", fontsize=20, minpad=0.0)
+    ra.set_axislabel(f"RA ({radesys})", fontsize=20)
+    dec.set_axislabel(f"Dec ({radesys})", fontsize=20, minpad=0.0)
     ra.ticklabels.set_fontsize(tick_fontsize)
     ra.set_ticks(exclude_overlapping=True)
     dec.ticklabels.set_fontsize(tick_fontsize)
@@ -223,6 +225,8 @@ def make_multifig(fieldid,
     except u.UnitConversionError:
         image = image.to(u.mJy/u.beam)
 
+    radesys = image.wcs.wcs.radesys.upper()
+
     if fig is None:
         fig = pl.figure(1, figsize=(12,10))
         fig.clf()
@@ -306,8 +310,8 @@ def make_multifig(fieldid,
     ra = ax.coords['ra']
     ra.set_major_formatter('hh:mm:ss.s')
     dec = ax.coords['dec']
-    ra.set_axislabel("RA (J2000)", fontsize=20)
-    dec.set_axislabel("Dec (J2000)", fontsize=20, minpad=0.0)
+    ra.set_axislabel(f"RA ({radesys})", fontsize=20)
+    dec.set_axislabel(f"Dec ({radesys})", fontsize=20, minpad=0.0)
     ra.ticklabels.set_fontsize(tick_fontsize)
     ra.set_ticks(exclude_overlapping=True)
     dec.ticklabels.set_fontsize(tick_fontsize)
@@ -399,6 +403,8 @@ def make_robust_comparison(fieldid,
         image = image.to(u.mJy/u.pix)
     elif image.unit.is_equivalent(u.mJy/u.beam):
         image = image.to(u.mJy/u.beam)
+
+    radesys = image.wcs.wcs.radesys.upper()
 
     if fig is None:
         fig = pl.figure(1, figsize=(16,5))
@@ -503,12 +509,12 @@ def make_robust_comparison(fieldid,
         tick_fontsize=16
         ra = ax.coords['ra']
         ra.set_major_formatter('hh:mm:ss.s')
-        ra.set_axislabel("RA (J2000)", fontsize=20)
+        ra.set_axislabel(f"RA ({radesys})", fontsize=20)
         ra.ticklabels.set_fontsize(tick_fontsize)
         ra.set_ticks(exclude_overlapping=True)
         dec = ax.coords['dec']
         if ii == 0:
-            dec.set_axislabel("Dec (J2000)", fontsize=20, minpad=0.0)
+            dec.set_axislabel(f"Dec ({radesys})", fontsize=20, minpad=0.0)
             dec.ticklabels.set_fontsize(tick_fontsize)
             dec.set_ticks(exclude_overlapping=True)
         else:
@@ -971,6 +977,7 @@ if __name__ == "__main__":
                   nsigma_max=45)        
 
 
+    import glob
 
     for band in ('B3','B6'):
         for fieldid in prefixes:

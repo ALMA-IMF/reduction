@@ -36,6 +36,10 @@ bands = {'B3': (80, 110),
         }
 
 
+def touch(fname, times=None):
+    with open(fname, 'a'):
+        os.utime(fname, times)
+
 def logprint(string):
     casalog.post(string, origin='split_cont_windows')
     print(string)
@@ -172,6 +176,8 @@ for band in bands:
 
             if os.path.exists(contvis):
                 logprint("Continuum: Skipping {0} because it's done".format(contvis),)
+            elif os.path.exists(contvis_bestsens+".working"):
+                logprint("Continuum: Skipping {0} because it's in progress in another thread".format(contvis),)
             elif field not in fields:
                 logprint("Skipping {0} because it is not one of the "
                          "selected fields (but its metadata is being "
@@ -180,6 +186,8 @@ for band in bands:
                 logprint("Flagging and splitting {0} to {1} for continuum"
                          .format(visfile, contvis),)
                 logprint("contfile is {0}".format(contfile))
+
+                touch(contvis+".working")
 
 
                 linechannels, linefracs = contchannels_to_linechannels(cont_channel_selection,
@@ -228,10 +236,13 @@ for band in bands:
                 # flag out the autocorres
                 flagdata(vis=contvis, mode='manual', autocorr=True)
 
+                os.remove(contvis+".working")
 
 
             if os.path.exists(contvis_bestsens):
                 logprint("Skipping {0} because it's done".format(contvis_bestsens),)
+            elif os.path.exists(contvis_bestsens+".working"):
+                logprint("Skipping {0} because it's in progress in another thread".format(contvis_bestsens),)
             elif field not in fields:
                 logprint("Skipping {0} because it is not one of the "
                          "selected fields (but its metadata is being "
@@ -239,6 +250,8 @@ for band in bands:
             else:
                 logprint("Splitting 'best-sensitivity' {0} to {1} for continuum"
                          .format(visfile, contvis_bestsens),)
+
+                touch(contvis_bestsens+".working")
 
                 # Average the channels within spws for the "best sensitivity"
                 # continuum, in which nothing is flagged out
@@ -249,6 +262,8 @@ for band in bands:
                              width=widths,
                              datacolumn=datacolumn), "Split Failed 2"
                 flagdata(vis=contvis_bestsens, mode='manual', autocorr=True)
+
+                os.remove(contvis_bestsens+".working")
 
             logprint("Finished splitting for {0} to {1}, {2}:{3} in {4} seconds"
                      .format(visfile, contvis, band, field, time.time() - t0))
