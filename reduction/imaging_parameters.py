@@ -2834,6 +2834,7 @@ line_imaging_parameters_default = {
         "perchanweightdensity": False,
         "interactive": 0, # returns a dict (False doesn't...)
         "mask_out_endchannels": 2,
+        "cyclefactor": 2.0, # higher cyclefactor = more major cycles
     }
     for field in allfields
     for band in ("B3", "B6")
@@ -3028,11 +3029,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {
-        "threshold": "80mJy",  # typical rms is 12-16 mJy, using 5sigma for threshold (8 Mar 2021)
+        "threshold": "48mJy",  # typical rms is 12-16 mJy, using 3sigma for threshold (9 June 2021)
         "cyclefactor": 2.0,
         'interactive': 0,
         "fastnoise": False,
-        "nsigma": 3,
+        #"nsigma": 3,
         "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
@@ -3056,7 +3057,7 @@ line_imaging_parameters_custom = {
         "cyclefactor": 2.0,
         'interactive': 0,
         "fastnoise": False,
-        "nsigma": 3,
+        #"nsigma": 3,
         "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
