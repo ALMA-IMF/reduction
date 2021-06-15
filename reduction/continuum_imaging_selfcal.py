@@ -357,6 +357,7 @@ for continuum_ms in continuum_mses:
               field=field,
              )
 
+
     logprint("Selfcal MS is: "
              "{0}".format(selfcal_ms), origin='contim_selfcal')
     assert os.path.exists(selfcal_ms)

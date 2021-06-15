@@ -54,12 +54,15 @@ t1 = time.time()
 for sg in science_goals:
     # walk only the science goals: walking other directories can be extremely
     # inefficient
+    t2 = time.time()
     for dirpath, dirnames, filenames in os.walk(sg):
         if dirpath.count(os.path.sep) >= 5:
             # skip over things below the sci/gro/mou/<blah>/* level
             continue
         for fn in sorted(dirnames):
             if fn[-10:] == ".split.cal":
+
+                logprint("Spent {0} walking paths between metadata collection steps".format(time.time() - t2))
 
                 t0 = time.time()
                 logprint("Collecting metadata for {0} in {1}; t0={2}".format(fn, dirpath, t0))
@@ -236,6 +239,7 @@ for sg in science_goals:
                     fh.write("{0}".format(antnames))
                 logprint("Acquired metadata for {0} in {1}_{2}_{3} successfully [Elapsed: {4}]"
                          .format(fn, field, band, array_config, time.time() - t0))
+                t2 = time.time()
 
 
                 msmd.close()

@@ -29,6 +29,8 @@ export SCRIPT_DIR=$ALMAIMF_ROOTDIR
 export PYTHONPATH=$SCRIPT_DIR
 
 export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
+export CASA=/orange/adamginsburg/casa/casa-release-5.7.0-134.el7/bin/casa
+export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
 
 export LOGFILENAME="casa_log_split_cont_$(date +%Y-%m-%d_%H_%M_%S).log"
 

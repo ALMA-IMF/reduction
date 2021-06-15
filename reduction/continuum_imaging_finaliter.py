@@ -293,50 +293,6 @@ for continuum_ms in continuum_mses:
     else:
         selfcal_ms = basename+"_"+arrayname+"_selfcal.ms"
 
-    if not os.path.exists(selfcal_ms):
-
-        logprint("Did not find selfcal ms.  Creating new one: "
-                 "{0}".format(selfcal_ms), origin='contim_selfcal')
-
-        msmd.open(continuum_ms)
-        fdm_spws = msmd.spwsforfield(field)
-        assert len(fdm_spws) > 0
-        bws = msmd.bandwidths()[fdm_spws]
-        spwstr = ",".join(map(str, fdm_spws))
-        freqs = [msmd.reffreq(spw)['m0']['value'] for spw in fdm_spws]
-        chwids = [np.mean(msmd.chanwidths(spw)) for spw in fdm_spws]
-
-        # using Roberto's numbers
-        # https://science.nrao.edu/facilities/vla/docs/manuals/oss2016A/performance/fov/bw-smearing
-        Synth_HPBW = 0.3 # Smallest synth HPBW among target sample in arcsec
-        #PB_HPBW = 21. * (300. / minfrq) # PB HPBW at lowest band freq (arcsec)
-        #targetwidth = 0.25 * (Synth_HPBW / PB_HPBW) * minfrq # 98% BW smearing criterion
-
-        width = [int(np.abs(0.25 * (Synth_HPBW / (21. * (300e9 / frq))) * frq / chwid))
-                 for frq, chwid in zip(freqs, chwids)]
-        # do not allow downsampling below 1/2 original width because that drops
-        # edge channels sometimes
-        width = [ww if float(ww)/msmd.nchan(spw) < 0.5 else int(msmd.nchan(spw)/2)
-                 for ww, spw in zip(width, fdm_spws)]
-
-        msmd.close()
-
-        tb.open(continuum_ms)
-        if 'CORRECTED_DATA' in tb.colnames():
-            datacolumn='corrected'
-        else:
-            datacolumn='data'
-        tb.close()
-
-        split(vis=continuum_ms,
-              outputvis=selfcal_ms,
-              datacolumn=datacolumn,
-              antenna=antennae,
-              spw=spwstr,
-              width=width,
-              field=field,
-             )
-
     logprint("Selfcal MS is: "
              "{0}".format(selfcal_ms), origin='contim_selfcal')
     assert os.path.exists(selfcal_ms)

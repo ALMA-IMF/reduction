@@ -19,11 +19,16 @@ from zoom_figures import determine_asinh_ticklocs
 
 def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False, nticks=9,
                           asinh_scaling_factor=10, scalebarlength=15, diff_suffix='.preselfcal-diff',
+                          convert_to_unit=None,
                           sigma_scale=15, cm='gray_r', inset_cm='inferno', allow_zero_diff=False):
     #fh_pre = fits.open()
     #fh_post = fits.open()
     cube_pre = SpectralCube.read(filename1, format='fits' if 'fits' in filename1 else 'casa_image').with_spectral_unit(u.GHz)
     cube_post = SpectralCube.read(filename2, format='fits' if 'fits' in filename2 else 'casa_image').with_spectral_unit(u.GHz)
+
+    if convert_to_unit is not None:
+        cube_pre = cube_pre.to(convert_to_unit)
+        cube_post = cube_post.to(convert_to_unit)
 
     if 'pbcor' in filename1:
         assert 'pbcor' in filename2
@@ -46,8 +51,12 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
-    data_pre = cube_pre[0].value * 1e3
-    data_post = cube_post[0].value * 1e3
+    if convert_to_unit is None:
+        data_pre = cube_pre[0].value * 1e3
+        data_post = cube_post[0].value * 1e3
+    else:
+        data_pre = cube_pre[0].value
+        data_post = cube_post[0].value
 
     #data_pre[np.abs(data_pre) < 1e-7] = np.nan
     #data_post[np.abs(data_post) < 1e-7] = np.nan
@@ -162,7 +171,10 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     cb1 = fig.colorbar(cax=cbax, mappable=im_lin)
     cbax2 = fig.add_axes([0.97,0.18,0.015,0.62])
     cb2 = fig.colorbar(cax=cbax2, mappable=im_in)
-    cb2.set_label("S$_\\nu$ [mJy/beam]")
+    if convert_to_unit is None:
+        cb2.set_label("S$_\\nu$ [mJy/beam]")
+    else:
+        cb2.set_label(f"S$_\\nu$ [{cube_pre.unit.to_string('latex')}]")
     # mn,mx = cb.get_ticks().min(), cb.get_ticks().max()
     # ticklocs = np.concatenate([np.linspace(-linear_norm.vmax, 0, nticks//2)[:-1], np.linspace(0, linear_norm.vmax, nticks//2)])
     # ticks = np.sinh(ticklocs)
