@@ -5,7 +5,7 @@ The first variable is used by ``continuum_imaging.py``.  It specifies the
 parameters to be used for the first-pass imaging before any self-calibration is
 done.  Please add your source name to the 'field' section.
 DO NOT modify the default imaging parameters; if there are any that are
-nnnsuitable for your target field, add them to the
+unsuitable for your target field, add them to the
 ``imaging_parameters_nondefault`` keyword, following the naming scheme laid out
 there.
 

@@ -241,6 +241,9 @@ def make_multifig(fieldid,
 
     norm = simple_norm(img, stretch='linear', min_cut=-nsigma_linear_min*mad, max_cut=nsigma_linear_max*mad,)
 
+    overview_cmap = pl.cm.get_cmap(overview_cmap)
+    overview_cmap.set_bad('white')
+
     im1 = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
     cm = pl.cm.get_cmap(inset_cmap)
