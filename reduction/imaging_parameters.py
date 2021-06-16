@@ -428,7 +428,15 @@ imaging_parameters_nondefault = {
             7: 100000,
             "final": 100000,
         },
-        "scales": [0, 3, 9, 27],
+        "scales": {0: [0, 3, 9, 27],
+                   1: [3, 9, 27], # force larger scales to avoid pointillism in northern HII region
+                   2: [0, 3, 9, 27],
+                   3: [0, 3, 9, 27],
+                   4: [0, 3, 9, 27],
+                   5: [0, 3, 9, 27],
+                   6: [0, 3, 9, 27],
+                   7: [0, 3, 9, 27],
+                  },
         "imsize": [4800, 4800],
         "cell": ["0.0375arcsec", "0.0375arcsec"],
     },
@@ -3026,6 +3034,7 @@ line_imaging_parameters_custom = {
     },
     "G351.77_B6_12M_robust0": {
         "threshold": "80mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
+        "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {

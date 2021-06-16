@@ -112,7 +112,7 @@ export CPUS_PER_TASK=8 # mem/4
 export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in
-W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92)
+W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92|G328.25)
     declare -A mem_map=( ["0"]="64gb" ["1"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
 esac
 

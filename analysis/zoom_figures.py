@@ -211,6 +211,7 @@ def make_multifig(fieldid,
                   region=None,
                   fig=None,
                   ax=None,
+                  title=None,
                   ):
 
     if pfxs is None:
@@ -239,6 +240,9 @@ def make_multifig(fieldid,
     mad = mad_std(img, ignore_nan=True)
 
     norm = simple_norm(img, stretch='linear', min_cut=-nsigma_linear_min*mad, max_cut=nsigma_linear_max*mad,)
+
+    overview_cmap = pl.cm.get_cmap(overview_cmap)
+    overview_cmap.set_bad('white')
 
     im1 = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
@@ -326,6 +330,10 @@ def make_multifig(fieldid,
 
     ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
     ax.add_patch(ell)
+
+    if title:
+        ax.text(0.99, 0.99, fieldid, horizontalalignment='right',
+                verticalalignment='top', transform=ax.transAxes)
 
 
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.png', bbox_inches='tight')
@@ -886,13 +894,13 @@ if __name__ == "__main__":
     import os
     import warnings
 
-    os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/')
+    os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release/')
     
     pl.close(1)
     for band in ('B3','B6'):
         for fieldid in prefixes:
             print(fieldid, band)
-            make_multifig(fieldid, band=band, inner_stretch='asinh')
+            make_multifig(fieldid, band=band, inner_stretch='asinh', title=fieldid)
 
                 
     pl.close('all')

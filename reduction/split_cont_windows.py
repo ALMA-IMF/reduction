@@ -219,12 +219,14 @@ for band in bands:
 
                 # Average the channels within spws
                 # (assert here checks that this completes successfully)
-                assert split(vis=visfile,
+                rslt = split(vis=visfile,
                              spw=",".join(map(str, spws)),
                              field=field,
                              outputvis=contvis,
                              width=widths,
-                             datacolumn=datacolumn), "Split failed!"
+                             datacolumn=datacolumn)
+
+                print("split's result was {0}".format(rslt))
 
                 if not os.path.exists(contvis):
                     raise IOError("Split failed for {0}".format(contvis))
@@ -255,12 +257,13 @@ for band in bands:
 
                 # Average the channels within spws for the "best sensitivity"
                 # continuum, in which nothing is flagged out
-                assert split(vis=visfile,
+                rslt = split(vis=visfile,
                              spw=",".join(map(str, spws)),
                              field=field,
                              outputvis=contvis_bestsens,
                              width=widths,
                              datacolumn=datacolumn), "Split Failed 2"
+                print("split's result was {0}".format(rslt))
                 flagdata(vis=contvis_bestsens, mode='manual', autocorr=True)
 
                 os.remove(contvis_bestsens+".working")
@@ -289,8 +292,9 @@ for band in bands:
             logprint("Merging continuum for {0} {1} into {2}"
                      .format(merged_continuum_fn, field, band),)
 
-            assert concat(vis=cont_to_merge[band][field],
+            rslt = concat(vis=cont_to_merge[band][field],
                           concatvis=merged_continuum_fn,)
+            print(("Concat failed!  result was {0}".format(rslt)))
             flagdata(vis=merged_continuum_fn, mode='manual', autocorr=True)
         cont_mses.append(merged_continuum_fn)
 
@@ -315,9 +319,10 @@ for band in bands:
 
             # Note this search-and-replace pattern: we use this instead
             # of separately storing the continuum bsens MS names
-            assert concat(vis=[x.replace(".cont", "_bsens.cont")
-                               for x in cont_to_merge[band][field]],
+            rslt = concat(vis=[x.replace(".cont", "_bsens.cont") for x in
+                               cont_to_merge[band][field]],
                           concatvis=merged_continuum_bsens_fn,)
+            print(("Concat failed 2!  result was {0}".format(rslt)))
             flagdata(vis=merged_continuum_fn, mode='manual', autocorr=True)
 
         # for debug purposes, we also track the split, unmerged MSes

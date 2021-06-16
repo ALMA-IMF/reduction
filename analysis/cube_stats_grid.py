@@ -172,7 +172,9 @@ if __name__ == "__main__":
                         print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}")
 
                         ia.open(fn)
-                        history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history(list=False)}
+                        hist = ia.history(list=False)
+                        history = {x.split(":")[0]:x.split(": ")[1] for x in hist if ':' in x}
+                        history.update({x.split("=")[0]:x.split("=")[1].lstrip() for x in hist if '=' in x})
                         ia.close()
 
                         if os.path.exists(fn+".fits"):
