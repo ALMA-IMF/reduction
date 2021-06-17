@@ -59,6 +59,8 @@ def make_zoom(fieldid, zoom_parameters,
               nsigma_asinh=5,
               nsigma_max=10,
               nticks_inset=7,
+              fontsize=20,
+              tick_fontsize=16
              ):
 
     pfxs = prefixes[fieldid]
@@ -92,12 +94,11 @@ def make_zoom(fieldid, zoom_parameters,
 
     im = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
-    tick_fontsize=16
     ra = ax.coords['ra']
     ra.set_major_formatter('hh:mm:ss.s')
     dec = ax.coords['dec']
-    ra.set_axislabel(f"RA ({radesys})", fontsize=20)
-    dec.set_axislabel(f"Dec ({radesys})", fontsize=20, minpad=0.0)
+    ra.set_axislabel(f"RA ({radesys})", fontsize=fontsize)
+    dec.set_axislabel(f"Dec ({radesys})", fontsize=fontsize, minpad=0.0)
     ra.ticklabels.set_fontsize(tick_fontsize)
     ra.set_ticks(exclude_overlapping=True)
     dec.ticklabels.set_fontsize(tick_fontsize)
@@ -144,8 +145,8 @@ def make_zoom(fieldid, zoom_parameters,
                  )
 
         cbins = pl.colorbar(mappable=im_ins, cax=caxins)
-        cbins.ax.tick_params(labelsize=14)
-        cbins.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
+        cbins.ax.tick_params(labelsize=tick_fontsize)
+        cbins.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=fontsize)
 
         if 'tick_locs' in zp:
             cbins.set_ticks(zp['tick_locs'])
@@ -178,15 +179,15 @@ def make_zoom(fieldid, zoom_parameters,
                          0.02,
                          ax.get_position().height])
     cb1 = pl.colorbar(mappable=im, cax=cax1)
-    cb1.ax.tick_params(labelsize=14)
-    cb1.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
+    cb1.ax.tick_params(labelsize=tick_fontsize)
+    cb1.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=fontsize)
     pl.setp(cb1.ax.yaxis.get_label(), backgroundcolor="white")
 
     left_side = coordinates.SkyCoord(*image.wcs.celestial.wcs_pix2world(scalebar_loc[1]*img.shape[1],
                                                                         scalebar_loc[0]*img.shape[0], 0)*u.deg, frame='fk5')
     length = (scalebar_length / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
     make_scalebar(ax, left_side, length, color='k', linestyle='-', label=f'{scalebar_length:0.1f}',
-                  fontsize=16, text_offset=0.5*u.arcsec)
+                  text_offset=0.5*u.arcsec, fontsize=fontsize)
 
     ell = image.beam.ellipse_to_plot(beam_loc[1]*img.shape[1], beam_loc[0]*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
     ax.add_patch(ell)
@@ -212,6 +213,9 @@ def make_multifig(fieldid,
                   fig=None,
                   ax=None,
                   title=None,
+                  fontsize=20,
+                  tick_fontsize=14,
+                  figsize=(12,10),
                   ):
 
     if pfxs is None:
@@ -229,7 +233,7 @@ def make_multifig(fieldid,
     radesys = image.wcs.wcs.radesys.upper()
 
     if fig is None:
-        fig = pl.figure(1, figsize=(12,10))
+        fig = pl.figure(1, figsize=figsize)
         fig.clf()
     if ax is None:
         ax = fig.add_subplot(projection=image.wcs.celestial)
@@ -267,19 +271,25 @@ def make_multifig(fieldid,
     divider = make_axes_locatable(ax)
     #cax1 = divider.append_axes("right", size="5%", pad=0.05)
     #cax2 = divider.append_axes("right", size="5%", pad=0.1)
-    cax1 = fig.add_axes([ax.get_position().x1+0.01,
-                         ax.get_position().y0,
-                         0.02,
-                         ax.get_position().height])
-    cax2 = fig.add_axes([ax.get_position().x1+0.08,
-                         ax.get_position().y0,
-                         0.02,
-                         ax.get_position().height])
-
+    #cax1 = fig.add_axes([ax.get_position().x1+0.00,
+    #                     ax.get_position().y0,
+    #                     0.02,
+    #                     ax.get_position().height])
+    cax1 = divider.append_axes("right", size="3%", pad="2%", axes_class=pl.matplotlib.axes.Axes)
+    cax2 = divider.append_axes("right", size="3%", pad="14%", axes_class=pl.matplotlib.axes.Axes)
+    #cax2 = divider.new_horizontal(size="3%", pad=0.25, pack_start=False, axes_class=pl.matplotlib.axes.Axes))
+    #cax2 = fig.add_axes([ax.get_position().x1+0.10,
+    #                     ax.get_position().y0,
+    #                     0.02,
+    #                     ax.get_position().height])
     cb2 = pl.colorbar(mappable=im2, cax=cax2)
     cb1 = pl.colorbar(mappable=im1, cax=cax1)
-    cb1.ax.tick_params(labelsize=14)
-    cb2.ax.tick_params(labelsize=14)
+    cb1.ax.tick_params(labelsize=tick_fontsize)
+    cb2.ax.tick_params(labelsize=tick_fontsize)
+
+
+    fig.add_axes(cax1)
+    fig.add_axes(cax2)
 
     ticklabels = cb2.ax.get_ymajorticklabels()
     ticks = list(cb2.get_ticks())
@@ -308,14 +318,13 @@ def make_multifig(fieldid,
         cb2.set_ticklabels(rounded)
         print(f"old ticks: {ticklabels}, new ticks: {rounded}")
 
-    cb2.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
+    cb2.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=tick_fontsize)
 
-    tick_fontsize=16
     ra = ax.coords['ra']
     ra.set_major_formatter('hh:mm:ss.s')
     dec = ax.coords['dec']
-    ra.set_axislabel(f"RA ({radesys})", fontsize=20)
-    dec.set_axislabel(f"Dec ({radesys})", fontsize=20, minpad=0.0)
+    ra.set_axislabel(f"RA ({radesys})", fontsize=fontsize)
+    dec.set_axislabel(f"Dec ({radesys})", fontsize=fontsize, minpad=0.0)
     ra.ticklabels.set_fontsize(tick_fontsize)
     ra.set_ticks(exclude_overlapping=True)
     dec.ticklabels.set_fontsize(tick_fontsize)
@@ -326,18 +335,20 @@ def make_multifig(fieldid,
     print(left_side)
     length = (0.1*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
     make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.1 pc',
-                  fontsize=16, text_offset=0.5*u.arcsec)
+                  text_offset=0.5*u.arcsec, fontsize=fontsize)
 
     ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
     ax.add_patch(ell)
 
     if title:
-        ax.text(0.99, 0.99, fieldid, fontsize=16, horizontalalignment='right',
+        ax.text(0.99, 0.99, fieldid, fontsize=fontsize, horizontalalignment='right',
                 verticalalignment='top', transform=ax.transAxes)
 
 
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.png', bbox_inches='tight')
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.pdf', bbox_inches='tight')
+
+    return fig,ax
 
 def determine_asinh_ticklocs(vmin, vmax, nticks, rms=None, stretch='asinh'):
     if stretch == 'asinh':
@@ -393,6 +404,8 @@ def make_robust_comparison(fieldid,
                   fig=None,
                   suffix="image.tt0.fits",
                   fileformat='fits',
+                           fontsize=20,
+                           tick_fontsize=14,
                   ):
 
     if pfxs is None:
@@ -512,17 +525,16 @@ def make_robust_comparison(fieldid,
                 cb2.set_ticklabels(rounded)
                 print(f"old ticks: {ticklabels}, new ticks: {rounded}")
 
-            cb2.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=14)
+            cb2.set_label(f"S$_{wl}$ [mJy beam$^{-1}$]", fontsize=tick_fontsize)
 
-        tick_fontsize=16
         ra = ax.coords['ra']
         ra.set_major_formatter('hh:mm:ss.s')
-        ra.set_axislabel(f"RA ({radesys})", fontsize=20)
+        ra.set_axislabel(f"RA ({radesys})", fontsize=fontsize)
         ra.ticklabels.set_fontsize(tick_fontsize)
         ra.set_ticks(exclude_overlapping=True)
         dec = ax.coords['dec']
         if ii == 0:
-            dec.set_axislabel(f"Dec ({radesys})", fontsize=20, minpad=0.0)
+            dec.set_axislabel(f"Dec ({radesys})", fontsize=fontsize, minpad=0.0)
             dec.ticklabels.set_fontsize(tick_fontsize)
             dec.set_ticks(exclude_overlapping=True)
         else:
@@ -535,7 +547,7 @@ def make_robust_comparison(fieldid,
         #print(left_side)
         length = (0.1*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
         make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.1 pc',
-                      fontsize=16, text_offset=0.5*u.arcsec)
+                      fontsize=fontsize, text_offset=0.5*u.arcsec)
 
         try:
             ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
