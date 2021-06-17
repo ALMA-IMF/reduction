@@ -17,14 +17,15 @@ bp_tbl.remove_column('config_2')
 
 
 tbl_selfcal = table.join(Table.read('metadata_sc.ecsv'), bp_tbl, keys=('region', 'band'))
-bad = np.array(['diff' in x for x in tbl_selfcal['filename']])
+bad = np.array([('diff' in x) or ('noco' in x) for x in tbl_selfcal['filename']])
 keep_selfcal = ((tbl_selfcal['suffix'] == 'finaliter') &
                 (tbl_selfcal['robust'] == 'r0.0') &
                 (~tbl_selfcal['pbcor']) &
                 (~tbl_selfcal['bsens']) & 
+                (~tbl_selfcal['nobright']) &
                 (~bad))
 wtbl_selfcal = tbl_selfcal[keep_selfcal]
-assert len(wtbl_selfcal) == 29
+assert len(wtbl_selfcal) == 30 # modified - we now have w43-mm1 b6
 
 tbl_bsens = table.join(Table.read('metadata_bsens_cleanest.ecsv'), bp_tbl, keys=('region', 'band'))
 bad = np.array(['diff' in x for x in tbl_bsens['filename']])
@@ -32,9 +33,10 @@ keep_bsens = ((tbl_bsens['suffix'] == 'finaliter') &
               (tbl_bsens['robust'] == 'r0.0') &
               (~tbl_bsens['pbcor']) &
               (tbl_bsens['bsens']) &
+              (~tbl_bsens['nobright']) &
               (~bad))
 wtbl_bsens = tbl_bsens[keep_bsens]
-assert len(wtbl_bsens) == 29
+assert len(wtbl_bsens) == 30
 
 
 wtbl_bsens['bsens_improvement'] = wtbl_bsens['mad_sample_bsens']/wtbl_bsens['mad_sample_cleanest']
@@ -245,7 +247,7 @@ ax1.axis(lims)
 
 b3bs = wtbl_bsens['band'] == 'B3'
 b6bs = wtbl_bsens['band'] == 'B6'
-wtbl_bsens['SensVsReqPost'] = wtbl_bsens['mad_sample_bsens'] / wtbl_bsens['Req_Sens'] * 1000
+wtbl_bsens['SensVsReqPost'] = wtbl_bsens['mad_sample_bsens'] / wtbl_bsens['Req_Sens']# * 1000
 
 ax2 = pl.subplot(1,2,2)
 ax2.plot(wtbl_bsens['SensVsReqPost'][b3bs], 1./wtbl_bsens['BeamVsReq'][b3bs], label='B3', **b3style)

@@ -15,7 +15,7 @@ overwrite = True
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
     for band in ('B3','B6'):
         for imtype,itgl in zip(('cleanest', 'bsens', 'bsens_nobright', 'bsens_nobright'),
-                               ('continuum_merged_12M', 'bsens_12M', 'bsens_12M_noco', 'bsens_12M_non2h')):
+                               ('continuum_merged_12M', 'bsens_12M', 'bsens_12M_noco', 'bsens_12M_non2hp')):
             itpath = releasepath / field / band / imtype
             itpath.mkdir(parents=True, exist_ok=True)
 
@@ -25,9 +25,9 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
 
                 for robust in (-2,-1,-0.5,0,0.5,1,2):
 
-                    for globstr in (f"{field}*_{band}_*{itgl}*robust{robust}_*selfcal[0-9]*finaliter.{suffix}",
-                                    f"{field}*_{band}_*{itgl}*robust{robust}_*preselfcal.{suffix}",
-                                    f"{field}*_{band}_*{itgl}*robust{robust}_*preselfcal_finalmodel.{suffix}",
+                    for globstr in (f"{field}*_{band}_*{itgl}_robust{robust}_*selfcal[0-9]*finaliter.{suffix}",
+                                    f"{field}*_{band}_*{itgl}_robust{robust}_*preselfcal.{suffix}",
+                                    f"{field}*_{band}_*{itgl}_robust{robust}_*preselfcal_finalmodel.{suffix}",
                                     f"{field}_{band}_*_robust{robust}_12M_mask.{suffix}", # use suffix here to avoid re-copying
                                    ):
 

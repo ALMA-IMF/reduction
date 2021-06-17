@@ -12,7 +12,7 @@ from latex_info import (latexdict, format_float, round_to_n, rounded,
 latexdict = latexdict.copy()
 
 if datetime.datetime.today() > datetime.datetime(year=2021, month=1, day=10):
-    result = requests.get('https://data.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/June2021Release/tables/metadata_sc.ecsv',
+    result = requests.get('https://data.rc.ufl.edu/secure/adamginsburg/ALMA-IMF/February2021Release/tables/metadata_sc.ecsv',
                           auth=('almaimf', keyring.get_password('almaimf', 'almaimf')))
     with open('metadata_sc.ecsv', 'w') as fh:
         fh.write(result.text)
@@ -32,13 +32,14 @@ bp_tbl.remove_column('config_1')
 bp_tbl.remove_column('config_2')
 
 tbl = table.join(Table.read('metadata_sc.ecsv'), bp_tbl, keys=('region', 'band'))
-bad = np.array(['diff' in x for x in tbl['filename']])
+bad = np.array([('diff' in x) or ('noco' in x) for x in tbl['filename']])
 
 # downselect
 keep = ((tbl['suffix'] == 'finaliter') &
         (tbl['robust'] == 'r0.0') &
         (~tbl['pbcor']) &
         (~tbl['bsens']) &
+        (~tbl['nobright']) &
         (~bad))
 
 

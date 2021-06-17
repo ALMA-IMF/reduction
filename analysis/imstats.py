@@ -328,6 +328,7 @@ def parse_fn(fn):
             'robust': 'r'+str(robust),
             'suffix': split[-1],
             'bsens': 'bsens' in fn.lower(),
+            'nobright': ('noco' in fn.lower()) or ('non2hp' in fn.lower()),
             'pbcor': 'pbcor' in fn.lower(),
            }
 
@@ -748,7 +749,7 @@ def savestats(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Releas
     requested = get_requested_sens()
 
     meta_keys = ['region', 'band', 'array', 'selfcaliter', 'robust', 'suffix',
-                 'bsens', 'pbcor', 'filename']
+                 'bsens', 'pbcor', 'nobright', 'filename']
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'sum', 'fluxsum', 'sumgt3sig',
                   'sumgt5sig', 'mad', 'mad_sample', 'std_sample', 'peak/mad',
                   'psf_secondpeak', 'psf_secondpeak_radius',
@@ -774,12 +775,13 @@ def savestats(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Releas
     # do some QA
     tbl.add_column(Column(name='SensVsReq', data=tbl['mad']*1e3/tbl['Req_Sens']))
     tbl.add_column(Column(name='BeamVsReq', data=(tbl['bmaj']*tbl['bmin'])**0.5/tbl['Req_Res']))
+    tbl.add_column(Column(name='BmajVsReq', data=tbl['bmaj']/tbl['Req_Res']))
 
-    tbl.write(f'{basepath}/tables/metadata_{suffix}.ecsv', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata_{suffix}.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.ecsv', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.html',
               format='ascii.html', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata_{suffix}.tex', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata_{suffix}.js.html',
+    tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.tex', overwrite=True)
+    tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.js.html',
               format='jsviewer')
 
     return tbl

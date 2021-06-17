@@ -332,7 +332,7 @@ def make_multifig(fieldid,
     ax.add_patch(ell)
 
     if title:
-        ax.text(0.99, 0.99, fieldid, horizontalalignment='right',
+        ax.text(0.99, 0.99, fieldid, fontsize=16, horizontalalignment='right',
                 verticalalignment='top', transform=ax.transAxes)
 
 

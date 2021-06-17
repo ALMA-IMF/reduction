@@ -32,6 +32,7 @@ sharepath = '/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/'
 #tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021/tables/metadata.ecsv')
 tbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/tables/metadata_image.tt0.ecsv')
 #tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/February2021Release/tables/metadata.ecsv')
+# in imstats tbl.add_column(Column(name='nobright', data=['no2nhp' in fn or 'noco' in fn for fn in tbl['filename']]))
 tbl.add_column(Column(name='casaversion_pre', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='casaversion_post', data=['                 ']*len(tbl)))
 tbl.add_column(Column(name='has_amp', data=[False]*len(tbl)))
@@ -63,13 +64,19 @@ tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 
 pl.close('all')
 
+imtype_glob_map = {'bsens': 'bsens_12M_robust',
+                   'cleanest': 'merged_12m_robust',
+                   'bsens_nobright': 'bsens_12M_no'
+                  }
+
+
 for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W43-MM2 G333.60 G338.93 G353.41".split():
     for band in (3,6):
-        for imtype in ('cleanest', 'bsens', ):#'7m12m', ):
+        for imtype in ('cleanest', 'bsens', 'bsens_nobright'):#'7m12m', ):
             for suffix in ('image.tt0.fits', 'image.tt0.pbcor.fits'):
 
                 # for not all-in-the-same-place stuff
-                fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*selfcal[0-9]*.{suffix}")
+                fns = [x for x in glob.glob(f"{field}/B{band}/{imtype}/{field}*_B{band}_*{imtype_glob_map[imtype]}*selfcal[0-9]*.{suffix}")
                        if 'robust0_' in x]
 
                 config = '7M12M' if '7m' in imtype else '12M'
@@ -104,6 +111,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                         fig.set_figwidth(14)
 
                     bsens = '_bsens' if 'bsens' in postselfcal_name else ''
+                    nobright = '_nobright' if 'noco' in postselfcal_name or 'non2hp' in postselfcal_name else ''
 
 
                     try:
@@ -118,8 +126,8 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                             os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
                         if not os.path.exists(f"{sharepath}/comparison_images/"):
                             os.mkdir(f"{sharepath}/comparison_images/")
-                        fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
-                        shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png",
+                        fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}{nobright}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+                        shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}{nobright}_selfcal{last_selfcal}_comparison.png",
                                     f"{sharepath}/comparison_images/")
                     except IndexError:
                         raise
@@ -134,7 +142,8 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                                 (tbl['array'] == ('12Monly' if config == '12M' else config)) &
                                 (tbl['robust'] == 'r0.0') &
                                 (tbl['bsens'] if 'bsens' in imtype else ~tbl['bsens']) &
-                                (tbl['pbcor'] if 'pbcor' in suffix else ~tbl['pbcor'])
+                                (tbl['pbcor'] if 'pbcor' in suffix else ~tbl['pbcor']) &
+                                (tbl['nobright'] if nobright else ~tbl['nobright'])
                                )
                     if matchrow.sum() == 0:
                         raise ValueError(f"No matches for field={field} band={band} config={config} imtype={imtype} suffix={suffix}")
@@ -170,7 +179,7 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                     tbl['has_amp'][matchrow] = diffstats['has_amp']
 
                     print(fns)
-                    print(f"{field}_B{band}:{last_selfcal}: matched {matchrow.sum()} rows")
+                    print(f"{field}_B{band}{nobright}:{last_selfcal}: matched {matchrow.sum()} rows")
                 else:
                     print(f"No hits for {field}_B{band}_{config} imtype={imtype}")
 
@@ -201,29 +210,26 @@ for bp in ('/orange/adamginsburg/web/secure/ALMA-IMF/',
               #formats=formats,
               format='jsviewer')
 
-
-
-
-
-bsens=""
-last_selfcal=9
-config='12M'
-band=3
-field='G010.62'
-preselfcal_name = f'{basepath}/{field}/B{band}/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_preselfcal_finalmodel.image.tt0'
-postselfcal_name = f'{basepath}/{field}/B{band}/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter.image.tt0'
-
-ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name,
-                                                      postselfcal_name,
-                                                      title1='Preselfcal',
-                                                      title2='Postselfcal',
-                                                      sigma_scale=5,
-                                                      writediff=True)
-fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
-shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png",
-            f"{sharepath}/comparison_images/")
-
-
-
-
+# some special case?
+# bsens=""
+# last_selfcal=9
+# config='12M'
+# band=3
+# field='G010.62'
+# preselfcal_name = f'{basepath}/{field}/B{band}/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_preselfcal_finalmodel.image.tt0'
+# postselfcal_name = f'{basepath}/{field}/B{band}/cleanest/G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter.image.tt0'
+# 
+# ax1, ax2, ax3, fig, diffstats = make_comparison_image(preselfcal_name,
+#                                                       postselfcal_name,
+#                                                       title1='Preselfcal',
+#                                                       title2='Postselfcal',
+#                                                       sigma_scale=5,
+#                                                       writediff=True)
+# fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
+# shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}_selfcal{last_selfcal}_comparison.png",
+#             f"{sharepath}/comparison_images/")
+ 
+ 
+ 
+ 
 os.chdir(cwd)
