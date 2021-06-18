@@ -77,6 +77,9 @@ def make_robust_comparison_figures(fieldname, bandname,
     ax1 = pl.subplot(3,1,2)
     ax2 = pl.subplot(3,1,3)
 
+    array_label_map = {'12M': 'cleanest',
+                       'bsens_12M': 'bsens'}
+
     for array, marker in zip(arrays, 'sox'):
         try:
             rmses = [rms[(array, robust)].to(u.mJy/u.beam).value for robust in
@@ -84,13 +87,13 @@ def make_robust_comparison_figures(fieldname, bandname,
         except u.UnitConversionError:
             rmses = [rms[(array, robust)].to(u.mJy).value for robust in
                      robusts]
-        ax1.plot(robusts, rmses, label=array.replace("_"," "),
+        ax1.plot(robusts, rmses, label=array_label_map[array],
                  marker=marker)
         ax2.plot(robusts, [beams[(array, robust)].major.to(u.arcsec).value for
-                           robust in robusts], label=array.replace("_"," "),
+                           robust in robusts], label=array_label_map[array],
                  marker=marker)
         ax3.plot(robusts, [dynamicrange[(array, robust)] for robust in
-                           robusts], label=array.replace("_"," "),
+                           robusts], label=array_label_map[array],
                  marker=marker)
 
 
@@ -102,8 +105,10 @@ def make_robust_comparison_figures(fieldname, bandname,
     ax3.set_ylabel("Dynamic Range")
 
     pl.figure(2)
-    pl.legend(loc='best')
+    leg = pl.legend(loc='best')
+    pl.setp(leg.texts, family='courier')
     pl.suptitle(f"{fieldname} {bandname}")
+    pl.tight_layout()
     pl.savefig(baseimagename+'_noise_and_beams_vs_robust.png', bbox_inches='tight')
     pl.savefig(baseimagename+'_noise_and_beams_vs_robust.pdf', bbox_inches='tight')
 

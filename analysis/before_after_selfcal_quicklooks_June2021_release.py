@@ -125,8 +125,12 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                             os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
                         if not os.path.exists(f"{sharepath}/comparison_images/"):
                             os.mkdir(f"{sharepath}/comparison_images/")
+                        pl.suptitle(f"{field} B{band}")
                         fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}{nobright}_selfcal{last_selfcal}_comparison.png", bbox_inches='tight')
                         shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}{nobright}_selfcal{last_selfcal}_comparison.png",
+                                    f"{sharepath}/comparison_images/")
+                        fig.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}{nobright}_selfcal{last_selfcal}_comparison.pdf", bbox_inches='tight')
+                        shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}{bsens}{nobright}_selfcal{last_selfcal}_comparison.pdf",
                                     f"{sharepath}/comparison_images/")
                     except IndexError:
                         raise

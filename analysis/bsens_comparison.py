@@ -2,6 +2,7 @@ import numpy as np
 import warnings
 import glob
 import os
+import shutil
 from astropy.io import fits
 from astropy import visualization
 from astropy.table import Table, Column
@@ -17,6 +18,9 @@ def bsens_comparison(release="June2021Release"):
     basepath = f'/orange/adamginsburg/web/secure/ALMA-IMF/{release}'
     basepath = f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/{release}/'
     os.chdir(basepath)
+    sharepath = f'/orange/adamginsburg/web/secure/ALMA-IMF/{release}/'
+    if not os.path.exists(f"{sharepath}/bsens_comparison_images/"):
+        os.mkdir(f"{sharepath}/bsens_comparison_images/")
 
     import imstats
 
@@ -150,8 +154,15 @@ def bsens_comparison(release="June2021Release"):
 
                     if not os.path.exists(f"{basepath}/{field}/B{band}/comparisons/"):
                         os.mkdir(f"{basepath}/{field}/B{band}/comparisons/")
+                    pl.suptitle(f"{field} B{band}")
                     pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.png",
                                bbox_inches='tight', dpi=200)
+                    pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.pdf",
+                               bbox_inches='tight', dpi=200)
+                    shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.png",
+                                f"{sharepath}/bsens_comparison_images/")
+                    shutil.copy(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.pdf",
+                                f"{sharepath}/bsens_comparison_images/")
 
                     matchrow = ((tbl['region'] == field) &
                                 (tbl['band'] == f'B{band}') &
@@ -232,6 +243,8 @@ def bsens_comparison(release="June2021Release"):
                                                           diff_suffix='.bsens-cleanest'
                                                          )
     pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.png",
+               bbox_inches='tight', dpi=200)
+    pl.savefig(f"{basepath}/{field}/B{band}/comparisons/{field}_B{band}_{config}_bsens_vs_cleanest_comparison.pdf",
                bbox_inches='tight', dpi=200)
 
 if __name__ == "__main__":
