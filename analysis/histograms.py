@@ -120,6 +120,7 @@ if __name__ == "__main__":
     data = {}
     for fieldid, pfxs in prefixes.items():
         flux_hist(basepath=basepath, **pfxs)
+        pl.suptitle(fieldid)
         savefig(f"../paper_figures/flux_histograms/{fieldid}_B3B6_flux_histogram.pdf", bbox_inches='tight')
 
     """

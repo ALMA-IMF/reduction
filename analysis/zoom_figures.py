@@ -276,7 +276,7 @@ def make_multifig(fieldid,
     #                     0.02,
     #                     ax.get_position().height])
     cax1 = divider.append_axes("right", size="3%", pad="2%", axes_class=pl.matplotlib.axes.Axes)
-    cax2 = divider.append_axes("right", size="3%", pad="14%", axes_class=pl.matplotlib.axes.Axes)
+    cax2 = divider.append_axes("right", size="3%", pad="12%", axes_class=pl.matplotlib.axes.Axes)
     #cax2 = divider.new_horizontal(size="3%", pad=0.25, pack_start=False, axes_class=pl.matplotlib.axes.Axes))
     #cax2 = fig.add_axes([ax.get_position().x1+0.10,
     #                     ax.get_position().y0,
@@ -344,6 +344,8 @@ def make_multifig(fieldid,
         ax.text(0.99, 0.99, fieldid, fontsize=fontsize, horizontalalignment='right',
                 verticalalignment='top', transform=ax.transAxes)
 
+    # try to fix the spacing between colorbars at the end
+    pl.tight_layout()
 
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.png', bbox_inches='tight')
     pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.pdf', bbox_inches='tight')

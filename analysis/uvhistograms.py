@@ -109,6 +109,7 @@ if  __name__ == "__main__":
 
         with np.errstate(divide='ignore'):
             pctiles,majpct,minpct = make_figure(data, wavelength, beam)
+        pl.suptitle(f"{region} {band}")
         savefig(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/paper_figures/uvhistograms/{region}_{band}_uvhistogram.pdf', bbox_inches='tight')
 
         uvdata.append({

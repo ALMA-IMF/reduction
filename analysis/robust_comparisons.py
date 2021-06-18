@@ -103,14 +103,16 @@ def make_robust_comparison_figures(fieldname, bandname,
 
     pl.figure(2)
     pl.legend(loc='best')
+    pl.suptitle(f"{fieldname} {bandname}")
     pl.savefig(baseimagename+'_noise_and_beams_vs_robust.png', bbox_inches='tight')
+    pl.savefig(baseimagename+'_noise_and_beams_vs_robust.pdf', bbox_inches='tight')
 
 if __name__ == "__main__":
     from pathlib import Path
     from os import symlink, chdir, mkdir
     import glob
     releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults/')
-    #releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release/')
+    releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release/')
     basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 
     dirnames = {#'fullcubes_12m': 'spw[0-9]_12M_spw[0-9]',

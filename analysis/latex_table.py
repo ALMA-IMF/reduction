@@ -45,6 +45,7 @@ keep = ((tbl['suffix'] == 'finaliter') &
 
 wtbl = tbl[keep]
 
+assert not any(np.isnan(wtbl['dr_improvement']))
 
 print(len(wtbl))
 print(wtbl)

@@ -65,7 +65,7 @@ tbl.add_column(Column(name='dr_improvement', data=[np.nan]*len(tbl)))
 pl.close('all')
 
 imtype_glob_map = {'bsens': 'bsens_12M_robust',
-                   'cleanest': 'merged_12m_robust',
+                   'cleanest': 'merged_12M_robust',
                    'bsens_nobright': 'bsens_12M_no'
                   }
 
@@ -145,6 +145,9 @@ for field in "W51-E W51-IRS2 G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G32
                                 (tbl['pbcor'] if 'pbcor' in suffix else ~tbl['pbcor']) &
                                 (tbl['nobright'] if nobright else ~tbl['nobright'])
                                )
+                    if np.isnan(diffstats['sum_post']):
+                        raise ValueError("NaN sum - nonsense.")
+
                     if matchrow.sum() == 0:
                         raise ValueError(f"No matches for field={field} band={band} config={config} imtype={imtype} suffix={suffix}")
                     tbl['scMaxDiff'][matchrow] = diffstats['max']
