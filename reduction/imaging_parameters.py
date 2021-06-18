@@ -3034,7 +3034,8 @@ line_imaging_parameters_custom = {
     },
     "G351.77_B6_12M_robust0": {
         "threshold": "80mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
-        "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
+        "smallscalebias": 1.0, # bias toward smaller scales; the large scales cause divergence
+        "perchanweightdensity": True,
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {

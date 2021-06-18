@@ -140,8 +140,7 @@ latexdict['tablefoot'] = ("}\par\n"
                           "factor."
                          )
 
-fwtbl.sort('Band')
-fwtbl.sort('Region')
+fwtbl.sort(['Region','Band'])
 
 fwtbl.write("../datapaper/selfcal_summary.tex", formats=formats,
            overwrite=True, latexdict=latexdict)

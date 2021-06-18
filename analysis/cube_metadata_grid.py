@@ -40,14 +40,25 @@ if os.getenv('DASK_THREADS') is not None:
         nthreads = 1
         scheduler = 'synchronous'
 
-default_lines = {'n2hp': '93.173700GHz',
-                 'sio': '217.104984GHz',
-                 'h2co303': '218.222195GHz',
-                 '12co': '230.538GHz',
-                 'h30a': '231.900928GHz',
-                 'h41a': '92.034434GHz',
-                 "c18o": "219.560358GHz",
-                }
+default_lines = {
+    "h41a": "92.034434GHz",
+    "ch3cnv8=1": "92.26144GHz",
+    "ch3cn": "91.97GHz",  # range from 91.987 to 91.567
+    "13cs_2-1": "92.49430800GHz",
+    "n2hp": "93.173700GHz",
+    "ch3cch_62-52": "102.547983GHz",
+    "h2cs_322-221": "103.039927GHz",
+    "h2cs_312-211": "104.617040GHz",
+    "oc33s_18-17": "216.14735900GHz",
+    "sio": "217.104984GHz",
+    "h2co_303-202": "218.222195GHz",
+    "c18o": "219.560358GHz",
+    "so_6-5": "219.94944200GHz",
+    "12co": "230.538GHz",
+    "ocs_19-18": "231.06099340GHz",
+    "13cs_5-4": "231.22068520GHz",
+    "h30a": "231.900928GHz",
+}
 spws = {3: list(range(4)),
         6: list(range(7)),}
 
@@ -89,7 +100,9 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                     mod_date = time.ctime(os.path.getmtime(fn))
 
                     ia.open(fn)
-                    history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
+                    hist = ia.history(list=False)
+                    history = {x.split(":")[0]:x.split(": ")[1] for x in hist if ':' in x}
+                    history.update({x.split("=")[0]:x.split("=")[1].lstrip() for x in hist if '=' in x})
                     ia.close()
 
                     if os.path.exists(fn+".fits"):
@@ -133,7 +146,9 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                     mod_date = time.ctime(os.path.getmtime(fn))
 
                     ia.open(fn)
-                    history = {x.split(":")[0]:x.split(": ")[1] for x in ia.history()}
+                    hist = ia.history(list=False)
+                    history = {x.split(":")[0]:x.split(": ")[1] for x in hist if ':' in x}
+                    history.update({x.split("=")[0]:x.split("=")[1].lstrip() for x in hist if '=' in x})
                     ia.close()
 
                     line = 'none'

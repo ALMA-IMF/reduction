@@ -53,7 +53,7 @@ print(wtbl)
 wtbl['selfcaliter'] = Column(data=[int(x[2:]) for x in wtbl['selfcaliter']])
 wtbl['bsens_div_cleanest_mad'] = wtbl['mad_bsens'] / wtbl['mad_cleanest']
 wtbl['bsens_div_cleanest_max'] = wtbl['max_bsens'] / wtbl['max_cleanest']
-wtbl['bsens_mad_div_req'] = wtbl['mad_bsens'] / wtbl['Req_Sens'] * 1e3
+wtbl['bsens_mad_div_req'] = wtbl['mad_bsens'] / wtbl['Req_Sens']# * 1e3
 
 
 cols_to_keep = {'region':'Region',
@@ -162,8 +162,7 @@ latexdict['tablefoot'] = ("}\par\n"
 
                          )
 
-wtbl.sort('Band')
-wtbl.sort('Region')
+wtbl.sort(['Region','Band'])
 
 wtbl.write("../datapaper/bsens_cleanest_diff.tex", formats=formats,
            overwrite=True, latexdict=latexdict)

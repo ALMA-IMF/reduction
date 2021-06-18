@@ -105,7 +105,7 @@ if  __name__ == "__main__":
             data[spw] = ms.getdata(items=['weight', 'uvdist', 'flag'])
             ms.close()
 
-        beam = mslist[(region,band)]['beam']#*u.arcsec
+        beam = u.Quantity(mslist[(region,band)]['beam'], u.arcsec)
 
         with np.errstate(divide='ignore'):
             pctiles,majpct,minpct = make_figure(data, wavelength, beam)

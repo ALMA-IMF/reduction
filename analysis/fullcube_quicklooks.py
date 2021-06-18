@@ -192,6 +192,7 @@ for band in (3,6):
                         beams = cube.beams
                         pl.plot(cube.spectral_axis, beams.major.value, label='major')
                         pl.plot(cube.spectral_axis, beams.minor.value, label='minor')
+                        pl.legend(loc='best')
                         pl.savefig("collapse/beams/pngs/{0}".format(fn.replace(suffix, "_beams.png")), bbox_inches='tight')
 
                     pl.clf()
