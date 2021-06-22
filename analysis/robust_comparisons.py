@@ -154,3 +154,29 @@ if __name__ == "__main__":
                                                    uidname=uid,)
 
                 chdir(cwd)
+
+    from zoom_figures import make_zoom, make_multifig, make_robust_comparison
+
+    for band in ('B3','B6'):
+        for fieldid in prefixes:
+            for robust0fn in glob.glob(f'/orange/adamginsburg/ALMA_IMF/RestructuredImagingResults/{fieldid}*/{band}/cleanest/{fieldid}*_{band}_uid___A001_X1296_*_continuum_merged_12M_robust0_selfcal*_finaliter.image.tt0'):
+                pfx = robust0fn.replace(".image.tt0","")
+                print(fieldid, band, pfx)
+                try:
+                    make_robust_comparison(fieldid, band=band, nsigma_linear_max=15, inner_stretch='asinh',
+                                           finaliter_prefix=pfx, suffix='model.tt0', fileformat='casa_image')
+                except FileNotFoundError:
+                    print(f"File not found: {fieldid} {band} {pfx} model.tt0")
+
+                try:
+                    make_robust_comparison(fieldid, band=band, nsigma_linear_max=15, inner_stretch='asinh',
+                                           finaliter_prefix=pfx, suffix='residual.tt0', fileformat='casa_image')
+                except FileNotFoundError:
+                    print(f"File not found: {fieldid} {band} {pfx} residual.tt0")
+
+                try:
+                    make_robust_comparison(fieldid, band=band, nsigma_linear_max=15, inner_stretch='asinh',
+                                           suffix='image.tt0', fileformat='casa_image',
+                                           finaliter_prefix=pfx)
+                except FileNotFoundError:
+                    print(f"File not found: {fieldid} {band} {pfx} image.tt0")

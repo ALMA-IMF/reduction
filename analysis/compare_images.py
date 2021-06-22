@@ -174,7 +174,8 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     if convert_to_unit is None:
         cb2.set_label("S$_\\nu$ [mJy/beam]")
     else:
-        cb2.set_label(f"S$_\\nu$ [{cube_pre.unit.to_string('latex')}]")
+        cube_unit = cube_pre.unit.to_string('latex').strip("$").lstrip("$")
+        cb2.set_label(f"S$_\\nu$ $\left[{cube_unit}\\right]$")
     # mn,mx = cb.get_ticks().min(), cb.get_ticks().max()
     # ticklocs = np.concatenate([np.linspace(-linear_norm.vmax, 0, nticks//2)[:-1], np.linspace(0, linear_norm.vmax, nticks//2)])
     # ticks = np.sinh(ticklocs)

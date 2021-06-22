@@ -1,6 +1,7 @@
 import numpy as np
 from astropy import units as u
 from astropy.io import ascii
+import string
 
 def exp_to_tex(st):
     if st == 'nan':
@@ -46,9 +47,12 @@ def round_to_n(x, n):
     else:
         return round(x, -int(np.floor(np.log10(np.abs(x)))) + (n - 1))
 
-def strip_trailing_zeros(x):
+def strip_trailing_zeros(x, nsf=2):
     if '.' in x:
         y = x.rstrip("0")
+        if len(y.rstrip('.')) < nsf or (sum(y.count(x) for x in string.digits[1:]) < nsf):
+            # if y = 1, for example
+            return y+"0"
         return y.rstrip(".")
     else:
         return x
