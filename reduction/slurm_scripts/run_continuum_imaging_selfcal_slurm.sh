@@ -41,4 +41,4 @@ echo "ALMAIMF_ROOTDIR: ${ALMAIMF_ROOTDIR}"
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
 xvfb-run -d ${CASA} --logfile=${LOGFILENAME}  --nogui --nologger -c "execfile('$ALMAIMF_ROOTDIR/continuum_imaging_selfcal.py')"
-xvfb-run -d ${CASA} --logfile=${LOGFILENAME}  --nogui --nologger -c "execfile('$ALMAIMF_ROOTDIR/continuum_imaging_finaliter.py')"
+# not successful xvfb-run -d ${CASA} --logfile=${LOGFILENAME}  --nogui --nologger -c "execfile('$ALMAIMF_ROOTDIR/continuum_imaging_finaliter.py')"

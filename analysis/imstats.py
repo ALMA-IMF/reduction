@@ -177,7 +177,9 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
     return (residual_peak,
             peakloc_as.value,
-            psf_residual_integral/psf_integral_firstpeak)
+            psf_residual_integral/psf_integral_firstpeak,
+            (rr, cutout, view, bmfit_residual)
+           )
 
 
 
@@ -266,9 +268,9 @@ def imstats(fn, reg=None):
 
     if os.path.exists(psf_fn):
         try:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction = get_psf_secondpeak(psf_fn)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, _ = get_psf_secondpeak(psf_fn)
         except IndexError:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction = get_psf_secondpeak(psf_fn, max_npix_peak=200)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
         meta['psf_secondpeak'] = psf_secondpeak
         meta['psf_secondpeak_radius'] = psf_secondpeak_loc
         meta['psf_secondpeak_sidelobefraction'] = psf_sidelobe1_fraction

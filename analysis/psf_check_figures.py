@@ -9,7 +9,7 @@ from imstats import get_psf_secondpeak
 
 import pylab as pl
 
-releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/May2021Release')
+releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release')
 
 if not os.path.exists(releasepath / 'figures'):
     os.mkdir(releasepath / 'figures')
@@ -45,7 +45,8 @@ for jj, band in enumerate(('B3', 'B6')):
         ax = pl.subplot(3, 5, ii+1)
         ax.set_title(field)
         log.info(f"{field} {band}")
-        get_psf_secondpeak(psffn, show_image=True, min_radial_extent=2.5*u.arcsec,
+        (psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, (rr, cutout, view, bmfit_residual)) = \
+                get_psf_secondpeak(psffn, show_image=True, min_radial_extent=2.5*u.arcsec,
                            max_radial_extent=5*u.arcsec
                           )
 
@@ -59,4 +60,5 @@ for jj, band in enumerate(('B3', 'B6')):
     fig.savefig(releasepath / f'figures/{band}_psfs.png', bbox_inches='tight', dpi=300)
     fig.savefig(releasepath / f'figures/{band}_psfs.pdf', bbox_inches='tight')
 
+    raise
 
