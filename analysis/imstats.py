@@ -20,6 +20,7 @@ import glob
 from functools import reduce
 import operator
 import re
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 warnings.filterwarnings('ignore', category=wcs.FITSFixedWarning, append=True)
 warnings.filterwarnings('ignore', category=BeamWarning, append=True)
@@ -161,19 +162,24 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
         #extent = np.array([-first_min_ind, first_min_ind, -first_min_ind, first_min_ind])*pixscale.to(u.arcsec).value
         extent = np.array([-radial_extent, radial_extent, -radial_extent, radial_extent])*pixscale.to(u.arcsec).value
-        pl.imshow(bmfit_residual2, origin='lower', interpolation='nearest',
-                  extent=extent, cmap='gray_r')
-        cb = pl.colorbar()
+        ax = pl.gca()
+        im = ax.imshow(bmfit_residual2, origin='lower',
+                       interpolation='nearest', extent=extent, cmap='gray_r')
+
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad="3%", axes_class=pl.matplotlib.axes.Axes)
+        cb = pl.colorbar(mappable=im, cax=cax)
         pl.matplotlib.colorbar.ColorbarBase.add_lines(self=cb,
                                                       levels=[max_sidelobe],
                                                       colors=[(0.1,0.7,0.1,0.9)],
                                                       linewidths=1)
-        pl.contour(bm2.array/bm2.array.max(), levels=[0.1,0.5,0.9], colors=['r']*3, extent=extent)
-        pl.contour(rr[view], levels=[first_min_ind, r_max_sidelobe],
+
+        ax.contour(bm2.array/bm2.array.max(), levels=[0.1,0.5,0.9], colors=['r']*3, extent=extent)
+        ax.contour(rr[view], levels=[first_min_ind, r_max_sidelobe],
                    linestyles=['--',':'],
                    colors=[(0.2,0.2,1,0.5), (0.1,0.7,0.1,0.5)], extent=extent)
-        pl.xlabel("RA Offset [arcsec]")
-        pl.ylabel("Dec Offset [arcsec]")
+        ax.set_xlabel("RA Offset [arcsec]")
+        ax.set_ylabel("Dec Offset [arcsec]")
 
     return (residual_peak,
             peakloc_as.value,
@@ -783,11 +789,8 @@ def savestats(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Releas
     tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.html',
               format='ascii.html', overwrite=True)
     tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.tex', overwrite=True)
-
-    jsfile = f'{basepath}/tables/metadata_{suffix.strip("*")}.js.html'
-    if os.path.exists(jsfile):
-        os.remove(jsfile)
-    tbl.write(jsfile, format='jsviewer')
+    tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.js.html',
+              format='jsviewer')
 
     return tbl
 

@@ -17,7 +17,7 @@ if not os.path.exists(releasepath / 'figures'):
 pl.close('all')
 
 for jj, band in enumerate(('B3', 'B6')):
-    fig = pl.figure(jj, figsize=(15, 10))
+    fig = pl.figure(jj, figsize=(15, 8))
     fig.clf()
     fig.suptitle(band)
 
@@ -57,8 +57,6 @@ for jj, band in enumerate(('B3', 'B6')):
 
 
     pl.subplots_adjust(wspace=0.32)
+    pl.tight_layout()
     fig.savefig(releasepath / f'figures/{band}_psfs.png', bbox_inches='tight', dpi=300)
     fig.savefig(releasepath / f'figures/{band}_psfs.pdf', bbox_inches='tight')
-
-    raise
-
