@@ -783,8 +783,11 @@ def savestats(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Releas
     tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.html',
               format='ascii.html', overwrite=True)
     tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.tex', overwrite=True)
-    tbl.write(f'{basepath}/tables/metadata_{suffix.strip("*")}.js.html',
-              format='jsviewer')
+
+    jsfile = f'{basepath}/tables/metadata_{suffix.strip("*")}.js.html'
+    if os.path.exists(jsfile):
+        os.remove(jsfile)
+    tbl.write(jsfile, format='jsviewer')
 
     return tbl
 

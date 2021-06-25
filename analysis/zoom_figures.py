@@ -60,7 +60,8 @@ def make_zoom(fieldid, zoom_parameters,
               nsigma_max=10,
               nticks_inset=7,
               fontsize=20,
-              tick_fontsize=16
+              tick_fontsize=16,
+              savedir='/orange/adamginsburg/ALMA_IMF/datapaper/figures'
              ):
 
     pfxs = prefixes[fieldid]
@@ -193,8 +194,8 @@ def make_zoom(fieldid, zoom_parameters,
     ax.add_patch(ell)
 
 
-    pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_inset_zooms_{band}.png', bbox_inches='tight')
-    pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_inset_zooms_{band}.pdf', bbox_inches='tight')
+    pl.savefig(f'{savedir}/{fieldid}_inset_zooms_{band}.png', bbox_inches='tight')
+    pl.savefig(f'{savedir}/{fieldid}_inset_zooms_{band}.pdf', bbox_inches='tight')
 
 
 def make_multifig(fieldid,
@@ -216,6 +217,7 @@ def make_multifig(fieldid,
                   fontsize=20,
                   tick_fontsize=14,
                   figsize=(12,10),
+                  savedir='/orange/adamginsburg/ALMA_IMF/datapaper/figures'
                   ):
 
     if pfxs is None:
@@ -347,8 +349,8 @@ def make_multifig(fieldid,
     # try to fix the spacing between colorbars at the end
     pl.tight_layout()
 
-    pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.png', bbox_inches='tight')
-    pl.savefig(f'/orange/adamginsburg/ALMA_IMF/datapaper/figures/{fieldid}_multicolor_{band}.pdf', bbox_inches='tight')
+    pl.savefig(f'{savedir}/{fieldid}_multicolor_{band}.png', bbox_inches='tight')
+    pl.savefig(f'{savedir}/{fieldid}_multicolor_{band}.pdf', bbox_inches='tight')
 
     return fig,ax
 
@@ -908,104 +910,118 @@ if __name__ == "__main__":
     import os
     import warnings
 
-    os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release/')
-    
-    pl.close(1)
+    for release in ('February2021Release', 'June2021Release', ):
+        os.chdir(f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/{release}/')
+        savedir = f'/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/{release}/figures'
+        if not os.path.exists(savedir):
+            os.mkdir(savedir)
+
+        prefixes['W43MM1']['finaliter_prefix_b6'] = ('W43-MM1/B6/cleanest/W43-MM1_B6_uid___A001_X12f_X9f_continuum_merged_12M_robust0_selfcal4_finaliter'
+                                                     if release == 'February2021Release' else
+                                                     'W43-MM1/B6/cleanest/W43-MM1_B6_uid___A002_X996c88_X87_continuum_merged_12M_robust0_selfcal4_finaliter')
+        
+        pl.close(1)
+        for band in ('B3','B6'):
+            for fieldid in prefixes:
+                print(fieldid, band)
+                make_multifig(fieldid, band=band, inner_stretch='asinh', title=fieldid,
+                              savedir=savedir)
+
+                    
+        pl.close('all')
+        make_zoom('W43MM1', zoom_parameters[('W43MM1', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15, savedir=savedir)
+        make_zoom('W43MM3', zoom_parameters[('W43MM3', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15, savedir=savedir)
+        make_zoom('G351', zoom_parameters[('G351', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=25, savedir=savedir)
+        make_zoom('G333', zoom_parameters[('G333', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45, savedir=savedir)
+        make_zoom('W43MM2', zoom_parameters[('W43MM2', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15, savedir=savedir)
+        make_zoom('W51-E', zoom_parameters[('W51-E', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45, savedir=savedir)
+        make_zoom('G353', zoom_parameters[('G353', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45, savedir=savedir)
+        make_zoom('G337', zoom_parameters[('G337', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
+
+        make_zoom('G10', zoom_parameters[('G10', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'},  savedir=savedir)
+        make_zoom('G327', zoom_parameters[('G327', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'},  savedir=savedir)
+        make_zoom('W51IRS2', zoom_parameters[('W51IRS2', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45,  savedir=savedir)
+        make_zoom('G12', zoom_parameters[('G12', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45,  savedir=savedir)
+        make_zoom('G328', zoom_parameters[('G328', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
+        make_zoom('G338', zoom_parameters[('G338', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
+        make_zoom('G008', zoom_parameters[('G008', 'B3')], band='B3',
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
+        make_zoom('G008', zoom_parameters[('G008', 'B6')], band='B6')
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G338', zoom_parameters[('G338', 'B6')], band='B6', savedir=savedir)# main_zoombox=(-200,1050,-200,1050))            
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G328', zoom_parameters[('G328', 'B6')], band='B6', nsigma_max=45, savedir=savedir)# main_zoombox=(0,1600,0,1110))4
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G333', zoom_parameters[('G333', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G12', zoom_parameters[('G12', 'B6')], band='B6', nsigma_max=45, savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('W51IRS2', zoom_parameters[('W51IRS2', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G327', zoom_parameters[('G327', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G10', zoom_parameters[('G10', 'B6')], band='B6', nsigma_max=35)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G337', zoom_parameters[('G337', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G338', zoom_parameters[('G338', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G351', zoom_parameters[('G351', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('G353', zoom_parameters[('G353', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('W43MM2', zoom_parameters[('W43MM2', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('W43MM3', zoom_parameters[('W43MM3', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            make_zoom('W51-E', zoom_parameters[('W51-E', 'B6')], band='B6', savedir=savedir)# main_zoombox=(0,1600,0,1110))
+
+            make_zoom('W43MM1', zoom_parameters[('W43MM1', 'B6')], band='B6',
+                      overview_vis_pars={'max_percent':99.75,
+                                         'min_percent':1.5, 'stretch':'asinh'},
+                      nsigma_max=45, savedir=savedir)        
+
+    import glob,shutil
+    paper_files = (glob.glob('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/figures/*inset_zooms*pdf') + 
+                   glob.glob('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release/figures/*multicolor*pdf'))
+    for fn in paper_files:
+        shutil.copy(fn, '/orange/adamginsburg/ALMA_IMF/datapaper/figures')
+
+
     for band in ('B3','B6'):
         for fieldid in prefixes:
             print(fieldid, band)
-            make_multifig(fieldid, band=band, inner_stretch='asinh', title=fieldid)
+            make_robust_comparison(fieldid, band=band, nsigma_linear_max=15, inner_stretch='asinh')
+            #for robust0fn in glob.glob(f'/orange/adamginsburg/ALMA_IMF/RestructuredImagingResults/{fieldid}/{band}/cleanest/{fieldid}_{band}_uid___A001_X1296_*_continuum_merged_12M_robust0_selfcal*_finaliter.image.tt0'):
+            #    pfx = os.path.basename(robust0fn.replace(".image.tt0",""))
 
-                
-    pl.close('all')
-    make_zoom('W43MM1', zoom_parameters[('W43MM1', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15)
-    make_zoom('W43MM3', zoom_parameters[('W43MM3', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15)
-    make_zoom('G351', zoom_parameters[('G351', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=25)
-    make_zoom('G333', zoom_parameters[('G333', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
-    make_zoom('W43MM2', zoom_parameters[('W43MM2', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=15)
-    make_zoom('W51-E', zoom_parameters[('W51-E', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
-    make_zoom('G353', zoom_parameters[('G353', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
-    make_zoom('G337', zoom_parameters[('G337', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
-
-    make_zoom('G10', zoom_parameters[('G10', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
-    make_zoom('G327', zoom_parameters[('G327', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
-    make_zoom('W51IRS2', zoom_parameters[('W51IRS2', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
-    make_zoom('G12', zoom_parameters[('G12', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45)
-    make_zoom('G328', zoom_parameters[('G328', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
-    make_zoom('G338', zoom_parameters[('G338', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, )
-    make_zoom('G008', zoom_parameters[('G008', 'B3')], band='B3',
-            overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'},)
-    make_zoom('G008', zoom_parameters[('G008', 'B6')], band='B6')
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G338', zoom_parameters[('G338', 'B6')], band='B6',)# main_zoombox=(-200,1050,-200,1050))            
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G328', zoom_parameters[('G328', 'B6')], band='B6', nsigma_max=45)# main_zoombox=(0,1600,0,1110))4
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G333', zoom_parameters[('G333', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G12', zoom_parameters[('G12', 'B6')], band='B6', nsigma_max=45)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('W51IRS2', zoom_parameters[('W51IRS2', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G327', zoom_parameters[('G327', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G10', zoom_parameters[('G10', 'B6')], band='B6', nsigma_max=35)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G337', zoom_parameters[('G337', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G338', zoom_parameters[('G338', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G351', zoom_parameters[('G351', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('G353', zoom_parameters[('G353', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('W43MM2', zoom_parameters[('W43MM2', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('W43MM3', zoom_parameters[('W43MM3', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        make_zoom('W51-E', zoom_parameters[('W51-E', 'B6')], band='B6',)# main_zoombox=(0,1600,0,1110))
-
-        make_zoom('W43MM1', zoom_parameters[('W43MM1', 'B6')], band='B6',
-                  overview_vis_pars={'max_percent':99.75,
-                                     'min_percent':1.5, 'stretch':'asinh'},
-                  nsigma_max=45)        
-
-
-    import glob
-
-    for band in ('B3','B6'):
-        for fieldid in prefixes:
-            print(fieldid, band)
-            for robust0fn in glob.glob('/orange/adamginsburg/ALMA_IMF/RestructuredImagingResults/{fieldid}/{band}/cleanest/{fieldid}_{band}_uid___A001_X1296_*_continuum_merged_12M_robust0_selfcal*_finaliter.image.tt0'):
-                pfx = robust0fn.replace(".image.tt0","")
-
-                make_robust_comparison(pfx, band=band, nsigma_linear_max=15, inner_stretch='asinh',
-                                       finaliter_prefix=pfx)
+            #    make_robust_comparison(fieldid, band=band, nsigma_linear_max=15, inner_stretch='asinh',
+            #                           finaliter_prefix=pfx)
