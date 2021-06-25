@@ -137,8 +137,8 @@ def make_zoom(fieldid, zoom_parameters,
         dec.ticklabels.set_visible(False)
 
         caxins = inset_axes(axins,
-                 width="5%",  # width = 10% of parent_bbox width
-                 height="100%",  # height : 50%
+                 width="5%", # width = 10% of parent_bbox width
+                 height="100%", # height : 50%
                  loc='lower left',
                  bbox_to_anchor=(1.05, 0., 1, 1),
                  bbox_transform=axins.transAxes,
@@ -565,12 +565,12 @@ def make_robust_comparison(fieldid,
 
 zoom_parameters = {}
 zoom_parameters[('G008', 'B3')] = [{'xl':1500, 'xr':1900, 'yl':600, 'yu':1000, 
-                                    'inset_pars':{'loc': 1, 'width':3, 'height':3,  'bbox_to_anchor':(550, 0, 100,100)},
+                                    'inset_pars':{'loc': 1, 'width':3, 'height':3, 'bbox_to_anchor':(550, 0, 100,100)},
                                     'mark_inset_pars':{'loc1':1, 'loc2':3,},
                                     'vis_pars':{'max_percent':99.995, 'min_percent': 1, 'stretch':'log'}
                                    },
                                    {'xl':700, 'xr':850, 'yl':1025, 'yu':1175, 
-                                    'inset_pars':{'loc': 3, 'width':3, 'height':3,  'bbox_to_anchor':(0, -120, 100,100)},
+                                    'inset_pars':{'loc': 3, 'width':3, 'height':3, 'bbox_to_anchor':(0, -120, 100,100)},
                                     'mark_inset_pars':{'loc1':2, 'loc2':4,},
                                     'vis_pars':{'max_percent':99.9, 'min_percent': 2, 'stretch':'linear'}
                                    },
@@ -925,7 +925,7 @@ if __name__ == "__main__":
             for fieldid in prefixes:
                 print(fieldid, band)
                 make_multifig(fieldid, band=band, inner_stretch='asinh', title=fieldid,
-                              savedir=savedir)
+                              savedir=savedir, fontsize=26, tick_fontsize=20)
 
                     
         pl.close('all')
@@ -947,13 +947,13 @@ if __name__ == "__main__":
                 overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
 
         make_zoom('G10', zoom_parameters[('G10', 'B3')], band='B3',
-                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'},  savedir=savedir)
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
         make_zoom('G327', zoom_parameters[('G327', 'B3')], band='B3',
-                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'},  savedir=savedir)
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
         make_zoom('W51IRS2', zoom_parameters[('W51IRS2', 'B3')], band='B3',
-                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45,  savedir=savedir)
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45, savedir=savedir)
         make_zoom('G12', zoom_parameters[('G12', 'B3')], band='B3',
-                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45,  savedir=savedir)
+                overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, nsigma_max=45, savedir=savedir)
         make_zoom('G328', zoom_parameters[('G328', 'B3')], band='B3',
                 overview_vis_pars={'max_percent':99.5, 'min_percent':0.5, 'stretch':'asinh'}, savedir=savedir)
         make_zoom('G338', zoom_parameters[('G338', 'B3')], band='B3',
