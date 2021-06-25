@@ -60,7 +60,7 @@ ax1 = pl.subplot(1,2,1)
 ax1.plot(wtbl_selfcal['sum_post'][b3]/wtbl_selfcal['ppbeam'][b3], wtbl_selfcal['dr_improvement'][b3], **b3style)
 ax1.plot(wtbl_selfcal['sum_post'][b6]/wtbl_selfcal['ppbeam'][b6], wtbl_selfcal['dr_improvement'][b6], **b6style)
 ax1.plot(np.linspace(0, 50), np.linspace(0, 50)*0.45/50 + 1, 'k--', zorder=-5, alpha=0.5)
-ax1.set_xlabel("Sum [Jy]")
+ax1.set_xlabel("Integrated Intensity [Jy]")
 ax1.set_ylabel("Dynamic Range Improvement")
 
 ax2 = pl.subplot(1,2,2)
@@ -86,8 +86,8 @@ ax1 = pl.subplot(1,2,1)
 ax1.plot(wtbl_bsens['sum_cleanest'][b3]/wtbl_bsens['ppbeam'][b3], wtbl_bsens['sum_bsens'][b3]/wtbl_bsens['sum_cleanest'][b3], **b3style)
 ax1.plot(wtbl_bsens['sum_cleanest'][b6]/wtbl_bsens['ppbeam'][b6], wtbl_bsens['sum_bsens'][b6]/wtbl_bsens['sum_cleanest'][b6], **b6style)
 #ax1.plot(np.linspace(0, 3000), np.linspace(0, 3000)*0.45/3000 + 1, 'k--', zorder=-5, alpha=0.5)
-ax1.set_xlabel("Sum (cleanest) [Jy]")
-ax1.set_ylabel("Sum (bsens) / Sum (cleanest)")
+ax1.set_xlabel("Integrated Intensity (cleanest) [Jy]")
+ax1.set_ylabel("Integrated Intensity (bsens) / (cleanest)")
 #ax1.add_patch(pl.Rectangle((-0.05,0.2), width=26, height=0.7, facecolor='r', alpha=0.25))
 
 ax2 = pl.subplot(1,2,2)
@@ -199,7 +199,7 @@ else:
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.text(0.99, 0.99, 'cleanest', fontsize=fontsize, horizontalalignment='right',
         verticalalignment='top', transform=ax1.transAxes)
-ax1.set_xlabel("Sum [Jy]")
+ax1.set_xlabel("Integrated Intensity [Jy]")
 ax1.set_ylabel("Measured Noise / Requested Sensitivity")
 
 ax2 = pl.subplot(1,2,2)
@@ -292,7 +292,7 @@ ax1 = pl.subplot(1,2,1)
 ax1.plot(wtbl_selfcal['sum_post'][b3sc]/wtbl_selfcal['ppbeam'][b3sc], wtbl_selfcal['dr_post'][b3sc], **b3style)
 ax1.plot(wtbl_selfcal['sum_post'][b6sc]/wtbl_selfcal['ppbeam'][b6sc], wtbl_selfcal['dr_post'][b6sc], **b6style)
 #ax1.plot(ax1.get_xlim(), [1,1], 'k--')
-ax1.set_xlabel("Sum [Jy]")
+ax1.set_xlabel("Integrated Intensity [Jy]")
 ax1.set_ylabel("Dynamic Range (self-calibrated)")
 
 ax2 = pl.subplot(1,2,2)
@@ -334,7 +334,7 @@ else:
 ax1.plot(ax1.get_xlim(), [1,1], 'k--')
 ax1.text(0.99, 0.99, 'bsens', fontsize=fontsize, horizontalalignment='right',
         verticalalignment='top', transform=ax1.transAxes)
-ax1.set_xlabel("Sum [Jy]")
+ax1.set_xlabel("Integrated Intensity [Jy]")
 ax1.set_ylabel("Measured Noise / Requested Sensitivity")
 
 ax2 = pl.subplot(1,2,2)
