@@ -10,6 +10,7 @@ import pylab as pl
 pl.rcParams['font.size'] = 14
 
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults'
+basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release'
 
 cutoutinfo = {'W51-IRS2': {'norm_kwargs': {'min_percent': 0.1, 'max_percent': 99.9, 'stretch': 'asinh'}, 'cutout_lims': [slice(1000,2800), slice(1000,2800)]},
               'G327.29': {'norm_kwargs': {},
@@ -111,8 +112,8 @@ for field in ("G327.29",):
                        colors=['orange', 'red'],
                        linewidths=0.65,
                       )
-            ax.set_xlabel('Right Ascension')
-            ax.set_ylabel('Declination')
+            ax.set_xlabel('Right Ascension (ICRS)')
+            ax.set_ylabel('Declination (ICRS)')
 
             fig2.savefig(f'{basepath}/{field}/continuum_colorcomposites/{field}_{imtype}_B3_B6_contourcomposite.pdf', bbox_inches='tight')
             fig2.savefig(f'{basepath}/{field}/continuum_colorcomposites/{field}_{imtype}_B3_B6_contourcomposite.png', bbox_inches='tight', dpi=300)

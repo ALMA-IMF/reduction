@@ -33,17 +33,25 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
                         basepath='/home/adam/work/alma-imf/reduction/', ):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     if finaliter_prefix_b3_bsens is None:
-        finaliter_prefix_b3_bsens = finaliter_prefix_b3.replace("cleanest","bsens").replace("merged_12M", f"merged_bsens{non2hp}_12M")
+        if non2hp:
+            finaliter_prefix_b3_bsens = finaliter_prefix_b3.replace("cleanest","bsens_nobright").replace("merged_12M", f"merged_bsens_12M{non2hp}")
+        else:
+            finaliter_prefix_b3_bsens = finaliter_prefix_b3.replace("cleanest","bsens").replace("merged_12M", f"merged_bsens{non2hp}_12M")
     bsens_b3 = SpectralCube.read(f'{finaliter_prefix_b3_bsens}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
     if finaliter_prefix_b6_bsens is None:
-        finaliter_prefix_b6_bsens = finaliter_prefix_b6.replace("cleanest","bsens").replace("merged_12M", f"merged_bsens{noco}_12M")
+        if noco:
+            finaliter_prefix_b6_bsens = finaliter_prefix_b6.replace("cleanest","bsens_nobright").replace("merged_12M", f"merged_bsens_12M{noco}")
+        else:
+            finaliter_prefix_b6_bsens = finaliter_prefix_b6.replace("cleanest","bsens").replace("merged_12M", f"merged_bsens{noco}_12M")
     bsens_b6 = SpectralCube.read(f'{finaliter_prefix_b6_bsens}.image.tt0', format='casa_image').subcube_from_ds9region(cutoutregion)
 
     # image_b3 = image_b3 * u.beam / image_b3.beam.sr
     # image_b6 = image_b6 * u.beam / image_b6.beam.sr
     # bsens_b3 = bsens_b3 * u.beam / bsens_b3.beam.sr
     # bsens_b6 = bsens_b6 * u.beam / bsens_b6.beam.sr
+
+    tgt_unit = u.mJy if bsens_b6.unit.is_equivalent(u.mJy) else u.mJy/u.beam
 
     fieldname = os.path.basename(finaliter_prefix_b6).split("_")[0]
     print(fieldname)
@@ -66,17 +74,17 @@ def bsens_cleanest_diff(finaliter_prefix_b3, finaliter_prefix_b6,
     fig = pl.figure(num=fignum, figsize=(6,6))
     fig.clf()
     ax = pl.subplot(1,1,1,label='B3', projection=diff_b3[0].wcs)
-    im = ax.imshow(diff_b3.to(u.mJy)[0].value, norm=simple_norm(diff_b3.to(u.mJy)[0].value, **normpars_b3), cmap='gray')
-    ax.set_xlabel('Right Ascension')
-    ax.set_ylabel('Declination')
+    im = ax.imshow(diff_b3.to(tgt_unit)[0].value, norm=simple_norm(diff_b3.to(tgt_unit)[0].value, **normpars_b3), cmap='gray')
+    ax.set_xlabel('Right Ascension (ICRS)')
+    ax.set_ylabel('Declination (ICRS)')
     cb = pl.colorbar(mappable=im)
     cb.set_label("$S_\\nu$ [mJy beam$^{-1}$]")
 
     fig2 = pl.figure(num=fignum+1, figsize=(6,6))
     ax2 = pl.subplot(1,1,1,label='B6', projection=diff_b6[0].wcs)
-    im = ax2.imshow(diff_b6.to(u.mJy)[0].value, norm=simple_norm(diff_b6.to(u.mJy)[0].value, **normpars_b6), cmap='gray')
-    ax2.set_xlabel('Right Ascension')
-    ax2.set_ylabel('Declination')
+    im = ax2.imshow(diff_b6.to(tgt_unit)[0].value, norm=simple_norm(diff_b6.to(tgt_unit)[0].value, **normpars_b6), cmap='gray')
+    ax2.set_xlabel('Right Ascension (ICRS)')
+    ax2.set_ylabel('Declination (ICRS)')
     cb = pl.colorbar(mappable=im)
     cb.set_label("$S_\\nu$ [mJy beam$^{-1}$]")
 
@@ -132,6 +140,9 @@ cutoutregions = {
     "W43MM2": (
         "fk5; box(281.9025, -2.0152, 25\", 25\")",
     ),
+    "W43MM1": (
+        "fk5; box(18:47:46.8714384205, -1:54:23.9163751512, 25\", 25\")",
+    ),
     "W51IRS2": (
         'fk5; box(19:23:39.9340,+14:31:09.099,11.912",11.502",6.5033172e-06)',
         "fk5; box(19:23:39.975,+14:31:08.2,25\",25\")",
@@ -144,7 +155,7 @@ cutoutregions = {
 if __name__ == "__main__":
     import os
     try:
-        os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults')
+        os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release')
     except FileNotFoundError:
         os.chdir('/home/adam/Dropbox_UFL/ALMA-IMF/December2020Release/')
 
@@ -159,11 +170,22 @@ if __name__ == "__main__":
     # why did I add this override?  It's wrong (I had 4 instead of 6)
     #prefixes['G338']['finaliter_prefix_b6_bsens'] = 'G338.93/B6/bsens/G338.93_B6_uid___A001_X1296_X14f_continuum_merged_bsens_12M_robust0_selfcal6_finaliter'
 
+    prefixes['W43MM1']['finaliter_prefix_b6'] = 'W43-MM1/B6/cleanest/W43-MM1_B6_uid___A001_X12f_X9f_continuum_merged_12M_robust0_selfcal4_finaliter'
+    
+
     for fieldid, pfxs in prefixes.items():
         fig1,fig2 = bsens_cleanest_diff(**pfxs, cutoutregion=cutoutregions[fieldid][0], **normpars.get(fieldid, {}))
         fig1.savefig(f'bsens_diff_zooms/{fieldid}_bsens_diff_zoom_B3.png', bbox_inches='tight', dpi=300)
         fig2.savefig(f'bsens_diff_zooms/{fieldid}_bsens_diff_zoom_B6.png', bbox_inches='tight', dpi=300)
 
+
+    prefixes['W43MM1']['finaliter_prefix_b6'] = 'W43-MM1/B6/cleanest/W43-MM1_B6_uid___A002_X996c88_X87_continuum_merged_12M_robust0_selfcal4_finaliter'
+
+    os.chdir('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release')
+    if not os.path.exists('bsens_diff_zooms'):
+        os.mkdir('bsens_diff_zooms')
+
+    for fieldid, pfxs in prefixes.items():
         fig1,fig2 = bsens_cleanest_diff(**pfxs, cutoutregion=cutoutregions[fieldid][0], **normpars.get(fieldid, {}),
                                         noco='_noco', non2hp='_non2hp')
         fig1.savefig(f'bsens_diff_zooms/{fieldid}_bsens_non2hp_diff_zoom_B3.png', bbox_inches='tight', dpi=300)

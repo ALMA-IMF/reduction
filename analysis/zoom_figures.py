@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 from astropy.visualization import simple_norm
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, inset_axes
@@ -117,7 +118,7 @@ def make_zoom(fieldid, zoom_parameters,
 
         norm2 = simple_norm(img, **zp['vis_pars'])
 
-        inset_cm = pl.cm.get_cmap(inset_cmap)
+        inset_cm = copy.copy(pl.cm.get_cmap(inset_cmap))
         inset_cm.set_bad(inset_cm(0))
 
         im_ins = axins.imshow(img[slc], extent=[xl,xr,yl,yu], cmap=inset_cm, norm=norm2)
@@ -247,12 +248,12 @@ def make_multifig(fieldid,
 
     norm = simple_norm(img, stretch='linear', min_cut=-nsigma_linear_min*mad, max_cut=nsigma_linear_max*mad,)
 
-    overview_cmap = pl.cm.get_cmap(overview_cmap)
+    overview_cmap = copy.copy(pl.cm.get_cmap(overview_cmap))
     overview_cmap.set_bad('white')
 
     im1 = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
-    cm = pl.cm.get_cmap(inset_cmap)
+    cm = copy.copy(pl.cm.get_cmap(inset_cmap))
     cm.set_under((0,0,0,0))
 
     vmin = norm.vmax*0.99
@@ -335,8 +336,8 @@ def make_multifig(fieldid,
     print(image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0))
     left_side = coordinates.SkyCoord(*image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0)*u.deg, frame='fk5')
     print(left_side)
-    length = (0.1*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
-    make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.1 pc',
+    length = (0.5*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
+    make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.5 pc',
                   text_offset=0.5*u.arcsec, fontsize=fontsize)
 
     ell = image.beam.ellipse_to_plot(0.05*img.shape[1], 0.05*img.shape[0], pixscale=image.wcs.celestial.pixel_scale_matrix[1,1]*u.deg)
@@ -470,7 +471,7 @@ def make_robust_comparison(fieldid,
 
         im1 = ax.imshow(img, cmap=overview_cmap, norm=norm)
 
-        cm = pl.cm.get_cmap(inset_cmap)
+        cm = copy.copy(pl.cm.get_cmap(inset_cmap))
         cm.set_under((0,0,0,0))
 
         if hasattr(norm2.stretch, 'a') and nsigma_asinh is not None:
@@ -549,8 +550,8 @@ def make_robust_comparison(fieldid,
         #print(image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0))
         left_side = coordinates.SkyCoord(*image.wcs.celestial.wcs_pix2world(0.1*img.shape[1], 0.1*img.shape[0], 0)*u.deg, frame='fk5')
         #print(left_side)
-        length = (0.1*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
-        make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.1 pc',
+        length = (0.5*u.pc / field_data.distances[fieldid]).to(u.arcsec, u.dimensionless_angles())
+        make_scalebar(ax, left_side, length, color='k', linestyle='-', label='0.5 pc',
                       fontsize=fontsize, text_offset=0.5*u.arcsec)
 
         try:
@@ -1016,6 +1017,7 @@ if __name__ == "__main__":
         shutil.copy(fn, '/orange/adamginsburg/ALMA_IMF/datapaper/figures')
 
 
+    pl.close('all')
     for band in ('B3','B6'):
         for fieldid in prefixes:
             print(fieldid, band)
