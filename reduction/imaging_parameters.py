@@ -428,15 +428,16 @@ imaging_parameters_nondefault = {
             7: 100000,
             "final": 100000,
         },
-        "scales": {0: [0, 3, 9, 27],
-                   1: [3, 9, 27], # force larger scales to avoid pointillism in northern HII region
-                   2: [0, 3, 9, 27],
-                   3: [0, 3, 9, 27],
-                   4: [0, 3, 9, 27],
-                   5: [0, 3, 9, 27],
-                   6: [0, 3, 9, 27],
-                   7: [0, 3, 9, 27],
-                  },
+        "scales": {
+            0: [0, 3, 9, 27],
+            1: [3, 9, 27],  # force larger scales to avoid pointillism in northern HII region
+            2: [0, 3, 9, 27],
+            3: [0, 3, 9, 27],
+            4: [0, 3, 9, 27],
+            5: [0, 3, 9, 27],
+            6: [0, 3, 9, 27],
+            7: [0, 3, 9, 27],
+        },
         "imsize": [4800, 4800],
         "cell": ["0.0375arcsec", "0.0375arcsec"],
     },
@@ -2840,9 +2841,9 @@ line_imaging_parameters_default = {
         "pblimit": 0.05,
         "pbmask": 0.1,
         "perchanweightdensity": False,
-        "interactive": 0, # returns a dict (False doesn't...)
+        "interactive": 0,  # returns a dict (False doesn't...)
         "mask_out_endchannels": 2,
-        "cyclefactor": 2.0, # higher cyclefactor = more major cycles
+        "cyclefactor": 2.0,  # higher cyclefactor = more major cycles
     }
     for field in allfields
     for band in ("B3", "B6")
@@ -2867,7 +2868,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G008.67_B3_12M_robust0_h41a": {
-        "threshold": "12.5mJy",  # noise ~ 2.5mJy in channels off line peak.
+        "threshold": "8.5mJy",  # noise ~ 2.5mJy in channels off line peak.
         "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 5, 10, 20, 40],  # 4.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 4.4 arcsec
@@ -2925,7 +2926,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G327.29_B3_12M_robust0_h41a": {
-        "threshold": "10mJy",  # noise ~ 2.5mJy in channels off line peak.
+        "threshold": "8.5mJy",  # noise ~ 2.5mJy in channels off line peak.
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 4, 8, 16, 32, 64],  # 3.9pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7 arcsec
@@ -2982,7 +2983,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G337.92_B3_12M_robust0_h41a": {
-        "threshold": "8mJy",  # noise ~ 2mJy in channels off line peak.
+        "threshold": "9mJy",  # noise ~ 2mJy in channels off line peak.
         "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 4, 8, 16, 32, 64],  # 3.7pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 7arcsec
@@ -3001,7 +3002,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
     },
     "G338.93_B3_12M_robust0_h41a": {
-        "threshold": "8mJy",  # noise ~ 2mJy in channels off line peak.
+        "threshold": "10mJy",  # noise ~ 2mJy in channels off line peak.
         "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 4, 8, 16, 32],  # 4.2pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 3.5arcsec
@@ -3034,16 +3035,16 @@ line_imaging_parameters_custom = {
     },
     "G351.77_B6_12M_robust0": {
         "threshold": "80mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
-        "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
+        "smallscalebias": 0.5,  # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {
         "threshold": "48mJy",  # typical rms is 12-16 mJy, using 3sigma for threshold (9 June 2021)
         "cyclefactor": 2.0,
-        'interactive': 0,
+        "interactive": 0,
         "fastnoise": False,
-        #"nsigma": 3,
-        "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
+        # "nsigma": 3,
+        "smallscalebias": 0.5,  # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G353.41_B3_12M_robust0": {
@@ -3051,7 +3052,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G353.41_B3_12M_robust0_h41a": {
-        "threshold": "16mJy",  # noise ~4mJy in channels off line peak.
+        "threshold": "14mJy",  # noise ~4mJy in channels off line peak.
         "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 5, 10, 20],  # 4.8pix per sqrt(bmaj*bmean), pix= 0.35arcsec, max scale ~7arcsec
@@ -3064,10 +3065,10 @@ line_imaging_parameters_custom = {
     "G353.41_B6_12M_robust0_sio": {
         "threshold": "48mJy",  # typical rms is 12.5-16 mJy, using 3sigma for threshold (14 Dec. 2020)
         "cyclefactor": 2.0,
-        'interactive': 0,
+        "interactive": 0,
         "fastnoise": False,
-        #"nsigma": 3,
-        "smallscalebias": 0.5, # bias toward smaller scales; the large scales cause divergence
+        # "nsigma": 3,
+        "smallscalebias": 0.5,  # bias toward smaller scales; the large scales cause divergence
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "W43-MM1_B3_12M_robust0": {
@@ -3075,7 +3076,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "W43-MM1_B3_12M_robust0_h41a": {
-        "threshold": "4mJy",  # noise ~1mJy in channels off line peak.
+        "threshold": "3.5mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 4, 8, 16, 32],  # 4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
@@ -3219,7 +3220,7 @@ line_imaging_parameters_custom = {
         "pblimit": 0.05,  # per Nov 6 telecon
     },
     "W51-E_B3_12M_robust0_h41a": {
-        "threshold": "4mJy",  # noise ~1mJy in channels off line peak.
+        "threshold": "6mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 4, 8, 16, 32, 64],  # 3.8pix per sqrt(bmaj*bmean), pix= 0.08arcsec, max scale ~5arcsec
@@ -3819,57 +3820,57 @@ line_imaging_parameters_custom = {
     },
     "G351.77_B6_12M_robust0_spw0": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 4, 8, 16],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw1": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 4, 8, 16],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw2": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 4, 8, 16],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw3": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 4, 8, 16],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw4": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 4, 8, 16],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw5": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 3, 6, 12, 24],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw6": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 3, 6, 12, 24],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw7": {
         "threshold": "10sigma",
-        "pblimit":0.2,
-        "pbmask":0.25,
+        "pblimit": 0.2,
+        "pbmask": 0.25,
         "scales": [0, 3, 6, 12, 24],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
