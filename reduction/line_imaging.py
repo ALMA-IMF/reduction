@@ -428,7 +428,8 @@ for band in band_list:
                                                           field=field,
                                                           phasecenter=(racen, deccen),
                                                           spw='all',
-                                                          pixfraction_of_fwhm=1/5. if only_7m else 1/3.,
+                                                          # July 2, 2021 - shrink pixsize to 1/4
+                                                          pixfraction_of_fwhm=1/5. if only_7m else 1/4.,
                                                           exclude_7m=exclude_7m,
                                                           only_7m=only_7m,
                                                           min_pixscale=0.08, # arcsec; dropped 20% on Nov 6, 2020 to handle beam size issues
