@@ -114,7 +114,7 @@ def make_zoom(fieldid, zoom_parameters,
         slc = [slice(yl,yu), slice(xl,xr)]
         axins = inset_axes(ax, **zp['inset_pars'],
                            axes_class=astropy.visualization.wcsaxes.core.WCSAxes,
-                           axes_kwargs=dict(wcs=image[0][slc].wcs.celestial))
+                           axes_kwargs=dict(wcs=image[0].wcs.celestial))
 
         norm2 = simple_norm(img, **zp['vis_pars'])
 
@@ -195,8 +195,9 @@ def make_zoom(fieldid, zoom_parameters,
     ax.add_patch(ell)
 
 
-    pl.savefig(f'{savedir}/{fieldid}_inset_zooms_{band}.png', bbox_inches='tight')
-    pl.savefig(f'{savedir}/{fieldid}_inset_zooms_{band}.pdf', bbox_inches='tight')
+    if savedir is not None:
+        pl.savefig(f'{savedir}/{fieldid}_inset_zooms_{band}.png', bbox_inches='tight')
+        pl.savefig(f'{savedir}/{fieldid}_inset_zooms_{band}.pdf', bbox_inches='tight')
 
 
 def make_multifig(fieldid,

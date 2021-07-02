@@ -2829,9 +2829,10 @@ line_imaging_parameters_default = {
         "niter": 5000000,
         "threshold": "3sigma",
         "robust": robust,
-        "weighting": "briggs",
+        "weighting": "briggsbwtaper",
         "deconvolver": "multiscale",
         "scales": [0, 5, 15],
+        "smallscalebias": 0.5,
         "gridder": "mosaic",
         "specmode": "cube",
         "outframe": "LSRK",
@@ -2839,8 +2840,7 @@ line_imaging_parameters_default = {
         "usemask": "pb",
         "pblimit": 0.05,
         "pbmask": 0.1,
-        "perchanweightdensity": False,
-        # option added June 24 - "restoringbeam": "common",
+        "perchanweightdensity": True,
         "interactive": 0, # returns a dict (False doesn't...)
         "mask_out_endchannels": 2,
         "cyclefactor": 2.0, # higher cyclefactor = more major cycles
