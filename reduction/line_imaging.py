@@ -49,19 +49,20 @@ try:
     from taskinit import casalog
     from exportfits_cli import exportfits_cli as exportfits
     from casa_system_defaults import casa
+    from taskinit import msmdtool, iatool, mstool
     version = map(int, re.split("[-.]", casa['version']))
-except ImportError:
+except ImportError,ModuleNotFoundError:
     # futureproofing: CASA 6 imports this way
     from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata
     from casatasks import casalog
     import casatools
     version = casatools.version()
+    from casatools import msmdtool, iatool, mstool
 versionstring = ".".join(map(str, version))
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint as logprint_
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from unite_contranges import merge_contdotdat
-from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
 from create_clean_model import create_clean_model
 from getversion import git_date, git_version
