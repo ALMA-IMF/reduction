@@ -49,19 +49,22 @@ try:
     from taskinit import casalog
     from exportfits_cli import exportfits_cli as exportfits
     from casa_system_defaults import casa
+    from taskinit import msmdtool, iatool, mstool
     version = map(int, re.split("[-.]", casa['version']))
-except ImportError:
+except (ImportError,ModuleNotFoundError):
     # futureproofing: CASA 6 imports this way
     from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata
     from casatasks import casalog
     import casatools
     version = casatools.version()
+    from casatools import msmetadata, image, ms as mstool
+    msmdtool = msmetadata
+    iatool = image
 versionstring = ".".join(map(str, version))
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import determine_imsize, determine_phasecenter, is_7m, logprint as logprint_
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
 from unite_contranges import merge_contdotdat
-from taskinit import msmdtool, iatool, mstool
 from metadata_tools import effectiveResolutionAtFreq
 from create_clean_model import create_clean_model
 from getversion import git_date, git_version
@@ -400,13 +403,13 @@ for band in band_list:
             # check that autocorrs are flagged out
             if 'concat' in concatvis:
                 flagsum = flagdata(vis=concatvis, mode='summary', uvrange='0~1m')
-                if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+                if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
                     # if 'flagged' isn't in flagsum, it's an empty dict
                     raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(concatvis))
             elif isinstance(concatvis, list):
                 for vv in concatvis:
                     flagsum = flagdata(vis=vv, mode='summary', uvrange='0~1m')
-                    if 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+                    if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
                         raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {vv}".format(vv=vv))
 
 
@@ -464,7 +467,8 @@ for band in band_list:
             if 'phasecenter' not in impars:
                 impars['phasecenter'] = phasecenter
                 logprint("Overriding phasecenter={0} to {1}".format(phasecenter, impars['phasecenter']))
-            impars['field'] = [field.encode()]
+            #impars['field'] = [field.encode()]
+            impars['field'] = field
 
             mask_out_endchannels = False
             if 'mask_out_endchannels' in impars:
