@@ -141,7 +141,7 @@ try:
     ia = iatool()
     tb = tbtool()
     ms = mstool()
-except ImportError:
+except (ImportError,ModuleNotFoundError):
     from casatasks import tclean, split, flagdata
     import casaplotms as plotms
 

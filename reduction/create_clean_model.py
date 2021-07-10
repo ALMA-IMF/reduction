@@ -1,8 +1,15 @@
 # Script to create a startmodel for cube cleaning based on the continuum clean components
 # Last modified 04.08.2020
 
-from tasks import imregrid
-from taskinit import iatool
+try:
+    from tasks import imregrid
+    from taskinit import iatool
+except (ImportError,ModuleNotFoundError):
+    # futureproofing: CASA 6 imports this way
+    from casatasks import imregrid
+    from casatools import image
+    iatool = image
+
 import shutil
 import os
 

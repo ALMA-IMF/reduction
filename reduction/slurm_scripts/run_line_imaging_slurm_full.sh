@@ -12,6 +12,8 @@ export NTASKS=1
 export CPUS_PER_TASK=16 # mem/4
 export SLURM_NTASKS=$NTASKS
 
+export LOGPATH=/blue/adamginsburg/adamginsburg/slurmjobs/
+
 if [ -z $QOS ]; then
     export QOS=adamginsburg-b
 fi
@@ -81,7 +83,7 @@ for SPW in {0..3}; do
 
     jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub} 
 
-    export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
+    export LOGFILENAME="${LOGPATH}/casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 
     if [ ${jobid##* } ]; then
         if [ -z $NODEPS ]; then
@@ -97,7 +99,7 @@ for SPW in {0..3}; do
     jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
     echo ${jobid##* }
     #export EXCLUDE_7M=False
-    #export LOGFILENAME="casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
+    #export LOGFILENAME="${LOGPATH}/casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
     #jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M${suffix12m}_${SPW}_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M12M_${SPW} --export=ALL $CMD)
     #echo ${jobid##* }
 done
@@ -135,12 +137,12 @@ for SPW in {0..7}; do
     [[ ${mem_map[$SPW]} ]] && export MEM=${mem_map[$SPW]} || export MEM=32gb
 
     jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub}
-    export LOGFILENAME="casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
+    export LOGFILENAME="${LOGPATH}/casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 
     jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
     echo ${jobid##* }
     #export EXCLUDE_7M=False
-    #export LOGFILENAME="casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
+    #export LOGFILENAME="${LOGPATH}/casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
     #jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M12M_${SPW} --export=ALL $CMD)
     #echo ${jobid##* }
 done
