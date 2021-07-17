@@ -97,8 +97,10 @@ imaging_root = "imaging_results"
 if os.getenv('PRODUCT_DIRECTORY') and os.getenv('WORK_DIRECTORY'):
     copy_files = True
     workdir = os.getenv('WORK_DIRECTORY')
-    proddir = os.getenv('WORK_DIRECTORY')
+    proddir = os.getenv('PRODUCT_DIRECTORY')
     imaging_root = workdir
+    logprint("Using working directory {workdir} and product directory {proddir}"
+             .format(workdir=workdir, proddir=proddir))
 else:
     copy_files = False
 
