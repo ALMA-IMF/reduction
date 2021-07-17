@@ -34,6 +34,18 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         imaging them.  A file metadata.json containing the paths to the
         cont.dat files is required in this case.
         metadata[band][field]['cont.dat'] = ['/path/to/cont.dat']
+    WORK_DIRECTORY
+        If the variable WORK_DIRECTORY is specified, the final measurement set
+        after any concatenation/splitting will be copied to that directory,
+        and all output files will be created in that directory.  If this is
+        specified, then PRODUCT_DIRECTORY must also be specified - that's where
+        the final image set will be moved to at the end.
+        The MSes will be cleaned up (deleted) after imaging.
+        This keyword is intended to help support work on computer systems
+        where the storage and high-performance computing are on different
+        machines.
+    PRODUCT_DIRECTORY
+        See WORK_DIRECTORY.  This is where the final products will be put.
 """
 
 import json
@@ -81,6 +93,14 @@ with open('to_image.json', 'r') as fh:
 if os.getenv('LOGFILENAME'):
     casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
 
+imaging_root = "imaging_results"
+if os.getenv('PRODUCT_DIRECTORY') and os.getenv('WORK_DIRECTORY'):
+    copy_files = True
+    workdir = os.getenv('WORK_DIRECTORY')
+    proddir = os.getenv('WORK_DIRECTORY')
+    imaging_root = workdir
+else:
+    copy_files = False
 
 if os.getenv('FIELD_ID'):
     field_id = os.getenv('FIELD_ID')
@@ -100,7 +120,6 @@ if os.getenv('BAND_NUMBERS'):
 elif 'band_list' not in locals():
     band_list = list(to_image.keys())
 
-imaging_root = "imaging_results"
 if not os.path.exists(imaging_root):
     os.mkdir(imaging_root)
 
@@ -422,6 +441,39 @@ for band in band_list:
                                          line_name, contsub_suffix))
             lineimagename = os.path.join(imaging_root, baselineimagename)
 
+            if copy_files:
+                # _copy_ the MS file to the working directory
+
+                # first, make sure that we're not copying the MS into itself - that would be bad.
+                assert os.path.split(concatvis)[0] != workdir
+
+                logprint("Copying {0}->{1}".format(concatvis, workdir), origin='almaimf_line_imaging')
+                shutil.cptree(concatvis, workdir)
+
+                concatvis = os.path.join(workdir, os.path.basename(concatvis))
+
+                # we need to copy the files to our working directory if they exist
+                # (this allows for continuation of partly-completed processes
+                # and reuse of existing startmodels)
+                for suffix in ('.image', '.image.pbcor', '.mask', '.model',
+                               '.pb', '.psf', '.residual', '.sumwt', '.weight',
+                               '.contcube.model', '.image.fits',
+                               '.image.pbcor.fits',
+                               '_continuum_model.image.tt0',
+                               '_continuum_model.image.tt1'):
+                    dest = imaging_root
+                    src = os.path.join(proddir,
+                                       baselineimagename + suffix)
+                    if os.path.exists(src):
+                        logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
+                        shutil.move(src, dest)
+
+                # we don't copy or move over the continuum startmodels; they're light reads
+                contmodel_path = proddir
+            else:
+                contmodel_path = None
+
+
             logprint("Measurement sets are: " + str(concatvis),
                      origin='almaimf_line_imaging')
             coosys, racen, deccen = determine_phasecenter(ms=concatvis,
@@ -559,6 +611,7 @@ for band in band_list:
                 # just skip the rest here
                 continue
 
+            # if the dirty image was made or exists
             if make_dirty_image:
                 # the threshold needs to be computed if any imaging is to be done (either contsub or not)
                 # no .image file is produced, only a residual
@@ -649,7 +702,8 @@ for band in band_list:
                     if make_continuum_startmodel:
                         contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                        contimagename=impars['startmodel'],
-                                                       imaging_results_path=imaging_root)
+                                                       imaging_results_path=imaging_root,
+                                                       contmodel_path=contmodel_path)
                         impars['startmodel'] = contmodel
 
 
@@ -766,6 +820,20 @@ for band in band_list:
                 if do_export_fits:
                     exportfits(lineimagename+".image", lineimagename+".image.fits", overwrite=True)
                     exportfits(lineimagename+".image.pbcor", lineimagename+".image.pbcor.fits", overwrite=True)
+
+
+            if copy_files:
+                for suffix in ('.image', '.image.pbcor', '.mask', '.model',
+                               '.pb', '.psf', '.residual', '.sumwt', '.weight',
+                               '.contcube.model', '.image.fits',
+                               '.image.pbcor.fits',
+                               '_continuum_model.image.tt0',
+                               '_continuum_model.image.tt1'):
+                    src = lineimagename+suffix
+                    dest = proddir
+                    if os.path.exists(src):
+                        logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
+                        shutil.move(src, dest)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
