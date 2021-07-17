@@ -85,6 +85,7 @@ ia = iatool()
 ms = mstool()
 
 def logprint(msg, origin="almaimf_line_imaging", **kwargs):
+    print(msg)
     return logprint_(msg, origin=origin, **kwargs)
 
 with open('to_image.json', 'r') as fh:
@@ -96,8 +97,8 @@ if os.getenv('LOGFILENAME'):
 imaging_root = "imaging_results"
 if os.getenv('PRODUCT_DIRECTORY') and os.getenv('WORK_DIRECTORY'):
     copy_files = True
-    workdir = os.getenv('WORK_DIRECTORY')
-    proddir = os.getenv('PRODUCT_DIRECTORY')
+    workdir = os.getenv('WORK_DIRECTORY') +"/"
+    proddir = os.getenv('PRODUCT_DIRECTORY') +"/"
     imaging_root = workdir
     logprint("Using working directory {workdir} and product directory {proddir}"
              .format(workdir=workdir, proddir=proddir))
@@ -449,10 +450,11 @@ for band in band_list:
                 # first, make sure that we're not copying the MS into itself - that would be bad.
                 assert os.path.split(concatvis)[0] != workdir
 
-                logprint("Copying {0}->{1}".format(concatvis, workdir), origin='almaimf_line_imaging')
-                shutil.cptree(concatvis, workdir)
+                newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
+                logprint("Copying {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
+                shutil.copytree(concatvis, newconcatvis)
+                concatvis=newconcatvis
 
-                concatvis = os.path.join(workdir, os.path.basename(concatvis))
 
                 # we need to copy the files to our working directory if they exist
                 # (this allows for continuation of partly-completed processes
