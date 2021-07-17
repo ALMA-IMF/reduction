@@ -453,7 +453,7 @@ for band in band_list:
                 newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
                 logprint("Copying {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
                 shutil.copytree(concatvis, newconcatvis)
-                concatvis=newconcatvis
+                concatvis = newconcatvis
 
 
                 # we need to copy the files to our working directory if they exist
@@ -475,7 +475,7 @@ for band in band_list:
                 # we don't copy or move over the continuum startmodels; they're light reads
                 contmodel_path = proddir
             else:
-                contmodel_path = None
+                contmodel_path = imaging_root
 
 
             logprint("Measurement sets are: " + str(concatvis),
@@ -706,7 +706,7 @@ for band in band_list:
                     if make_continuum_startmodel:
                         contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                        contimagename=impars['startmodel'],
-                                                       imaging_results_path=imaging_root,
+                                                       imaging_results_path=contmodel_path,
                                                        contmodel_path=contmodel_path)
                         impars['startmodel'] = contmodel
 
