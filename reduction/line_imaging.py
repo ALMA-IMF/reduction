@@ -451,6 +451,8 @@ for band in band_list:
                 assert os.path.split(concatvis)[0] != workdir
 
                 newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
+                if os.path.exists(newconcatvis):
+                    raise IOError("The target directory {newconcatvis} already exists".format(newconcatvis=newconcatvis))
                 logprint("Copying {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
                 shutil.copytree(concatvis, newconcatvis)
                 concatvis = newconcatvis
