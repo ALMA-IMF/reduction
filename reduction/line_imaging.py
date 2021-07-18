@@ -486,8 +486,11 @@ for band in band_list:
 
                 # we don't copy or move over the continuum startmodels; they're light reads
                 contmodel_path = proddir
+                imaging_results_path_for_contmodel = workdir
+
             else:
                 contmodel_path = imaging_root
+                imaging_results_path_for_contmodel = imaging_root
 
 
             logprint("Measurement sets are: " + str(concatvis),
@@ -718,7 +721,7 @@ for band in band_list:
                     if make_continuum_startmodel:
                         contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                        contimagename=impars['startmodel'],
-                                                       imaging_results_path=contmodel_path,
+                                                       imaging_results_path=imaging_results_path_for_contmodel,
                                                        contmodel_path=contmodel_path)
                         impars['startmodel'] = contmodel
 
