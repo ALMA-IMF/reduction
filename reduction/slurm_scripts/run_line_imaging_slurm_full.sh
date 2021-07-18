@@ -27,6 +27,15 @@ case $QOS in
         ;;
 esac
 
+if [ $CONTINUE_IF_MS_EXISTS ]; then
+    echo "Continue if ms exists: ${CONTINUE_IF_MS_EXISTS}"
+else
+    # default: let's allow for the existence of the MS file
+    # (this can happen if the cleaning times out)
+    export CONTINUE_IF_MS_EXISTS=True
+fi
+
+
 # re-trying without specifying giant memory - chanchunks should be able to handle this, right?
 # WRONG! Chanchunks doesn't help because automultithresh is a poop.
 case $FIELD_ID in
