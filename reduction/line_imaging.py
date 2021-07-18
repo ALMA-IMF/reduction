@@ -46,6 +46,11 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         machines.
     PRODUCT_DIRECTORY
         See WORK_DIRECTORY.  This is where the final products will be put.
+    CONTINUE_IF_MS_EXISTS
+        A boolean flag that only applies if both PRODUCT_DIRECTORY and
+        WORK_DIRECTORY are set.  If this is not set, and the .ms file to
+        clean from exists in WORK_DIRECTORY, an error will be raised and
+        the script will fail.  If this is set, it will use that file.
 """
 
 import json
@@ -452,10 +457,15 @@ for band in band_list:
 
                 newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
                 if os.path.exists(newconcatvis):
-                    raise IOError("The target directory {newconcatvis} already exists".format(newconcatvis=newconcatvis))
-                logprint("Copying {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
-                shutil.copytree(concatvis, newconcatvis)
-                concatvis = newconcatvis
+                    if not os.getenv('CONTINUE_IF_MS_EXISTS'):
+                        raise IOError("The target directory {newconcatvis} already exists".format(newconcatvis=newconcatvis))
+                    else:
+                        logprint("{0} exists, using it as concatvis".format(newconcatvis), origin='almaimf_line_imaging')
+                        concatvis = newconcatvis
+                else:
+                    logprint("Copying {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
+                    shutil.copytree(concatvis, newconcatvis)
+                    concatvis = newconcatvis
 
 
                 # we need to copy the files to our working directory if they exist
@@ -840,6 +850,15 @@ for band in band_list:
                     if os.path.exists(src):
                         logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
                         shutil.move(src, dest)
+
+                    # use the variable name 'newconcatvis' here since that should
+                    # only ever take on the value specified in copy_files; this is
+                    # a safety mechanism to make sure we don't accidentally delete
+                    # the original file.
+                    logprint("Removing MS file {0} from working directory {1}"
+                             .format(newconcatvis, workdir),
+                             origin='almaimf_line_imaging')
+                    shutil.rmtree(newconcatvis)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
