@@ -143,7 +143,7 @@ try:
     ms = mstool()
 except (ImportError,ModuleNotFoundError):
     from casatasks import tclean, split, flagdata
-    import casaplotms as plotms
+    from casaplotms import plotms
 
     from casatasks import clearcal, gaincal, rmtables, applycal, exportfits
 
