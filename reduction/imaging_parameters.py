@@ -3020,8 +3020,9 @@ line_imaging_parameters_custom = {
     "G338.93_B6_12M_robust0_sio": {
         "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
-        "usemask": "user",
-        "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
+        #This mask is not available
+        # "usemask": "user",
+        # "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
     },
     "G351.77_B3_12M_robust0": {
         "threshold": "30mJy",

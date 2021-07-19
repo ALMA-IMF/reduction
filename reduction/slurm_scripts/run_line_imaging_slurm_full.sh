@@ -8,9 +8,17 @@ export FIELD_ID=$1
 export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export MEM=64gb
-export NTASKS=1
-export CPUS_PER_TASK=16 # mem/4
+
+if [[ $CMD == *"mpi"* ]]; then
+    export NTASKS=16
+    export CPUS_PER_TASK=1 # mem/4
+    export SLURM_TASKS_PER_NODE=$NTASKS
+else
+    export NTASKS=1
+    export CPUS_PER_TASK=16 # mem/4
+fi
 export SLURM_NTASKS=$NTASKS
+
 
 export LOGPATH=/blue/adamginsburg/adamginsburg/slurmjobs/
 
@@ -118,8 +126,15 @@ export BAND_TO_IMAGE=B${BAND_NUMBERS}
 jobid=""
 
 export MEM=32gb
-export NTASKS=1
-export CPUS_PER_TASK=8 # mem/4
+
+if [[ $CMD == *"mpi"* ]]; then
+    export NTASKS=16
+    export CPUS_PER_TASK=1 # mem/4
+    export SLURM_TASKS_PER_NODE=$NTASKS
+else
+    export NTASKS=1
+    export CPUS_PER_TASK=8 # mem/4
+fi
 export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in

@@ -463,8 +463,10 @@ for band in band_list:
                         logprint("{0} exists, using it as concatvis".format(newconcatvis), origin='almaimf_line_imaging')
                         concatvis = newconcatvis
                 else:
-                    logprint("Copying {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
+                    logprint("Copying concatvis {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
                     shutil.copytree(concatvis, newconcatvis)
+                    # could use filecmp.dircmp to do a deeper comparison, but that might be expensive and unnecessary
+                    assert os.path.exists(newconcatvis)
                     concatvis = newconcatvis
 
 
@@ -854,14 +856,14 @@ for band in band_list:
                         logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
                         shutil.move(src, dest)
 
-                    # use the variable name 'newconcatvis' here since that should
-                    # only ever take on the value specified in copy_files; this is
-                    # a safety mechanism to make sure we don't accidentally delete
-                    # the original file.
-                    logprint("Removing MS file {0} from working directory {1}"
-                             .format(newconcatvis, workdir),
-                             origin='almaimf_line_imaging')
-                    shutil.rmtree(newconcatvis)
+                # use the variable name 'newconcatvis' here since that should
+                # only ever take on the value specified in copy_files; this is
+                # a safety mechanism to make sure we don't accidentally delete
+                # the original file.
+                logprint("Removing MS file {0} from working directory {1}"
+                         .format(newconcatvis, workdir),
+                         origin='almaimf_line_imaging')
+                shutil.rmtree(newconcatvis)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
