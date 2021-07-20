@@ -2854,7 +2854,7 @@ line_imaging_parameters_default = {
 }
 
 
-for key in line_imaging_parameters_default:
+for key in line_imaging_parameters_default.keys():
     if "7M12M" in key:
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
