@@ -2859,6 +2859,18 @@ for key in line_imaging_parameters_default:
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
         line_imaging_parameters_default[key]["niter"] = 5000
+    if 'B6' in key:
+        # set defaults for 12CO to have higher cyclefactor and higher threshold (12CO is scary)
+        line_imaging_parameters_default[key+"_12co"] = {}
+        line_imaging_parameters_default[key+"_12co"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key+"_12co"]['cyclefactor'] = 3.0
+        line_imaging_parameters_default[key+"_12co"]['threshold'] = '5sigma'
+        # spw5 is the 12CO SPW
+        line_imaging_parameters_default[key+"_spw5"] = {}
+        line_imaging_parameters_default[key+"_spw5"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key+"_spw5"]['cyclefactor'] = 3.0
+        line_imaging_parameters_default[key+"_spw5"]['threshold'] = '5sigma'
+
 
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
