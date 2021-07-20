@@ -1,3 +1,5 @@
-#CRTFv0 CASA Region Text Format version 0
-poly [[273.55786421deg, -17.92643217deg], [273.56161753deg, -17.92858820deg], [273.56360053deg, -17.93141801deg], [273.56175936deg, -17.93411320deg], [273.55701448deg, -17.93418067deg], [273.55602300deg, -17.93155293deg], [273.55234052deg, -17.92818399deg], [273.55531484deg, -17.92575840deg], [273.55651870deg, -17.92569103deg]] coord=ICRS, corr=[I], linewidth=2, linestyle=-, symsize=1, symthick=1, color=2ee6d6, font=Helvetica, fontsize=10, fontstyle=bold, usetex=false, label="8mJy", labelcolor=green, labelpos=top
-ellipse [[273.55920961deg, -17.92110929deg], [7.2768arcsec, 6.3066arcsec], 0.00000000deg] coord=ICRS, corr=[I], linewidth=2, linestyle=-, symsize=1, symthick=1, color=2ee6d6, font=Helvetica, fontsize=10, fontstyle=bold, usetex=false, label="8mJy", labelcolor=green, labelpos=top
+# Region file format: DS9 CARTA 2.0.0
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+icrs
+polygon(273.557864,-17.926432,273.561618,-17.928588,273.563601,-17.931418,273.561759,-17.934113,273.557014,-17.934181,273.556023,-17.931553,273.552341,-17.928184,273.555315,-17.925758,273.556519,-17.925691) # color=#2EE6D6 width=2 text={8mJy}
+ellipse(273.559210, -17.921109, 7.2768", 6.3066", 90) # color=#2EE6D6 width=2 text={8mJy}
