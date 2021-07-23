@@ -9,7 +9,8 @@ env
 pwd; hostname; date
 echo "Memory=${MEM}"
 
-WORK_DIR='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
+export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
+export PRODUCT_DIRECTORY='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
 
 module load git
 # for MPI module load cuda/11.0.207  gcc/9.3.0 openmpi/4.0.4
@@ -32,8 +33,9 @@ export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
 cd ${ALMAIMF_ROOTDIR}
 python getversion.py
 
-cd ${WORK_DIR}
-echo ${WORK_DIR}
+cd ${WORK_DIRECTORY}
+echo "Working in ${WORK_DIRECTORY}"
+echo "Publishing to  ${PRODUCT_DIRECTORY}"
 echo ${LINE_NAME} ${BAND_NUMBERS}
 
 export PYTHONPATH=$ALMAIMF_ROOTDIR

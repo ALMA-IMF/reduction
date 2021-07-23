@@ -2854,11 +2854,23 @@ line_imaging_parameters_default = {
 }
 
 
-for key in line_imaging_parameters_default:
+for key in list(line_imaging_parameters_default.keys()):
     if "7M12M" in key:
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
         line_imaging_parameters_default[key]["niter"] = 5000
+    if 'B6' in key:
+        # set defaults for 12CO to have higher cyclefactor and higher threshold (12CO is scary)
+        line_imaging_parameters_default[key+"_12co"] = {}
+        line_imaging_parameters_default[key+"_12co"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key+"_12co"]['cyclefactor'] = 3.0
+        line_imaging_parameters_default[key+"_12co"]['threshold'] = '5sigma'
+        # spw5 is the 12CO SPW
+        line_imaging_parameters_default[key+"_spw5"] = {}
+        line_imaging_parameters_default[key+"_spw5"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key+"_spw5"]['cyclefactor'] = 3.0
+        line_imaging_parameters_default[key+"_spw5"]['threshold'] = '5sigma'
+
 
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
@@ -3020,8 +3032,9 @@ line_imaging_parameters_custom = {
     "G338.93_B6_12M_robust0_sio": {
         "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
-        "usemask": "user",
-        "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
+        #This mask is not available
+        # "usemask": "user",
+        # "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
     },
     "G351.77_B3_12M_robust0": {
         "threshold": "30mJy",

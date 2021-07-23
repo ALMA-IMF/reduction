@@ -213,6 +213,7 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
         pixscale_as = 180/np.pi * 3600 * pixscale
         pixscale_as = np.round(pixscale_as, 2)
         if pixscale_as < min_pixscale:
+            logprint("Pixel scale was = {0} rad = {1} \", but is begin forced to min_pixscale={2} ".format(pixscale, pixscale_as/3600/180*np.pi, min_pixscale))
             pixscale_as = min_pixscale
         # re-set pixscale to be radians
         pixscale = pixscale_as * np.pi / 3600 / 180

@@ -8,7 +8,9 @@ env
 pwd; hostname; date
 echo "Memory=${MEM}"
 
-WORK_DIR='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
+#WORK_DIR='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
+export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
+export PRODUCT_DIRECTORY='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
 
 module load git
 module load cuda/11.0.207  gcc/9.3.0 openmpi/4.0.4
@@ -40,14 +42,17 @@ export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
 export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/mpicasa
 export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
 export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.8.0-109.el7/bin/mpicasa
+export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
+export MPICASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/mpicasa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
 cd ${ALMAIMF_ROOTDIR}
 python getversion.py
 
-cd ${WORK_DIR}
-echo ${WORK_DIR}
+cd ${WORK_DIRECTORY}
+echo "Working in ${WORK_DIRECTORY}"
+echo "Publishing to  ${PRODUCT_DIRECTORY}"
 echo ${LINE_NAME} ${BAND_NUMBERS}
 
 export PYTHONPATH=$ALMAIMF_ROOTDIR
@@ -58,7 +63,7 @@ echo $LOGFILENAME
 
 # do one band at a time to enable _disabling_ one or the other
 #export BAND_NUMBERS="3"
-echo srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+#echo srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 # srun --mpi=pmix_v3 
 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 

@@ -8,9 +8,17 @@ export FIELD_ID=$1
 export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export MEM=64gb
-export NTASKS=1
-export CPUS_PER_TASK=16 # mem/4
+
+if [[ $CMD == *"mpi"* ]]; then
+    export NTASKS=16
+    export CPUS_PER_TASK=1 # mem/4
+    export SLURM_TASKS_PER_NODE=$NTASKS
+else
+    export NTASKS=1
+    export CPUS_PER_TASK=16 # mem/4
+fi
 export SLURM_NTASKS=$NTASKS
+
 
 export LOGPATH=/blue/adamginsburg/adamginsburg/slurmjobs/
 
@@ -26,6 +34,15 @@ case $QOS in
         export ACCOUNT=astronomy-dept
         ;;
 esac
+
+if [ $CONTINUE_IF_MS_EXISTS ]; then
+    echo "Continue if ms exists: ${CONTINUE_IF_MS_EXISTS}"
+else
+    # default: let's allow for the existence of the MS file
+    # (this can happen if the cleaning times out)
+    export CONTINUE_IF_MS_EXISTS=True
+fi
+
 
 # re-trying without specifying giant memory - chanchunks should be able to handle this, right?
 # WRONG! Chanchunks doesn't help because automultithresh is a poop.
@@ -109,8 +126,15 @@ export BAND_TO_IMAGE=B${BAND_NUMBERS}
 jobid=""
 
 export MEM=32gb
-export NTASKS=1
-export CPUS_PER_TASK=8 # mem/4
+
+if [[ $CMD == *"mpi"* ]]; then
+    export NTASKS=16
+    export CPUS_PER_TASK=1 # mem/4
+    export SLURM_TASKS_PER_NODE=$NTASKS
+else
+    export NTASKS=1
+    export CPUS_PER_TASK=8 # mem/4
+fi
 export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in
