@@ -2859,6 +2859,7 @@ for key in list(line_imaging_parameters_default.keys()):
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
         line_imaging_parameters_default[key]["niter"] = 5000
+        # TODO: change pblimit?
     if 'B6' in key:
         # set defaults for 12CO to have higher cyclefactor and higher threshold (12CO is scary)
         line_imaging_parameters_default[key+"_12co"] = {}

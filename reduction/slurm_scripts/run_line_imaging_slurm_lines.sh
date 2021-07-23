@@ -58,7 +58,7 @@ echo "Contsub = ${suffix_contsub}"
 export NTASKS=16
 MEM=64gb
 case $FIELD_ID in
-W43-MM2|W51-IRS2|W43-MM3|G328.25) #B3 B6
+W43-MM2|W51-IRS2|W51-E|W43-MM3|G328.25) #B3 B6
     export MEM=96gb NTASKS=24 ;;
 esac
 export SLURM_NTASKS=$NTASKS
