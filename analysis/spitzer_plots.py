@@ -67,6 +67,7 @@ def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitz
                         spitzer_display_args=dict(stretch='log', min_percent=1, max_percent=99.99, clip=True),
                         mips=False,
                         figsize=(10,10),
+                        zoom=None,
                         contour_level={'B3':[0.01], 'B6':[0.01]}):
     image_b3 = SpectralCube.read(f'{finaliter_prefix_b3}.image.tt0.fits', use_dask=False, format='fits')
     image_b6 = SpectralCube.read(f'{finaliter_prefix_b6}.image.tt0.fits', use_dask=False, format='fits')
@@ -88,6 +89,17 @@ def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitz
 
     lims = ax.axis()
 
+
+    if zoom:
+        xdiff = lims[1] - lims[0]
+        ydiff = lims[3] - lims[2]
+        lims = (lims[0] + xdiff/zoom/2,
+                lims[1] - xdiff/zoom/2,
+                lims[2] + ydiff/zoom/2,
+                lims[3] - ydiff/zoom/2)
+    else:
+        zoom = 1
+
     ax.contour(image_b3.mask.include()[0], transform=ax.get_transform(image_b3.wcs.celestial), levels=[0.5], colors=['orange'])
     ax.contour(image_b6.mask.include()[0], transform=ax.get_transform(image_b6.wcs.celestial), levels=[0.5], colors=['cyan'])
     ax.contour(image_b3[0].value,  transform=ax.get_transform(image_b3.wcs.celestial), levels=contour_level['B3'], colors=['wheat'], linewidths=[0.5])
@@ -97,6 +109,11 @@ def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitz
     ax.axis(lims)
     ax.set_xlabel('Galactic Longitude')
     ax.set_ylabel('Galactic Latitude')
+
+    ax.text(0.88, 0.87, fieldid, horizontalalignment='right',
+            #fontweight='bold',
+            fontsize=22,
+            verticalalignment='top', transform=fig.transFigure)
 
     #pl.figure(2).gca().imshow(image_b6.mask.include()[0])
     return fig
@@ -141,6 +158,9 @@ if __name__ == "__main__":
     if not os.path.exists('mips_datapath/fov_contour_plots'):
         os.mkdir('mips_datapath/fov_contour_plots')
 
+    import pylab as pl
+    pl.rcParams['font.size'] = 16
+
     #prefixes['W43MM1'] = dict(
     #    finaliter_prefix_b3="W43-MM1/B3/cleanest/W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
     #    finaliter_prefix_b6="W43-MM2/B6/cleanest/W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",)
@@ -174,12 +194,12 @@ if __name__ == "__main__":
 
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[100], 'B6': [100]})
         fig.savefig(f'spitzer_datapath/fov_plots/{fieldid}_field_of_view_plot.png', bbox_inches='tight')
-        fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level=contour_levels[fieldid])
+        fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level=contour_levels[fieldid], zoom=2)
         fig.savefig(f'spitzer_datapath/fov_contour_plots/{fieldid}_field_of_view_contour_plot.png', bbox_inches='tight', dpi=300)
 
 
 
         fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level={'B3':[100], 'B6': [100]}, mips=True)
         fig.savefig(f'mips_datapath/fov_plots/{fieldid}_field_of_view_plot_mips.png', bbox_inches='tight')
-        fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level=contour_levels[fieldid], mips=True)
+        fig = show_fov_on_spitzer(**pfxs, fieldid=fieldid, spitzerpath='spitzer_datapath', contour_level=contour_levels[fieldid], mips=True, zoom=2)
         fig.savefig(f'mips_datapath/fov_contour_plots/{fieldid}_field_of_view_contour_plot_mips.png', bbox_inches='tight', dpi=300)
