@@ -12,6 +12,8 @@ echo "Memory=${MEM}"
 export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
 export PRODUCT_DIRECTORY='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
 
+export IPYTHONDIR=/tmp
+
 module load git
 # for MPI module load cuda/11.0.207  gcc/9.3.0 openmpi/4.0.4
 

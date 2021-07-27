@@ -8,14 +8,15 @@ export FIELD_ID=$1
 export BAND_NUMBERS=3
 export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export MEM=64gb
+export MEM=128gb
 
 if [[ $CMD == *"mpi"* ]]; then
-    export NTASKS=16
+    export NTASKS=32
     export CPUS_PER_TASK=1 # mem/4
     export SLURM_TASKS_PER_NODE=$NTASKS
 else
     export NTASKS=1
-    export CPUS_PER_TASK=16 # mem/4
+    export CPUS_PER_TASK=32 # mem/4
 fi
 export SLURM_NTASKS=$NTASKS
 
@@ -50,7 +51,8 @@ case $FIELD_ID in
 #G338.93|W51-E|W51-IRS2|G10.62) # B3 needs bigger; B6 is probably OK w/96
 #    declare -A mem_map=( ["0"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
 W43-MM2|W51-IRS2|G333.60|W51-E) #B3 B6
-    export MEM=96gb ;;
+#    export MEM=96gb ;;
+    export MEM=128gb ;;
 #G333.60|W43-MM3|G353.41|G351.77|G337.92) #B3 B6
 #    export MEM=96gb ;;
 #W43-MM1|W43-MM2|G008.67) # only B3 needs more...
@@ -126,20 +128,21 @@ export BAND_TO_IMAGE=B${BAND_NUMBERS}
 jobid=""
 
 export MEM=32gb
+export MEM=128gb
 
 if [[ $CMD == *"mpi"* ]]; then
-    export NTASKS=16
+    export NTASKS=32
     export CPUS_PER_TASK=1 # mem/4
     export SLURM_TASKS_PER_NODE=$NTASKS
 else
     export NTASKS=1
-    export CPUS_PER_TASK=8 # mem/4
+    export CPUS_PER_TASK=32 # mem/4
 fi
 export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92|G328.25)
-    declare -A mem_map=( ["0"]="64gb" ["1"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
+    declare -A mem_map=( ["0"]="128gb" ["1"]="128gb" ["3"]="128gb" ["6"]="128gb" ["7"]="128gb" ) ;;
 esac
 
 echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub}
@@ -158,7 +161,7 @@ for SPW in {0..7}; do
     fi
 
     # ternary operator - if `mem_map` doesn't exist, or if `mem_map[$blah]` doesn't exist, will set back to default
-    [[ ${mem_map[$SPW]} ]] && export MEM=${mem_map[$SPW]} || export MEM=32gb
+    [[ ${mem_map[$SPW]} ]] && export MEM=${mem_map[$SPW]} || export MEM=128gb
 
     jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub}
     export LOGFILENAME="${LOGPATH}/casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
