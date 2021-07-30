@@ -262,6 +262,20 @@ def set_impars(impars, line_name, vis, linpars, spwnames=None):
 
     return impars
 
+def copy_ms(src, dest):
+    if os.path.exists(dest):
+        if not os.getenv('CONTINUE_IF_MS_EXISTS'):
+            raise IOError("The target directory {dest} already exists".format(dest=dest))
+        else:
+            logprint("{0} exists, using it as concatvis".format(dest), origin='almaimf_line_imaging')
+            return dest
+    else:
+        logprint("Copying concatvis {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
+        shutil.copytree(src, dest)
+        # could use filecmp.dircmp to do a deeper comparison, but that might be expensive and unnecessary
+        assert os.path.exists(dest)
+        return dest
+
 if exclude_7m:
     arrayname = '12M'
 elif only_7m:
@@ -452,26 +466,18 @@ for band in band_list:
             if copy_files:
                 # _copy_ the MS file to the working directory
 
-                if os.getenv('DO_NOT_CONCAT'):
-                    # todo: implement this
-                    raise NotImplementedError
 
                 # first, make sure that we're not copying the MS into itself - that would be bad.
                 assert os.path.split(concatvis)[0] != workdir
 
-                newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
-                if os.path.exists(newconcatvis):
-                    if not os.getenv('CONTINUE_IF_MS_EXISTS'):
-                        raise IOError("The target directory {newconcatvis} already exists".format(newconcatvis=newconcatvis))
-                    else:
-                        logprint("{0} exists, using it as concatvis".format(newconcatvis), origin='almaimf_line_imaging')
-                        concatvis = newconcatvis
+                if os.getenv('DO_NOT_CONCAT'):
+                    newconcatvis = [os.path.join(workdir, os.path.basename(vv))
+                                    for vv in concatvis]
+                    concatvis = [copy_ms(vv, newvv)
+                                 for vv,newvv in zip(concatvis, newconcatvis)]
                 else:
-                    logprint("Copying concatvis {0}->{1}".format(concatvis, newconcatvis), origin='almaimf_line_imaging')
-                    shutil.copytree(concatvis, newconcatvis)
-                    # could use filecmp.dircmp to do a deeper comparison, but that might be expensive and unnecessary
-                    assert os.path.exists(newconcatvis)
-                    concatvis = newconcatvis
+                    newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
+                    concatvis = copy_ms(concatvis, newconcatvis)
 
 
                 # we need to copy the files to our working directory if they exist
@@ -864,10 +870,19 @@ for band in band_list:
                 # only ever take on the value specified in copy_files; this is
                 # a safety mechanism to make sure we don't accidentally delete
                 # the original file.
-                logprint("Removing MS file {0} from working directory {1}"
-                         .format(newconcatvis, workdir),
-                         origin='almaimf_line_imaging')
-                shutil.rmtree(newconcatvis)
+                if os.getenv('DO_NOT_CONCAT'):
+                    # sanity check: make sure `newconcatvis` was set to be a list
+                    assert isinstance(newconcatvis, list)
+                    for newvv in newconcatvis:
+                        logprint("Removing MS file {0} from working directory {1}"
+                                 .format(newvv, workdir),
+                                 origin='almaimf_line_imaging')
+                        shutil.rmtree(newvv)
+                else:
+                    logprint("Removing MS file {0} from working directory {1}"
+                             .format(newconcatvis, workdir),
+                             origin='almaimf_line_imaging')
+                    shutil.rmtree(newconcatvis)
 
 
             logprint("Completed {0}->{1}".format(vis, concatvis), origin='almaimf_line_imaging')
