@@ -110,10 +110,30 @@ def show_fov_on_spitzer(finaliter_prefix_b3, finaliter_prefix_b6, fieldid, spitz
     ax.set_xlabel('Galactic Longitude')
     ax.set_ylabel('Galactic Latitude')
 
-    ax.text(0.88, 0.87, fieldid, horizontalalignment='right',
-            #fontweight='bold',
-            fontsize=22,
-            verticalalignment='top', transform=fig.transFigure)
+    txtpos = [0.97, 0.97]
+    # xx,yy = ax.transData.inverted().transform(ax.transAxes.transform(txtpos))
+    # arr = ax.images[0].get_array()
+    # bgcolor = arr[int(xx)-2:int(xx)+2, int(yy)-2:int(yy)+2, :].mean(axis=(0,1))
+
+    # #from matplotlib.colors import rgb_to_hsv, hsv_to_rgb
+
+    # #def complementary(r, g, b):
+    # #    """returns RGB components of complementary color"""
+    # #    hsv = rgb_to_hsv((r, g, b))
+    # #    # force saturation to 1
+    # #    return hsv_to_rgb(((hsv[0] + 0.5) % 1, 1, 1))
+
+    # if np.any(bgcolor.mask) or bgcolor.mean() < 0.5:
+    #     txcolor = 'white'
+    # else:
+    #     txcolor = 'black' #complementary(*bgcolor)
+    txcolor = 'white'
+
+    txt = ax.text(*txtpos, fieldid, horizontalalignment='right',
+                  #fontweight='bold',
+                  color=txcolor,
+                  fontsize=22,
+                  verticalalignment='top', transform=ax.transAxes)
 
     #pl.figure(2).gca().imshow(image_b6.mask.include()[0])
     return fig

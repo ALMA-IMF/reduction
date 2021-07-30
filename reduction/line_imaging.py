@@ -452,6 +452,10 @@ for band in band_list:
             if copy_files:
                 # _copy_ the MS file to the working directory
 
+                if os.getenv('DO_NOT_CONCAT'):
+                    # todo: implement this
+                    raise NotImplementedError
+
                 # first, make sure that we're not copying the MS into itself - that would be bad.
                 assert os.path.split(concatvis)[0] != workdir
 
