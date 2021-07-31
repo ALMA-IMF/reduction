@@ -55,15 +55,16 @@ else
 fi
 echo "Contsub = ${suffix_contsub}"
 
-export NTASKS=16
+# large ntasks seems to block up completely with 'write lock's
+export NTASKS=8
 MEM=64gb
 case $FIELD_ID in
 W43-MM1|W43-MM2|W51-IRS2|W51-E|W43-MM3|G328.25) #B3 B6
-    export MEM=96gb NTASKS=24 ;;
+    export MEM=96gb NTASKS=8 ;;
 esac
 
 # override other options: just max it out
-export MEM=128gb NTASKS=16
+export MEM=128gb NTASKS=8
 export SLURM_NTASKS=$NTASKS
 
 echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M only_7m=$ONLY_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
