@@ -71,28 +71,18 @@ def find_closest_cal(band, field, verbose=False):
             times_tgt = np.unique(timefield['time'][timefield['field_id'] == tgt_id])
             indices = np.searchsorted(times_good, times_tgt, side='left')
 
-            if np.all(indices == len(times_good)):
+            if np.all(indices == len(times_good)) or np.all(indices == 0):
                 # the cal scans are not in range; usually
                 # indicates 7m data matching to 12m?
                 md[band][field]['selfcal_maxsep'][tgt_id] = np.inf
             else:
-                try:
-                    b4 = times_tgt - times_good[indices]
-                except IndexError:
-                    b4 = None
+                b4mx = times_tgt - times_good[indices]
 
-                try:
-                    after = times_good[indices+1] - times_tgt
-                except IndexError:
-                    after = None
+                # throw out indices that are beyond the end
+                indices = indices[indices + 1 != len(times_good)]
+                aftermx = np.max(times_good[indices+1] - times_tgt)
 
-                if b4 is None and after is not None:
-                    mx = after.max()
-                elif after is None and b4 is not None:
-                    mx = b4.max()
-                else:
-                    tdiff_selfcal = np.max([after, b4], axis=0)
-                    mx = tdiff_selfcal.max()
+                mx = np.max([b4max,aftermax])
                 md[band][field]['selfcal_maxsep'][tgt_id] = int(round(mx))
 
         md[band][field]['cal_separations'] = separations
