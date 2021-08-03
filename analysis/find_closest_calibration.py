@@ -76,13 +76,18 @@ def find_closest_cal(band, field, verbose=False):
                 # indicates 7m data matching to 12m?
                 md[band][field]['selfcal_maxsep'][tgt_id] = np.inf
             else:
-                b4mx = times_tgt - times_good[indices]
+                # use 'abs' because the closest time could be before the first cal
+                # I don't really understand why this is
+                indices_ok = indices != len(times_good)
+                b4mx = np.abs(times_tgt[indices_ok] - times_good[indices[indices_ok]]).max()
 
                 # throw out indices that are beyond the end
-                indices = indices[indices + 1 != len(times_good)]
-                aftermx = np.max(times_good[indices+1] - times_tgt)
+                indices_ok = indices + 1 < len(times_good)
+                aftermx = np.max(times_good[indices[indices_ok]+1] - times_tgt[indices_ok])
+                # the 'after' should _always_ be after....
+                assert np.all(aftermx > 0)
 
-                mx = np.max([b4max,aftermax])
+                mx = np.max([b4mx,aftermx])
                 md[band][field]['selfcal_maxsep'][tgt_id] = int(round(mx))
 
         md[band][field]['cal_separations'] = separations

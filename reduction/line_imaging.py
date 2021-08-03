@@ -118,6 +118,7 @@ if os.getenv('FIELD_ID'):
 else:
     field_id = 'all'
 
+dryrun = bool(os.getenv('DRYRUN') or (dryrun if 'dryrun' in locals() else False))
 
 if os.getenv('BAND_NUMBERS'):
     band_list = list(map(lambda x: "B"+x, os.getenv('BAND_NUMBERS').split(',')))
@@ -276,6 +277,23 @@ def copy_ms(src, dest):
         assert os.path.exists(dest)
         return dest
 
+def check_channel_flags(concatvis):
+    flagsum = flagdata(vis=concatvis, mode='summary', spwchan=True)
+    spws = set([int(key.split(":")[0]) for key in flagsum['spw:channel']])
+    fractions_of_channels_flagged = {spwn: {int(key.split(":")[1]):
+                                            flagsum['spw:channel'][key]['flagged']
+                                            /
+                                            flagsum['spw:channel'][key]['total']
+                                            for key in
+                                            flagsum['spw:channel'] if
+                                            int(key.split(":")[0])
+                                            == spwn }
+                                     for spwn in spws}
+    for spwn, chanfracs in fractions_of_channels_flagged.items():
+        if len(set(chanfracs.values())) != 1:
+            raise ValueError("Spectral Window {0} has flagged out channels".format(spwn))
+
+
 if exclude_7m:
     arrayname = '12M'
 elif only_7m:
@@ -398,11 +416,15 @@ for band in band_list:
                              .format(vis=vis, concatvis=concatvis),
                              origin='almaimf_line_imaging'
                             )
+                    if dryrun:
+                        raise ValueError("Cannot do a dry run without concatenated data in place")
                     concat(vis=vis, concatvis=concatvis)
 
             if do_contsub:
 
                 if not os.path.exists(concatvis+".contsub"):
+                    if dryrun:
+                        raise ValueError("Cannot do a dry run without contsub concatenated data in place")
                     logprint("Concatvis contsub {0}.contsub does not exist, doing continuum subtraction.".format(str(concatvis)),
                              origin='almaimf_line_imaging')
 
@@ -447,6 +469,9 @@ for band in band_list:
                 if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
                     # if 'flagged' isn't in flagsum, it's an empty dict
                     raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(concatvis))
+
+                check_channel_flags(concatvis)
+
             elif isinstance(concatvis, list):
                 for vv in concatvis:
                     flagsum = flagdata(vis=vv, mode='summary', uvrange='0~1m')
@@ -463,7 +488,7 @@ for band in band_list:
                                          line_name, contsub_suffix))
             lineimagename = os.path.join(imaging_root, baselineimagename)
 
-            if copy_files:
+            if copy_files and not dryrun:
                 # _copy_ the MS file to the working directory
 
 
@@ -595,13 +620,16 @@ for band in band_list:
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
-                tclean(vis=concatvis,
-                       imagename=lineimagename,
-                       restoringbeam='', # do not use restoringbeam='common'
-                       # it results in bad edge channels dominating the beam
-                       **impars_dirty
-                      )
-                sethistory(lineimagename, impars=impars_dirty, suffixes=(".image", ".residual"))
+                check_channel_flags(concatvis)
+                if not dryrun:
+                    tclean(vis=concatvis,
+                           imagename=lineimagename,
+                           restoringbeam='', # do not use restoringbeam='common'
+                           # it results in bad edge channels dominating the beam
+                           **impars_dirty
+                          )
+                    sethistory(lineimagename, impars=impars_dirty, suffixes=(".image", ".residual"))
+                check_channel_flags(concatvis)
                 for suffix in ("mask", "model"):
                     bad_fn = lineimagename + "." + suffix
                     if os.path.exists(bad_fn):
@@ -730,7 +758,7 @@ for band in band_list:
                         for fn in glob.glob(lineimagename+".workdirectory/*.model"):
                             shutil.rmtree(fn)
 
-                    if make_continuum_startmodel:
+                    if make_continuum_startmodel and not dryrun:
                         contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                        contimagename=impars['startmodel'],
                                                        imaging_results_path=imaging_results_path_for_contmodel,
@@ -810,13 +838,16 @@ for band in band_list:
                 impars['parallel'] = parallel
 
 
-                tclean(vis=concatvis,
-                       imagename=lineimagename,
-                       restoringbeam='', # do not use restoringbeam='common'
-                       # it results in bad edge channels dominating the beam
-                       calcres=False,
-                       **impars
-                      )
+                check_channel_flags(concatvis)
+                if not dryrun:
+                    tclean(vis=concatvis,
+                           imagename=lineimagename,
+                           restoringbeam='', # do not use restoringbeam='common'
+                           # it results in bad edge channels dominating the beam
+                           calcres=False,
+                           **impars
+                          )
+                check_channel_flags(concatvis)
                 # re-do the tclean once more, with niter=0, to force recalculation of the residual
                 niter = impars['niter']
                 impars['niter'] = 0
@@ -831,29 +862,33 @@ for band in band_list:
                     impars['mask'] = ''
                 else:
                     mask = ''
-                tclean(vis=concatvis,
-                       imagename=lineimagename,
-                       restoringbeam='',
-                       calcres=True,
-                       **impars
-                      )
-                impars['niter'] = niter
-                impars['startmodel'] = smod
-                impars['mask'] = mask
-                sethistory(lineimagename, nsigma=nsigma, impars=impars)
+                check_channel_flags(concatvis)
+                if not dryrun:
+                    tclean(vis=concatvis,
+                           imagename=lineimagename,
+                           restoringbeam='',
+                           calcres=True,
+                           **impars
+                          )
+                    impars['niter'] = niter
+                    impars['startmodel'] = smod
+                    impars['mask'] = mask
+                    sethistory(lineimagename, nsigma=nsigma, impars=impars)
+                check_channel_flags(concatvis)
 
-                impbcor(imagename=lineimagename+'.image',
-                        pbimage=lineimagename+'.pb',
-                        outfile=lineimagename+'.image.pbcor',
-                        cutoff=0.2,
-                        overwrite=True)
+                if not dryrun:
+                    impbcor(imagename=lineimagename+'.image',
+                            pbimage=lineimagename+'.pb',
+                            outfile=lineimagename+'.image.pbcor',
+                            cutoff=0.2,
+                            overwrite=True)
 
-                if do_export_fits:
-                    exportfits(lineimagename+".image", lineimagename+".image.fits", overwrite=True)
-                    exportfits(lineimagename+".image.pbcor", lineimagename+".image.pbcor.fits", overwrite=True)
+                    if do_export_fits:
+                        exportfits(lineimagename+".image", lineimagename+".image.fits", overwrite=True)
+                        exportfits(lineimagename+".image.pbcor", lineimagename+".image.pbcor.fits", overwrite=True)
 
 
-            if copy_files:
+            if copy_files and not dryrun:
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
                                '.contcube.model', '.image.fits',
