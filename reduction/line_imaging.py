@@ -671,7 +671,7 @@ for band in band_list:
                 continue
 
             # if the dirty image was made or exists
-            if make_dirty_image:
+            if make_dirty_image and not dryrun:
                 # the threshold needs to be computed if any imaging is to be done (either contsub or not)
                 # no .image file is produced, only a residual
                 logprint("Computing residual image statistics for {0}".format(lineimagename),
