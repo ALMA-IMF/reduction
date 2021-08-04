@@ -111,7 +111,13 @@ else:
     copy_files = False
 
 if os.getenv('FIELD_ID'):
-    field_id = os.getenv('FIELD_ID')
+    if 'field_id' in locals():
+        if os.getenv('FIELD_ID') is not None and os.getenv('FIELD_ID') != field_id:
+            raise ValueError("Mismatch between ENVIRON field id {0} and field id {1}"
+                             .format(os.getenv('FIELD_ID'), field_id))
+        # else: all is good, go on
+    else:
+        field_id = os.getenv('FIELD_ID')
     for band in to_image:
         to_image[band] = {key:value for key, value in to_image[band].items()
                           if key == field_id}
@@ -532,9 +538,11 @@ for band in band_list:
 
             logprint("Measurement sets are: " + str(concatvis),
                      origin='almaimf_line_imaging')
+            check_channel_flags(concatvis)
             coosys, racen, deccen = determine_phasecenter(ms=concatvis,
                                                           field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
+            check_channel_flags(concatvis)
             (dra, ddec, pixscale) = list(determine_imsize(ms=concatvis,
                                                           field=field,
                                                           phasecenter=(racen, deccen),
@@ -547,6 +555,7 @@ for band in band_list:
                                                          ))
             imsize = [int(dra), int(ddec)]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
+            check_channel_flags(concatvis)
 
             dirty_tclean_made_residual = False
 

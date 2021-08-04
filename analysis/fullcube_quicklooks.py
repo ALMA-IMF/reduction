@@ -85,7 +85,6 @@ def dt():
 print("starting loops")
 
 redo = True
-redo = False
 
 for band in (3,6):
     for config in ('12M',):# '7M12M'):
