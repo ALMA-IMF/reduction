@@ -45,8 +45,8 @@ for fn in files:
     # remove gigantic outliers
     med = np.nanmedian(wtspc)
     madstd = mad_std(wtspc, ignore_nan=True)
-    wtspc[wtspc < med - 10 * madstd] = np.nan
-    wtspc[wtspc > med + 10 * madstd] = np.nan
+    removed = (wtspc < med - 10 * madstd) | (wtspc > med + 10 * madstd)
+    wtspc[removed] = np.nan
 
     mn = np.nanmean(wtspc)
     std = np.nanstd(wtspc)
@@ -55,7 +55,12 @@ for fn in files:
     maxdiff = mx - minim
     fraction_deviation = maxdiff / mn
 
-    stats[basefn] = {'mean': mn, 'median': med, 'mad': madstd, 'min': minim, 'max': mx, 'std': std, 'maxdiff': maxdiff, 'fraction_deviation': fraction_deviation}
+    stats[basefn] = {'mean': mn, 'median': med, 'mad': madstd, 'min': minim,
+                     'max': mx, 'std': std, 'maxdiff': maxdiff,
+                     'fraction_deviation': fraction_deviation,
+                     'nremoved': removed.sum(),
+                     'fracremoved': removed.sum()/removed.size,
+                    }
     print(basefn, stats[basefn])
 
     # if fraction_deviation > 0.01:
@@ -65,11 +70,14 @@ for fn in files:
     pl.ylabel("Weight")
     pl.title(basefn)
     pl.legend(loc='best')
+    lims = pl.axis()
+    pl.plot(cube.spectral_axis, cube[:, yy, xx], zorder=-5)
+    pl.axis(lims)
     pl.savefig(f'/orange/adamginsburg/web/secure/ALMA-IMF/cube_quicklooks/weights/{basefn}_center.png')
 
 fns = list(stats.keys())
 cols = {'name': fns}
-for row in stats[fn]:
+for row in stats[basefn]:
     cols[row] = [stats[key][row] for key in fns]
 
 tbl = Table(cols)
