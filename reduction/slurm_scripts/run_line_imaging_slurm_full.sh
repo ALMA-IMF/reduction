@@ -114,9 +114,15 @@ for SPW in {0..3}; do
         dependency=""
     fi
 
+    # use sacct to check for jobname
+    job_running=$(sacct --format="JobID,JobName%45,Account%15,QOS%17,State,Priority%8,ReqMem%8,CPUTime%15,Elapsed%15,Timelimit%15,NodeList%20" | grep RUNNING | grep $jobname)
 
-    jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
-    echo ${jobid##* }
+    if [[ $job_running ]]; then
+        echo "Skipped job $jobname because it's running"
+    else
+        jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
+        echo ${jobid##* }
+    fi
     #export EXCLUDE_7M=False
     #export LOGFILENAME="${LOGPATH}/casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
     #jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M${suffix12m}_${SPW}_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M12M_${SPW} --export=ALL $CMD)
@@ -166,8 +172,16 @@ for SPW in {0..7}; do
     jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub}
     export LOGFILENAME="${LOGPATH}/casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 
-    jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
-    echo ${jobid##* }
+
+    # use sacct to check for jobname
+    job_running=$(sacct --format="JobID,JobName%45,Account%15,QOS%17,State,Priority%8,ReqMem%8,CPUTime%15,Elapsed%15,Timelimit%15,NodeList%20" | grep RUNNING | grep $jobname)
+
+    if [[ $job_running ]]; then
+        echo "Skipped job $jobname because it's running"
+    else
+        jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
+        echo ${jobid##* }
+    fi
     #export EXCLUDE_7M=False
     #export LOGFILENAME="${LOGPATH}/casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
     #jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M12M_${SPW} --export=ALL $CMD)

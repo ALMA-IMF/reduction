@@ -297,7 +297,10 @@ def check_channel_flags(concatvis):
                                      for spwn in spws}
     for spwn, chanfracs in fractions_of_channels_flagged.items():
         if len(set(chanfracs.values())) != 1:
-            raise ValueError("Spectral Window {0} has flagged out channels".format(spwn))
+            print("Spectral Window {0} of {1} has flagged out channels".format(spwn, concatvis))
+            raise ValueError("Spectral Window {0} of {1} has flagged out channels".format(spwn, concatvis))
+
+    logprint("Visibility file {0} has no flagged-out channels.".format(concatvis))
 
 
 if exclude_7m:
@@ -424,6 +427,8 @@ for band in band_list:
                             )
                     if dryrun:
                         raise ValueError("Cannot do a dry run without concatenated data in place")
+                    for vv in vis:
+                        check_channel_flags(vv)
                     concat(vis=vis, concatvis=concatvis)
 
             if do_contsub:

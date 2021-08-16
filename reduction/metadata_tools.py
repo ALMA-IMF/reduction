@@ -564,3 +564,22 @@ def sethistory(prefix, selfcalpars=None, impars=None, selfcaliter=None):
             ia.close()
             ia.done()
 
+
+def check_channel_flags(vis, **kwargs):
+    flagsum = flagdata(vis=vis, mode='summary', spwchan=True, **kwargs)
+    spws = set([int(key.split(":")[0]) for key in flagsum['spw:channel']])
+    fractions_of_channels_flagged = {spwn: {int(key.split(":")[1]):
+                                            flagsum['spw:channel'][key]['flagged']
+                                            /
+                                            flagsum['spw:channel'][key]['total']
+                                            for key in
+                                            flagsum['spw:channel'] if
+                                            int(key.split(":")[0])
+                                            == spwn }
+                                     for spwn in spws}
+    for spwn, chanfracs in fractions_of_channels_flagged.items():
+        if len(set(chanfracs.values())) != 1:
+            print("Spectral Window {0} of {1} has flagged out channels".format(spwn, vis))
+            raise ValueError("Spectral Window {0} of {1} has flagged out channels".format(spwn, vis))
+
+    logprint("Visibility file {0} has no flagged-out channels.".format(vis))

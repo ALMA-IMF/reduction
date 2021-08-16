@@ -111,6 +111,13 @@ for band in bands:
                     else:
                         datacolumn = 'data'
                     tb.close()
+
+                    # verify that no channels are flagged in the input data
+                    # (no channel-based flagging is performed by the ALMA pipeline or by
+                    # the ALMA-IMF pipeline; there is no technical reason channels should
+                    # ever be flagged)
+                    check_channel_flags(invis, field=field, spw=spws[newid])
+
                     assert split(vis=invis,
                                  spw=spws[newid],
                                  field=field,
