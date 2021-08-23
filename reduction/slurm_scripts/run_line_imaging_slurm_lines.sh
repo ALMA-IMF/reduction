@@ -78,8 +78,16 @@ export BAND_TO_IMAGE=B${BAND_NUMBERS}
 export LINE_NAME='n2hp'
 export jobname=${FIELD_ID}_${BAND_TO_IMAGE}_${LINE_NAME}_${suffix12m}${suffix_contsub}
 export LOGFILENAME="${LOGPATH}/casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
-jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
-echo ${jobid##* }
+
+# use sacct to check for jobname
+job_running=$(sacct --format="JobID,JobName%45,Account%15,QOS%17,State,Priority%8,ReqMem%8,CPUTime%15,Elapsed%15,Timelimit%15,NodeList%20" | grep RUNNING | grep $jobname)
+
+if [[ $job_running ]]; then
+    echo "Skipped job $jobname because it's running"
+else
+    jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
+    echo ${jobid##* }
+fi
 
 # export BAND_NUMBERS=3
 # export BAND_TO_IMAGE=B${BAND_NUMBERS}
@@ -122,7 +130,14 @@ for LINE_NAME in sio; do # h2co303 h30a 12co c18o; do
         dependency=""
     fi
 
-    jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} ${dependency} --export=ALL $CMD)
-    echo ${jobid##* }
+    # use sacct to check for jobname
+    job_running=$(sacct --format="JobID,JobName%45,Account%15,QOS%17,State,Priority%8,ReqMem%8,CPUTime%15,Elapsed%15,Timelimit%15,NodeList%20" | grep RUNNING | grep $jobname)
+
+    if [[ $job_running ]]; then
+        echo "Skipped job $jobname because it's running"
+    else
+        jobid=$(sbatch --ntasks=${NTASKS} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} ${dependency} --export=ALL $CMD)
+        echo ${jobid##* }
+    fi
 
 done
