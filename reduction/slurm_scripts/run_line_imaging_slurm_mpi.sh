@@ -52,8 +52,14 @@ export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
 cd ${ALMAIMF_ROOTDIR}
 python getversion.py
 
-cd ${WORK_DIRECTORY}
-echo "Working in ${WORK_DIRECTORY}"
+
+export TEMP_WORKDIR=${FIELD_ID}_${LINE_NAME}_${suffix_12m}_${BAND_TO_IMAGE}
+
+ln ${WORK_DIRECTORY}/to_image.json ${TEMP_WORKDIR}/to_image.json
+ln ${WORK_DIRECTORY}/metadata.json ${TEMP_WORKDIR}/metadata.json
+
+cd ${TEMP_WORKDIR}
+echo "Working in ${TEMP_WORKDIR}"
 echo "Publishing to  ${PRODUCT_DIRECTORY}"
 echo ${LINE_NAME} ${BAND_NUMBERS}
 
