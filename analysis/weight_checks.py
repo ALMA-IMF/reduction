@@ -48,10 +48,11 @@ for fn in files:
     removed = (wtspc < med - 10 * madstd) | (wtspc > med + 10 * madstd)
     wtspc[removed] = np.nan
 
-    mn = np.nanmean(wtspc)
-    std = np.nanstd(wtspc)
-    minim = np.nanmin(wtspc)
-    mx = np.nanmax(wtspc)
+    # wtspc is a Quantity.  np.nanstd is not compatible with quantities?
+    mn = np.nanmean(wtspc.value)
+    std = np.nanstd(wtspc.value)
+    minim = np.nanmin(wtspc.value)
+    mx = np.nanmax(wtspc.value)
     maxdiff = mx - minim
     fraction_deviation = maxdiff / mn
 
