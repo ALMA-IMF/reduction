@@ -11,12 +11,12 @@ export MEM=64gb
 export MEM=128gb
 
 if [[ $CMD == *"mpi"* ]]; then
-    export NTASKS=32
+    export NTASKS=16
     export CPUS_PER_TASK=1 # mem/4
     export SLURM_TASKS_PER_NODE=$NTASKS
 else
     export NTASKS=1
-    export CPUS_PER_TASK=32 # mem/4
+    export CPUS_PER_TASK=16 # mem/4
 fi
 export SLURM_NTASKS=$NTASKS
 
@@ -136,15 +136,6 @@ jobid=""
 export MEM=32gb
 export MEM=128gb
 
-if [[ $CMD == *"mpi"* ]]; then
-    export NTASKS=32
-    export CPUS_PER_TASK=1 # mem/4
-    export SLURM_TASKS_PER_NODE=$NTASKS
-else
-    export NTASKS=1
-    export CPUS_PER_TASK=32 # mem/4
-fi
-export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92|G328.25)

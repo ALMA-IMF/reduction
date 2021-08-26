@@ -37,13 +37,15 @@ OMPI_COMM_WORLD_SIZE=$SLURM_NTASKS
 # OMPI_COMM_WORLD_NODE_RANK - the relative rank of this process on this node looking across ALL jobs.
 
 
-export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
-export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
-export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
-export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.8.0-109.el7/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
-export MPICASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
+#export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
+#export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
+#export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.8.0-109.el7/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
+#export MPICASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/mpicasa
+export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
+export MPICASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/mpicasa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
