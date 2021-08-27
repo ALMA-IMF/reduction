@@ -8,12 +8,12 @@ fi
 export FIELD_ID=$1
 if [ -z $EXCLUDE_7M ]; then
     export EXCLUDE_7M=True
-    suffix12m="12M"
+    export suffix12m="12M"
 else
     if [ $EXCLUDE_7M == "True" ]; then
-        suffix12m="12M"
+        export suffix12m="12M"
     else 
-        suffix12m="7M12M"
+        export suffix12m="7M12M"
     fi
 fi
 

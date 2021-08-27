@@ -52,14 +52,21 @@ export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
 cd ${ALMAIMF_ROOTDIR}
 python getversion.py
 
+cd ${WORK_DIRECTORY}
 
-export TEMP_WORKDIR=${FIELD_ID}_${LINE_NAME}_${suffix_12m}_${BAND_TO_IMAGE}
+export TEMP_WORKDIR=${FIELD_ID}_${LINE_NAME}_${suffix12m}_${BAND_TO_IMAGE}
+if ! [[ -d ${TEMP_WORKDIR} ]]; then
+    mkdir ${TEMP_WORKDIR}
+fi
 
 ln ${WORK_DIRECTORY}/to_image.json ${TEMP_WORKDIR}/to_image.json
 ln ${WORK_DIRECTORY}/metadata.json ${TEMP_WORKDIR}/metadata.json
 
 cd ${TEMP_WORKDIR}
-echo "Working in ${TEMP_WORKDIR}"
+pwd
+ls -lhrt *.json
+ls
+echo "Working in ${TEMP_WORKDIR} = $(pwd)"
 echo "Publishing to  ${PRODUCT_DIRECTORY}"
 echo ${LINE_NAME} ${BAND_NUMBERS}
 
@@ -74,6 +81,15 @@ echo $LOGFILENAME
 #echo srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 # srun --mpi=pmix_v3 
 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+exitcode=$?
 
 #export BAND_NUMBERS="6"
 #xvfb-run -d ${CASA} --nogui --nologger -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+
+cd -
+
+if [ -z $(ls -A ${TEMP_WORKDIR}) ]; then
+    rmdir ${TEMP_WORKDIR}
+fi
+
+exit $exitcode
