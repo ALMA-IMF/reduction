@@ -54,7 +54,7 @@ python getversion.py
 
 cd ${WORK_DIRECTORY}
 
-export TEMP_WORKDIR=$(pwc)/${FIELD_ID}_${LINE_NAME}_${suffix12m}_${BAND_TO_IMAGE}
+export TEMP_WORKDIR=$(pwd)/${FIELD_ID}_${LINE_NAME}_${suffix12m}_${BAND_TO_IMAGE}
 if ! [[ -d ${TEMP_WORKDIR} ]]; then
     mkdir ${TEMP_WORKDIR}
 fi
@@ -88,7 +88,7 @@ exitcode=$?
 
 cd -
 
-if [ -z $(ls -A ${TEMP_WORKDIR}) ]; then
+if [[ -z $(ls -A ${TEMP_WORKDIR}) ]]; then
     rmdir ${TEMP_WORKDIR}
 fi
 
