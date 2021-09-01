@@ -6,12 +6,12 @@ try:
     from casac import casac
     synthesisutils = casac.synthesisutils
     from taskinit import msmdtool, casalog, qatool, tbtool, mstool, iatool
-    from tasks import tclean
+    from tasks import tclean, flagdata
 except ImportError:
     from casatools import (quanta as qatool, table as tbtool, msmetadata as
                            msmdtool, synthesisutils, ms as mstool,
                            image as iatool)
-    from casatasks import casalog, tclean
+    from casatasks import casalog, tclean, flagdata
 msmd = msmdtool()
 ms = mstool()
 qa = qatool()
@@ -564,3 +564,45 @@ def sethistory(prefix, selfcalpars=None, impars=None, selfcaliter=None):
             ia.close()
             ia.done()
 
+
+def check_channel_flags(vis, tolerance=0, nchan_tolerance=10, **kwargs):
+    flagsum = flagdata(vis=vis, mode='summary', spwchan=True, **kwargs)
+    spws = set([int(key.split(":")[0]) for key in flagsum['spw:channel']])
+    fractions_of_channels_flagged = {spwn: {int(key.split(":")[1]):
+                                            flagsum['spw:channel'][key]['flagged']
+                                            /
+                                            flagsum['spw:channel'][key]['total']
+                                            for key in
+                                            flagsum['spw:channel'] if
+                                            int(key.split(":")[0])
+                                            == spwn }
+                                     for spwn in spws}
+    unique_fractions = {k:list(set(v.values())) for k,v in fractions_of_channels_flagged.items()}
+    nunique_fractions = {k:[(np.array(list(v.values())) == vv).sum() for vv in unique_fractions[k]] for k,v in fractions_of_channels_flagged.items()}
+    for spwn, nchanfracs in unique_fractions.items():
+        if len(nchanfracs) != 1:
+            if tolerance > 0:
+                mostcommon = max(nunique_fractions[spwn])
+                denominator = [frac for x, frac in zip(nunique_fractions[spwn], nchanfracs) if (x == mostcommon)][0]
+                maxdiff = (max(nchanfracs) - min(nchanfracs)) / denominator
+
+                if maxdiff < tolerance:
+                    logprint("Visibility file {0} has {1}% flagged-out channels (within tolerance).".format(vis, maxdiff*100))
+                else:
+                    if nchan_tolerance > 0:
+                        # count up the number of channels that exceed the tolerance
+                        notmostcommon = [x for x, frac in zip(nunique_fractions[spwn], nchanfracs) if (x != mostcommon) and ((frac-min(nchanfracs))/denominator > tolerance)]
+                        total_different = sum(notmostcommon)
+                        if total_different < nchan_tolerance:
+                            logprint("Visibility file {0} has at most {1} channels with differing flag % (within tolerance {2}).".format(vis, total_different, tolerance))
+                        else:
+                            logprint("Visibility file {0} has at most {1} channels with differing flag % (above tolerance {2}).".format(vis, total_different, tolerance))
+                            raise ValueError("Spectral Window {0} of {1} has too many differing-flag channels".format(spwn, vis))
+                    else:
+                        logprint("Visibility file {0} has {1}% flagged-out channels (above tolerance).".format(vis, maxdiff*100))
+                        raise ValueError("Spectral Window {0} of {1} has too many flagged out channels".format(spwn, vis))
+            else:
+                print("Spectral Window {0} of {1} has flagged out channels".format(spwn, vis))
+                raise ValueError("Spectral Window {0} of {1} has flagged out channels".format(spwn, vis))
+
+    logprint("Visibility file {0} has no flagged-out channels or f(flagged)<tolerance.".format(vis))

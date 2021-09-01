@@ -11,6 +11,7 @@ echo "Memory=${MEM}"
 export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
 export PRODUCT_DIRECTORY='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
 
+# https://github.com/ipython/ipython/issues/2426/#issuecomment-8822369
 export IPYTHONDIR=/tmp
 
 module load git
@@ -27,7 +28,8 @@ echo $?
 #export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 #export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
 #export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
-export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
+#export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
+export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"

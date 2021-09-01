@@ -11,12 +11,12 @@ export MEM=64gb
 export MEM=128gb
 
 if [[ $CMD == *"mpi"* ]]; then
-    export NTASKS=32
+    export NTASKS=16
     export CPUS_PER_TASK=1 # mem/4
     export SLURM_TASKS_PER_NODE=$NTASKS
 else
     export NTASKS=1
-    export CPUS_PER_TASK=32 # mem/4
+    export CPUS_PER_TASK=16 # mem/4
 fi
 export SLURM_NTASKS=$NTASKS
 
@@ -69,12 +69,12 @@ esac
 
 if [ -z $EXCLUDE_7M ]; then
     export EXCLUDE_7M=True
-    suffix12m="12M"
+    export suffix12m="12M"
 else
     if [ $EXCLUDE_7M == "True" ]; then
-        suffix12m="12M"
+        export suffix12m="12M"
     else
-        suffix12m="7M12M"
+        export suffix12m="7M12M"
     fi
 fi
 
@@ -114,9 +114,15 @@ for SPW in {0..3}; do
         dependency=""
     fi
 
+    # use sacct to check for jobname
+    job_running=$(sacct --format="JobID,JobName%45,Account%15,QOS%17,State,Priority%8,ReqMem%8,CPUTime%15,Elapsed%15,Timelimit%15,NodeList%20" | grep RUNNING | grep $jobname)
 
-    jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
-    echo ${jobid##* }
+    if [[ $job_running ]]; then
+        echo "Skipped job $jobname because it's running"
+    else
+        jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=${jobname} --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
+        echo ${jobid##* }
+    fi
     #export EXCLUDE_7M=False
     #export LOGFILENAME="${LOGPATH}/casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
     #jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M${suffix12m}_${SPW}_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M12M_${SPW} --export=ALL $CMD)
@@ -130,15 +136,6 @@ jobid=""
 export MEM=32gb
 export MEM=128gb
 
-if [[ $CMD == *"mpi"* ]]; then
-    export NTASKS=32
-    export CPUS_PER_TASK=1 # mem/4
-    export SLURM_TASKS_PER_NODE=$NTASKS
-else
-    export NTASKS=1
-    export CPUS_PER_TASK=32 # mem/4
-fi
-export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92|G328.25)
@@ -166,8 +163,16 @@ for SPW in {0..7}; do
     jobname=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_${suffix12m}_${SPW}${suffix_contsub}
     export LOGFILENAME="${LOGPATH}/casa_log_line_${jobname}_$(date +%Y-%m-%d_%H_%M_%S).log"
 
-    jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
-    echo ${jobid##* }
+
+    # use sacct to check for jobname
+    job_running=$(sacct --format="JobID,JobName%45,Account%15,QOS%17,State,Priority%8,ReqMem%8,CPUTime%15,Elapsed%15,Timelimit%15,NodeList%20" | grep RUNNING | grep $jobname)
+
+    if [[ $job_running ]]; then
+        echo "Skipped job $jobname because it's running"
+    else
+        jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
+        echo ${jobid##* }
+    fi
     #export EXCLUDE_7M=False
     #export LOGFILENAME="${LOGPATH}/casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"
     #jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_fullcube_7M12M_${SPW} --export=ALL $CMD)

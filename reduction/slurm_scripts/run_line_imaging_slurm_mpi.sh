@@ -37,13 +37,15 @@ OMPI_COMM_WORLD_SIZE=$SLURM_NTASKS
 # OMPI_COMM_WORLD_NODE_RANK - the relative rank of this process on this node looking across ALL jobs.
 
 
-export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
-export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
-export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
-export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.8.0-109.el7/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
-export MPICASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
+#export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
+#export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
+#export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.8.0-109.el7/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
+#export MPICASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/mpicasa
+export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
+export MPICASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/mpicasa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
@@ -51,7 +53,20 @@ cd ${ALMAIMF_ROOTDIR}
 python getversion.py
 
 cd ${WORK_DIRECTORY}
-echo "Working in ${WORK_DIRECTORY}"
+
+export TEMP_WORKDIR=$(pwd)/${FIELD_ID}_${LINE_NAME}_${suffix12m}_${BAND_TO_IMAGE}
+if ! [[ -d ${TEMP_WORKDIR} ]]; then
+    mkdir ${TEMP_WORKDIR}
+fi
+
+ln ${WORK_DIRECTORY}/to_image.json ${TEMP_WORKDIR}/to_image.json
+ln ${WORK_DIRECTORY}/metadata.json ${TEMP_WORKDIR}/metadata.json
+
+cd ${TEMP_WORKDIR}
+pwd
+ls -lhrt *.json
+ls
+echo "Working in ${TEMP_WORKDIR} = $(pwd)"
 echo "Publishing to  ${PRODUCT_DIRECTORY}"
 echo ${LINE_NAME} ${BAND_NUMBERS}
 
@@ -66,6 +81,15 @@ echo $LOGFILENAME
 #echo srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 # srun --mpi=pmix_v3 
 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+exitcode=$?
 
 #export BAND_NUMBERS="6"
 #xvfb-run -d ${CASA} --nogui --nologger -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+
+cd -
+
+if [[ -z $(ls -A ${TEMP_WORKDIR}) ]]; then
+    rmdir ${TEMP_WORKDIR}
+fi
+
+exit $exitcode

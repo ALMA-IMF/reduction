@@ -23,6 +23,8 @@ if os.getenv('ALMAIMF_ROOTDIR') is None:
 else:
     sys.path.append(os.getenv('ALMAIMF_ROOTDIR'))
 
+from metadata_tools import check_channel_flags
+
 msmd = msmdtool()
 ms = mstool()
 tb = tbtool()
@@ -111,6 +113,19 @@ for band in bands:
                     else:
                         datacolumn = 'data'
                     tb.close()
+
+                    # verify that no channels are flagged in the input data
+                    # (no channel-based flagging is performed by the ALMA pipeline or by
+                    # the ALMA-IMF pipeline; there is no technical reason channels should
+                    # ever be flagged)
+                    # I revised this later because it appears that at least one
+                    # window legitimately had edge channels flagged out
+                    try:
+                        check_channel_flags(invis, field=field, spw=str(spws[newid]))
+                    except Exception as ex:
+                        print("There was an error in splitting!")
+                        print(ex)
+
                     assert split(vis=invis,
                                  spw=spws[newid],
                                  field=field,
