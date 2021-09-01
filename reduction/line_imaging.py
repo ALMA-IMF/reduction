@@ -119,8 +119,12 @@ if os.getenv('FIELD_ID'):
     else:
         field_id = os.getenv('FIELD_ID')
     for band in to_image:
-        to_image[band] = {key:value for key, value in to_image[band].items()
-                          if key == field_id}
+        field_matches = {key:value for key, value in to_image[band].items()
+                         if key == field_id}
+        if len(field_matches) == 0:
+            logprint("No matches to field {field_id} were found in the to_image.json file"
+                     .format(field_id=field_id))
+        to_image[band] = field_matches
 else:
     field_id = 'all'
 
