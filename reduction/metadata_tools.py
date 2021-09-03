@@ -594,9 +594,14 @@ def check_channel_flags(vis, tolerance=0, nchan_tolerance=10, **kwargs):
                         notmostcommon = [x for x, frac in zip(nunique_fractions[spwn], nchanfracs) if (x != mostcommon) and ((frac-min(nchanfracs))/denominator > tolerance)]
                         total_different = sum(notmostcommon)
                         if total_different < nchan_tolerance:
-                            logprint("Visibility file {0} has at most {1} channels with differing flag % (within tolerance {2}).".format(vis, total_different, tolerance))
+                            logprint("Visibility file {0} has at most {1} channels with differing flag % (maxdiff {3} is within tolerance {2}).".format(vis, total_different, tolerance, maxdiff))
                         else:
-                            logprint("Visibility file {0} has at most {1} channels with differing flag % (above tolerance {2}).".format(vis, total_different, tolerance))
+                            logprint("Visibility file {0} has at most {1} channels with differing flag % (maxdiff {3} is above tolerance {2}).".format(vis, total_different, tolerance, maxdiff))
+                            leastcommon_ind = np.argmin(nunique_fractions[spwn])
+                            discrepant_channels = sorted([key for key in
+                                                   fractions_of_channels_flagged[spwn] if
+                                                   fractions_of_channels_flagged[spwn][key] == unique_fractions[spwn][leastcommon_ind]])
+                            logprint("The channels are: {0}".format(discrepant_channels))
                             raise ValueError("Spectral Window {0} of {1} has too many differing-flag channels".format(spwn, vis))
                     else:
                         logprint("Visibility file {0} has {1}% flagged-out channels (above tolerance).".format(vis, maxdiff*100))

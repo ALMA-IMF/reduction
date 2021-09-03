@@ -51,10 +51,6 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         WORK_DIRECTORY are set.  If this is not set, and the .ms file to
         clean from exists in WORK_DIRECTORY, an error will be raised and
         the script will fail.  If this is set, it will use that file.
-    TEMP_WORKDIR
-        A directory to do operations in when running the code; this will allow
-        storage of temporary files.  This will be set automatically if not
-        specified.
 """
 
 import json
@@ -175,20 +171,8 @@ else:
     contsub_suffix = ''
 
 # what fraction of channels can be flagged out before crashing?
-flagging_tolerance=0.01
-
-if os.getenv('TEMP_WORKDIR'):
-    temp_workdir = os.getenv('TEMP_WORKDIR')
-else:
-    temp_workdir = "_".join((field_id,
-            line_name,
-            ('7M' if only_7m else ('12M' if exclude_7m else '7M12M')),
-            "_".join(band_list)
-            ))
-if not os.path.exists(temp_workdir):
-    os.mkdir(temp_workdir)
-logprint("Working in directory {0}".format(temp_workdir))
-os.chdir(temp_workdir)
+flagging_tolerance=0.31 # ideally should be 0.01, but we have a couple cases in G012.80 B3 and G353.41 B3 with 30 channels that are up to 31% different
+max_flagged_channels=30
 
 # hacky approach to paralellism
 parallel = bool(os.getenv('MPICASA'))

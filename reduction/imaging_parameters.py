@@ -4380,6 +4380,7 @@ line_parameters_custom = {
     },
     "W51-IRS2": {
         "12co": {"cubewidth": "150km/s"},
+        "n2hp": {"cubewidth": "80km/s"},
         "sio": {"cubewidth": "120km/s", "vlsr": "60km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-9km/s"},  # 56 - 65 = -9km/s to accomodate He and C.

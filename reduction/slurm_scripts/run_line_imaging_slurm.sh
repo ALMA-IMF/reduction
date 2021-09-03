@@ -37,9 +37,22 @@ cd ${ALMAIMF_ROOTDIR}
 python getversion.py
 
 cd ${WORK_DIRECTORY}
-echo "Working in ${WORK_DIRECTORY}"
+
+export TEMP_WORKDIR=$(pwd)/${FIELD_ID}_${LINE_NAME}_${suffix12m}_${BAND_TO_IMAGE}
+if ! [[ -d ${TEMP_WORKDIR} ]]; then
+    mkdir ${TEMP_WORKDIR}
+fi
+
+ln ${WORK_DIRECTORY}/to_image.json ${TEMP_WORKDIR}/to_image.json
+ln ${WORK_DIRECTORY}/metadata.json ${TEMP_WORKDIR}/metadata.json
+
+cd ${TEMP_WORKDIR}
+pwd
+echo "Listing contents of directory $(pwd): json files $(ls -lhrt *.json), others: $(ls)"
+echo "Working in ${TEMP_WORKDIR} = $(pwd)"
 echo "Publishing to  ${PRODUCT_DIRECTORY}"
 echo ${LINE_NAME} ${BAND_NUMBERS}
+
 
 export PYTHONPATH=$ALMAIMF_ROOTDIR
 export SCRIPT_DIR=$ALMAIMF_ROOTDIR

@@ -46,6 +46,8 @@ OMPI_COMM_WORLD_SIZE=$SLURM_NTASKS
 #export MPICASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/mpicasa
 export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
 export MPICASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/mpicasa
+export CASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/casa
+export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/mpicasa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
@@ -64,8 +66,7 @@ ln ${WORK_DIRECTORY}/metadata.json ${TEMP_WORKDIR}/metadata.json
 
 cd ${TEMP_WORKDIR}
 pwd
-ls -lhrt *.json
-ls
+echo "Listing contents of directory ${TEMP_WORKDIR}: json files $(ls -lhrt *.json), others: $(ls)"
 echo "Working in ${TEMP_WORKDIR} = $(pwd)"
 echo "Publishing to  ${PRODUCT_DIRECTORY}"
 echo ${LINE_NAME} ${BAND_NUMBERS}
