@@ -120,11 +120,8 @@ for band in bands:
                     # ever be flagged)
                     # I revised this later because it appears that at least one
                     # window legitimately had edge channels flagged out
-                    try:
-                        check_channel_flags(invis, field=field, spw=str(spws[newid]))
-                    except Exception as ex:
-                        print("There was an error in splitting!")
-                        print(ex)
+                    # (check_channel_flags will raise an exception if there is excess flaggin)
+                    check_channel_flags(invis, field=field, spw=str(spws[newid]), tolerance=0.1)
 
                     assert split(vis=invis,
                                  spw=spws[newid],
