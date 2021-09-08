@@ -51,6 +51,10 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         WORK_DIRECTORY are set.  If this is not set, and the .ms file to
         clean from exists in WORK_DIRECTORY, an error will be raised and
         the script will fail.  If this is set, it will use that file.
+    TEMP_WORKDIR
+        A directory to do operations in when running the code; this will allow
+        storage of temporary files.  This will be set automatically if not
+        specified.
 """
 
 import json
@@ -120,12 +124,8 @@ if os.getenv('FIELD_ID'):
     else:
         field_id = os.getenv('FIELD_ID')
     for band in to_image:
-        field_matches = {key:value for key, value in to_image[band].items()
-                         if key == field_id}
-        if len(field_matches) == 0:
-            logprint("No matches to field {field_id} were found in the to_image.json file"
-                     .format(field_id=field_id))
-        to_image[band] = field_matches
+        to_image[band] = {key:value for key, value in to_image[band].items()
+                          if key == field_id}
 else:
     field_id = 'all'
 
@@ -174,9 +174,26 @@ if do_contsub:
 else:
     contsub_suffix = ''
 
+if os.getenv('DO_NOT_CONCAT'):
+    do_not_concat = os.getenv('DO_NOT_CONCAT').lower() != 'false'
+else:
+    do_not_concat = False
+
 # what fraction of channels can be flagged out before crashing?
-flagging_tolerance=0.31 # ideally should be 0.01, but we have a couple cases in G012.80 B3 and G353.41 B3 with 30 channels that are up to 31% different
-max_flagged_channels=30
+flagging_tolerance=0.01
+
+if os.getenv('TEMP_WORKDIR'):
+    temp_workdir = os.getenv('TEMP_WORKDIR')
+else:
+    temp_workdir = "_".join((field_id,
+            line_name,
+            ('7M' if only_7m else ('12M' if exclude_7m else '7M12M')),
+            "_".join(band_list)
+            ))
+if not os.path.exists(temp_workdir):
+    os.mkdir(temp_workdir)
+logprint("Working in directory {0}".format(temp_workdir))
+os.chdir(temp_workdir)
 
 # hacky approach to paralellism
 parallel = bool(os.getenv('MPICASA'))
@@ -401,7 +418,7 @@ for band in band_list:
                 continue
 
 
-            if os.getenv('DO_NOT_CONCAT'):
+            if do_not_concat:
                 concatvis = vis
             elif any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
@@ -496,14 +513,15 @@ for band in band_list:
 
 
                 # first, make sure that we're not copying the MS into itself - that would be bad.
-                assert os.path.split(concatvis)[0] != workdir
 
-                if os.getenv('DO_NOT_CONCAT'):
+                if do_not_concat:
+                    assert os.path.split(concatvis[0])[0] != workdir
                     newconcatvis = [os.path.join(workdir, os.path.basename(vv))
                                     for vv in concatvis]
                     concatvis = [copy_ms(vv, newvv)
                                  for vv,newvv in zip(concatvis, newconcatvis)]
                 else:
+                    assert os.path.split(concatvis)[0] != workdir
                     newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
                     concatvis = copy_ms(concatvis, newconcatvis)
 
@@ -911,7 +929,7 @@ for band in band_list:
                 # only ever take on the value specified in copy_files; this is
                 # a safety mechanism to make sure we don't accidentally delete
                 # the original file.
-                if os.getenv('DO_NOT_CONCAT'):
+                if do_not_concat:
                     # sanity check: make sure `newconcatvis` was set to be a list
                     assert isinstance(newconcatvis, list)
                     for newvv in newconcatvis:

@@ -286,8 +286,9 @@ def determine_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4., **
     logprint("Determining imsize of {0}".format(ms))
 
     if isinstance(ms, list):
-        results = [get_indiv_imsize(vis, field, phasecenter, spw,
-                                    pixfraction_of_fwhm, **kwargs)
+        # specify spw=0 always for lists, since they should be splitted MSes
+        results = [get_indiv_imsize(vis, field, phasecenter, spw=0,
+                                    pixfraction_of_fwhm=pixfraction_of_fwhm, **kwargs)
                    for vis in ms]
 
         dra = np.max([ra for ra, dec, pixscale in results])
@@ -566,6 +567,11 @@ def sethistory(prefix, selfcalpars=None, impars=None, selfcaliter=None):
 
 
 def check_channel_flags(vis, tolerance=0, nchan_tolerance=10, **kwargs):
+
+    if isinstance(vis, list):
+        return [check_channel_flags(vv, tolerance=tolerance, nchan_tolerance=nchan_tolerance, **kwargs)
+                for vv in vis]
+
     flagsum = flagdata(vis=vis, mode='summary', spwchan=True, **kwargs)
     spws = set([int(key.split(":")[0]) for key in flagsum['spw:channel']])
     fractions_of_channels_flagged = {spwn: {int(key.split(":")[1]):
