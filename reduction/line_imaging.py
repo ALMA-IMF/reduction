@@ -176,6 +176,7 @@ else:
 
 if os.getenv('DO_NOT_CONCAT'):
     do_not_concat = os.getenv('DO_NOT_CONCAT').lower() != 'false'
+    logprint("DO_NOT_CONCAT was set")
 else:
     do_not_concat = False
 
@@ -359,7 +360,7 @@ for band in band_list:
 
             if do_contsub and os.path.exists(concatvis+".contsub"):
                 vis = [concatvis+".contsub"]
-            elif os.path.exists(concatvis):
+            elif os.path.exists(concatvis) and not do_not_concat:
                 # we will use concatvis for the metadata
                 vis = [concatvis]
             else:
@@ -420,6 +421,8 @@ for band in band_list:
 
             if do_not_concat:
                 concatvis = vis
+                logprint("DO_NOT_CONCAT set; NOT concatenating vis={0}.".format(vis),
+                         origin='almaimf_line_imaging')
             elif any('concat' in x for x in vis):
                 logprint("NOT concatenating vis={0}.".format(vis),
                          origin='almaimf_line_imaging')
