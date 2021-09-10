@@ -1,5 +1,4 @@
 from spectral_cube import SpectralCube
-from casatools import ia
 import numpy as np
 import os
 import astropy.units as u
@@ -23,7 +22,7 @@ def despeckle_model_image(basename, threshold_factor=2.0, median_npix=3):
 
     filt = modelcube.spectral_smooth_median(median_npix)
 
-    deviation = (modelcube - filtscube) / filtscube
+    deviation = (modelcube - filt) / filt
 
     reject = np.abs(deviation) > threshold_factor
 
