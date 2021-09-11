@@ -85,7 +85,7 @@ versionstring = ".".join(map(str, version))
 from parse_contdotdat import parse_contdotdat, freq_selection_overlap, contchannels_to_linechannels
 from metadata_tools import (determine_imsize, determine_phasecenter, is_7m,
                             logprint as logprint_, check_channel_flags)
-from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters
+from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters, flag_thresholds
 from unite_contranges import merge_contdotdat
 from metadata_tools import effectiveResolutionAtFreq
 from create_clean_model import create_clean_model
@@ -179,9 +179,6 @@ if os.getenv('DO_NOT_CONCAT'):
     logprint("DO_NOT_CONCAT was set")
 else:
     do_not_concat = False
-
-# what fraction of channels can be flagged out before crashing?
-flagging_tolerance=0.01
 
 if os.getenv('TEMP_WORKDIR'):
     temp_workdir = os.getenv('TEMP_WORKDIR')
@@ -345,6 +342,17 @@ for band in band_list:
             spw = str(spw)
             band = str(band)
 
+            flagkey = "{0}_{1}_{2}_spw{3}".format(field, band, arrayname, spw)
+            if flagkey in flag_thresholds:
+                flagging_tolerance = flag_thresholds[flagkey]['tolerance']
+                nflag_threshold = flag_thresholds[flagkey]['nchan']
+            else:
+                # defaults
+                flagging_tolerance = 0.01
+                nflag_threshold = 10
+            logprint("Set flag threshold to {0} per channel for {1} channels (flagkey={2})"
+                     .format(flagging_tolerance, nflag_threshold, flagkey))
+
             vis = list(map(str, to_image[band][field][spw]))
 
             # concatenate MSes prior to imaging
@@ -440,7 +448,7 @@ for band in band_list:
                         raise ValueError("Cannot do a dry run without concatenated data in place")
                     for vv in vis:
                         # allow up to 1% flagging
-                        check_channel_flags(vv, tolerance=flagging_tolerance)
+                        check_channel_flags(vv, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                     concat(vis=vis, concatvis=concatvis)
 
             if do_contsub:
@@ -493,7 +501,7 @@ for band in band_list:
                     # if 'flagged' isn't in flagsum, it's an empty dict
                     raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(concatvis))
 
-                check_channel_flags(concatvis, tolerance=flagging_tolerance)
+                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
 
             elif isinstance(concatvis, list):
                 for vv in concatvis:
@@ -556,11 +564,11 @@ for band in band_list:
 
             logprint("Measurement sets are: " + str(concatvis),
                      origin='almaimf_line_imaging')
-            check_channel_flags(concatvis, tolerance=flagging_tolerance)
+            check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
             coosys, racen, deccen = determine_phasecenter(ms=concatvis,
                                                           field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            check_channel_flags(concatvis, tolerance=flagging_tolerance)
+            check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
             (dra, ddec, pixscale) = list(determine_imsize(ms=concatvis,
                                                           field=field,
                                                           phasecenter=(racen, deccen),
@@ -573,7 +581,7 @@ for band in band_list:
                                                          ))
             imsize = [int(dra), int(ddec)]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
-            check_channel_flags(concatvis, tolerance=flagging_tolerance)
+            check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
 
             dirty_tclean_made_residual = False
 
@@ -647,7 +655,7 @@ for band in band_list:
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
-                check_channel_flags(concatvis, tolerance=flagging_tolerance)
+                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
                     tclean(vis=concatvis,
                            imagename=lineimagename,
@@ -656,7 +664,7 @@ for band in band_list:
                            **impars_dirty
                           )
                     sethistory(lineimagename, impars=impars_dirty, suffixes=(".image", ".residual"))
-                check_channel_flags(concatvis, tolerance=flagging_tolerance)
+                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 for suffix in ("mask", "model"):
                     bad_fn = lineimagename + "." + suffix
                     if os.path.exists(bad_fn):
@@ -865,7 +873,7 @@ for band in band_list:
                 impars['parallel'] = parallel
 
 
-                check_channel_flags(concatvis, tolerance=flagging_tolerance)
+                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
                     tclean(vis=concatvis,
                            imagename=lineimagename,
@@ -874,7 +882,7 @@ for band in band_list:
                            calcres=False,
                            **impars
                           )
-                check_channel_flags(concatvis, tolerance=flagging_tolerance)
+                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 # re-do the tclean once more, with niter=0, to force recalculation of the residual
                 niter = impars['niter']
                 impars['niter'] = 0
@@ -889,7 +897,7 @@ for band in band_list:
                     impars['mask'] = ''
                 else:
                     mask = ''
-                check_channel_flags(concatvis, tolerance=flagging_tolerance)
+                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
                     tclean(vis=concatvis,
                            imagename=lineimagename,
@@ -901,7 +909,7 @@ for band in band_list:
                     impars['startmodel'] = smod
                     impars['mask'] = mask
                     sethistory(lineimagename, nsigma=nsigma, impars=impars)
-                check_channel_flags(concatvis, tolerance=flagging_tolerance)
+                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
 
                 if not dryrun:
                     impbcor(imagename=lineimagename+'.image',
