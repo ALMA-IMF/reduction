@@ -2842,7 +2842,7 @@ line_imaging_parameters_default = {
         "pblimit": 0.05,
         "pbmask": 0.1,
         "perchanweightdensity": True,
-        "interactive": 0, # returns a dict (False doesn't...)
+        "interactive": 0,  # returns a dict (False doesn't...)
         "mask_out_endchannels": 2,
         "cyclefactor": 2.0,  # higher cyclefactor = more major cycles
     }
@@ -2860,18 +2860,17 @@ for key in list(line_imaging_parameters_default.keys()):
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
         line_imaging_parameters_default[key]["niter"] = 5000
         # TODO: change pblimit?
-    if 'B6' in key:
+    if "B6" in key:
         # set defaults for 12CO to have higher cyclefactor and higher threshold (12CO is scary)
-        line_imaging_parameters_default[key+"_12co"] = {}
-        line_imaging_parameters_default[key+"_12co"].update(line_imaging_parameters_default[key])
-        line_imaging_parameters_default[key+"_12co"]['cyclefactor'] = 3.0
-        line_imaging_parameters_default[key+"_12co"]['threshold'] = '5sigma'
+        line_imaging_parameters_default[key + "_12co"] = {}
+        line_imaging_parameters_default[key + "_12co"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key + "_12co"]["cyclefactor"] = 3.0
+        line_imaging_parameters_default[key + "_12co"]["threshold"] = "5sigma"
         # spw5 is the 12CO SPW
-        line_imaging_parameters_default[key+"_spw5"] = {}
-        line_imaging_parameters_default[key+"_spw5"].update(line_imaging_parameters_default[key])
-        line_imaging_parameters_default[key+"_spw5"]['cyclefactor'] = 3.0
-        line_imaging_parameters_default[key+"_spw5"]['threshold'] = '5sigma'
-
+        line_imaging_parameters_default[key + "_spw5"] = {}
+        line_imaging_parameters_default[key + "_spw5"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key + "_spw5"]["cyclefactor"] = 3.0
+        line_imaging_parameters_default[key + "_spw5"]["threshold"] = "5sigma"
 
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
@@ -3033,7 +3032,7 @@ line_imaging_parameters_custom = {
     "G338.93_B6_12M_robust0_sio": {
         "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
-        #This mask is not available
+        # This mask is not available
         # "usemask": "user",
         # "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
     },
@@ -4399,11 +4398,9 @@ for field in line_parameters_custom:
 # If both nchan & tolerance pass, the imaging will be done
 # The convention here is to put both nchan and tolerance just above
 # that level so we have a record of how much data is lost
-spws = {'B3': ['spw'+str(spw) for spw in [1,2,3,4]],
-        'B6': ['spw'+str(spw) for spw in [1,2,3,4,5,6,7]]}
+spws = {"B3": ["spw" + str(spw) for spw in [1, 2, 3, 4]], "B6": ["spw" + str(spw) for spw in [1, 2, 3, 4, 5, 6, 7]]}
 flag_thresholds_default = {
-    "{0}_{1}_{2}_{3}".format(field, band, array, spw):
-    {'nchan': 10, 'tolerance': 0.01, }
+    "{0}_{1}_{2}_{3}".format(field, band, array, spw): {"nchan": 10, "tolerance": 0.01}
     for field in allfields
     for band in ("B3", "B6")
     for spw in spws[band]
@@ -4411,9 +4408,9 @@ flag_thresholds_default = {
 }
 
 flag_thresholds_custom = {
-    'G012.80_B3_12M_spw0': {'nchan': 20, 'tolerance': 0.31, },
-    'G353.41_B3_12M_spw0': {'nchan': 27, 'tolerance': 0.23, },
-    'G337.92_B6_12M_spw7': {'nchan': 50, 'tolerance': 0.07, },
+    "G012.80_B3_12M_spw0": {"nchan": 20, "tolerance": 0.31},
+    "G353.41_B3_12M_spw0": {"nchan": 27, "tolerance": 0.23},
+    "G337.92_B6_12M_spw7": {"nchan": 51, "tolerance": 1.00},  # maxdiff is ~6x!
 }
 flag_thresholds = flag_thresholds_default.copy()
 flag_thresholds.update(flag_thresholds_custom)
