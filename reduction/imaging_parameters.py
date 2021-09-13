@@ -3109,23 +3109,23 @@ line_imaging_parameters_custom = {
         "gain": 0.08,
     },
     "W43-MM2_B3_12M_robust0_13cs_2-1": {
-        "threshold": "2mJy",  # sigma in brighter channel ~ 1mJy
+        "threshold": "3mJy",  # sigma in brighter channel ~ 1mJy
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 4, 13],  # >~ 4 pixels per bmaj, not too extended emission
+        "scales": [0, 4, 12, 36],  # >~ 4 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B3_12M_robust0_13cs_2-1_contsub": {"threshold": "4mJy", "deconvolver": "multiscale", "scales": [0, 4, 13]},
     "W43-MM2_B3_12M_robust0_h2cs_322-221": {
-        "threshold": "4mJy",  # sigma in brighter channel ~ 1.3mJy
+        "threshold": "3.5mJy",  # sigma in brighter channel ~ 1mJy
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 4, 12],  # 4 pixels per bmaj, not too extended emission
+        "scales": [0, 4, 12, 36],  # 4 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B3_12M_robust0_h2cs_312-211": {
         "threshold": "4mJy",  # sigma in brighter channel ~ 1.3mJy
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 4, 12],  # 4 pixels per bmaj, not too extended emission
+        "scales": [0, 4, 12, 36],  # 4 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B6_12M_robust0": {
         "threshold": "8.1mJy",  # "6mJy", #estimated noise: 2.7 mJy, from sio-only cube
@@ -3166,11 +3166,11 @@ line_imaging_parameters_custom = {
         "imsize": [1372, 1372],
     },
     "W43-MM2_B6_12M_robust0_c18o": {
-        "threshold": "15mJy",  # sigma in empty channel ~ 5mJy
+        "threshold": "17.5mJy",  # sigma in empty channel ~ 5mJy
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 7, 22],  # 7 pixels per bmaj, extended emission
-        "imsize": [1344, 1344],
+        "scales": [0, 7, 22, 67],  # 7.5 pixels per beam, extended emission
+        "imsize": [1500, 1500],  # automatic imsize was too small
     },
     "W43-MM2_B6_12M_robust0_ocs_19-18": {
         "threshold": "8.4mJy",
@@ -3180,11 +3180,11 @@ line_imaging_parameters_custom = {
         "imsize": [1344, 1344],
     },
     "W43-MM2_B6_12M_robust0_oc33s_18-17": {
-        "threshold": "8.4mJy",  # sigma ~ 2.8mJy
+        "threshold": "9mJy",  # sigma ~ 2.8mJy
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 7, 21],  # 7 pixels per bmaj, not too extended emission
-        "imsize": [1344, 1344],  # automatic imsize 1280 was too small
+        "scales": [0, 7, 21, 63],  # 7 pixels per sqrt(bmaj*bmin), not too extended emission
+        "imsize": [1500, 1500],  # automatic imsize was too small
     },
     "W43-MM2_B6_12M_robust0_13cs_5-4": {
         "threshold": "8.4mJy",  # sigma ~ 2.8mJy
@@ -3193,11 +3193,11 @@ line_imaging_parameters_custom = {
         "scales": [0, 7, 21],  # 7 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B6_12M_robust0_so_6-5": {
-        "threshold": "8.4mJy",  #
+        "threshold": "11.5mJy",  # sigma  ~ 3.8 mJy in bright channel
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 7, 21],  # 7 pixels per bmaj, extended emission
-        "imsize": [1344, 1344],  # automatic imsize 1280 was too small
+        "scales": [0, 7, 22, 67],  # 7 pixels per sqrt(bmaj*bmin), extended emission
+        "imsize": [1500, 1500],  # automatic imsize was too small
     },
     "W43-MM3_B3_12M_robust0": {
         "threshold": "6mJy",
