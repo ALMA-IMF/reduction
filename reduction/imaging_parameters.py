@@ -2842,7 +2842,7 @@ line_imaging_parameters_default = {
         "pblimit": 0.05,
         "pbmask": 0.1,
         "perchanweightdensity": True,
-        "interactive": 0, # returns a dict (False doesn't...)
+        "interactive": 0,  # returns a dict (False doesn't...)
         "mask_out_endchannels": 2,
         "cyclefactor": 2.0,  # higher cyclefactor = more major cycles
     }
@@ -2860,18 +2860,17 @@ for key in list(line_imaging_parameters_default.keys()):
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
         line_imaging_parameters_default[key]["niter"] = 5000
         # TODO: change pblimit?
-    if 'B6' in key:
+    if "B6" in key:
         # set defaults for 12CO to have higher cyclefactor and higher threshold (12CO is scary)
-        line_imaging_parameters_default[key+"_12co"] = {}
-        line_imaging_parameters_default[key+"_12co"].update(line_imaging_parameters_default[key])
-        line_imaging_parameters_default[key+"_12co"]['cyclefactor'] = 3.0
-        line_imaging_parameters_default[key+"_12co"]['threshold'] = '5sigma'
+        line_imaging_parameters_default[key + "_12co"] = {}
+        line_imaging_parameters_default[key + "_12co"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key + "_12co"]["cyclefactor"] = 3.0
+        line_imaging_parameters_default[key + "_12co"]["threshold"] = "5sigma"
         # spw5 is the 12CO SPW
-        line_imaging_parameters_default[key+"_spw5"] = {}
-        line_imaging_parameters_default[key+"_spw5"].update(line_imaging_parameters_default[key])
-        line_imaging_parameters_default[key+"_spw5"]['cyclefactor'] = 3.0
-        line_imaging_parameters_default[key+"_spw5"]['threshold'] = '5sigma'
-
+        line_imaging_parameters_default[key + "_spw5"] = {}
+        line_imaging_parameters_default[key + "_spw5"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key + "_spw5"]["cyclefactor"] = 3.0
+        line_imaging_parameters_default[key + "_spw5"]["threshold"] = "5sigma"
 
 
 line_imaging_parameters = copy.deepcopy(line_imaging_parameters_default)
@@ -3033,7 +3032,7 @@ line_imaging_parameters_custom = {
     "G338.93_B6_12M_robust0_sio": {
         "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
-        #This mask is not available
+        # This mask is not available
         # "usemask": "user",
         # "mask": "G338.93_B6_spw1_12M_sio.image_2sigma_e2_d8.mask",
     },
@@ -3110,23 +3109,23 @@ line_imaging_parameters_custom = {
         "gain": 0.08,
     },
     "W43-MM2_B3_12M_robust0_13cs_2-1": {
-        "threshold": "2mJy",  # sigma in brighter channel ~ 1mJy
+        "threshold": "3mJy",  # sigma in brighter channel ~ 1mJy
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 4, 13],  # >~ 4 pixels per bmaj, not too extended emission
+        "scales": [0, 4, 12, 36],  # >~ 4 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B3_12M_robust0_13cs_2-1_contsub": {"threshold": "4mJy", "deconvolver": "multiscale", "scales": [0, 4, 13]},
     "W43-MM2_B3_12M_robust0_h2cs_322-221": {
-        "threshold": "4mJy",  # sigma in brighter channel ~ 1.3mJy
+        "threshold": "3.5mJy",  # sigma in brighter channel ~ 1mJy
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 4, 12],  # 4 pixels per bmaj, not too extended emission
+        "scales": [0, 4, 12, 36],  # 4 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B3_12M_robust0_h2cs_312-211": {
         "threshold": "4mJy",  # sigma in brighter channel ~ 1.3mJy
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 4, 12],  # 4 pixels per bmaj, not too extended emission
+        "scales": [0, 4, 12, 36],  # 4 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B6_12M_robust0": {
         "threshold": "8.1mJy",  # "6mJy", #estimated noise: 2.7 mJy, from sio-only cube
@@ -3167,11 +3166,11 @@ line_imaging_parameters_custom = {
         "imsize": [1372, 1372],
     },
     "W43-MM2_B6_12M_robust0_c18o": {
-        "threshold": "15mJy",  # sigma in empty channel ~ 5mJy
+        "threshold": "17.5mJy",  # sigma in empty channel ~ 5mJy
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 7, 22],  # 7 pixels per bmaj, extended emission
-        "imsize": [1344, 1344],
+        "scales": [0, 7, 22, 67],  # 7.5 pixels per beam, extended emission
+        "imsize": [1500, 1500],  # automatic imsize was too small
     },
     "W43-MM2_B6_12M_robust0_ocs_19-18": {
         "threshold": "8.4mJy",
@@ -3181,11 +3180,11 @@ line_imaging_parameters_custom = {
         "imsize": [1344, 1344],
     },
     "W43-MM2_B6_12M_robust0_oc33s_18-17": {
-        "threshold": "8.4mJy",  # sigma ~ 2.8mJy
+        "threshold": "9mJy",  # sigma ~ 2.8mJy
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 7, 21],  # 7 pixels per bmaj, not too extended emission
-        "imsize": [1344, 1344],  # automatic imsize 1280 was too small
+        "scales": [0, 7, 21, 63],  # 7 pixels per sqrt(bmaj*bmin), not too extended emission
+        "imsize": [1500, 1500],  # automatic imsize was too small
     },
     "W43-MM2_B6_12M_robust0_13cs_5-4": {
         "threshold": "8.4mJy",  # sigma ~ 2.8mJy
@@ -3194,11 +3193,11 @@ line_imaging_parameters_custom = {
         "scales": [0, 7, 21],  # 7 pixels per bmaj, not too extended emission
     },
     "W43-MM2_B6_12M_robust0_so_6-5": {
-        "threshold": "8.4mJy",  #
+        "threshold": "11.5mJy",  # sigma  ~ 3.8 mJy in bright channel
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
         "deconvolver": "multiscale",
-        "scales": [0, 7, 21],  # 7 pixels per bmaj, extended emission
-        "imsize": [1344, 1344],  # automatic imsize 1280 was too small
+        "scales": [0, 7, 22, 67],  # 7 pixels per sqrt(bmaj*bmin), extended emission
+        "imsize": [1500, 1500],  # automatic imsize was too small
     },
     "W43-MM3_B3_12M_robust0": {
         "threshold": "6mJy",
