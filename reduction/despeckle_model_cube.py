@@ -29,10 +29,10 @@ def despeckle_model_image(basename, threshold_factor=2.0, median_npix=3):
     # iterate over channels under the expectation that dask is only evaluating as needed
     for ii in range(filt.shape[0]):
 
-        filtslc = filt.filled_data[ii, :, :]
+        filtslc = filt.unitless_filled_data[ii, :, :]
         assert filtslc.ndim == 2
 
-        modslc = modelcube.filled_data[ii, :, :]
+        modslc = modelcube.unitless_filled_data[ii, :, :]
         assert modslc.ndim == 2
         deviation = (modslc - filtslc) / filtslc
 
@@ -40,7 +40,7 @@ def despeckle_model_image(basename, threshold_factor=2.0, median_npix=3):
 
         if np.any(reject):
             print(ii, end=' ')
-            modslc[reject] = filtslc.value[reject]
+            modslc[reject] = filtslc[reject]
             modslc = modslc[None,None,:,:]
 
             ia.putchunk(pixels=modslc.T.astype('float64'), blc=[-1,-1,-1,ii])
