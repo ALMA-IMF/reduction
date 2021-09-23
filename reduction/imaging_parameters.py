@@ -3073,6 +3073,15 @@ line_imaging_parameters_custom = {
         "scales": [0, 5, 10, 20],  # 4.8pix per sqrt(bmaj*bmean), pix= 0.35arcsec, max scale ~7arcsec
         "gain": 0.08,
     },
+    "G353.41_B3_7M12M_robust0": {
+        "niter":5000000,
+        "threshold":"2sigma",
+        "deconvolver":'multiscale',
+        'scales':[0,6,12,24],
+        "pblimit":0.18,#18,
+        "pbmask":0.1,
+        "cyclefactor":2.0,
+    },
     "G353.41_B6_12M_robust0": {
         "threshold": "48mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
@@ -4344,7 +4353,7 @@ line_parameters_custom = {
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-16km/s"},
-        "n2hp": {"cubewidth": "32km/s"},
+        "n2hp": {"cubewidth": "50km/s"},
     },
     "W43-MM1": {
         "12co": {"cubewidth": "150km/s"},
