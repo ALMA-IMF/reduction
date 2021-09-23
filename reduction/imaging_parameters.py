@@ -3078,7 +3078,7 @@ line_imaging_parameters_custom = {
         "threshold":"2sigma",
         "deconvolver":'multiscale',
         'scales':[0,6,12,24],
-        "pblimit":0.18,#18,
+        "pblimit":0.18,
         "pbmask":0.1,
         "cyclefactor":2.0,
     },
