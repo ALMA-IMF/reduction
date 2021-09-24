@@ -2950,7 +2950,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B6_12M_robust0_sio": {
-        "threshold": "34.5mJy",  # typical rms 9.5-11.5 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "30mJy",  # typical rms is 10-12.5 mJy, using 3sigma of lowest value for threshold (15 Sept. 2021)
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G328.25_B3_12M_robust0": {
@@ -2969,7 +2969,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_sio": {
-        "threshold": "63mJy",  # typical rms is 15-21 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "57mJy",  # typical rms is 18-22 mJy, using 3sigma of 19 mJy for threshold (15 Sept. 2021)
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0": {
@@ -3072,6 +3072,15 @@ line_imaging_parameters_custom = {
         "deconvolver": "multiscale",
         "scales": [0, 5, 10, 20],  # 4.8pix per sqrt(bmaj*bmean), pix= 0.35arcsec, max scale ~7arcsec
         "gain": 0.08,
+    },
+    "G353.41_B3_7M12M_robust0": {
+        "niter":5000000,
+        "threshold":"2sigma",
+        "deconvolver":'multiscale',
+        'scales':[0,6,12,24],
+        "pblimit":0.18,
+        "pbmask":0.1,
+        "cyclefactor":2.0,
     },
     "G353.41_B6_12M_robust0": {
         "threshold": "48mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
@@ -4287,14 +4296,14 @@ line_parameters_custom = {
     },
     "G012.80": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "100km/s", "vlsr": "35.5km/s"},
+        "sio": {"cubewidth": "150km/s", "vlsr": "35.5km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-29km/s"},  # 36 - 65 = -29km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "35km/s"},
     },
     "G327.29": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "120km/s", "vlsr": "-43km/s"},
+        "sio": {"cubewidth": "150km/s", "vlsr": "-43km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-105km/s"},  # -40 - 65 = -105km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
@@ -4344,7 +4353,7 @@ line_parameters_custom = {
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-16km/s"},
-        "n2hp": {"cubewidth": "32km/s"},
+        "n2hp": {"cubewidth": "50km/s"},
     },
     "W43-MM1": {
         "12co": {"cubewidth": "150km/s"},
