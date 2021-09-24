@@ -11,12 +11,12 @@ export MEM=64gb
 export MEM=128gb
 
 if [[ $CMD == *"mpi"* ]]; then
-    export NTASKS=16
+    export NTASKS=32
     export CPUS_PER_TASK=1 # mem/4
     export SLURM_TASKS_PER_NODE=$NTASKS
 else
     export NTASKS=1
-    export CPUS_PER_TASK=16 # mem/4
+    export CPUS_PER_TASK=32 # mem/4
 fi
 export SLURM_NTASKS=$NTASKS
 
@@ -52,7 +52,7 @@ case $FIELD_ID in
 #    declare -A mem_map=( ["0"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
 W43-MM2|W51-IRS2|G333.60|W51-E) #B3 B6
 #    export MEM=96gb ;;
-    export MEM=128gb ;;
+    export MEM=256gb ;;
 #G333.60|W43-MM3|G353.41|G351.77|G337.92) #B3 B6
 #    export MEM=96gb ;;
 #W43-MM1|W43-MM2|G008.67) # only B3 needs more...
@@ -69,12 +69,12 @@ esac
 
 if [ -z $EXCLUDE_7M ]; then
     export EXCLUDE_7M=True
-    export suffix12m="12M"
+    suffix12m="12M"
 else
     if [ $EXCLUDE_7M == "True" ]; then
-        export suffix12m="12M"
+        suffix12m="12M"
     else
-        export suffix12m="7M12M"
+        suffix12m="7M12M"
     fi
 fi
 
@@ -136,6 +136,15 @@ jobid=""
 export MEM=32gb
 export MEM=128gb
 
+if [[ $CMD == *"mpi"* ]]; then
+    export NTASKS=32
+    export CPUS_PER_TASK=1 # mem/4
+    export SLURM_TASKS_PER_NODE=$NTASKS
+else
+    export NTASKS=1
+    export CPUS_PER_TASK=32 # mem/4
+fi
+export SLURM_NTASKS=$NTASKS
 
 case $FIELD_ID in
 W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92|G328.25)

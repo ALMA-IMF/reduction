@@ -16,7 +16,7 @@ except ImportError:
 ia = iatool()
 
 
-def despeckle_model_image(basename, threshold_factor=2.0, median_npix=3):
+def despeckle_model_image(basename, threshold_factor=4.0, median_npix=3):
 
     modelcube = SpectralCube.read(basename+".model", format='casa_image')
     print(modelcube)

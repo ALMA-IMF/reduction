@@ -1,5 +1,5 @@
 """
-Continuum imaging self-calibration script.  
+Continuum imaging self-calibration script.
 
 You can set the following environmental variables for this script:
     EXCLUDE_7M=<boolean>

@@ -4411,6 +4411,10 @@ flag_thresholds_custom = {
     "G012.80_B3_12M_spw0": {"nchan": 20, "tolerance": 0.31},
     "G353.41_B3_12M_spw0": {"nchan": 27, "tolerance": 0.23},
     "G337.92_B6_12M_spw7": {"nchan": 51, "tolerance": 1.00},  # maxdiff is ~6x!
+    "W51-E_B6_12M_spw3": {"nchan": 18, "tolerance": 2.25},
+    "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
+    "W51-E_B6_12M_spw6": {"nchan": 41, "tolerance": 0.25},
+    "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25}, # again 51 channels in spw7
 }
 flag_thresholds = flag_thresholds_default.copy()
 flag_thresholds.update(flag_thresholds_custom)
