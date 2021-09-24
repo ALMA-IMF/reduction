@@ -2828,7 +2828,7 @@ del selfcal_pars["G327.29_B3_7M12M_robust0"][4]
 line_imaging_parameters_default = {
     "{0}_{1}_{2}_robust{3}{4}".format(field, band, array, robust, contsub): {
         "niter": 5000000,
-        "threshold": "3sigma",
+        "threshold": "5sigma",
         "robust": robust,
         "weighting": "briggsbwtaper",
         "deconvolver": "multiscale",
@@ -3282,66 +3282,90 @@ line_imaging_parameters_custom = {
         "threshold": "6.4mJy",  # typical rms is 2.7-3.2 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
     },
-    "G008.67_B3_12M_robust0_n2hp": {
-        "scales": [0, 7, 14, 28, 42, 56, 70],
-        "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
-    },
+        "G008.67_B3_12M_robust0_n2hp": {
+            "threshold":"5sigma",
+            "scales": [0, 9, 18, 36, 54, 72, 90],
+            "startmodel": "G008.67_B3_uid___A001_X1296_X1c1_continuum_merged_12M_robust0_selfcal5_finaliter",
+   },
+
     "G010.62_B3_12M_robust0_n2hp": {
-        "scales": [0, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72],
-        "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
+   },
+
     "G012.80_B3_12M_robust0_n2hp": {
-        "scales": [0, 6, 12, 24],
-        "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 8, 16, 32],
+            "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
+   },
+
     "G327.29_B3_12M_robust0_n2hp": {
-        "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70],
-        "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 8, 16, 32, 48, 64, 80, 96],
+            "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
+   },
+
     "G328.25_B3_12M_robust0_n2hp": {
-        "scales": [0, 8, 16, 32, 48, 64],
-        "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
-    },
-    "G333.60_B3_12M_robust0_n2hp": {
-        "scales": [0, 7, 14, 28, 42, 56, 70],
-        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 12, 24, 48, 72, 96],
+            "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
+   },
+
     "G337.92_B3_12M_robust0_n2hp": {
-        "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70],
-        "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 8, 16, 32, 48, 64, 80, 96],
+            "startmodel": "G337.92_B3_uid___A001_X1296_X147_continuum_merged_12M_robust0_selfcal4_finaliter",
+   },
+
     "G338.93_B3_12M_robust0_n2hp": {
-        "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70],
-        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 7, 14, 28, 42, 56, 70, 84, 98],
+            "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
+   },
+
     "G351.77_B3_12M_robust0_n2hp": {
-        "scales": [0, 6, 12, 24],
-        "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 7, 14, 28],
+            "startmodel": "G351.77_B3_uid___A001_X1296_X209_continuum_merged_12M_robust0_selfcal4_finaliter",
+   },
+
     "G353.41_B3_12M_robust0_n2hp": {
-        "scales": [0, 6, 12, 24],
-        "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 7, 14, 28],
+            "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
+   },
+
     "W43-MM1_B3_12M_robust0_n2hp": {
-        "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70],
-        "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 6, 12, 24, 36, 48, 60, 72, 84, 96],
+            "startmodel": "W43-MM1_B3_uid___A001_X1296_X1af_continuum_merged_12M_robust0_selfcal4_finaliter",
+   },
+
     "W43-MM2_B3_12M_robust0_n2hp": {
-        "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104],
+            "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
+   },
+
     "W43-MM3_B3_12M_robust0_n2hp": {
-        "scales": [0, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72],
-        "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 6, 12, 24, 36, 48, 60, 72, 84, 96],
+            "startmodel": "W43-MM3_B3_uid___A001_X1296_X12f_continuum_merged_12M_robust0_selfcal5_finaliter",
+   },
+
     "W51-E_B3_12M_robust0_n2hp": {
-        "scales": [0, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104],
-        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104],
+            "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+   },
+
     "W51-IRS2_B3_12M_robust0_n2hp": {
-        "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
-    },
+            "threshold":"5sigma",
+            "scales": [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            "startmodel": "W51-IRS2_B3_uid___A001_X1296_X18f_continuum_merged_12M_robust0_selfcal4_finaliter",
+   },
+
     "G008.67_B3_12M_robust0_spw0": {
         "threshold": "5sigma",
         "scales": [0, 7, 14, 28, 56],
