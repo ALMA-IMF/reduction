@@ -3074,13 +3074,13 @@ line_imaging_parameters_custom = {
         "gain": 0.08,
     },
     "G353.41_B3_7M12M_robust0": {
-        "niter":5000000,
-        "threshold":"2sigma",
-        "deconvolver":'multiscale',
-        'scales':[0,6,12,24],
-        "pblimit":0.18,
-        "pbmask":0.1,
-        "cyclefactor":2.0,
+        "niter": 5000000,
+        "threshold": "2sigma",
+        "deconvolver": "multiscale",
+        "scales": [0, 6, 12, 24],
+        "pblimit": 0.18,
+        "pbmask": 0.1,
+        "cyclefactor": 2.0,
     },
     "G353.41_B6_12M_robust0": {
         "threshold": "48mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
@@ -4423,7 +4423,7 @@ flag_thresholds_custom = {
     "W51-E_B6_12M_spw3": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw6": {"nchan": 41, "tolerance": 0.25},
-    "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25}, # again 51 channels in spw7
+    "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25},  # again 51 channels in spw7
 }
 flag_thresholds = flag_thresholds_default.copy()
 flag_thresholds.update(flag_thresholds_custom)
