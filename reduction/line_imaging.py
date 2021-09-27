@@ -573,7 +573,7 @@ for band in band_list:
                                                           field=field,
                                                           phasecenter=(racen, deccen),
                                                           spw='all',
-                                                          # July 2, 2021 - shrink pixsize to 1/4
+                                                          # July 2, 2021 - shrink pixsize to 1/4 (actually was apparently 1/5)
                                                           pixfraction_of_fwhm=1/5. if only_7m else 1/4.,
                                                           exclude_7m=exclude_7m,
                                                           only_7m=only_7m,
@@ -767,8 +767,12 @@ for band in band_list:
                     make_continuum_startmodel = True
                     # remove the model image
                     # (it should be created by dirty imaging above)
+                    if os.path.exists(lineimagename+".model") and impars['startmodel'] == os.path.exists(lineimagename+".model"):
+                        logprint("Startmodel {0} was specifield and exists; we are proceeding assuming "
+                                 "that this is a full-cube startmodel.".format(impars['startmodel']))
+                        make_continuum_startmodel = False
                     if did_dirty_imaging and os.path.exists(lineimagename+".model"):
-                        logprint("Removing {0}.model because we're using starmodel instead"
+                        logprint("Removing {0}.model because we're using startmodel instead"
                                  .format(lineimagename),
                                  origin='almaimf_line_imaging')
                         shutil.rmtree(lineimagename+".model")
