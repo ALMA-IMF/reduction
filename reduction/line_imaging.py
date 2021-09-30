@@ -546,12 +546,17 @@ for band in band_list:
                                '.image.pbcor.fits',
                                '_continuum_model.image.tt0',
                                '_continuum_model.image.tt1'):
-                    dest = imaging_root
+                    destdir = imaging_root
+                    dest = os.path.join(imaging_root, baselineimagename+suffix)
                     src = os.path.join(proddir,
                                        baselineimagename + suffix)
-                    if os.path.exists(src):
-                        logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
-                        shutil.move(src, dest)
+                    if os.path.exists(dest):
+                        logprint("Destination {0} exists".format(dest), origin='almaimf_line_imaging')
+                        if not os.getenv('CONTINUE_IF_MS_EXISTS'):
+                            raise ValueError("Target destination exists and were trying to copy into it.")
+                    elif os.path.exists(src):
+                        logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
+                        shutil.move(src, destdir)
 
                 # we don't copy or move over the continuum startmodels; they're light reads
                 contmodel_path = proddir
