@@ -63,10 +63,10 @@ echo $LOGFILENAME
 # do one band at a time to enable _disabling_ one or the other
 #export BAND_NUMBERS="3"
 echo xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
-xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 PID=$!
 
-python ${ALMAIMF_ROOTDIR}/slurm_scripts/monitor_memory.py ${PID}
+/orange/adamginsburg/miniconda3/bin/python ${ALMAIMF_ROOTDIR}/slurm_scripts/monitor_memory.py ${PID}
 
 #export BAND_NUMBERS="6"
 #xvfb-run -d ${CASA} --nogui --nologger -c "execfile('$SCRIPT_DIR/line_imaging.py')"

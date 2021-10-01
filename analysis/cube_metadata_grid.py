@@ -78,8 +78,8 @@ def dt():
     then = now
 
 
-colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'mod_date', 'wcs_restfreq', 'minfreq', 'maxfreq']
-colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
+colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'mod_date', 'wcs_restfreq', 'minfreq', 'maxfreq', 'biggest_bmaj', 'smallest_bmaj']
+colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date',]
 
 rows = []
 
@@ -114,10 +114,14 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                         cube = cube.rechunk()
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
+                        biggest_beam = beam
+                        smallest_beam = beam
                     else:
                         beams = cube.beams
                         # use the middle-ish beam
                         beam = beams[len(beams)//2]
+                        biggest_beam = beams[np.argmax(beams.sr)]
+                        smallest_beam = beams[np.argmin(beams.sr)]
 
                     print(cube)
 
@@ -127,7 +131,7 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                     maxfreq = cube.spectral_axis.max()
                     restfreq = cube.wcs.wcs.restfrq
 
-                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, mod_date, restfreq, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
+                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, mod_date, restfreq, minfreq, maxfreq, biggest_beam.major, smallest_beam.minor] + [history[key] if key in history else '' for key in colnames_fromheader]
                     rows.append(row)
 
 
@@ -159,15 +163,19 @@ for field in "G337.92 W43-MM3 G328.25 G351.77 W43-MM2 G327.29 G338.93 W51-E G353
                         cube = SpectralCube.read(fn)
                     if hasattr(cube, 'beam'):
                         beam = cube.beam
+                        biggest_beam = beam
+                        smallest_beam = beam
                     else:
                         beams = cube.beams
                         beam = beams[len(beams)//2]
+                        biggest_beam = beams[np.argmax(beams.sr)]
+                        smallest_beam = beams[np.argmin(beams.sr)]
 
                     minfreq = cube.spectral_axis.min()
                     maxfreq = cube.spectral_axis.max()
                     restfreq = cube.wcs.wcs.restfrq
 
-                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, mod_date, restfreq, minfreq, maxfreq] + [history[key] if key in history else '' for key in colnames_fromheader]
+                    row = [field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, mod_date, restfreq, minfreq, maxfreq, biggest_beam.major, smallest_beam.minor] + [history[key] if key in history else '' for key in colnames_fromheader]
                     rows.append(row)
 
 from astropy.table import Table
