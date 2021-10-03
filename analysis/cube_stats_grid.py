@@ -18,8 +18,10 @@ import glob
 from spectral_cube import SpectralCube,DaskSpectralCube
 from spectral_cube.lower_dimensional_structures import Projection
 
-from casatools import image
-ia = image()
+from casa_formats_io import Table as casaTable
+#obsoleted by casaformatsio
+# from casatools import image
+# ia = image()
 
 from pathlib import Path
 tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
@@ -37,23 +39,6 @@ print(f"TMPDIR = {os.environ.get('TMPDIR')}")
 
 threads = os.getenv('DASK_THREADS') or os.getenv('SLURM_NTASKS')
 
-if threads:
-    try:
-        nthreads = int(threads)
-        if nthreads > 1:
-            scheduler = 'threads'
-        else:
-            scheduler = 'synchronous'
-    except (TypeError,ValueError):
-        nthreads = 1
-        scheduler = 'synchronous'
-else:
-    nthreads = 1
-    scheduler = 'synchronous'
-
-target_chunk_size = int(1e4)
-
-print(f"Using scheduler {scheduler} with {nthreads} threads")
 
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
@@ -85,6 +70,38 @@ def dt():
     then = now
 
 if __name__ == "__main__":
+    if threads:
+        # try dask.distrib again
+        from dask.distributed import Client, LocalCluster
+
+        mem_mb = os.getenv('SLURM_MEM_PER_NODE')
+
+        try:
+            nthreads = int(threads)
+            if nthreads > 1:
+                scheduler = 'threads'
+                # set up cluster and workers
+                cluster = LocalCluster(n_workers=1,
+                                       threads_per_worker=int(nthreads),
+                                       memory_target_fraction=0.95,
+                                       memory_limit=f'{mem_mb}MB')
+                client = Client(cluster)
+                print(f"Started dask cluster {client} with mem limit {mem_mb}MB")
+            else:
+                scheduler = 'synchronous'
+        except (TypeError,ValueError) as ex:
+            print(f"Exception raised when creating scheduler: {ex}")
+            nthreads = 1
+            scheduler = 'synchronous'
+    else:
+        nthreads = 1
+        scheduler = 'synchronous'
+
+    target_chunk_size = int(1e4)
+
+    print(f"Using scheduler {scheduler} with {nthreads} threads")
+
+
     cwd = os.getcwd()
     basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
     os.chdir(basepath)
@@ -171,21 +188,26 @@ if __name__ == "__main__":
 
                         print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}")
 
-                        ia.open(fn)
-                        hist = ia.history(list=False)
-                        history = {x.split(":")[0]:x.split(": ")[1] for x in hist if ':' in x}
-                        history.update({x.split("=")[0]:x.split("=")[1].lstrip() for x in hist if '=' in x})
-                        ia.close()
+                        logtable = casaTable.read(f'{fn}/logtable').as_astropy_tables()[0]
+                        hist = logtable['MESSAGE']
+
+                        #ia.open(fn)
+                        #hist = ia.history(list=False)
+                        history = {x.split(":")[0]:x.split(": ")[1]
+                                   for x in hist if ':' in x}
+                        history.update({x.split("=")[0]:x.split("=")[1].lstrip()
+                                        for x in hist if '=' in x})
+                        #ia.close()
 
                         if os.path.exists(fn+".fits"):
                             cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
-                            cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            #cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         else:
                             cube = SpectralCube.read(fn, format='casa_image', target_chunk_size=target_chunk_size)
-                            cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            #cube.use_dask_scheduler(scheduler, num_workers=nthreads)
                             print(f"Rechunking {cube} to tmp dir")
                             cube = cube.rechunk(save_to_tmp_dir=True)
-                            cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            #cube.use_dask_scheduler(scheduler, num_workers=nthreads)
 
                         if hasattr(cube, 'beam'):
                             beam = cube.beam
@@ -221,13 +243,13 @@ if __name__ == "__main__":
 
                         if os.path.exists(modfn+".fits"):
                             modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
-                            modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            #modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
                         else:
                             modcube = SpectralCube.read(modfn, format='casa_image', target_chunk_size=target_chunk_size)
-                            modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            #modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
                             print(f"Rechunking {modcube} to tmp dir")
                             modcube = modcube.rechunk(save_to_tmp_dir=True)
-                            modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            #modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
 
                         print(modcube)
                         print("Computing model cube statistics")
@@ -257,3 +279,6 @@ if __name__ == "__main__":
     print(tbl)
 
     os.chdir(cwd)
+
+if threads and nthreads > 1:
+    client.close()

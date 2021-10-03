@@ -553,7 +553,7 @@ for band in band_list:
                     if os.path.exists(dest):
                         logprint("Destination {0} exists".format(dest), origin='almaimf_line_imaging')
                         if not os.getenv('CONTINUE_IF_MS_EXISTS'):
-                            raise ValueError("Target destination exists and were trying to copy into it.")
+                            raise ValueError("Target destination exists and we were trying to copy into it.")
                     elif os.path.exists(src):
                         logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
                         shutil.move(src, destdir)
@@ -941,9 +941,18 @@ for band in band_list:
                                '_continuum_model.image.tt1'):
                     src = lineimagename+suffix
                     dest = proddir
+                    destfile = os.path.join(proddir, os.path.basename(src))
                     if os.path.exists(src):
-                        logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
-                        shutil.move(src, dest)
+                        if os.path.exists(destfile):
+                            logprint("Destination {0} exists".format(destfile), origin='almaimf_line_imaging')
+                            if not os.getenv('CONTINUE_IF_MS_EXISTS'):
+                                raise ValueError("Target destination exists and we were trying to copy into it.")
+                            else:
+                                logprint("Removing the workingdir file {0}".format(src), origin='almaimf_line_imaging')
+                                shutil.rmtree(src)
+                        else:
+                            logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
+                            shutil.move(src, dest)
 
                 # use the variable name 'newconcatvis' here since that should
                 # only ever take on the value specified in copy_files; this is
