@@ -37,8 +37,8 @@ elif not os.environ.get("TMPDIR"):
     os.environ['TMPDIR'] ='/blue/adamginsburg/adamginsburg/tmp/'
 print(f"TMPDIR = {os.environ.get('TMPDIR')}")
 
-threads = os.getenv('DASK_THREADS') or os.getenv('SLURM_NTASKS')
-
+threads = int(os.getenv('DASK_THREADS') or os.getenv('SLURM_NTASKS'))
+print(f"Using {threads} threads.")
 
 default_lines = {'n2hp': '93.173700GHz',
                  'sio': '217.104984GHz',
@@ -74,19 +74,20 @@ if __name__ == "__main__":
         # try dask.distrib again
         from dask.distributed import Client, LocalCluster
 
-        mem_mb = os.getenv('SLURM_MEM_PER_NODE')
+        mem_mb = int(os.getenv('SLURM_MEM_PER_NODE'))
 
         try:
             nthreads = int(threads)
+            memlimit = f'{int(mem_mb) / int(nthreads)}MB'
             if nthreads > 1:
                 scheduler = 'threads'
                 # set up cluster and workers
                 cluster = LocalCluster(n_workers=1,
                                        threads_per_worker=int(nthreads),
                                        memory_target_fraction=0.95,
-                                       memory_limit=f'{mem_mb}MB')
+                                       memory_limit=memlimit)
                 client = Client(cluster)
-                print(f"Started dask cluster {client} with mem limit {mem_mb}MB")
+                print(f"Started dask cluster {client} with mem limit {memlimit}")
             else:
                 scheduler = 'synchronous'
         except (TypeError,ValueError) as ex:
@@ -137,6 +138,7 @@ if __name__ == "__main__":
         rows = [list(row) for row in tbl]
     else:
         rows = []
+
 
     cache_stats_file = open(tbldir / "cube_stats.txt", 'w')
 
@@ -280,5 +282,5 @@ if __name__ == "__main__":
 
     os.chdir(cwd)
 
-if threads and nthreads > 1:
-    client.close()
+    if threads and nthreads > 1:
+        client.close()
