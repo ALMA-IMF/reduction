@@ -59,9 +59,10 @@ if __name__ == "__main__":
     import pylab as pl
 
     pl.clf()
+    pl.plot(tbl['TIME'], tbl['RSS'], label='rss', linewidth=2)
     pl.plot(tbl['TIME'], tbl['cached'], label='cached')
     pl.plot(tbl['TIME'], tbl['shared'], label='shared')
-    pl.plot(tbl['TIME'], tbl['free'], label='free')
+    #pl.plot(tbl['TIME'], tbl['free'], label='free')
     pl.plot(tbl['TIME'], tbl['used'], label='used')
     pl.plot(tbl['TIME'], tbl['active'], label='active')
     pl.plot(tbl['TIME'], tbl['inactive'], label='inactive')

@@ -26,6 +26,8 @@ from casa_formats_io import Table as casaTable
 from pathlib import Path
 tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
 
+dataroot = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
+
 if os.getenv('NO_PROGRESSBAR') is None and not (os.getenv('ENVIRON') == 'BATCH'):
     from dask.diagnostics import ProgressBar
     pbar = ProgressBar()
@@ -36,6 +38,10 @@ if os.environ.get('SLURM_TMPDIR'):
 elif not os.environ.get("TMPDIR"):
     os.environ['TMPDIR'] ='/blue/adamginsburg/adamginsburg/tmp/'
 print(f"TMPDIR = {os.environ.get('TMPDIR')}")
+
+# Dask writes some log stuff; let's make sure it gets written on local scratch
+# or in a blue drive and not on orange
+os.chdir(os.getenv('TMPDIR'))
 
 threads = int(os.getenv('DASK_THREADS') or os.getenv('SLURM_NTASKS'))
 print(f"Using {threads} threads.")
@@ -69,44 +75,69 @@ def dt():
     print(f"Elapsed: {now-then}")
     then = now
 
+num_workers = None
+print(f"PID = {os.getpid()}")
+
 if __name__ == "__main__":
     if threads:
         # try dask.distrib again
         from dask.distributed import Client, LocalCluster
+        import dask
 
         mem_mb = int(os.getenv('SLURM_MEM_PER_NODE'))
+        print("Threads was set", flush=True)
 
         try:
             nthreads = int(threads)
-            memlimit = f'{int(mem_mb) / int(nthreads)}MB'
+            #memlimit = f'{0.8 * int(mem_mb) / int(nthreads)}MB'
+            memlimit = f'{0.4*int(mem_mb)}MB'
             if nthreads > 1:
+                num_workers = nthreads
                 scheduler = 'threads'
+
+            elif False:
+                print(f"nthreads = {nthreads} > 1, so starting a LocalCluster with memory limit {memlimit}", flush=True)
+                #scheduler = 'threads'
                 # set up cluster and workers
                 cluster = LocalCluster(n_workers=1,
                                        threads_per_worker=int(nthreads),
-                                       memory_target_fraction=0.95,
-                                       memory_limit=memlimit)
+                                       memory_target_fraction=0.60,
+                                       memory_spill_fraction=0.65,
+                                       memory_pause_fraction=0.7,
+                                       #memory_terminate_fraction=0.9,
+                                       memory_limit=memlimit,
+                                       silence_logs=False, # https://stackoverflow.com/questions/58014417/seeing-logs-of-dask-workers
+                                      )
+                print(f"Created a cluster {cluster}", flush=True)
                 client = Client(cluster)
-                print(f"Started dask cluster {client} with mem limit {memlimit}")
+                print(f"Created a client {client}", flush=True)
+                scheduler = client
+                # https://github.com/dask/distributed/issues/3519
+                # https://docs.dask.org/en/latest/configuration.html
+                dask.config.set({"distributed.workers.memory.terminate": 0.75})
+                print(f"Started dask cluster {client} with mem limit {memlimit}", flush=True)
             else:
                 scheduler = 'synchronous'
         except (TypeError,ValueError) as ex:
-            print(f"Exception raised when creating scheduler: {ex}")
+            print(f"Exception raised when creating scheduler: {ex}", flush=True)
             nthreads = 1
             scheduler = 'synchronous'
     else:
         nthreads = 1
         scheduler = 'synchronous'
 
-    target_chunk_size = int(1e4)
+    target_chunksize = int(1e8)
+    print(f"Target chunk size = {target_chunksize} (log10={np.log10(target_chunksize)})", flush=True)
 
-    print(f"Using scheduler {scheduler} with {nthreads} threads")
+    print(f"Using scheduler {scheduler} with {nthreads} threads", flush=True)
+    time.sleep(1)
+    print("Slept for 1s", flush=True)
 
 
     cwd = os.getcwd()
     basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
     os.chdir(basepath)
-    print(f"Changed from {cwd} to {basepath}, now running cube stats assembly")
+    print(f"Changed from {cwd} to {basepath}, now running cube stats assembly", flush=True)
 
     colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
     colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
@@ -166,18 +197,18 @@ if __name__ == "__main__":
                                            (tbl['spw'] == spw) &
                                            (tbl['suffix'] == suffix))
                             if any(row_matches):
-                                print(f"Skipping {globblob} as complete: {tbl[row_matches]}")
+                                print(f"Skipping {globblob} as complete: {tbl[row_matches]}", flush=True)
                                 continue
 
 
 
-                        fn = glob.glob(globblob)
+                        fn = glob.glob(f'{dataroot}/{globblob}')
 
                         if any(fn):
-                            print(f"Found some matches for fn {fn}, using {fn[0]}.")
+                            print(f"Found some matches for fn {fn}, using {fn[0]}.", flush=True)
                             fn = fn[0]
                         else:
-                            print(f"Found no matches for glob {globblob}")
+                            print(f"Found no matches for glob {globblob}", flush=True)
                             continue
 
                         modfn = fn.replace(".image", ".model")
@@ -188,7 +219,7 @@ if __name__ == "__main__":
                         if line in default_lines:
                             spw = int(fn.split('spw')[1][0])
 
-                        print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}")
+                        print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}", flush=True)
 
                         logtable = casaTable.read(f'{fn}/logtable').as_astropy_tables()[0]
                         hist = logtable['MESSAGE']
@@ -203,13 +234,13 @@ if __name__ == "__main__":
 
                         if os.path.exists(fn+".fits"):
                             cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
-                            #cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
                         else:
-                            cube = SpectralCube.read(fn, format='casa_image', target_chunk_size=target_chunk_size)
-                            #cube.use_dask_scheduler(scheduler, num_workers=nthreads)
-                            print(f"Rechunking {cube} to tmp dir")
-                            cube = cube.rechunk(save_to_tmp_dir=True)
-                            #cube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            cube = SpectralCube.read(fn, format='casa_image', target_chunksize=target_chunksize)
+                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                            # print(f"Rechunking {cube} to tmp dir", flush=True)
+                            # cube = cube.rechunk(save_to_tmp_dir=True)
+                            # cube.use_dask_scheduler(scheduler)
 
                         if hasattr(cube, 'beam'):
                             beam = cube.beam
@@ -224,8 +255,17 @@ if __name__ == "__main__":
                         maxfreq = cube.spectral_axis.max()
                         restfreq = cube.wcs.wcs.restfrq
 
-                        print("Computing cube statistics")
+                        # print("getting filled data")
+                        # data = cube._get_filled_data(fill=np.nan)
+                        # print("finished getting filled data")
+                        # del data
+
+                        # try this as an experiment?  Maybe it's statistics that causes problems?
+                        #print(f"Computing cube mean with scheduler {scheduler} and sched args {cube._scheduler_kwargs}", flush=True)
+                        #mean = cube.mean()
+                        print(f"Computing cube statistics with scheduler {scheduler} and sched args {cube._scheduler_kwargs}", flush=True)
                         stats = cube.statistics()
+                        print("finished cube stats", flush=True)
                         min = stats['min']
                         max = stats['max']
                         std = stats['sigma']
@@ -245,16 +285,16 @@ if __name__ == "__main__":
 
                         if os.path.exists(modfn+".fits"):
                             modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
-                            #modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
                         else:
-                            modcube = SpectralCube.read(modfn, format='casa_image', target_chunk_size=target_chunk_size)
-                            #modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
-                            print(f"Rechunking {modcube} to tmp dir")
-                            modcube = modcube.rechunk(save_to_tmp_dir=True)
-                            #modcube.use_dask_scheduler(scheduler, num_workers=nthreads)
+                            modcube = SpectralCube.read(modfn, format='casa_image', target_chunksize=target_chunksize)
+                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                            # print(f"Rechunking {modcube} to tmp dir", flush=True)
+                            # modcube = modcube.rechunk(save_to_tmp_dir=True)
+                            # modcube.use_dask_scheduler(scheduler)
 
-                        print(modcube)
-                        print("Computing model cube statistics")
+                        print(modcube, flush=True)
+                        print(f"Computing model cube statistics with scheduler {scheduler} and sched args {modcube._scheduler_kwargs}", flush=True)
                         modstats = modcube.statistics()
                         modmin = modstats['min']
                         modmax = modstats['max']
