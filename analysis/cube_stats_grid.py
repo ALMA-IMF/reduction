@@ -322,5 +322,5 @@ if __name__ == "__main__":
 
     os.chdir(cwd)
 
-    if threads and nthreads > 1:
+    if threads and nthreads > 1 and 'client' in locals():
         client.close()
