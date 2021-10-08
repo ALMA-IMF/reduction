@@ -949,7 +949,10 @@ for band in band_list:
                                 raise ValueError("Target destination exists and we were trying to copy into it.")
                             else:
                                 logprint("Removing the workingdir file {0}".format(src), origin='almaimf_line_imaging')
-                                shutil.rmtree(src)
+                                if src.endswith('fits'):
+                                    os.remove(src)
+                                else:
+                                    shutil.rmtree(src)
                         else:
                             logprint("Moving {0}->{1}".format(src, dest), origin='almaimf_line_imaging')
                             shutil.move(src, dest)
