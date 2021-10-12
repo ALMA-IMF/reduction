@@ -536,6 +536,17 @@ for band in band_list:
                     newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
                     concatvis = copy_ms(concatvis, newconcatvis)
 
+                for suffix in ('.image', '.image.pbcor', '.mask', '.model',
+                               '.pb', '.psf', '.residual', '.sumwt', '.weight',
+                               '.contcube.model', '.image.fits',
+                               '.image.pbcor.fits',
+                               '_continuum_model.image.tt0',
+                               '_continuum_model.image.tt1'):
+                    destdir = imaging_root
+                    dest = os.path.join(imaging_root, baselineimagename+suffix)
+                    if os.path.exists(dest):
+                        # if ANY of the target destinations exist, we need to fail
+                        raise ValueError("Target destination exists and we were trying to copy into it.")
 
                 # we need to copy the files to our working directory if they exist
                 # (this allows for continuation of partly-completed processes

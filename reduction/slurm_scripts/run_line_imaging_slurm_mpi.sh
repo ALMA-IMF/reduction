@@ -48,6 +48,8 @@ export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
 export MPICASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/mpicasa
 export CASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/casa
 export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/mpicasa
+export CASA=/orange/adamginsburg/casa/casa-6.4.0-12/bin/casa
+export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-6.4.0-12/bin/mpicasa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
@@ -81,11 +83,18 @@ echo $LOGFILENAME
 #export BAND_NUMBERS="3"
 #echo srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 # srun --mpi=pmix_v3 
-${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
-exitcode=$?
+${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+ppid="$!"; childPID="$(ps -C ${CASA} -o ppid=,pid= | awk -v ppid="$ppid" '$1==ppid {print $2}')"
+echo PID=${ppid} childPID=${childPID}
 
-#export BAND_NUMBERS="6"
-#xvfb-run -d ${CASA} --nogui --nologger -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+if [[ ! -z $childPID ]]; then 
+    /orange/adamginsburg/miniconda3/bin/python ${ALMAIMF_ROOTDIR}/slurm_scripts/monitor_memory.py ${childPID}
+else
+    echo "FAILURE: PID=$PID was not set."
+fi
+
+wait $ppid
+exitcode=$?
 
 cd -
 

@@ -64,9 +64,22 @@ echo $LOGFILENAME
 #export BAND_NUMBERS="3"
 echo xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
-PID=$!
+ppid="$!"; childPID="$(ps -C ${CASA} -o ppid=,pid= | awk -v ppid="$ppid" '$1==ppid {print $2}')"
+echo PID=${ppid} childPID=${childPID}
 
-/orange/adamginsburg/miniconda3/bin/python ${ALMAIMF_ROOTDIR}/slurm_scripts/monitor_memory.py ${PID}
+if [[ ! -z $childPID ]]; then 
+    /orange/adamginsburg/miniconda3/bin/python ${ALMAIMF_ROOTDIR}/slurm_scripts/monitor_memory.py ${childPID}
+else
+    echo "FAILURE: PID=$PID was not set."
+fi
 
-#export BAND_NUMBERS="6"
-#xvfb-run -d ${CASA} --nogui --nologger -c "execfile('$SCRIPT_DIR/line_imaging.py')"
+wait $ppid
+exitcode=$?
+
+cd -
+
+if [[ -z $(ls -A ${TEMP_WORKDIR}) ]]; then
+    rmdir ${TEMP_WORKDIR}
+fi
+
+exit $exitcode
