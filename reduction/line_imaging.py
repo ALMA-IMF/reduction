@@ -536,6 +536,8 @@ for band in band_list:
                     newconcatvis = os.path.join(workdir, os.path.basename(concatvis))
                     concatvis = copy_ms(concatvis, newconcatvis)
 
+                # do a preliminary check: don't copy anything if both src & dest exist;
+                # that indicates a severe problem
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
                                '.contcube.model', '.image.fits',
@@ -544,9 +546,11 @@ for band in band_list:
                                '_continuum_model.image.tt1'):
                     destdir = imaging_root
                     dest = os.path.join(imaging_root, baselineimagename+suffix)
-                    if os.path.exists(dest):
+                    src = os.path.join(proddir,
+                                       baselineimagename + suffix)
+                    if os.path.exists(dest) and os.path.exists(src):
                         # if ANY of the target destinations exist, we need to fail
-                        raise ValueError("Target destination exists and we were trying to copy into it.")
+                        raise ValueError("Target destination {0} exists and we were trying to copy into it from {1}.".format(dest, src))
 
                 # we need to copy the files to our working directory if they exist
                 # (this allows for continuation of partly-completed processes
@@ -561,10 +565,11 @@ for band in band_list:
                     dest = os.path.join(imaging_root, baselineimagename+suffix)
                     src = os.path.join(proddir,
                                        baselineimagename + suffix)
+                    logprint("Planning to move {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
                     if os.path.exists(dest):
                         logprint("Destination {0} exists".format(dest), origin='almaimf_line_imaging')
                         if not os.getenv('CONTINUE_IF_MS_EXISTS'):
-                            raise ValueError("Target destination exists and we were trying to copy into it.")
+                            raise ValueError("Target destination {0} exists and we were trying to copy into it.".format(dest))
                     elif os.path.exists(src):
                         logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
                         shutil.move(src, destdir)
@@ -879,6 +884,27 @@ for band in band_list:
                                     )
 
                         ia.close()
+                    if 'mask-ranges' in line_parameters[field][line_name]:
+                        ia.open(infile=lineimagename+".mask")
+                        for maskrange in line_parameters[field][line_name]:
+                            logprint("Masking out selected channels {0}".format(maskrange),
+                                     origin="almaimf_line_imaging")
+
+                            veltofreq = u.Quantity(maskrange, u.km/u.s).to(u.GHz, u.doppler_radio(restfreq))
+                            startchan = np.argmin(np.abs(veltofreq[0] - freqs))
+                            endchan = np.argmin(np.abs(veltofreq[1] - freqs))
+                            if endchan < startchan:
+                                startchan, endchan = endchan, startchan
+
+                            flagchans = ia.getchunk(blc=[0,0,0, startchan],
+                                                  trc=[-1,-1,-1, endchan])
+                            flagchans[:] = 0
+                            ia.putchunk(pixels=flagchans, blc=[0,0,0, startchan],)
+
+                        ia.close()
+                elif 'mask-ranges' in line_parameters[field][line_name]:
+                    raise ValueError("Mask-ranges was specified but no mask is available - this might "
+                                     "be a corner case that needs to be implemented")
 
                 # SANITY CHECK:
                 if os.path.exists(lineimagename+".model"):
@@ -957,7 +983,7 @@ for band in band_list:
                         if os.path.exists(destfile):
                             logprint("Destination {0} exists".format(destfile), origin='almaimf_line_imaging')
                             if not os.getenv('CONTINUE_IF_MS_EXISTS'):
-                                raise ValueError("Target destination exists and we were trying to copy into it.")
+                                raise ValueError("Target destination {0} exists and we were trying to copy into it.".format(destfile))
                             else:
                                 logprint("Removing the workingdir file {0}".format(src), origin='almaimf_line_imaging')
                                 if src.endswith('fits'):

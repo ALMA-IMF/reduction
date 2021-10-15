@@ -65,12 +65,12 @@ echo $LOGFILENAME
 echo xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
 xvfb-run -d ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 ppid="$!"; childPID="$(ps -C ${CASA} -o ppid=,pid= | awk -v ppid="$ppid" '$1==ppid {print $2}')"
-echo PID=${ppid} childPID=${childPID}
+echo PPID=${ppid} childPID=${childPID}
 
 if [[ ! -z $childPID ]]; then 
     /orange/adamginsburg/miniconda3/bin/python ${ALMAIMF_ROOTDIR}/slurm_scripts/monitor_memory.py ${childPID}
 else
-    echo "FAILURE: PID=$PID was not set."
+    echo "FAILURE: PID=$childPID was not set."
 fi
 
 wait $ppid

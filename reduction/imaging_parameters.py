@@ -4290,7 +4290,7 @@ line_parameters = copy.deepcopy(line_parameters_default)
 
 line_parameters_custom = {
     "G008.67": {
-        "12co": {"cubewidth": "150km/s"},
+        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(20,34)]}, # km/s units
         "sio": {"cubewidth": "120km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-22km/s"},  # 43 - 65 = -22km/s to accomodate He and C.
