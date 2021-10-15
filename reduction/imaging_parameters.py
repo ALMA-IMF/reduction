@@ -3071,7 +3071,8 @@ line_imaging_parameters_custom = {
         "startmodel": "G353.41_B3_uid___A001_X1296_X1d5_continuum_merged_12M_robust0_selfcal6_finaliter",
         "deconvolver": "multiscale",
         "scales": [0, 5, 10, 20],  # 4.8pix per sqrt(bmaj*bmean), pix= 0.35arcsec, max scale ~7arcsec
-        "gain": 0.08,
+        "gain": 1.5,
+        "parameters": foo,
     },
     "G353.41_B3_7M12M_robust0": {
         "niter": 5000000,
