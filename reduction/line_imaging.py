@@ -267,15 +267,16 @@ def set_impars(impars, line_name, vis, linpars, spwnames=None):
             raise ValueError("linpars (the line-specific parameters) were not set correctly")
 
         local_impars['restfreq'] = linpars['restfreq']
-        # calculate vstart
-        vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
-        local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
-        local_impars['chanchunks'] = int(chanchunks)
+        if 'cubewidth' in linpars:
+            # calculate vstart
+            vstart = u.Quantity(linpars['vlsr'])-u.Quantity(linpars['cubewidth'])/2
+            local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
+            local_impars['chanchunks'] = int(chanchunks)
 
-        local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
-                                    / u.Quantity(local_impars['width'])).value)
-        if local_impars['nchan'] < local_impars['chanchunks']:
-            local_impars['chanchunks'] = local_impars['nchan']
+            local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
+                                        / u.Quantity(local_impars['width'])).value)
+            if local_impars['nchan'] < local_impars['chanchunks']:
+                local_impars['chanchunks'] = local_impars['nchan']
         impars.update(local_impars)
     else:
         impars['chanchunks'] = int(chanchunks)
@@ -399,7 +400,7 @@ for band in band_list:
 
             linpars = {}
             # load in the line parameter info
-            if line_name not in ('full', ) + spwnames:
+            if line_name in line_parameters[field] and line_parameters[field][line_name]["band"] == band:
                 linpars = line_parameters[field][line_name]
                 restfreq = u.Quantity(linpars['restfreq'])
                 vlsr = u.Quantity(linpars['vlsr'])
@@ -884,9 +885,11 @@ for band in band_list:
                                     )
 
                         ia.close()
-                    if 'mask-ranges' in line_parameters[field][line_name]:
+                    if ((line_name in line_parameters[field]
+                         and line_parameters[field][line_name]["band"] == band
+                         and 'mask-ranges' in linpars)):
                         ia.open(infile=lineimagename+".mask")
-                        for maskrange in line_parameters[field][line_name]:
+                        for maskrange in linpars['mask-ranges']:
                             logprint("Masking out selected channels {0}".format(maskrange),
                                      origin="almaimf_line_imaging")
 
@@ -902,7 +905,9 @@ for band in band_list:
                             ia.putchunk(pixels=flagchans, blc=[0,0,0, startchan],)
 
                         ia.close()
-                elif 'mask-ranges' in line_parameters[field][line_name]:
+                elif ((line_name in line_parameters[field]
+                     and line_parameters[field][line_name]["band"] == band
+                     and 'mask-ranges' in linpars)):
                     raise ValueError("Mask-ranges was specified but no mask is available - this might "
                                      "be a corner case that needs to be implemented")
 
