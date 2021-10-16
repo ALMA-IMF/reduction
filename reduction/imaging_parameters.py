@@ -4292,7 +4292,7 @@ for field in allfields:
     # If there were, this would not work and would be a little disastrous.
     # The only fix is to add a "band" specification ...
     line_parameters_default[field]["spw5"] = {"restfreq": line_parameters_default[field]["12co"]["restfreq"],
-                                              "vslr": line_parameters_default[field]["12co"]["vlsr"],
+                                              "vlsr": line_parameters_default[field]["12co"]["vlsr"],
                                               "band": "B6",
                                              }
     line_parameters_default[field]["ch3cnv8=1"]["cubewidth"] = "150km/s"  # is 150 wide enough?
