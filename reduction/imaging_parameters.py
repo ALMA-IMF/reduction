@@ -39,6 +39,7 @@ CONTRIBUTOR NOTE:
         black -t py27 -l 120 imaging_parameters.py
 """
 import copy
+from astropy import units as u
 
 allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
 
@@ -4277,19 +4278,28 @@ field_vlsr = {
 # line parameters are converted by line_imaging.py into tclean parameters
 line_parameters_default = {
     field: {
-        line: {"restfreq": freq, "vlsr": field_vlsr[field], "cubewidth": "50km/s"}
+        line: {"restfreq": freq, "vlsr": field_vlsr[field], "cubewidth": "50km/s",
+               "band": "B3" if u.Quantity(freq) < 115*u.GHz else "B6"
+              }
         for line, freq in default_lines.items()
     }
     for field in allfields
 }
 for field in allfields:
     line_parameters_default[field]["12co"]["cubewidth"] = "150km/s"
+    # a hack for spw5, which contains 12CO and needs to be special-cased
+    # This is tricky, though, as it breaks the generalization: spw5 is lucky in that there is no B3 SPW5!
+    # If there were, this would not work and would be a little disastrous.
+    # The only fix is to add a "band" specification ...
+    line_parameters_default[field]["spw5"] = {"restfreq": line_parameters_default[field]["12co"]["restfreq"],
+                                              "vslr": line_parameters_default[field]["12co"]["vlsr"]}
     line_parameters_default[field]["ch3cnv8=1"]["cubewidth"] = "150km/s"  # is 150 wide enough?
     line_parameters_default[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
 line_parameters = copy.deepcopy(line_parameters_default)
 
 line_parameters_custom = {
     "G008.67": {
+        "spw5": {'mask-ranges': [(20,34)]}, # km/s units
         "12co": {"cubewidth": "150km/s", 'mask-ranges': [(20,34)]}, # km/s units
         "sio": {"cubewidth": "120km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
