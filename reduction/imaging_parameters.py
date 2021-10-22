@@ -2951,7 +2951,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B6_12M_robust0_sio": {
-        "threshold": "30mJy",  # typical rms is 10-12.5 mJy, using 3sigma of lowest value for threshold (15 Sept. 2021)
+        "threshold": "50mJy",  # typical rms is 10-12.5 mJy, using 5sigma of lowest value for threshold (22 Oct. 2021)
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G328.25_B3_12M_robust0": {
@@ -2970,7 +2970,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_sio": {
-        "threshold": "57mJy",  # typical rms is 18-22 mJy, using 3sigma of 19 mJy for threshold (15 Sept. 2021)
+        "threshold": "90mJy",  # typical rms is 18-22 mJy, using 5sigma of 18 mJy for threshold (15 Sept. 2021)
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0": {
@@ -4303,14 +4303,14 @@ line_parameters_custom = {
     "G008.67": {
         "spw5": {'mask-ranges': [(20,34)]}, # km/s units
         "12co": {"cubewidth": "150km/s", 'mask-ranges': [(20,34)]}, # km/s units
-        "sio": {"cubewidth": "120km/s", "vlsr": "35km/s"},
+        "sio": {"cubewidth": "150km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-22km/s"},  # 43 - 65 = -22km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "44km/s"},
     },
     "G010.62": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "80km/s"},
+        "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-66km/s"},  # -1 - 65 = -66km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "0km/s"},
@@ -4332,23 +4332,20 @@ line_parameters_custom = {
     },
     "G328.25": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "120km/s"},
+        "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-43km/s"},
     },
     "G333.60": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {
-            "cubewidth": "100km/s",
-            "vlsr": "-48km/s",
-        },  # unclear if cube needs to be widened as it diverges in a few places - 100 km/s width is based on cube widths for other sources (5 March 2021, apmtowner)
+        "sio": {"cubewidth": "150km/s","vlsr": "-48km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-110km/s"},  # -45 - 65 = -110km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-45km/s"},
     },
     "G337.92": {
-        "sio": {"cubewidth": "100km/s", "vlsr": "-39km/s"},
+        "sio": {"cubewidth": "150km/s", "vlsr": "-39km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-100km/s"},  # -35 - 65 = -100km/s to accomodate He and C.
@@ -4356,7 +4353,7 @@ line_parameters_custom = {
     },
     "G338.93": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "80km/s"},
+        "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-127km/s"},  # -62 - 65 = -127km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-62km/s"},
@@ -4364,13 +4361,13 @@ line_parameters_custom = {
     },
     "G351.77": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "100km/s"},
+        "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-67km/s"},  # -2 - 65 = -67km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
-        "sio": {"cubewidth": "80km/s"},
+        "sio": {"cubewidth": "150km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
@@ -4384,7 +4381,7 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
-        "sio": {"cubewidth": "140km/s", "vlsr": "91km/s", "width": "0.37km/s"},
+        "sio": {"cubewidth": "240km/s", "vlsr": "91km/s", "width": "0.37km/s"},
         "12co": {"cubewidth": "240km/s", "vlsr": "91km/s"},
         # "12co": {"cubewidth": "240km/s", "vlsr": "91km/s", "width": "2km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
@@ -4393,7 +4390,7 @@ line_parameters_custom = {
         "c18o": {"cubewidth": "80km/s"},
     },
     "W43-MM3": {
-        "sio": {"cubewidth": "120km/s", "vlsr": "93km/s", "width": "0.37km/s"},
+        "sio": {"cubewidth": "190km/s", "vlsr": "93km/s", "width": "0.37km/s"},
         "12co": {"cubewidth": "190km/s", "vlsr": "93km/s"},
         # "12co": {"cubewidth": "190km/s", "vlsr": "93km/s", "width": "2km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
@@ -4402,7 +4399,7 @@ line_parameters_custom = {
     },
     "W51-E": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "120km/s"},
+        "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-6km/s"},  # 59 - 65 = -6km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "59km/s"},
@@ -4411,7 +4408,7 @@ line_parameters_custom = {
     "W51-IRS2": {
         "12co": {"cubewidth": "150km/s"},
         "n2hp": {"cubewidth": "80km/s"},
-        "sio": {"cubewidth": "120km/s", "vlsr": "60km/s"},
+        "sio": {"cubewidth": "150km/s", "vlsr": "60km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-9km/s"},  # 56 - 65 = -9km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "56km/s"},
