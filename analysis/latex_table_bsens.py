@@ -309,8 +309,8 @@ def make_latex_table_overview(releasename='June2021', savename='res_sens'):
              r'$\theta_{min}(B3)$':u.arcsec.to_string(u.format.LatexInline),
              r'$\theta_{maj}(B6)$':u.arcsec.to_string(u.format.LatexInline),
              r'$\theta_{min}(B6)$':u.arcsec.to_string(u.format.LatexInline),
-             'LAS$_{10\%}$(B3)$':u.arcsec.to_string(u.format.LatexInline),
-             'LAS$_{10\%}$(B6)$':u.arcsec.to_string(u.format.LatexInline),
+             'LAS$_{10\%}$(B3)':u.arcsec.to_string(u.format.LatexInline),
+             'LAS$_{10\%}$(B6)':u.arcsec.to_string(u.format.LatexInline),
              #r'PA':u.deg.to_string(u.format.LatexInline),
             }
     latexdict['units'] = units
