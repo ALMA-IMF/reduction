@@ -4446,6 +4446,11 @@ flag_thresholds_custom = {
     "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw6": {"nchan": 41, "tolerance": 0.25},
     "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25},  # again 51 channels in spw7
+    "W43-MM2_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01}, # 141 chan with 0.97% diff
+    "W43-MM2_B6_12M_spw7": {"nchan": 20, "tolerance": 0.02}, # 201 channels with 1.96% diff?
+    "W43-MM3_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01}, # ??
+    "W43-MM3_B6_12M_spw7": {"nchan": 20, "tolerance": 0.02}, # ??
+    "G010.62_B6_12M_spw5": {"nchan": 332, "tolerance": 0.01}, # there are several discrepant EBs.  331 is a LOT.
 }
 flag_thresholds = flag_thresholds_default.copy()
 flag_thresholds.update(flag_thresholds_custom)

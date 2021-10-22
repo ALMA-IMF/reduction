@@ -583,10 +583,23 @@ def check_channel_flags(vis, tolerance=0, nchan_tolerance=10, **kwargs):
                                             int(key.split(":")[0])
                                             == spwn }
                                      for spwn in spws}
+
+    # for each spw, collect the fraction-of-channel flagged for each channel;
+    # if all channels have the same fraction flagged, there will just be 1
+    # value.  Ideally, this value is zero, but if there are consistently
+    # flagged out chunks, it's OK
     unique_fractions = {k:list(set(v.values())) for k,v in
             fractions_of_channels_flagged.items()}
+
+    # count the number of channels with unique fractions of baselines flagged
+    # the previous has a list of unique fractions - e.g, [0.1, 0.2]
+    # this one has the number of EBs with that fraction.
+    # e.g., for [0.1, 0.1, 0.2], it would be [2, 1]
+    # We do this so we can say that the most common fraction is the "right" one,
+    # and the other(s) is/are discrepant.
     nunique_fractions = {k:[(np.array(list(v.values())) == vv).sum() for vv in
         unique_fractions[k]] for k,v in fractions_of_channels_flagged.items()}
+
     for spwn, nchanfracs in unique_fractions.items():
         if len(nchanfracs) != 1:
             if tolerance > 0:
@@ -610,20 +623,25 @@ def check_channel_flags(vis, tolerance=0, nchan_tolerance=10, **kwargs):
                         if total_different < nchan_tolerance:
                             logprint("Visibility file {0} has at most {1}"
                                     " channels with differing flag % "
-                                    "(maxdiff {3} is within tolerance {2})."
-                                    .format(vis, total_different, tolerance, maxdiff))
+                                    "(maxdiff {3} is above tolerance {2}, but nchan {1} < {4})."
+                                    .format(vis, total_different, tolerance, maxdiff, nchan_tolerance))
                         else:
                             logprint("Visibility file {0} has at most {1} "
                                     "channels with differing flag % "
-                                    "(maxdiff {3} is above tolerance {2})."
-                                    .format(vis, total_different, tolerance, maxdiff))
+                                    "(maxdiff {3} is above tolerance {2} and nchan {1} >= nchantol {4})."
+                                    .format(vis, total_different, tolerance, maxdiff, nchan_tolerance))
                             leastcommon_ind = np.argmin(nunique_fractions[spwn])
                             discrepant_channels = sorted([key for key in
                                 fractions_of_channels_flagged[spwn] if
                                 fractions_of_channels_flagged[spwn][key] ==
                                 unique_fractions[spwn][leastcommon_ind]])
-                            logprint("The channels are: {0}"
-                                    .format(discrepant_channels))
+                            if len(discrepant_channels) == total_different:
+                                logprint("The {1} channels with the least common fraction are: {0}"
+                                        .format(discrepant_channels, len(discrepant_channels)))
+                            else:
+                                logprint("There were several EBs with different fractions of channels flagged.  "
+                                         "unique_fractions[spw]={0}".format(unique_fractions[spwn]),
+                                        )
                             raise ValueError("Spectral Window {0} of {1}"
                                     " has too many differing-flag channels"
                                     .format(spwn, vis))

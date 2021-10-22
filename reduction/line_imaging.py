@@ -349,6 +349,7 @@ for band in band_list:
                 nflag_threshold = flag_thresholds[flagkey]['nchan']
             else:
                 # defaults
+                logprint("Using default threshold fraction=0.01 flagthresh=10")
                 flagging_tolerance = 0.01
                 nflag_threshold = 10
             logprint("Set flag threshold to {0} per channel for {1} channels (flagkey={2})"
@@ -926,6 +927,7 @@ for band in band_list:
 
                 check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
+                    logprint("Cleaning with pars {0}".format(impars), origin='almaimf_line_imaging')
                     tclean(vis=concatvis,
                            imagename=lineimagename,
                            restoringbeam='', # do not use restoringbeam='common'
@@ -950,6 +952,7 @@ for band in band_list:
                     mask = ''
                 check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
+                    logprint("Final zero-iter clean to restore residual", origin='almaimf_line_imaging')
                     tclean(vis=concatvis,
                            imagename=lineimagename,
                            restoringbeam='',
@@ -963,6 +966,7 @@ for band in band_list:
                 check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
 
                 if not dryrun:
+                    logprint("pbcorrecting {0}".format(lineimagename), origin='almaimf_line_imaging')
                     impbcor(imagename=lineimagename+'.image',
                             pbimage=lineimagename+'.pb',
                             outfile=lineimagename+'.image.pbcor',

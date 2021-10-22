@@ -7,6 +7,7 @@ fi
 export FIELD_ID=$1
 if [[ $2 ]]; then
     export BAND_TO_IMAGE=$2
+    export BAND_NUMBERS=${BAND_TO_IMAGE/B/}
     echo "Imaging only band $BAND_TO_IMAGE"
 else
     export BAND_NUMBERS=3
