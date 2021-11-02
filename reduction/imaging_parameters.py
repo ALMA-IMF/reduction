@@ -3641,7 +3641,7 @@ line_imaging_parameters_custom = {
     "G328.25_B6_12M_robust0_spw5": {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32],
-        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter", 
     },
     "G328.25_B6_12M_robust0_spw6": {
         "threshold": "5sigma",
@@ -4331,7 +4331,8 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
-        "12co": {"cubewidth": "150km/s"},
+        "spw5": {'mask-ranges': [(-48,-51)]}, # km/s units
+        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(-48,-51)]}, # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.
@@ -4360,15 +4361,17 @@ line_parameters_custom = {
         "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
-        "12co": {"cubewidth": "150km/s"},
+        "spw5": {'mask-ranges': [(-11,-2),(-27,-17),(-32,-31)]}, # km/s units
+        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(-11,-2),(-27,-17),(-32,-31)]}, # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-67km/s"},  # -2 - 65 = -67km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
+        "spw5": {'mask-ranges': [(-27,-20)]}, # km/s units
+        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(-27,-20)]}, # km/s units
         "sio": {"cubewidth": "150km/s"},
-        "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-16km/s"},
