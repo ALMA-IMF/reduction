@@ -2951,7 +2951,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B6_12M_robust0_sio": {
-        "threshold": "50mJy",  # typical rms is 10-12.5 mJy, using 5sigma of lowest value for threshold (22 Oct. 2021)
+        "threshold": "50mJy",  # typical rms is 10-12.5 mJy, using 5sigma of lowest value for threshold (22 October 2021)
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G328.25_B3_12M_robust0": {
@@ -2970,7 +2970,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_sio": {
-        "threshold": "90mJy",  # typical rms is 18-22 mJy, using 5sigma of 18 mJy for threshold (15 Sept. 2021)
+        "threshold": "90mJy",  # typical rms is 18-22 mJy, using 5sigma of 18 mJy for threshold (03 November 2021)
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0": {
@@ -3031,7 +3031,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G338.93_B6_12M_robust0_sio": {
-        "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "22.5mJy",  # rms is 4.5-5.5 mJy, using 5sigma for threshold (02 Nov 2021)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
         # This mask is not available
         # "usemask": "user",
@@ -3055,7 +3055,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {
-        "threshold": "48mJy",  # typical rms is 12-16 mJy, using 3sigma for threshold (9 June 2021)
+        "threshold": "60mJy",  # typical rms is 12-16 mJy, using 5sigma for threshold (02 Nov 2021)
         "cyclefactor": 2.0,
         "interactive": 0,
         "fastnoise": False,
@@ -3107,6 +3107,7 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 8, 16, 32],  # 4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
         "gain": 0.08,
     },
+    #W43-MM1 SiO 12m-only threshold: 15mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -3151,7 +3152,7 @@ line_imaging_parameters_custom = {
         # "mask": "imaging_results/W43-MM2_B6_spw5_12M_12co_multi_2.5sigma_e2_d5.mask"
     },
     "W43-MM2_B6_12M_robust0_sio": {
-        "threshold": "6.8mJy",  # sig 2.7 mJy, before 8.5 mJy
+        "threshold": "10mJy",  # rms is 2-3 mJy, using 5 sigma (02 Nov 2021)
         "deconvolver": "multiscale",
         "scales": [0, 6, 18, 36],
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -3233,7 +3234,7 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 12, 24],
     },
     "W43-MM3_B6_12M_robust0_sio": {
-        "threshold": "8.4mJy",  # typical rms is 2.7-3.1 mJy, using 3sigma=9.3 for threshold (14 Dec. 2020)
+        "threshold": "13mJy",  # typical rms is 2.6-3.3 mJy, using 5 sigma (02 Nov 2021)
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [960, 960],
         "deconvolver": "multiscale",
@@ -3257,7 +3258,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B6_12M_robust0_sio": {
-        "threshold": "8.2mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "16.5mJy",  # typical rms is 3.3-3.9 mJy, using 5sigma for threshold (02 Nov 2021)
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B6_12M_robust0_spw1": {
