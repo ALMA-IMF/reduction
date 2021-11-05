@@ -194,7 +194,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
             peakloc_as.value,
             psf_residual_integral/psf_integral_firstpeak,
             epsilon,
-            (rr, cutout, view, bmfit_residual)
+            (rr, pixscale, cutout, fullbeam, view, bmfit_residual)
            )
 
 
