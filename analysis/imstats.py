@@ -39,7 +39,8 @@ def get_requested_sens():
     return tbl
 
 def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
-                       max_radial_extent=5*u.arcsec, max_npix_peak=100):
+                       max_radial_extent=5*u.arcsec, max_npix_peak=100,
+                       specslice=slice(0,1)):
     """ REDUNDANT with get_psf_secondpeak, but this one is better
 
     Process:
@@ -55,7 +56,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
         warnings.simplefilter("ignore")
         cube = SpectralCube.read(fn,
                                  format='casa_image' if not fn.endswith('.fits') else 'fits')
-    psfim = cube[0]
+    psfim = cube[specslice][0]
 
     pixscale = wcs.utils.proj_plane_pixel_scales(cube.wcs.celestial)[0] * u.deg
 
@@ -194,6 +195,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
             peakloc_as.value,
             psf_residual_integral/psf_integral_firstpeak,
             epsilon,
+            first_min_ind*pixscale.to(u.arcsec),
             (rr, pixscale, cutout, fullbeam, view, bmfit_residual)
            )
 
