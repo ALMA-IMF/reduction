@@ -23,6 +23,8 @@ from casa_formats_io import Table as casaTable
 # from casatools import image
 # ia = image()
 
+from imstats import get_psf_secondpeak
+
 from pathlib import Path
 tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
 
@@ -141,7 +143,7 @@ if __name__ == "__main__":
 
     colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
     colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
-    colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std sum mean'.split()]
+    colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
 
     colnames = colnames_apriori+colnames_fromheader+colnames_stats
 
@@ -215,6 +217,7 @@ if __name__ == "__main__":
                         if os.path.exists(fn) and not os.path.exists(modfn):
                             log.error(f"File {fn} is missing its model {modfn}")
                             continue
+                        psffn = fn.replace(".image", ".psf")
 
                         if line in default_lines:
                             spw = int(fn.split('spw')[1][0])
@@ -232,11 +235,11 @@ if __name__ == "__main__":
                                         for x in hist if '=' in x})
                         #ia.close()
 
-                        if os.path.exists(fn+".fits"):
-                            cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
-                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
-                        else:
+                        if os.path.exists(fn):
                             cube = SpectralCube.read(fn, format='casa_image', target_chunksize=target_chunksize)
+                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                        elif os.path.exists(fn+".fits"):
+                            cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
                             cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
                             # print(f"Rechunking {cube} to tmp dir", flush=True)
                             # cube = cube.rechunk(save_to_tmp_dir=True)
@@ -283,15 +286,15 @@ if __name__ == "__main__":
                         del cube
                         del stats
 
-                        if os.path.exists(modfn+".fits"):
-                            modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
-                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
-                        else:
+                        if os.path.exists(modfn):
                             modcube = SpectralCube.read(modfn, format='casa_image', target_chunksize=target_chunksize)
                             modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
                             # print(f"Rechunking {modcube} to tmp dir", flush=True)
                             # modcube = modcube.rechunk(save_to_tmp_dir=True)
                             # modcube.use_dask_scheduler(scheduler)
+                        elif os.path.exists(modfn+".fits"):
+                            modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
+                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
 
                         print(modcube, flush=True)
                         print(f"Computing model cube statistics with scheduler {scheduler} and sched args {modcube._scheduler_kwargs}", flush=True)
@@ -305,10 +308,14 @@ if __name__ == "__main__":
                         del modcube
                         del modstats
 
+                        if os.path.exists(psffn):
+                            (residual_peak, peakloc_as, frac, epsilon, _) = get_psf_secondpeak(psffn, specslice=slice(cube.shape[0]//2))
+
+
                         row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
                             [history[key] if key in history else '' for key in colnames_fromheader] +
                             [min, max, std, sum, mean] +
-                            [modmin, modmax, modstd, modsum, modmean])
+                            [modmin, modmax, modstd, modsum, modmean, epsilon])
                         rows.append(row)
 
                         cache_stats_file.write(" ".join(map(str, row)) + "\n")
