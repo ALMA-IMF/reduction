@@ -111,6 +111,15 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     bmfit_residual = data-bm/bm.max()
     radial_mask = rr[view] < first_min_ind
 
+    # calculate epsilon, the ratio of the PSF integral out to the first null to the integral of the PSF
+    # the integral of the PSF should be very close to 1, but we want to peak-normalize to match the dirty beam
+    synthbeam_integral = (fullbeam.array/fullbeam.array.max()).sum()
+    log.debug(f"Synthetic beam integral = {synthbeam_integral}")
+    dirtybeam_integral = (data / data.max() * radial_mask).sum()
+    log.debug(f"Dirty beam integral = {dirtybeam_integral}")
+    epsilon = synthbeam_integral / dirtybeam_integral
+    log.debug(f"epsilon = {epsilon}")
+
     psf_integral_firstpeak = (data * radial_mask).sum()
     psf_residual_integral = (bmfit_residual * radial_mask).sum()
     residual_peak = bmfit_residual.max()
@@ -184,6 +193,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     return (residual_peak,
             peakloc_as.value,
             psf_residual_integral/psf_integral_firstpeak,
+            epsilon,
             (rr, cutout, view, bmfit_residual)
            )
 
@@ -274,14 +284,16 @@ def imstats(fn, reg=None):
 
     if os.path.exists(psf_fn):
         try:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, _ = get_psf_secondpeak(psf_fn)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, _ = get_psf_secondpeak(psf_fn)
         except IndexError:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
         meta['psf_secondpeak'] = psf_secondpeak
+        meta['psf_epsilon'] = epsilon
         meta['psf_secondpeak_radius'] = psf_secondpeak_loc
         meta['psf_secondpeak_sidelobefraction'] = psf_sidelobe1_fraction
     else:
         meta['psf_secondpeak'] = np.nan
+        meta['psf_epsilon'] = np.nan
         meta['psf_secondpeak_radius'] = np.nan
         meta['psf_secondpeak_sidelobefraction'] = np.nan
 

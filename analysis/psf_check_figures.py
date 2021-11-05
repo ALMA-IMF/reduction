@@ -45,7 +45,7 @@ for jj, band in enumerate(('B3', 'B6')):
         ax = pl.subplot(3, 5, ii+1)
         ax.set_title(field)
         log.info(f"{field} {band}")
-        (psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, (rr, cutout, view, bmfit_residual)) = \
+        (psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, psf_integral_firstpeak, (rr, cutout, view, bmfit_residual)) = \
                 get_psf_secondpeak(psffn, show_image=True, min_radial_extent=2.5*u.arcsec,
                            max_radial_extent=5*u.arcsec
                           )
