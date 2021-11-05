@@ -63,7 +63,7 @@ if [[ $BAND_TO_IMAGE == "B3" ]]; then
     case $FIELD_ID in
     #G338.93|W51-E|W51-IRS2|G10.62) # B3 needs bigger; B6 is probably OK w/96
     #    declare -A mem_map=( ["0"]="64gb" ["3"]="64gb" ["6"]="64gb" ["7"]="64gb" ) ;;
-    W43-MM2|W51-IRS2|G333.60|W51-E) #B3 B6
+    W43-MM1|W43-MM2|W43-MM3|W51-IRS2|G333.60|W51-E) #B3 B6
     #    export MEM=96gb ;;
         export MEM=256gb ;;
     #G333.60|W43-MM3|G353.41|G351.77|G337.92) #B3 B6
@@ -170,8 +170,10 @@ if [[ $BAND_TO_IMAGE == "B6" ]]; then
     export SLURM_NTASKS=$NTASKS
 
     case $FIELD_ID in
-    W51-IRS2|G10.62|G333.60|W51-E|W43-MM3|G353.41|G351.77|G338.93|G337.92|G328.25)
+    W51-IRS2|G10.62|G333.60|W51-E|G353.41|G351.77|G338.93|G337.92|G328.25)
         declare -A mem_map=( ["0"]="128gb" ["1"]="128gb" ["3"]="128gb" ["6"]="128gb" ["7"]="128gb" ) ;;
+    W43-MM2|W43-MM3)
+        declare -A mem_map=( ["0"]="128gb" ["1"]="128gb" ["3"]="128gb" ["6"]="256gb" ["7"]="256gb" ) ;;
     esac
 
     echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub}

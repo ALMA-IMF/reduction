@@ -32,6 +32,9 @@ for imtype,dirname in zip(('12M', '7M12M'), ('fullcubes_12m', 'fullcubes_7m12m')
         spws = range(4) if band == 3 else range(8)
         for spw in spws:
             exists = [os.path.exists(f'{basepath}/{field}_B{band}_spw{spw}_{imtype}_spw{spw}.image.pbcor')
+                      or ("WIPim" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_spw{spw}.image')
+                          else "WIPpsf" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_spw{spw}.psf')
+                          else False)
                       for field in fieldlist.split()]
 
             rows.append(f"{spw:<4d}" + " ".join([f"{str(x):10s}" for x in exists]) + "\n")
