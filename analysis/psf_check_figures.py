@@ -68,8 +68,8 @@ for jj, band in enumerate(('B3', 'B6')):
         pixscale = pixscale.to(u.arcsec)
         ax2.plot(pixscale.value*rr.ravel()[rr_inds], sorted_synth, '-', label='Synth')
         ax2.plot(pixscale.value*rr.ravel(), cutout.ravel()/cutout.max(), '.', label='Dirty', alpha=0.75, markersize=2)
-        ax2.set_xlim(0, 3)# rr[view].max())
-        ax2.text(2, 0.9, f'$\epsilon={epsilon:0.2f}$')
+        ax2.set_xlim(0, psf_secondpeak_loc*2)# rr[view].max())
+        ax2.text(psf_secondpeak_loc*1.5, 0.9, f'$\epsilon={epsilon:0.2f}$')
 
         if ii not in (0, 5, 10):
             ax2.set_ylabel("")
