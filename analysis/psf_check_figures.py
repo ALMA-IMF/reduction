@@ -50,7 +50,8 @@ for jj, band in enumerate(('B3', 'B6')):
         ax = fig.add_subplot(3, 5, ii+1)
         ax.set_title(field)
         log.info(f"{field} {band}")
-        (psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, firstnull, (rr, pixscale, cutout, beam, view, bmfit_residual)) = \
+        (psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, firstnull,
+         r_sidelobe, (rr, pixscale, cutout, beam, fullbeam, view, bmfit_residual)) = \
                 get_psf_secondpeak(psffn, show_image=True, min_radial_extent=2.5*u.arcsec,
                            max_radial_extent=5*u.arcsec
                           )
@@ -64,7 +65,7 @@ for jj, band in enumerate(('B3', 'B6')):
         ax2 = fig2.add_subplot(3, 5, ii+1)
         ax2.set_title(field)
         rr_inds = rr.ravel().argsort()
-        sorted_synth = (beam.array.ravel()/beam.array.max())[rr_inds]
+        sorted_synth = (fullbeam.array.ravel()/fullbeam.array.max())[rr_inds]
         pixscale = pixscale.to(u.arcsec)
         ax2.plot(pixscale.value*rr.ravel()[rr_inds], sorted_synth, '-', label='Synth')
         ax2.plot(pixscale.value*rr.ravel(), cutout.ravel()/cutout.max(), '.', label='Dirty', alpha=0.75, markersize=2)

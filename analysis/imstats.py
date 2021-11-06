@@ -67,14 +67,20 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
     cutout = psfim[cy-npix:cy+npix+1, cx-npix:cx+npix+1]
     psfim = cutout
-    fullbeam = cube.beam.as_kernel(pixscale, x_size=npix*2+1, y_size=npix*2+1,)
+
+    try:
+        beam = cube.beam
+    except AttributeError:
+        # assume we've appropriately sliced to get a single beam above
+        beam = cube.beams[0]
+
+    fullbeam = beam.as_kernel(pixscale, x_size=npix*2+1, y_size=npix*2+1,)
 
     shape = cutout.shape
     sy, sx = shape
 
     Y, X = np.mgrid[0:sy, 0:sx]
 
-    beam = cube.beam
 
     center = np.unravel_index(np.argmax(cutout), cutout.shape)
     cy, cx = center
@@ -162,10 +168,8 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
                  f"first_sidelobe_ind={first_sidelobe_ind}, "
                  f"first_min_ind = {first_min_ind}")
 
-        bm2 = cube.beam.as_kernel(pixscale,
-                                 x_size=radial_extent.astype('int')*2+1,
-                                 y_size=radial_extent.astype('int')*2+1,
-                                )
+        bm2 = beam.as_kernel(pixscale, x_size=radial_extent.astype('int')*2+1,
+                             y_size=radial_extent.astype('int')*2+1,)
         view = (slice(cy-radial_extent.astype('int'), cy+radial_extent.astype('int')+1),
                 slice(cx-radial_extent.astype('int'), cx+radial_extent.astype('int')+1))
         bmfit_residual2 = cutout[view].value-bm2.array/bm2.array.max()
@@ -196,7 +200,8 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
             psf_residual_integral/psf_integral_firstpeak,
             epsilon,
             first_min_ind*pixscale.to(u.arcsec),
-            (rr, pixscale, cutout, fullbeam, view, bmfit_residual)
+            r_max_sidelobe*pixscale.to(u.arcsec),
+            (rr, pixscale, cutout, beam, fullbeam, view, bmfit_residual)
            )
 
 
@@ -286,9 +291,9 @@ def imstats(fn, reg=None):
 
     if os.path.exists(psf_fn):
         try:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, _ = get_psf_secondpeak(psf_fn)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, r_sidelobe, _ = get_psf_secondpeak(psf_fn)
         except IndexError:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, r_sidelobe, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
         meta['psf_secondpeak'] = psf_secondpeak
         meta['psf_epsilon'] = epsilon
         meta['psf_secondpeak_radius'] = psf_secondpeak_loc
