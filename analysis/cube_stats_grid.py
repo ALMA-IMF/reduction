@@ -309,7 +309,7 @@ if __name__ == "__main__":
                         del modstats
 
                         if os.path.exists(psffn):
-                            (residual_peak, peakloc_as, frac, epsilon, firstnull, _) = get_psf_secondpeak(psffn, specslice=slice(cube.shape[0]//2, cube.shape[0]//2+1))
+                            (residual_peak, peakloc_as, frac, epsilon, firstnull, r_sidelobe, _) = get_psf_secondpeak(psffn, specslice=slice(cube.shape[0]//2, cube.shape[0]//2+1))
 
 
                         row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
