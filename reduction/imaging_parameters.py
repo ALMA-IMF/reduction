@@ -3641,7 +3641,7 @@ line_imaging_parameters_custom = {
     "G328.25_B6_12M_robust0_spw5": {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32],
-        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter", 
+        "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_spw6": {
         "threshold": "5sigma",
