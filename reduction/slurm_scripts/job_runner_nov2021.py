@@ -10,13 +10,21 @@ parameters = {'W51-E': {'12M':
  }},
  'W43-MM3': {'12M':
   {'B3':
-   {'spw0': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': False, },
+   {'spw0': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, },
     'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': False, } }
   },
  },
  'W43-MM1': {'12M':
   {'B3':
-   {'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': False, } }
+   {'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': False, } },
+   'B6':
+   {'sio':  {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat': True, } },
+  },
+ },
+ 'W43-MM2': {'12M':
+  {
+   'B6':
+   {'sio':  {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, } },
   },
  },
 }
@@ -97,7 +105,7 @@ if __name__ == "__main__":
             continue
         elif imstatus['WIP']:
             if '--redo-wip' in sys.argv:
-                print(f"field {field} {band} {spw} {array} is in progress: imstatus={imstatus['WIP']}; trying anyway")
+                print(f"field {field} {band} {spw} {array} is in progress: imstatus={imstatus['WIP']}; trying anyway (if it is not in the 'PENDING' or 'RUNNING' queue)")
             else:
                 continue
         else:
@@ -188,4 +196,4 @@ if __name__ == "__main__":
         else:
             sbatch = subprocess.check_output(cmd.split())
 
-            print(f"Started sbatch job with jobid={sbatch.decode()} and parameters {spwpars}")
+            print(f"Started sbatch job {row} with jobid={sbatch.decode()} and parameters {spwpars}")

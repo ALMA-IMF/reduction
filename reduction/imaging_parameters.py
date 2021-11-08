@@ -3107,7 +3107,7 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 8, 16, 32],  # 4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
         "gain": 0.08,
     },
-    #W43-MM1 SiO 12m-only threshold: 15mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
+    # W43-MM1 SiO 12m-only threshold: 15mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -4279,9 +4279,12 @@ field_vlsr = {
 # line parameters are converted by line_imaging.py into tclean parameters
 line_parameters_default = {
     field: {
-        line: {"restfreq": freq, "vlsr": field_vlsr[field], "cubewidth": "50km/s",
-               "band": "B3" if u.Quantity(freq) < 115*u.GHz else "B6"
-              }
+        line: {
+            "restfreq": freq,
+            "vlsr": field_vlsr[field],
+            "cubewidth": "50km/s",
+            "band": "B3" if u.Quantity(freq) < 115 * u.GHz else "B6",
+        }
         for line, freq in default_lines.items()
     }
     for field in allfields
@@ -4292,18 +4295,19 @@ for field in allfields:
     # This is tricky, though, as it breaks the generalization: spw5 is lucky in that there is no B3 SPW5!
     # If there were, this would not work and would be a little disastrous.
     # The only fix is to add a "band" specification ...
-    line_parameters_default[field]["spw5"] = {"restfreq": line_parameters_default[field]["12co"]["restfreq"],
-                                              "vlsr": line_parameters_default[field]["12co"]["vlsr"],
-                                              "band": "B6",
-                                             }
+    line_parameters_default[field]["spw5"] = {
+        "restfreq": line_parameters_default[field]["12co"]["restfreq"],
+        "vlsr": line_parameters_default[field]["12co"]["vlsr"],
+        "band": "B6",
+    }
     line_parameters_default[field]["ch3cnv8=1"]["cubewidth"] = "150km/s"  # is 150 wide enough?
     line_parameters_default[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
 line_parameters = copy.deepcopy(line_parameters_default)
 
 line_parameters_custom = {
     "G008.67": {
-        "spw5": {'mask-ranges': [(20,34)]}, # km/s units
-        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(20,34)]}, # km/s units
+        "spw5": {"mask-ranges": [(20, 34)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(20, 34)]},  # km/s units
         "sio": {"cubewidth": "150km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-22km/s"},  # 43 - 65 = -22km/s to accomodate He and C.
@@ -4332,8 +4336,8 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
-        "spw5": {'mask-ranges': [(-48,-51)]}, # km/s units
-        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(-48,-51)]}, # km/s units
+        "spw5": {"mask-ranges": [(-48, -51)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-48, -51)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.
@@ -4341,7 +4345,7 @@ line_parameters_custom = {
     },
     "G333.60": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "150km/s","vlsr": "-48km/s"},
+        "sio": {"cubewidth": "150km/s", "vlsr": "-48km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-110km/s"},  # -45 - 65 = -110km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-45km/s"},
@@ -4362,16 +4366,16 @@ line_parameters_custom = {
         "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
-        "spw5": {'mask-ranges': [(-11,-2),(-27,-17),(-32,-31)]}, # km/s units
-        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(-11,-2),(-27,-17),(-32,-31)]}, # km/s units
+        "spw5": {"mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-67km/s"},  # -2 - 65 = -67km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
-        "spw5": {'mask-ranges': [(-27,-20)]}, # km/s units
-        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(-27,-20)]}, # km/s units
+        "spw5": {"mask-ranges": [(-27, -20)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-27, -20)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
@@ -4447,11 +4451,11 @@ flag_thresholds_custom = {
     "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw6": {"nchan": 41, "tolerance": 0.25},
     "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25},  # again 51 channels in spw7
-    "W43-MM2_B6_12M_spw6": {"nchan": 142, "tolerance": 0.01}, # 141 chan with 0.97x diff
-    "W43-MM2_B6_12M_spw7": {"nchan": 202, "tolerance": 0.02}, # 201 channels with 1.96x diff?
-    "W43-MM3_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01}, # 201 above 1.92x
-    "W43-MM3_B6_12M_spw7": {"nchan": 172, "tolerance": 0.02}, # 171 above 0.89x
-    "G010.62_B6_12M_spw5": {"nchan": 332, "tolerance": 0.01}, # there are several discrepant EBs.  331 is a LOT.
+    "W43-MM2_B6_12M_spw6": {"nchan": 142, "tolerance": 0.01},  # 141 chan with 0.97x diff
+    "W43-MM2_B6_12M_spw7": {"nchan": 202, "tolerance": 0.02},  # 201 channels with 1.96x diff?
+    "W43-MM3_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01},  # 201 above 1.92x
+    "W43-MM3_B6_12M_spw7": {"nchan": 172, "tolerance": 0.02},  # 171 above 0.89x
+    "G010.62_B6_12M_spw5": {"nchan": 332, "tolerance": 0.01},  # there are several discrepant EBs.  331 is a LOT.
 }
 flag_thresholds = flag_thresholds_default.copy()
 flag_thresholds.update(flag_thresholds_custom)
