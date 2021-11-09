@@ -10,7 +10,7 @@ releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release
 os.chdir(basepath)
 
 # configurable, kinda
-overwrite = True
+overwrite = False
 
 for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
     for band in ('B3','B6'):
@@ -36,6 +36,7 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                             basefn = os.path.basename(fn)
                             try:
                                 if os.path.exists(itpath / basefn) and not overwrite:
+                                    print(f"Found {itpath / basefn}, skipping")
                                     pass
                                 else:
                                     shutil.copy(fn, itpath)
@@ -46,8 +47,10 @@ for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G0
                                 # EITHER: Rewrite or Continue
                                 if os.path.isdir(target):
                                     if overwrite:
+                                        print(f"Found {target}, overwriting")
                                         shutil.rmtree(target)
                                     else:
+                                        print(f"Found {target}, skipping")
                                         continue
                                 print(f"{fn} -> {target}")
                                 shutil.copytree(fn, target)

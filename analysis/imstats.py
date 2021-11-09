@@ -39,7 +39,8 @@ def get_requested_sens():
     return tbl
 
 def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
-                       max_radial_extent=5*u.arcsec, max_npix_peak=100):
+                       max_radial_extent=5*u.arcsec, max_npix_peak=100,
+                       specslice=slice(0,1)):
     """ REDUNDANT with get_psf_secondpeak, but this one is better
 
     Process:
@@ -55,7 +56,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
         warnings.simplefilter("ignore")
         cube = SpectralCube.read(fn,
                                  format='casa_image' if not fn.endswith('.fits') else 'fits')
-    psfim = cube[0]
+    psfim = cube[specslice][0]
 
     pixscale = wcs.utils.proj_plane_pixel_scales(cube.wcs.celestial)[0] * u.deg
 
@@ -66,14 +67,20 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
     cutout = psfim[cy-npix:cy+npix+1, cx-npix:cx+npix+1]
     psfim = cutout
-    fullbeam = cube.beam.as_kernel(pixscale, x_size=npix*2+1, y_size=npix*2+1,)
+
+    try:
+        beam = cube.beam
+    except AttributeError:
+        # assume we've appropriately sliced to get a single beam above
+        beam = cube.beams[0]
+
+    fullbeam = beam.as_kernel(pixscale, x_size=npix*2+1, y_size=npix*2+1,)
 
     shape = cutout.shape
     sy, sx = shape
 
     Y, X = np.mgrid[0:sy, 0:sx]
 
-    beam = cube.beam
 
     center = np.unravel_index(np.argmax(cutout), cutout.shape)
     cy, cx = center
@@ -110,6 +117,15 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
 
     bmfit_residual = data-bm/bm.max()
     radial_mask = rr[view] < first_min_ind
+
+    # calculate epsilon, the ratio of the PSF integral out to the first null to the integral of the PSF
+    # the integral of the PSF should be very close to 1, but we want to peak-normalize to match the dirty beam
+    synthbeam_integral = (fullbeam.array/fullbeam.array.max()).sum()
+    log.debug(f"Synthetic beam integral = {synthbeam_integral}")
+    dirtybeam_integral = (data / data.max() * radial_mask).sum()
+    log.debug(f"Dirty beam integral = {dirtybeam_integral}")
+    epsilon = synthbeam_integral / dirtybeam_integral
+    log.debug(f"epsilon = {epsilon}")
 
     psf_integral_firstpeak = (data * radial_mask).sum()
     psf_residual_integral = (bmfit_residual * radial_mask).sum()
@@ -152,10 +168,8 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
                  f"first_sidelobe_ind={first_sidelobe_ind}, "
                  f"first_min_ind = {first_min_ind}")
 
-        bm2 = cube.beam.as_kernel(pixscale,
-                                 x_size=radial_extent.astype('int')*2+1,
-                                 y_size=radial_extent.astype('int')*2+1,
-                                )
+        bm2 = beam.as_kernel(pixscale, x_size=radial_extent.astype('int')*2+1,
+                             y_size=radial_extent.astype('int')*2+1,)
         view = (slice(cy-radial_extent.astype('int'), cy+radial_extent.astype('int')+1),
                 slice(cx-radial_extent.astype('int'), cx+radial_extent.astype('int')+1))
         bmfit_residual2 = cutout[view].value-bm2.array/bm2.array.max()
@@ -184,7 +198,10 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     return (residual_peak,
             peakloc_as.value,
             psf_residual_integral/psf_integral_firstpeak,
-            (rr, cutout, view, bmfit_residual)
+            epsilon,
+            first_min_ind*pixscale.to(u.arcsec),
+            r_max_sidelobe*pixscale.to(u.arcsec),
+            (rr, pixscale, cutout, beam, fullbeam, view, bmfit_residual)
            )
 
 
@@ -274,14 +291,16 @@ def imstats(fn, reg=None):
 
     if os.path.exists(psf_fn):
         try:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, _ = get_psf_secondpeak(psf_fn)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, r_sidelobe, _ = get_psf_secondpeak(psf_fn)
         except IndexError:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, r_sidelobe, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
         meta['psf_secondpeak'] = psf_secondpeak
+        meta['psf_epsilon'] = epsilon
         meta['psf_secondpeak_radius'] = psf_secondpeak_loc
         meta['psf_secondpeak_sidelobefraction'] = psf_sidelobe1_fraction
     else:
         meta['psf_secondpeak'] = np.nan
+        meta['psf_epsilon'] = np.nan
         meta['psf_secondpeak_radius'] = np.nan
         meta['psf_secondpeak_sidelobefraction'] = np.nan
 

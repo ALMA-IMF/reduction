@@ -2951,7 +2951,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B6_12M_robust0_sio": {
-        "threshold": "50mJy",  # typical rms is 10-12.5 mJy, using 5sigma of lowest value for threshold (22 Oct. 2021)
+        "threshold": "50mJy",  # typical rms is 10-12.5 mJy, using 5sigma of lowest value for threshold (22 October 2021)
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G328.25_B3_12M_robust0": {
@@ -2970,7 +2970,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_sio": {
-        "threshold": "90mJy",  # typical rms is 18-22 mJy, using 5sigma of 18 mJy for threshold (15 Sept. 2021)
+        "threshold": "90mJy",  # typical rms is 18-22 mJy, using 5sigma of 18 mJy for threshold (03 November 2021)
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0": {
@@ -3031,7 +3031,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G338.93_B6_12M_robust0_sio": {
-        "threshold": "12mJy",  # typical rms is 5-6 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "22.5mJy",  # rms is 4.5-5.5 mJy, using 5sigma for threshold (02 Nov 2021)
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
         # This mask is not available
         # "usemask": "user",
@@ -3055,7 +3055,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {
-        "threshold": "48mJy",  # typical rms is 12-16 mJy, using 3sigma for threshold (9 June 2021)
+        "threshold": "60mJy",  # typical rms is 12-16 mJy, using 5sigma for threshold (02 Nov 2021)
         "cyclefactor": 2.0,
         "interactive": 0,
         "fastnoise": False,
@@ -3107,6 +3107,7 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 8, 16, 32],  # 4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
         "gain": 0.08,
     },
+    # W43-MM1 SiO 12m-only threshold: 15mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -3151,7 +3152,7 @@ line_imaging_parameters_custom = {
         # "mask": "imaging_results/W43-MM2_B6_spw5_12M_12co_multi_2.5sigma_e2_d5.mask"
     },
     "W43-MM2_B6_12M_robust0_sio": {
-        "threshold": "6.8mJy",  # sig 2.7 mJy, before 8.5 mJy
+        "threshold": "10mJy",  # rms is 2-3 mJy, using 5 sigma (02 Nov 2021)
         "deconvolver": "multiscale",
         "scales": [0, 6, 18, 36],
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -3233,7 +3234,7 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 12, 24],
     },
     "W43-MM3_B6_12M_robust0_sio": {
-        "threshold": "8.4mJy",  # typical rms is 2.7-3.1 mJy, using 3sigma=9.3 for threshold (14 Dec. 2020)
+        "threshold": "13mJy",  # typical rms is 2.6-3.3 mJy, using 5 sigma (02 Nov 2021)
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
         "imsize": [960, 960],
         "deconvolver": "multiscale",
@@ -3257,7 +3258,7 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B6_12M_robust0_sio": {
-        "threshold": "8.2mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
+        "threshold": "16.5mJy",  # typical rms is 3.3-3.9 mJy, using 5sigma for threshold (02 Nov 2021)
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B6_12M_robust0_spw1": {
@@ -4278,9 +4279,12 @@ field_vlsr = {
 # line parameters are converted by line_imaging.py into tclean parameters
 line_parameters_default = {
     field: {
-        line: {"restfreq": freq, "vlsr": field_vlsr[field], "cubewidth": "50km/s",
-               "band": "B3" if u.Quantity(freq) < 115*u.GHz else "B6"
-              }
+        line: {
+            "restfreq": freq,
+            "vlsr": field_vlsr[field],
+            "cubewidth": "50km/s",
+            "band": "B3" if u.Quantity(freq) < 115 * u.GHz else "B6",
+        }
         for line, freq in default_lines.items()
     }
     for field in allfields
@@ -4291,18 +4295,19 @@ for field in allfields:
     # This is tricky, though, as it breaks the generalization: spw5 is lucky in that there is no B3 SPW5!
     # If there were, this would not work and would be a little disastrous.
     # The only fix is to add a "band" specification ...
-    line_parameters_default[field]["spw5"] = {"restfreq": line_parameters_default[field]["12co"]["restfreq"],
-                                              "vlsr": line_parameters_default[field]["12co"]["vlsr"],
-                                              "band": "B6",
-                                             }
+    line_parameters_default[field]["spw5"] = {
+        "restfreq": line_parameters_default[field]["12co"]["restfreq"],
+        "vlsr": line_parameters_default[field]["12co"]["vlsr"],
+        "band": "B6",
+    }
     line_parameters_default[field]["ch3cnv8=1"]["cubewidth"] = "150km/s"  # is 150 wide enough?
     line_parameters_default[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
 line_parameters = copy.deepcopy(line_parameters_default)
 
 line_parameters_custom = {
     "G008.67": {
-        "spw5": {'mask-ranges': [(20,34)]}, # km/s units
-        "12co": {"cubewidth": "150km/s", 'mask-ranges': [(20,34)]}, # km/s units
+        "spw5": {"mask-ranges": [(20, 34)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(20, 34)]},  # km/s units
         "sio": {"cubewidth": "150km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-22km/s"},  # 43 - 65 = -22km/s to accomodate He and C.
@@ -4331,7 +4336,8 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
-        "12co": {"cubewidth": "150km/s"},
+        "spw5": {"mask-ranges": [(-48, -51)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-48, -51)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.
@@ -4339,7 +4345,7 @@ line_parameters_custom = {
     },
     "G333.60": {
         "12co": {"cubewidth": "150km/s"},
-        "sio": {"cubewidth": "150km/s","vlsr": "-48km/s"},
+        "sio": {"cubewidth": "150km/s", "vlsr": "-48km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-110km/s"},  # -45 - 65 = -110km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-45km/s"},
@@ -4360,15 +4366,17 @@ line_parameters_custom = {
         "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
-        "12co": {"cubewidth": "150km/s"},
+        "spw5": {"mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-67km/s"},  # -2 - 65 = -67km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
+        "spw5": {"mask-ranges": [(-27, -20)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-27, -20)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
-        "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-16km/s"},
@@ -4438,16 +4446,17 @@ flag_thresholds_default = {
 flag_thresholds_custom = {
     "G012.80_B3_12M_spw0": {"nchan": 20, "tolerance": 0.31},
     "G353.41_B3_12M_spw0": {"nchan": 27, "tolerance": 0.23},
+    "G353.41_B6_12M_spw5": {"nchan": 101, "tolerance": 0.23},  # first 100 channels
     "G337.92_B6_12M_spw7": {"nchan": 51, "tolerance": 1.00},  # maxdiff is ~6x!
     "W51-E_B6_12M_spw3": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw6": {"nchan": 41, "tolerance": 0.25},
     "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25},  # again 51 channels in spw7
-    "W43-MM2_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01}, # 141 chan with 0.97% diff
-    "W43-MM2_B6_12M_spw7": {"nchan": 20, "tolerance": 0.02}, # 201 channels with 1.96% diff?
-    "W43-MM3_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01}, # ??
-    "W43-MM3_B6_12M_spw7": {"nchan": 20, "tolerance": 0.02}, # ??
-    "G010.62_B6_12M_spw5": {"nchan": 332, "tolerance": 0.01}, # there are several discrepant EBs.  331 is a LOT.
+    "W43-MM2_B6_12M_spw6": {"nchan": 142, "tolerance": 0.01},  # 141 chan with 0.97x diff
+    "W43-MM2_B6_12M_spw7": {"nchan": 202, "tolerance": 0.02},  # 201 channels with 1.96x diff?
+    "W43-MM3_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01},  # 201 above 1.92x
+    "W43-MM3_B6_12M_spw7": {"nchan": 172, "tolerance": 0.02},  # 171 above 0.89x
+    "G010.62_B6_12M_spw5": {"nchan": 332, "tolerance": 0.01},  # there are several discrepant EBs.  331 is a LOT.
 }
 flag_thresholds = flag_thresholds_default.copy()
 flag_thresholds.update(flag_thresholds_custom)
