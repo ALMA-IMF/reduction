@@ -76,7 +76,7 @@ for file in fits_files:
     first_min_ind = signal.find_peaks(-radial_mean)[0][0]
 
     cutout_posit = np.where(cutout > 0, cutout, 0.)
-    radial_sum = ndimage.sum(cutout_posit, labels=rbin, index=np.arange(max_npix_peak))
+    radial_sum = ndimage.sum(cutout_posit, labels=rbin, index=np.arange(first_min_ind))
     psf_sum = np.sum(radial_sum)
 
     scale_factor = clean_beam_sum/psf_sum
