@@ -50,6 +50,8 @@ export CASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/casa
 export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/mpicasa
 export CASA=/orange/adamginsburg/casa/casa-6.4.0-12/bin/casa
 export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-6.4.0-12/bin/mpicasa
+export CASA=/orange/adamginsburg/casa/casa-6.4.0-16/bin/casa
+export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-6.4.0-16/bin/mpicasa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"

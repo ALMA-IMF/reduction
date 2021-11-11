@@ -1,3 +1,8 @@
+"""
+cd /orange/adamginsburg/web/secure/ALMA-IMF/June2021FlatRelease/
+# only copy FITS files
+cp -nv ../June2021Release/*/B*/{cleanest,bsens,bsens_nobright}/*robust0_selfcal[0-9]_finaliter*tt{0,1}.{pbcor.,}fits .
+"""
 import glob
 import os
 import shutil
@@ -7,6 +12,7 @@ from pathlib import Path
 cwd = os.getcwd()
 basepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/')
 releasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release/')
+flatreleasepath = Path('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021FlatRelease/')
 os.chdir(basepath)
 
 # configurable, kinda
