@@ -4446,7 +4446,7 @@ flag_thresholds_default = {
 flag_thresholds_custom = {
     "G012.80_B3_12M_spw0": {"nchan": 20, "tolerance": 0.31},
     "G353.41_B3_12M_spw0": {"nchan": 27, "tolerance": 0.23},
-    "G353.41_B6_12M_spw5": {"nchan": 101, "tolerance": 0.23},  # first 100 channels
+    "G353.41_B6_12M_spw5": {"nchan": 102, "tolerance": 0.23},  # first 100 channels
     "G337.92_B6_12M_spw7": {"nchan": 51, "tolerance": 1.00},  # maxdiff is ~6x!
     "W51-E_B6_12M_spw3": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
