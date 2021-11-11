@@ -140,19 +140,17 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     # pl.plot(bmradmean)
     # pl.figure(1)
 
+    # this finds the second peak
+    # (useful for display)
+    outside_first_peak_mask = (rr > first_min_ind) & (fullbeam.array < 1e-5)
+    first_sidelobe_ind = scipy.signal.find_peaks(radial_mean *
+                          (np.arange(len(radial_mean)) > first_min_ind))[0][0]
+    max_sidelobe = cutout[outside_first_peak_mask].max()
+    max_sidelobe_loc = cutout[outside_first_peak_mask].argmax()
+    r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
+
     if show_image:
         import pylab as pl
-        #pl.clf()
-
-        # this finds the second peak
-        # (useful for display)
-        outside_first_peak_mask = (rr > first_min_ind) & (fullbeam.array < 1e-5)
-        first_sidelobe_ind = scipy.signal.find_peaks(radial_mean *
-                              (np.arange(len(radial_mean)) > first_min_ind))[0][0]
-        max_sidelobe = cutout[outside_first_peak_mask].max()
-        max_sidelobe_loc = cutout[outside_first_peak_mask].argmax()
-        r_max_sidelobe = rr[outside_first_peak_mask][max_sidelobe_loc]
-        #r_max_sidelobe = first_sidelobe_ind
 
         # decide how big to make the plot
         if r_max_sidelobe * pixscale < min_radial_extent:
