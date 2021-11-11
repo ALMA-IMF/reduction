@@ -824,6 +824,7 @@ for band in band_list:
                             shutil.rmtree(fn)
 
                     if make_continuum_startmodel and not dryrun:
+                        logprint("Creating continuum model {0}".format(contmodel_path))
                         contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                        contimagename=impars['startmodel'],
                                                        imaging_results_path=imaging_results_path_for_contmodel,
