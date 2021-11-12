@@ -283,7 +283,6 @@ if __name__ == "__main__":
                         #sum = cube.sum()
                         #mean = cube.mean()
 
-                        del cube
                         del stats
 
                         if os.path.exists(modfn):
@@ -311,6 +310,7 @@ if __name__ == "__main__":
                         if os.path.exists(psffn):
                             (residual_peak, peakloc_as, frac, epsilon, firstnull, r_sidelobe, _) = get_psf_secondpeak(psffn, specslice=slice(cube.shape[0]//2, cube.shape[0]//2+1))
 
+                        del cube
 
                         row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
                             [history[key] if key in history else '' for key in colnames_fromheader] +

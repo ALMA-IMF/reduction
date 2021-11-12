@@ -66,7 +66,7 @@ import astropy.units as u
 from astropy import constants
 import re
 try:
-    from tasks import tclean, uvcontsub, impbcor, concat, flagdata
+    from tasks import tclean, uvcontsub, impbcor, concat, flagdata, makemask
     from taskinit import casalog
     from exportfits_cli import exportfits_cli as exportfits
     from casa_system_defaults import casa
@@ -74,7 +74,7 @@ try:
     version = map(int, re.split("[-.]", casa['version']))
 except (ImportError,ModuleNotFoundError):
     # futureproofing: CASA 6 imports this way
-    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata
+    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata, makemask
     from casatasks import casalog
     import casatools
     version = casatools.version()
@@ -521,6 +521,7 @@ for band in band_list:
                                          line_name, contsub_suffix))
             lineimagename = os.path.join(imaging_root, baselineimagename)
 
+            # STAGING: so you can do the work on a different HD
             if copy_files and not dryrun:
                 # _copy_ the MS file to the working directory
 
@@ -570,19 +571,18 @@ for band in band_list:
                     logprint("Planning to move {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
                     if os.path.exists(dest):
                         logprint("Destination {0} exists".format(dest), origin='almaimf_line_imaging')
-                        if not os.getenv('CONTINUE_IF_MS_EXISTS'):
+                        if False: #not os.getenv('CONTINUE_IF_MS_EXISTS'):
                             raise ValueError("Target destination {0} exists and we were trying to copy into it.".format(dest))
                     elif os.path.exists(src):
                         logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
                         shutil.move(src, destdir)
 
-                # we don't copy or move over the continuum startmodels; they're light reads
-                contmodel_path = proddir
                 imaging_results_path_for_contmodel = workdir
 
             else:
-                contmodel_path = imaging_root
                 imaging_results_path_for_contmodel = imaging_root
+
+            contmodel_path = imaging_results_path_for_contmodel
 
 
             logprint("Measurement sets are: " + str(concatvis),
@@ -650,6 +650,8 @@ for band in band_list:
             if 'startmodel' in impars:
                 # need the dirty image to populate our model
                 make_dirty_image = True
+
+            logprint("make_dirty_image is set to {0}".format(make_dirty_image))
 
             # start with cube imaging
             # step 1 is dirty imaging
@@ -821,6 +823,7 @@ for band in band_list:
                             shutil.rmtree(fn)
 
                     if make_continuum_startmodel and not dryrun:
+                        logprint("Creating continuum model {0}".format(contmodel_path))
                         contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                        contimagename=impars['startmodel'],
                                                        imaging_results_path=imaging_results_path_for_contmodel,
@@ -846,6 +849,23 @@ for band in band_list:
                 # elif os.path.exists(lineimagename+".mask"):
                 #     if 'usemask' in impars and impars['usemask'] != 'user':
                 #         raise ValueError("Mask exists but not specified as user.")
+                if 'mask' not in impars and not os.path.exists(lineimagename+".mask"):
+                    logprint("Copying mask from image", origin='almaimf_line_imaging')
+                    ia.open(lineimagename+".image")
+                    shape = ia.shape()
+                    csys = ia.coordsys().torecord()
+                    ia.close()
+
+                    ia.fromshape(outfile=lineimagename+".mask", shape=shape, csys=csys, type='f')
+
+                    # makemask doesn't work
+                    #makemask(mode='copy',
+                    #        inpimage=lineimagename+".image",
+                    #        inpmask=lineimagename+".image:mask0",
+                    #        output=lineimagename+".mask")
+
+                # this if statement is now (almost?) entirely redundant b/c the
+                # previous ensures that a mask exists
                 if os.path.exists(lineimagename+".mask"):
                     impars['usemask'] = 'user'
 

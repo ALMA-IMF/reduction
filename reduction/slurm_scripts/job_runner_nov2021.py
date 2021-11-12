@@ -1,5 +1,9 @@
 import numpy as np
 
+allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
+spws = {'B3': [f'spw{s}' for s in range(4)] + ['n2hp'],
+        'B6': [f'spw{s}' for s in range(8)] + ['sio']}
+
 # baseband, spw: name
 line_maps = {'n2hp': {'band': 3, 'spw': 0},
              'sio': {'band': 6, 'spw': 1}}
@@ -11,12 +15,12 @@ parameters = {'W51-E': {'12M':
  'W43-MM3': {'12M':
   {'B3':
    {'spw0': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, },
-    'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': False, } }
+    'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, } }
   },
  },
  'W43-MM1': {'12M':
   {'B3':
-   {'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': False, } },
+   {'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, } },
    'B6':
    {'sio':  {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat': True, } },
   },
@@ -29,7 +33,6 @@ parameters = {'W51-E': {'12M':
  },
 }
 
-
 newpars = {}
 for field, fpars in parameters.items():
     for array, arrpars in fpars.items():
@@ -37,11 +40,14 @@ for field, fpars in parameters.items():
             for spw, spwpars in bandpars.items():
                 newpars[f'{field}_{array}_{band}_{spw}'] = spwpars
 
+# add the 7m12m merge for n2hp,sio only
+newpars.update({f'{field}_{array}_{band}_{spw}':
+                      {'mem': 64, 'ntasks': 16, 'mpi': True, 'concat':True}
+    for field in allfields
+    for array in ("7M12M", )
+    for band, spw in (('B3', 'n2hp'), ('B6', 'sio'))
+})
 
-
-allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
-spws = {'B3': [f'spw{s}' for s in range(4)] + ['n2hp'],
-        'B6': [f'spw{s}' for s in range(8)] + ['sio']}
 
 del band
 del field
@@ -58,7 +64,6 @@ default_parameters = {f'{field}_{array}_{band}_{spw}':
 
 assert 'G008.67_12M_B6_n2hp' not in default_parameters
 
-
 for key in newpars:
     default_parameters[key] = newpars[key]
 
@@ -66,6 +71,9 @@ parameters = default_parameters
 
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
+
+# something's really broken about the ms here
+del parameters['W43-MM1_7M12M_B6_sio']
 
 
 if __name__ == "__main__":
@@ -137,17 +145,17 @@ if __name__ == "__main__":
             elif 'FAILED' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'FAILED')]
                 if '--redo-failed' in sys.argv:
-                    print(f"Redoing job {jobname} even though it's FAILED as {jobid}")
+                    print(f"Redoing job {jobname} even though it's FAILED as {set(jobid)}")
                 else:
-                    print(f"Skipped job {jobname} because it's FAILED as {jobid}")
+                    print(f"Skipped job {jobname} because it's FAILED as {set(jobid)}")
                     continue
             elif 'PENDING' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'PENDING')]
-                print(f"Skipped job {jobname} because it's PENDING as {jobid}")
+                print(f"Skipped job {jobname} because it's PENDING as {set(jobid)}")
                 continue
             elif 'TIMEOUT' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'TIMEOUT')]
-                print(f"Restarting job {jobname} because it TIMED OUT as {jobid}")
+                print(f"Restarting job {jobname} because it TIMED OUT as {set(jobid)}")
 
         # handle specific parameters
         mem = int(spwpars["mem"])
