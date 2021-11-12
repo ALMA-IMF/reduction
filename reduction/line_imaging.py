@@ -577,12 +577,13 @@ for band in band_list:
                         logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
                         shutil.move(src, destdir)
 
+                # we don't copy or move over the continuum startmodels b/c the  `make_clean` operates inplace
+                contmodel_path = proddir
                 imaging_results_path_for_contmodel = workdir
 
             else:
+                contmodel_path = imaging_root
                 imaging_results_path_for_contmodel = imaging_root
-
-            contmodel_path = imaging_results_path_for_contmodel
 
 
             logprint("Measurement sets are: " + str(concatvis),
@@ -828,6 +829,17 @@ for band in band_list:
                                                        contimagename=impars['startmodel'],
                                                        imaging_results_path=imaging_results_path_for_contmodel,
                                                        contmodel_path=contmodel_path)
+                        if copy_files:
+                            # this is the case where we had to make the model cubes,
+                            # but we had to make them in the original directory
+                            # (this could be worked around by adding more paths to `create_clean_model`,
+                            # but for now, it expects the continuum data files to be in place)
+                            for suffix in ('_continuum_model.image.tt0', '_continuum_model.image.tt1'):
+                                src = lineimagename+suffix
+                                dest = proddir
+                                destfile = os.path.join(proddir, os.path.basename(src))
+                                logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
+                                shutil.move(src, destdir)
                         impars['startmodel'] = contmodel
 
 
