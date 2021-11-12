@@ -562,8 +562,7 @@ for band in band_list:
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
                                '.contcube.model', '.image.fits',
                                '.image.pbcor.fits',
-                               '_continuum_model.image.tt0',
-                               '_continuum_model.image.tt1'):
+                              ):
                     destdir = imaging_root
                     dest = os.path.join(imaging_root, baselineimagename+suffix)
                     src = os.path.join(proddir,
@@ -824,23 +823,24 @@ for band in band_list:
                             shutil.rmtree(fn)
 
                     if make_continuum_startmodel and not dryrun:
-                        logprint("Creating continuum model {0}".format(contmodel_path))
-                        contmodel = create_clean_model(cubeimagename=baselineimagename,
-                                                       contimagename=impars['startmodel'],
-                                                       imaging_results_path=imaging_results_path_for_contmodel,
-                                                       contmodel_path=contmodel_path)
-                        if copy_files:
-                            # this is the case where we had to make the model cubes,
-                            # but we had to make them in the original directory
-                            # (this could be worked around by adding more paths to `create_clean_model`,
-                            # but for now, it expects the continuum data files to be in place)
-                            for suffix in ('_continuum_model.image.tt0', '_continuum_model.image.tt1'):
-                                src = lineimagename+suffix
-                                dest = proddir
-                                destfile = os.path.join(proddir, os.path.basename(src))
-                                logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
-                                shutil.move(src, destdir)
+                        contmodel = "{0}/{1}.contcube.model".format(imaging_results_path_for_contmodel,
+                                                                    baselineimagename)
                         impars['startmodel'] = contmodel
+
+                        if os.path.exists(contmodel):
+                            logprint("Not creating continuum model {0} because it already exists".format(contmodel))
+                        else:
+                            logprint("Creating continuum model {0}".format(contmodel))
+                            new_contmodel = create_clean_model(cubeimagename=baselineimagename,
+                                                               contimagename=impars['startmodel'],
+                                                               imaging_results_path=imaging_results_path_for_contmodel,
+                                                               contmodel_path=contmodel_path)
+                            if copy_files:
+                                logprint("Moving contmodel from {0} to {1}".format(new_contmodel, contmodel))
+                                shutil.move(new_contmodel, contmodel)
+                            else:
+                                # if we're not moving these around, they should be the same file
+                                assert contmodel == new_contmodel
 
 
 
@@ -1015,8 +1015,7 @@ for band in band_list:
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
                                '.contcube.model', '.image.fits',
                                '.image.pbcor.fits',
-                               '_continuum_model.image.tt0',
-                               '_continuum_model.image.tt1'):
+                              ):
                     src = lineimagename+suffix
                     dest = proddir
                     destfile = os.path.join(proddir, os.path.basename(src))

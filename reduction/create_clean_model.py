@@ -89,7 +89,7 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     # dnu_plane: dnu with respect to cube reference freq.
     # dnu: dnu with respect to tt0 continuum reference
     for plane in range(dict_line['shap'][-1]):
-        logprint('Calculating continuum model for plane {}'.format(plane))
+        #logprint('Calculating continuum model for plane {}'.format(plane))
         dnu_plane = (plane - dict_line['csys']['spectral2']['wcs']['crpix'])*dict_line['csys']['spectral2']['wcs']['cdelt']
         nu_plane = dict_line['csys']['spectral2']['wcs']['crval'] + dnu_plane
         #print(dnu_plane, nu_plane)
