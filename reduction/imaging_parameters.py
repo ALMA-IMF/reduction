@@ -3309,6 +3309,11 @@ line_imaging_parameters_custom = {
         "scales": [0, 12, 24, 48, 72, 96],
         "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
+    "G333.60_B3_12M_robust0_n2hp": {
+        "threshold": "5sigma",
+        "scales": [0, 9, 28, 85],
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
     "G337.92_B3_12M_robust0_n2hp": {
         "threshold": "5sigma",
         "scales": [0, 8, 16, 32, 48, 64, 80, 96],
