@@ -624,13 +624,21 @@ for band in band_list:
             if 'imsize' not in impars:
                 impars['imsize'] = imsize
             else:
+                # leave untouched
                 logprint("Overriding imsize={0} to {1}".format(imsize, impars['imsize']))
+
             if 'cell' not in impars:
                 impars['cell'] = cellsize
+            else:
+                # leave untouched
                 logprint("Overriding cell={0} to {1}".format(cellsize, impars['cell']))
+
             if 'phasecenter' not in impars:
                 impars['phasecenter'] = phasecenter
+            else:
+                # leave impars['phasecenter'] untouched
                 logprint("Overriding phasecenter={0} to {1}".format(phasecenter, impars['phasecenter']))
+
             #impars['field'] = [field.encode()]
             impars['field'] = field
 
@@ -823,12 +831,12 @@ for band in band_list:
                     if make_continuum_startmodel and not dryrun:
                         contmodel = "{0}/{1}.contcube.model".format(imaging_results_path_for_contmodel,
                                                                     baselineimagename)
-                        impars['startmodel'] = contmodel
 
                         if os.path.exists(contmodel):
                             logprint("Not creating continuum model {0} because it already exists".format(contmodel))
                         else:
-                            logprint("Creating continuum model {0}".format(contmodel))
+                            logprint("Creating continuum model {0} from cubeimagename={1}, contimagename={2}, imaging_results_path={3}, contmodel_path={4}"
+                                     .format(contmodel, baselineimagename, impars['startmodel'], imaging_results_path_for_contmodel, contmodel_path))
                             new_contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                                contimagename=impars['startmodel'],
                                                                imaging_results_path=imaging_results_path_for_contmodel,
@@ -839,6 +847,8 @@ for band in band_list:
                             else:
                                 # if we're not moving these around, they should be the same file
                                 assert contmodel == new_contmodel
+
+                        impars['startmodel'] = contmodel
 
 
 

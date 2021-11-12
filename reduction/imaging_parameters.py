@@ -2844,7 +2844,7 @@ line_imaging_parameters_default = {
         "pbmask": 0.1,
         "perchanweightdensity": True,
         "interactive": 0,  # returns a dict (False doesn't...)
-        "mask_out_endchannels": 2,
+        "mask_out_endchannels": 2,  # this may be something to remove, it continually confuses people.
         "cyclefactor": 2.0,  # higher cyclefactor = more major cycles
     }
     for field in allfields
@@ -3311,6 +3311,13 @@ line_imaging_parameters_custom = {
     },
     "G333.60_B3_12M_robust0_n2hp": {
         "threshold": "5sigma",
+        "scales": [0, 9, 28, 85],
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B3_7M12M_robust0_n2hp": {
+        "threshold": "5sigma",
+        "imsize": [4096, 4096],
+        "cell": ["0.08arcsec", "0.08arcsec"],
         "scales": [0, 9, 28, 85],
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
