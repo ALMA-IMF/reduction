@@ -544,9 +544,7 @@ for band in band_list:
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
                                '.contcube.model', '.image.fits',
-                               '.image.pbcor.fits',
-                               '_continuum_model.image.tt0',
-                               '_continuum_model.image.tt1'):
+                               '.image.pbcor.fits'):
                     destdir = imaging_root
                     dest = os.path.join(imaging_root, baselineimagename+suffix)
                     src = os.path.join(proddir,
