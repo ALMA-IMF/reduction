@@ -577,13 +577,12 @@ for band in band_list:
                         logprint("Moving {0}->{1} ({2})".format(src, destdir, dest), origin='almaimf_line_imaging')
                         shutil.move(src, destdir)
 
-                # we don't copy or move over the continuum startmodels; they're light reads
-                contmodel_path = proddir
                 imaging_results_path_for_contmodel = workdir
 
             else:
-                contmodel_path = imaging_root
                 imaging_results_path_for_contmodel = imaging_root
+
+            contmodel_path = imaging_results_path_for_contmodel
 
 
             logprint("Measurement sets are: " + str(concatvis),

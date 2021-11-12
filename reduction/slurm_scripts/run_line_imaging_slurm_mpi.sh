@@ -36,6 +36,11 @@ OMPI_COMM_WORLD_SIZE=$SLURM_NTASKS
 # OMPI_COMM_WORLD_LOCAL_SIZE - the number of ranks from this job that are running on this node.
 # OMPI_COMM_WORLD_NODE_RANK - the relative rank of this process on this node looking across ALL jobs.
 
+if [[ ! $CASAVERSION ]]; then
+    CASAVERSION=casa-6.4.0-16
+    echo "Set CASA version to default ${CASAVERSION}"
+fi
+echo "CASA version = ${CASAVERSION}"
 
 #export CASA=/orange/adamginsburg/casa/casa-release-5.6.0-60.el7/bin/casa
 #export CASA=/orange/adamginsburg/casa/casa-pipeline-release-5.6.1-8.el7/bin/casa
@@ -44,14 +49,14 @@ OMPI_COMM_WORLD_SIZE=$SLURM_NTASKS
 #export MPICASA=/orange/adamginsburg/casa/casa-pipeline-release-5.8.0-109.el7/bin/mpicasa
 #export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
 #export MPICASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
-export MPICASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/mpicasa
-export CASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/casa
-export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/casa-6.4.0-12/bin/casa
-export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-6.4.0-12/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/casa-6.4.0-16/bin/casa
-export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-6.4.0-16/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
+#export MPICASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/mpicasa
+#export CASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/casa
+#export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/mpicasa
+#export CASA=/orange/adamginsburg/casa/casa-6.4.0-12/bin/casa
+#export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-6.4.0-12/bin/mpicasa
+export CASA=/orange/adamginsburg/casa/${CASAVERSION}/bin/casa
+export MPICASA=/blue/adamginsburg/adamginsburg/casa/${CASAVERSION}/bin/mpicasa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
@@ -79,12 +84,10 @@ export PYTHONPATH=$ALMAIMF_ROOTDIR
 export SCRIPT_DIR=$ALMAIMF_ROOTDIR
 export PYTHONPATH=$SCRIPT_DIR
 
-echo $LOGFILENAME
+echo logfile=$LOGFILENAME
 
-# do one band at a time to enable _disabling_ one or the other
-#export BAND_NUMBERS="3"
-#echo srun --mpi=pmix_v3 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')"
-# srun --mpi=pmix_v3 
+echo Running command: ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+
 ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 ppid="$!"; childPID="$(ps -C ${CASA} -o ppid=,pid= | awk -v ppid="$ppid" '$1==ppid {print $2}')"
 echo PID=${ppid} childPID=${childPID}
