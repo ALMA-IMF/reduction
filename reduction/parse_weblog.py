@@ -16,8 +16,13 @@ flux_scales = {'Jy': 1,
 def get_mous_to_sb_mapping(project_code):
 
     tbl = Alma.query(payload={'project_code': project_code}, cache=False,
-                     public=False)['member_ous_uid','schedblock_name', 'qa2_passed']
+                     )['member_ous_uid','schedblock_name', 'qa2_passed']
     mapping = {row['member_ous_uid']: row['schedblock_name'] for row in tbl if row['qa2_passed'] == 'T'}
+    
+    tbl = Alma.query(payload={'project_code': project_code}, cache=False,
+                     public=False)['member_ous_uid','schedblock_name', 'qa2_passed']
+    mapping.update({row['member_ous_uid']: row['schedblock_name'] for row in tbl if row['qa2_passed'] == 'T'})
+
     return mapping
 
 def get_human_readable_name(weblog, mapping=None):
