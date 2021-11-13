@@ -5,6 +5,8 @@ from parse_weblog import get_mous_to_sb_mapping
 from astroquery.alma import Alma
 from astropy import units as u
 from astropy.io import fits
+from casa_formats_io import Table
+import xml.etree.ElementTree as ET
 import os
 import shutil
 
@@ -48,6 +50,27 @@ def get_band(hdr):
     frq = u.Quantity(hdr['CRVAL3'], u.Hz)
     band = 'B3' if frq < 115*u.GHz else 'B6'
     return band
+
+#unfortunately it looks like this grabs the *project* ID, which is useless
+# def get_obsid_from_ms(msname):
+#     tbl = Table.read(msname+"/ASDM_SBSUMMARY").as_astropy_tables()[0]
+#     xmld = ET.fromstring(tbl['obsUnitSetUID'])
+#     ousid = xmld.attrib['entityId']
+#     return ousid
+
+def get_obsid_from_ms(msname):
+    if 'uid' in msname:
+        elts = msname.split("_")
+        uidid = elts.index('uid')
+        mous = "uid://"+"/".join(elts[uidid+3:uidid+6])
+        tbl = Alma.query_tap(f"select top 100 * from ivoa.ObsCore where member_ous_uid = '{mous}'").to_table()
+        gouses = set(tbl['group_ous_uid'])
+        if len(gouses) != 1:
+            raise ValueError
+        gous = list(gouses)[0]
+        return mous, gous
+    else:
+        raise ValueError
 
 if __name__ == "__main__":
     import glob
@@ -96,6 +119,19 @@ if __name__ == "__main__":
                 readmedata[gous_].append(new_fn)
             else:
                 readmedata[gous_] = [new_fn]
+
+    for msname in glob.glob('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/*_12M_*.ms'):
+        mous, gous = get_obsid_from_ms(msname)
+        gous_ = gous.replace(":","_").replace("/","_")
+        dir = f'{gous_}.lp_2017.1.01355.L.motte'
+        suffix = 'bsens_selfcal.ms' if 'bsens' in msname else 'selfcal.ms'
+        tfname = f'{dir}/{gous_}.lp_2017.1.01355.L.motte.{suffix}.tgz'
+        if not os.path.exists(tfname):
+            with tarfile.open(tfname, "w:gz") as tf:
+                # this will add the MS to the tarball using the original name as the folder name
+                tf.add(msname, arcname=os.path.basename(msname))
+        readmedata[gous_].append(f'{tfname}\n')
+
 
     for dir in glob.glob("*.motte"):
         gous_ = dir.split(".")[0]
