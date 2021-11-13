@@ -13,15 +13,11 @@ flux_scales = {'Jy': 1,
                'µJy': 1e-6,
               }
 
-def get_mous_to_sb_mapping(project_code, QA2_required=True):
+def get_mous_to_sb_mapping(project_code):
 
     tbl = Alma.query(payload={'project_code': project_code}, cache=False,
-                     public=False)['Member ous id','SB name', 'QA2 Status']
-    if QA2_required:
-        mapping = {row['Member ous id']: row['SB name'] for row in tbl if
-                   row['QA2 Status'] == 'Y'}
-    else:
-        mapping = {row['Member ous id']: row['SB name'] for row in tbl}
+                     public=False)['member_ous_uid','schedblock_name', 'qa2_passed']
+    mapping = {row['member_ous_uid']: row['schedblock_name'] for row in tbl if row['qa2_passed'] == 'T'}
     return mapping
 
 def get_human_readable_name(weblog, mapping=None):
@@ -214,7 +210,7 @@ def get_all_fluxes(weblog_list, mapping=None):
 
 def fluxes_to_table(flux_dict):
 
-    sbname = Column(name='SB name', data=[name for name,item in flux_dict.items() for row in item])
+    sbname = Column(name='schedblock_name', data=[name for name,item in flux_dict.items() for row in item])
     uid = Column(name='UID', data=[data['ms'] for name,item in flux_dict.items() for num,data in item.items()])
     calname = Column(name='Calibrator', data=[data['calibrator'] for name,item in flux_dict.items() for num,data in item.items()])
     spw = Column(name='SPW', data=[data['spw'] for name,item in flux_dict.items() for num,data in item.items()])
