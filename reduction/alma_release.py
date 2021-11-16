@@ -9,6 +9,7 @@ from casa_formats_io import Table
 import xml.etree.ElementTree as ET
 import os
 import shutil
+import tarfile
 
 def get_sb_to_mous_mapping(obstypes=['TM1', 'TM2'], programid='2017.1.01355.L'):
     m_to_s = get_mous_to_sb_mapping(programid)
@@ -131,6 +132,7 @@ if __name__ == "__main__":
                 # this will add the MS to the tarball using the original name as the folder name
                 tf.add(msname, arcname=os.path.basename(msname))
         readmedata[gous_].append(f'{tfname}\n')
+        print(f"{msname} -> {tfname}")
 
 
     for dir in glob.glob("*.motte"):
