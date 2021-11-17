@@ -86,7 +86,11 @@ if __name__ == "__main__":
     readmeheader = "Project Code: 2017.1.01355.L\n"
     readmedata = {}
 
-    os.chdir('/orange/adamginsburg/web/secure/ALMA-IMF/ContinuumDataArchiveDelivery')
+    delivery_dir = '/orange/adamginsburg/web/secure/ALMA-IMF/ContinuumDataArchiveDelivery'
+    if not os.path.exists(delivery_dir):
+        os.mkdir(delivery_dir)
+
+    os.chdir(delivery_dir)
 
     for suffix in ('image.tt0.pbcor.fits', 'model.tt0.fits',
             'model.tt1.fits', 'residual.tt0.fits', 'residual.tt1.fits',
@@ -101,11 +105,22 @@ if __name__ == "__main__":
             gous, obsid, sbname = mous_to_gous(mousids[0])
             print(f"Field={field}, gous={gous}, obsid={obsid}, mousids={mousids}, sbname={sbname}")
 
+            if 'robust0_' not in fn:
+                raise ValueError
+
+            if 'bsens' in fn:
+                # ALMA does not allow different images of same field
+                continue
+                # but this is what we'd do if they did
+                # bsens_or_cleanest = 'bsens' if 'bsens' in msname else 'cleanest'
+
+            humanname = f'{field}_{band}_12M_cleanest_robust0'
+
             gous_ = gous.replace(":","_").replace("/","_")
-            dir = f'{gous_}.lp_2017.1.01355.L.motte'
+            dir = f'{gous_}.lp_motte.{humanname}'
             if not os.path.exists(dir):
                 os.mkdir(dir)
-            new_fn = f'{gous_}.lp_2017.1.01355.L.motte.{suffix}'
+            new_fn = f'{gous_}.lp_motte.{humanname}.{suffix}'
             if not os.path.exists(f'{dir}/{new_fn}'):
                 shutil.copy(fn, f'{dir}/{new_fn}')
 
@@ -116,26 +131,31 @@ if __name__ == "__main__":
                 fh[0].header['BAND'] = band
                 fh[0].header['FIELD'] = field
 
-            if gous in readmedata:
+            if gous_ in readmedata:
                 readmedata[gous_].append(new_fn)
             else:
                 readmedata[gous_] = [new_fn]
 
     for msname in glob.glob('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/*_12M_*.ms'):
         mous, gous = get_obsid_from_ms(msname)
+        basemsname = os.path.basename(msname)
+        field = basemsname.split("_")[0]
+        band = basemsname.split("_")[1]
+        bsens_or_cleanest = 'bsens' if 'bsens' in msname else 'cleanest'
+        humanname = f'{field}_{band}_12M_{bsens_or_cleanest}'
         gous_ = gous.replace(":","_").replace("/","_")
-        dir = f'{gous_}.lp_2017.1.01355.L.motte'
+        dir = f'{gous_}.lp_motte.{humanname.replace("bsens", "cleanest")}_robust0'
         suffix = 'bsens_selfcal.ms' if 'bsens' in msname else 'selfcal.ms'
-        tfname = f'{dir}/{gous_}.lp_2017.1.01355.L.motte.{suffix}.tgz'
+        tfname = f'{dir}/{gous_}.lp_motte.{humanname}.{suffix}.tgz'
         if not os.path.exists(tfname):
             with tarfile.open(tfname, "w:gz") as tf:
                 # this will add the MS to the tarball using the original name as the folder name
                 tf.add(msname, arcname=os.path.basename(msname))
-        readmedata[gous_].append(f'{tfname}\n')
+        readmedata[gous_].append(tfname)
         print(f"{msname} -> {tfname}")
 
 
-    for dir in glob.glob("*.motte"):
+    for dir in glob.glob("*.lp_motte.*/"):
         gous_ = dir.split(".")[0]
         with open(f'{dir}/README', 'w') as fh:
             fh.write(readmeheader)
