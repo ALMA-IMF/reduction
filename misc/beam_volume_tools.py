@@ -12,7 +12,21 @@ from radio_beam import Beam, Beams
 from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
 
-def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True):
+def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True, **kwargs):
+    """
+    Determine epsilon, the ratio of the clean beam volume to the dirty beam volume within the first null, for a cube's PSFs.
+    
+    Parameters
+    ----------
+    psf_image : casa image
+        A cube image of PSFs made by CASA
+    max_npix_peak : int
+        The maximum separation to integrate within to estimate the beam
+    export_clean_beam : bool
+        Return the synthesized beam in addition to the epsilon values?
+    kwargs : 
+        passed to `common_beam`
+    """
 
     #if not path.exists(psf_image):
     #    print('CASA image file of PSF not found.')
@@ -23,7 +37,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True):
     psf = SpectralCube.read(psf_image, format='casa_image')
 
     # Add check on psf.beams.major.max() and .min() ?
-    common_beam = psf.beams.common_beam()
+    common_beam = psf.beams.common_beam(**kwargs)
 
     # In pixels (clean beam per channel):
     npix_clean_beam = psf.pixels_per_beam
