@@ -12,22 +12,7 @@ from radio_beam import Beam, Beams
 from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
 
-def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
-                     verbose=False, **kwargs):
-    """
-    Determine epsilon, the ratio of the clean beam volume to the dirty beam volume within the first null, for a cube's PSFs.
-    
-    Parameters
-    ----------
-    psf_image : casa image
-        A cube image of PSFs made by CASA
-    max_npix_peak : int
-        The maximum separation to integrate within to estimate the beam
-    export_clean_beam : bool
-        Return the synthesized beam in addition to the epsilon values?
-    kwargs : 
-        passed to `common_beam`
-    """
+def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True):
 
     #if not path.exists(psf_image):
     #    print('CASA image file of PSF not found.')
@@ -38,7 +23,11 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
     psf = SpectralCube.read(psf_image, format='casa_image')
 
     # Add check on psf.beams.major.max() and .min() ?
-    common_beam = psf.beams.common_beam(**kwargs)
+    common_beam = psf.beams.common_beam()
+
+    # Is it better to take beam sizes in sr (like here) or in pixels?
+    # In sr (common beam):
+    #omega_common_beam = common_beam.sr
 
     # In pixels (clean beam per channel):
     npix_clean_beam = psf.pixels_per_beam
@@ -86,11 +75,11 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
         epsilon = clean_psf_sum/psf_sum
         epsilon_arr[chan] = epsilon
 
-        if verbose:
-            print('\n')
-            print('Clean beam area of channel {0} is {1} pixels:'.format(chan, clean_psf_sum))
-            print('Dirty beam area of channel {0} is {1} pixels:'.format(chan, psf_sum))
-            print('epsilon = Omega_clean / Omega_dirty = {}'.format(epsilon))
+        #print('Dirty beam area of channel {0} is:'.format(chan))
+        print('\n')
+        print('Clean beam area of channel {0} is {1} pixels:'.format(chan, clean_psf_sum))
+        print('Dirty beam area of channel {0} is {1} pixels:'.format(chan, psf_sum))
+        print('epsilon = Omega_clean / Omega_dirty = {}'.format(epsilon))
 
     if export_clean_beam:
         output = {'epsilon': epsilon_arr, 'clean_beam': common_beam}
@@ -107,38 +96,42 @@ def conv_model(model_image, clean_beam):
     pix_scale = pix_scale.to(u.arcsec)
     clean_beam_kernel = beam.as_kernel(pix_scale)
 
-    omega_beam = beam.sr
-    omega_pix = pix_scale.to('rad')**2
+    omega_beam = (np.pi/(4*np.log(2)))*beam.major.to('arcsec')*beam.minor.to('arcsec')
+    omega_pix = pix_scale**2
     npix_beam = (omega_beam/omega_pix).value
 
-    # should we just use a delta function rather than try to hack correct pixel area?
-    # alternately, we could deconvolve a pixel size.
-    # What is technically correct?
-    # What does CASA do?  (scary question)
-    fwhm_gauss_pix = (4*np.log(2)/np.pi)**0.5 * pix_scale
-    pix_beam = Beam(fwhm_gauss_pix, fwhm_gauss_pix, 0*u.deg)
-    model = model.with_beam(pix_beam)
+    pix_beam = Beam(pix_scale, pix_scale, 0*u.deg)
+    model.with_beam(pix_beam)
 
-    conv = model.convolve_to(beam)
+    conv_arr = np.zeros(model.shape)
 
-    return conv
+    for chan in range(model.shape[0]):
+        conv_arr[chan,:,:] = model[chan].convolve_to(beam)
+
+    model.header['BUNIT'] = 'beam-1 Jy'
+    model.header['BMAJ'] = beam.major.to('deg').value
+    model.header['BMIN'] = beam.minor.to('deg').value
+    model.header['BPA'] = beam.pa.to('deg').value
+
+    return SpectralCube(data=conv_arr, header=model.header, beam=clean_beam)
 
 
-def rescale(conv_model, epsilon, residual_image, export_fits=True):
-    residual = SpectralCube.read(residual_image, format='casa_image')
+def rescale(conv_model, epsilon, residual_image, clean_beam, export_fits=True):
 
-    header = conv_model.header
+    if not isinstance(residual, SpectralCube):
+        residual = SpectralCube.read(residual_image, format='casa_image')
 
-    conv_model._unit = u.dimensionless_unscaled
-    epsilon = epsilon*u.dimensionless_unscaled
-    # maybe use einsum here?
-    print("creating restor")
-    restor = conv_model + residual*epsilon[:,None,None]
-    print("done creating restor")
+    header = residual.header
+    header['BUNIT'] = 'beam-1 Jy'
+    header['BMAJ'] = clean_beam.major.to('deg').value
+    header['BMIN'] = clean_beam.minor.to('deg').value
+    header['BPA'] = clean_beam.pa.to('deg').value
 
-    if export_fits:
-        print("Writing")
-        restor.write(residual_image.replace('.residual','.resc_restored.fits'), overwrite=True)
-        print("Done writing")
+    restor_arr = np.empty(residual.shape)
+    restor_arr[:] = np.NaN
 
-    return restor
+    #for chan in range(5):
+    for chan in range(residual.shape[0]):
+        restor_arr[chan,:,:] = conv_model[chan,:,:] + epsilon[chan]*residual[chan]
+
+    return SpectralCube(data=restor_arr, header=header, beam=clean_beam)
