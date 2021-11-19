@@ -41,11 +41,11 @@ for field, fpars in parameters.items():
             for spw, spwpars in bandpars.items():
                 newpars[f'{field}_{array}_{band}_{spw}'] = spwpars
 
-# add the 7m12m merge for n2hp,sio only
+# add the 7m12m merge for n2hp,sio,h41a only
 newpars.update({f'{field}_{array}_{band}_{spw}':
                       {'mem': 64, 'ntasks': 16, 'mpi': True, 'concat':True}
     for field in allfields
-    for array in ("12M", )
+    for array in ("12M", "7M12M")
     for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'))
 })
 
