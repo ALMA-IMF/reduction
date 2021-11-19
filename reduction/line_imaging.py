@@ -871,19 +871,12 @@ for band in band_list:
                 #     if 'usemask' in impars and impars['usemask'] != 'user':
                 #         raise ValueError("Mask exists but not specified as user.")
                 if 'mask' not in impars and not os.path.exists(lineimagename+".mask"):
-                    logprint("Copying mask from image", origin='almaimf_line_imaging')
-                    ia.open(lineimagename+".image")
-                    shape = ia.shape()
-                    csys = ia.coordsys().torecord()
-                    ia.close()
+                    pblimit = impars['pblimit'] if 'pblimit' in impars else 0.001
+                    logprint("Creating mask from pb with pblimit = {0}".format(pblimit), origin='almaimf_line_imaging')
 
-                    ia.fromshape(outfile=lineimagename+".mask", shape=shape, csys=csys, type='f')
-
-                    # makemask doesn't work
-                    #makemask(mode='copy',
-                    #        inpimage=lineimagename+".image",
-                    #        inpmask=lineimagename+".image:mask0",
-                    #        output=lineimagename+".mask")
+                    ia.calcmask(mask="{0}.pb > {1}".format(lineimagename, pblimit),
+                                name="{0}.mask".format(lineimagename)
+                               )
 
                 # this if statement is now (almost?) entirely redundant b/c the
                 # previous ensures that a mask exists
