@@ -190,6 +190,9 @@ else:
             ))
 if not os.path.exists(temp_workdir):
     os.mkdir(temp_workdir)
+if imaging_root[0] != '/':
+    imaging_root = os.path.join(os.getcwd(), imaging_root)
+    logprint("Imaging root changed to {0}".format(imaging_root))
 logprint("Working in directory {0}".format(temp_workdir))
 os.chdir(temp_workdir)
 
