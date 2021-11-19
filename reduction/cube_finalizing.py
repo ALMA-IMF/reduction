@@ -39,6 +39,6 @@ def beam_correct_cube(basename, minimize=True):
                      export_fits=False
                      )
 
-    merged.write(basename+".JvM.image.fits")
+    merged.write(basename+".JvM.image.fits", overwrite=True)
 
     return merged
