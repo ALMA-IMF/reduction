@@ -38,6 +38,6 @@ def beam_correct_cube(basename, minimize=True):
                      residual_image=residcube,
                      clean_beam=clean_beam)
 
-    merged.write(basename+".JvM.image")
+    merged.write(basename+".JvM.image.fits")
 
     return merged
