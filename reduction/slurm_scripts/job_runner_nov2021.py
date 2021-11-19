@@ -139,10 +139,10 @@ if __name__ == "__main__":
             if 'RUNNING' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'RUNNING')]
                 continue
-                print(f"Skipped job {jobname} because it's running as {jobid}")
+                print(f"Skipped job {jobname} because it's running as {set(jobid)}")
             elif 'COMPLETED' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'COMPLETED')]
-                print(f"Skipped job {jobname} because it's COMPLETED as {jobid}")
+                print(f"Skipped job {jobname} because it's COMPLETED as {set(jobid)}")
                 continue
             elif 'FAILED' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'FAILED')]
