@@ -12,7 +12,8 @@ from radio_beam import Beam, Beams
 from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
 
-def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True, **kwargs):
+def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
+                     verbose=False, **kwargs):
     """
     Determine epsilon, the ratio of the clean beam volume to the dirty beam volume within the first null, for a cube's PSFs.
     
@@ -85,10 +86,11 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True, **kwa
         epsilon = clean_psf_sum/psf_sum
         epsilon_arr[chan] = epsilon
 
-        print('\n')
-        print('Clean beam area of channel {0} is {1} pixels:'.format(chan, clean_psf_sum))
-        print('Dirty beam area of channel {0} is {1} pixels:'.format(chan, psf_sum))
-        print('epsilon = Omega_clean / Omega_dirty = {}'.format(epsilon))
+        if verbose:
+            print('\n')
+            print('Clean beam area of channel {0} is {1} pixels:'.format(chan, clean_psf_sum))
+            print('Dirty beam area of channel {0} is {1} pixels:'.format(chan, psf_sum))
+            print('epsilon = Omega_clean / Omega_dirty = {}'.format(epsilon))
 
     if export_clean_beam:
         output = {'epsilon': epsilon_arr, 'clean_beam': common_beam}
@@ -106,9 +108,13 @@ def conv_model(model_image, clean_beam):
     clean_beam_kernel = beam.as_kernel(pix_scale)
 
     omega_beam = beam.sr
-    omega_pix = pix_scale.to('rad') **2
+    omega_pix = pix_scale.to('rad')**2
     npix_beam = (omega_beam/omega_pix).value
 
+    # should we just use a delta function rather than try to hack correct pixel area?
+    # alternately, we could deconvolve a pixel size.
+    # What is technically correct?
+    # What does CASA do?  (scary question)
     fwhm_gauss_pix = (4*np.log(2)/np.pi)**0.5 * pix_scale
     pix_beam = Beam(fwhm_gauss_pix, fwhm_gauss_pix, 0*u.deg)
     model = model.with_beam(pix_beam)
@@ -125,9 +131,14 @@ def rescale(conv_model, epsilon, residual_image, export_fits=True):
 
     conv_model._unit = u.dimensionless_unscaled
     epsilon = epsilon*u.dimensionless_unscaled
-    restor = conv_model + epsilon[:,None,None]*residual
+    # maybe use einsum here?
+    print("creating restor")
+    restor = conv_model + residual*epsilon[:,None,None]
+    print("done creating restor")
 
     if export_fits:
+        print("Writing")
         restor.write(residual_image.replace('.residual','.resc_restored.fits'), overwrite=True)
+        print("Done writing")
 
     return restor
