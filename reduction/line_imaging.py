@@ -104,7 +104,6 @@ with open('to_image.json', 'r') as fh:
 if os.getenv('LOGFILENAME'):
     casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
 
-imaging_root = "imaging_results"
 if os.getenv('PRODUCT_DIRECTORY') and os.getenv('WORK_DIRECTORY'):
     copy_files = True
     workdir = os.getenv('WORK_DIRECTORY') +"/"
@@ -114,6 +113,8 @@ if os.getenv('PRODUCT_DIRECTORY') and os.getenv('WORK_DIRECTORY'):
              .format(workdir=workdir, proddir=proddir))
 else:
     copy_files = False
+    imaging_root = os.path.join(os.getcwd(), 'imaging_results')
+    logprint("Imaging root set to '{0}'".format(imaging_root))
 
 if os.getenv('FIELD_ID'):
     if 'field_id' in locals():
