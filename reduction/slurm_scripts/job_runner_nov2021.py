@@ -139,11 +139,18 @@ if __name__ == "__main__":
             if 'RUNNING' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'RUNNING')]
                 continue
-                print(f"Skipped job {jobname} because it's running as {set(jobid)}")
+                print(f"Skipped job {jobname} because it's RUNNING as {set(jobid)}")
+            elif 'PENDING' in states:
+                jobid = tbl['JobID'][match & (tbl['State'] == 'PENDING')]
+                print(f"Skipped job {jobname} because it's PENDING as {set(jobid)}")
+                continue
             elif 'COMPLETED' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'COMPLETED')]
-                print(f"Skipped job {jobname} because it's COMPLETED as {set(jobid)}")
-                continue
+                if '--redo-completed' in sys.argv:
+                    print(f"Redoing job {jobname} even though it's COMPLETED as {set(jobid)} (if it is not pending)")
+                else:
+                    print(f"Skipped job {jobname} because it's COMPLETED as {set(jobid)}")
+                    continue
             elif 'FAILED' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'FAILED')]
                 if '--redo-failed' in sys.argv:
@@ -151,10 +158,6 @@ if __name__ == "__main__":
                 else:
                     print(f"Skipped job {jobname} because it's FAILED as {set(jobid)}")
                     continue
-            elif 'PENDING' in states:
-                jobid = tbl['JobID'][match & (tbl['State'] == 'PENDING')]
-                print(f"Skipped job {jobname} because it's PENDING as {set(jobid)}")
-                continue
             elif 'TIMEOUT' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'TIMEOUT')]
                 print(f"Restarting job {jobname} because it TIMED OUT as {set(jobid)}")
