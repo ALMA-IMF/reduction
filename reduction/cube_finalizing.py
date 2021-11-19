@@ -9,7 +9,7 @@ Cube finalizing:
 
 from beam_volume_tools import epsilon_from_psf, conv_model, rescale
 from spectral_cube import SpectralCube
-from radio_beam import BeamError
+from radio_beam.utils import BeamError
 
 def beam_correct_cube(basename, minimize=True):
     modcube = SpectralCube.read(basename+".model")
