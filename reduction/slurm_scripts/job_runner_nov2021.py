@@ -6,6 +6,7 @@ spws = {'B3': [f'spw{s}' for s in range(4)] + ['n2hp'],
 
 # baseband, spw: name
 line_maps = {'n2hp': {'band': 3, 'spw': 0},
+             'h41a': {'band': 3, 'spw': 1},
              'sio': {'band': 6, 'spw': 1}}
 
 parameters = {'W51-E': {'12M':
@@ -44,8 +45,8 @@ for field, fpars in parameters.items():
 newpars.update({f'{field}_{array}_{band}_{spw}':
                       {'mem': 64, 'ntasks': 16, 'mpi': True, 'concat':True}
     for field in allfields
-    for array in ("7M12M", )
-    for band, spw in (('B3', 'n2hp'), ('B6', 'sio'))
+    for array in ("12M", )
+    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'))
 })
 
 
@@ -73,7 +74,8 @@ assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
 
 # something's really broken about the ms here
-del parameters['W43-MM1_7M12M_B6_sio']
+if 'W43-MM1_7M12M_B6_sio' in parameters:
+    del parameters['W43-MM1_7M12M_B6_sio']
 
 
 if __name__ == "__main__":
