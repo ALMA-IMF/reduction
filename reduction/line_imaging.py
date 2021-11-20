@@ -64,6 +64,7 @@ import shutil
 import numpy as np
 import astropy.units as u
 from astropy import constants
+from spectral_cube import SpectralCube
 import re
 try:
     from tasks import tclean, uvcontsub, impbcor, concat, flagdata, makemask
@@ -544,8 +545,12 @@ for band in band_list:
                 # that indicates a severe problem
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
-                               '.contcube.model', '.image.fits',
-                               '.image.pbcor.fits'):
+                               '.contcube.model',
+                               '.image.fits',
+                               '.image.pbcor.fits',
+                               '.image.mincube.fits',
+                               '.image.pbcor.mincube.fits',
+                              ):
                     destdir = imaging_root
                     dest = os.path.join(imaging_root, baselineimagename+suffix)
                     src = os.path.join(proddir,
@@ -1011,12 +1016,25 @@ for band in band_list:
                         exportfits(lineimagename+".image", lineimagename+".image.fits", overwrite=True)
                         exportfits(lineimagename+".image.pbcor", lineimagename+".image.pbcor.fits", overwrite=True)
 
+                        cube = SpectralCube.read(lineimagename+".image.fits", use_dask=True)
+                        cutslc = cube.subcube_slices_from_mask(cube.mask)
+                        cube[cutslc].write(lineimagename+".image.mincube.fits", overwrite=True)
+                        del cube
+                        SpectralCube.read(lineimagename+".image.pbcor.fits", use_dask=True)[cutslc].write(lineimagename+".image.pbcor.mincube.fits", overwrite=True)
+                        SpectralCube.read(linemodelname+".model", use_dask=True, format='casa_image')[cutslc].write(linemodelname+".model.mincube.fits", overwrite=True)
+                        SpectralCube.read(lineresidualname+".residual", use_dask=True, format='casa_image')[cutslc].write(lineresidualname+".residual.mincube.fits", overwrite=True)
+
 
             if copy_files and not dryrun:
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
-                               '.contcube.model', '.image.fits',
+                               '.contcube.model',
+                               '.model.mincube.fits',
+                               '.residual.mincube.fits',
+                               '.image.fits',
+                               '.image.mincube.fits',
                                '.image.pbcor.fits',
+                               '.image.pbcor.mincube.fits',
                               ):
                     src = lineimagename+suffix
                     dest = proddir
