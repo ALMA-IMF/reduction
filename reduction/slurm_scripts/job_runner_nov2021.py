@@ -70,6 +70,9 @@ for key in newpars:
 
 parameters = default_parameters
 
+for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
+    parameters[f'{field}_7M12M_B3_h41a']['mem'] = 128
+
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
 
