@@ -97,12 +97,12 @@ def get_human_readable_name(weblog, mapping=None):
                             if 'uid' in td.text:
                                 uid = td.text
 
-                sbname = mapping[uid]
-#                try:
-#                    sbname = mapping[uid]
-#                except:
-#                    sbname = 'fail'
-#                    print('fail = {0}'.format(directory))
+#                sbname = mapping[uid]
+                try:
+                    sbname = mapping[uid]
+                except:
+                    sbname = 'fail'
+                    print('fail = {0}'.format(directory))
 
     return sbname, max_baseline
 
@@ -235,7 +235,10 @@ def weblog_names(list_of_weblogs, mapping):
             if hrns.count(nm) > 1:
                 print("Fixing {0}".format(nm))
                 dupes = [ii for ii,x in enumerate(hrns) if x==nm]
-                assert len(dupes) == 2
+                if len(dupes) != 2:
+                    print(f"Found too many or too few: {dupes}")
+                    continue
+                #assert len(dupes) == 2
                 bl1 = data[dupes[0]][0][1]
                 bl2 = data[dupes[1]][0][1]
                 if bl1 < bl2:
