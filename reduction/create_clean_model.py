@@ -22,7 +22,7 @@ ia = iatool()
 # 2) robust0 cleanest model .tt0 and .tt1 are used to construct continuum_cube.model. A next level of complexity would be to use the robust 1 or
 # robust -1 continuum images depending on the robust param of the line tclean command.
 
-def create_clean_model(cubeimagename, contimagename, imaging_results_path, contmodel_path=None,):
+def create_clean_model(cubeimagename, contimagename, imaging_results_path, contmodel_path=None, cubeinsuffix='image'):
     #results_path = "./imaging_results/"  # imaging_results frmo the pipeline
     #contmodel_path = "./imaging_results_test_casatools/"  #Path with input and temporary continuum models
     if contmodel_path is None:
@@ -39,9 +39,10 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
 
     # image has to exist, model should not exist!
     # (if you ran tclean with niter=0, no model is created)
-    cubeinimagepath = ("{results_path}/{cubeimagename}.image"
+    cubeinimagepath = ("{results_path}/{cubeimagename}.{cubeinsuffix}"
                        .format(results_path=imaging_results_path,
-                               cubeimagename=cubeimagename))
+                               cubeimagename=cubeimagename,
+                               cubeinsuffix=cubeinsuffix))
     cubeoutmodelpath = ("{results_path}/{cubeimagename}.contcube.model"
                         .format(results_path=imaging_results_path,
                                 cubeimagename=cubeimagename))
