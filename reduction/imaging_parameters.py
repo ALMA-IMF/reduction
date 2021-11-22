@@ -4463,6 +4463,7 @@ flag_thresholds_custom = {
     "G012.80_B3_12M_spw0": {"nchan": 20, "tolerance": 0.31},
     "G012.80_B3_7M12M_spw0": {"nchan": 20, "tolerance": 0.31},
     "G328.25_B3_7M12M_spw0": {"nchan": 427, "tolerance": 0.57},
+    "G328.25_B3_7M12M_spw1": {"nchan": 427, "tolerance": 0.57},
     "G353.41_B3_12M_spw0": {"nchan": 28, "tolerance": 0.23},
     "G353.41_B3_7M12M_spw0": {"nchan": 28, "tolerance": 0.23},
     "G353.41_B6_12M_spw5": {"nchan": 102, "tolerance": 0.23},  # first 100 channels

@@ -43,7 +43,7 @@ for field, fpars in parameters.items():
 
 # add the 7m12m merge for n2hp,sio,h41a only
 newpars.update({f'{field}_{array}_{band}_{spw}':
-                      {'mem': 64, 'ntasks': 16, 'mpi': True, 'concat':True}
+                      {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
     for array in ("12M", "7M12M")
     for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'))
@@ -72,6 +72,8 @@ parameters = default_parameters
 
 for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
     parameters[f'{field}_7M12M_B3_h41a']['mem'] = 128
+for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
+    parameters[f'{field}_7M12M_B3_n2hp']['mem'] = 128
 
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
