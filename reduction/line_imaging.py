@@ -1021,8 +1021,8 @@ for band in band_list:
                         cube[cutslc].write(lineimagename+".image.mincube.fits", overwrite=True)
                         del cube
                         SpectralCube.read(lineimagename+".image.pbcor.fits", use_dask=True)[cutslc].write(lineimagename+".image.pbcor.mincube.fits", overwrite=True)
-                        SpectralCube.read(lineimagename+".model", use_dask=True, format='casa_image')[cutslc].write(linemodelname+".model.mincube.fits", overwrite=True)
-                        SpectralCube.read(lineimagename+".residual", use_dask=True, format='casa_image')[cutslc].write(lineresidualname+".residual.mincube.fits", overwrite=True)
+                        SpectralCube.read(lineimagename+".model", use_dask=True, format='casa_image')[cutslc].write(lineimagename+".model.mincube.fits", overwrite=True)
+                        SpectralCube.read(lineimagename+".residual", use_dask=True, format='casa_image')[cutslc].write(lineimagename+".residual.mincube.fits", overwrite=True)
 
 
             if copy_files and not dryrun:
