@@ -4460,6 +4460,7 @@ flag_thresholds_default = {
 
 flag_thresholds_custom = {
     "G008.67_B3_7M12M_spw0": {"nchan": 420, "tolerance": 0.01},
+    "G008.67_B3_7M12M_spw1": {"nchan": 420, "tolerance": 0.01},
     "G012.80_B3_12M_spw0": {"nchan": 20, "tolerance": 0.31},
     "G012.80_B3_7M12M_spw0": {"nchan": 20, "tolerance": 0.31},
     "G328.25_B3_7M12M_spw0": {"nchan": 427, "tolerance": 0.57},
@@ -4472,6 +4473,7 @@ flag_thresholds_custom = {
     "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw6": {"nchan": 41, "tolerance": 0.25},
     "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25},  # again 51 channels in spw7
+    "W43-MM1_B3_7M12M_spw1": {"nchan": 26, "tolerance": 0.01},  # 25 chan with 3.0x diff
     "W43-MM2_B6_12M_spw6": {"nchan": 142, "tolerance": 0.01},  # 141 chan with 0.97x diff
     "W43-MM2_B6_12M_spw7": {"nchan": 202, "tolerance": 0.02},  # 201 channels with 1.96x diff?
     "W43-MM3_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01},  # 201 above 1.92x
