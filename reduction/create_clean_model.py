@@ -65,6 +65,14 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     imregrid(imagename=tt0name, output=tt0model, template=temp_dict_line, overwrite=True)
     imregrid(imagename=tt1name, output=tt1model, template=temp_dict_line, overwrite=True)
 
+    # calculate the pixel areas in steradians
+    original_pixel_area = np.product(temp_dict_cont_tt0['csys']['direction0']['cdelt'])
+    new_pixel_area = np.product(temp_dict_line['csys']['direction0']['cdelt'])
+
+    # the units of the new image need to be rescaled by the ratio of the pixel areas
+    # (this scaling is applied in the pixel value calculation in the loop below)
+    jypix_scalefactor = new_pixel_area / original_pixel_area
+
     # Use CASA tools to create a model cube from the continuum model
     if os.path.exists(cubeoutmodelpath):
         shutil.rmtree(cubeoutmodelpath)
@@ -96,7 +104,7 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
         #print(dnu_plane, nu_plane)
         factor = (nu_plane - temp_dict_cont_tt0['csys']['spectral2']['wcs']['crval'])/temp_dict_cont_tt0['csys']['spectral2']['wcs']['crval']
         #print(factor)
-        plane_pixvalues = tt0_pixvalues + factor*tt1_pixvalues
+        plane_pixvalues = (tt0_pixvalues + factor*tt1_pixvalues) * jypix_scalefactor
         blc = [0, 0, 0, plane]
         #trc = [line_im.shape()[0]-1, line_im.shape()[1]-1, 0, plane]
         line_im.putchunk(plane_pixvalues, blc=blc, replicate=False)
