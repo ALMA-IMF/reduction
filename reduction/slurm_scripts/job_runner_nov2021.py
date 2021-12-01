@@ -75,6 +75,9 @@ for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
 for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
     parameters[f'{field}_7M12M_B3_n2hp']['mem'] = 128
 
+parameters['W51-IRS2_7M12M_B3_n2hp']['mem'] = 256
+parameters['G333.60_7M12M_B3_h41a']['mem'] = 256
+
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
 
