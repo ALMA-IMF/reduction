@@ -1,6 +1,8 @@
 # Script to create a startmodel for cube cleaning based on the continuum clean components
 # Last modified 04.08.2020
 
+import numpy as np
+
 try:
     from tasks import imregrid
     from taskinit import iatool
