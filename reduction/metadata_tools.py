@@ -201,10 +201,12 @@ def get_indiv_imsize(ms, field, phasecenter, spw=0, pixfraction_of_fwhm=1/4.,
     wavelength = 299792458.0/freq # m
     # go a little past the first null in each direction
     # (radians)
-    primary_beam_fwhm = 1.22 * wavelength / antsize
+    # Note we originally had 1.22 (from the Rayleigh criterion, not well-justified)
+    # but empirically found that we need at least 1.26 to avoid wrapping images.
+    primary_beam_fwhm = 1.26 * wavelength / antsize
 
     # synthesized beam minimum size (max_baseline in m)
-    synthbeam_minsize_fwhm = 1.22 * wavelength / max_baseline
+    synthbeam_minsize_fwhm = 1.26 * wavelength / max_baseline
     # (radians)
     pixscale = pixfraction_of_fwhm * synthbeam_minsize_fwhm
 
