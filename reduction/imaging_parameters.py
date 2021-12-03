@@ -2844,7 +2844,7 @@ line_imaging_parameters_default = {
         "pbmask": 0.1,
         "perchanweightdensity": True,
         "interactive": 0,  # returns a dict (False doesn't...)
-        "mask_out_endchannels": 2,
+        "mask_out_endchannels": 2,  # this may be something to remove, it continually confuses people.
         "cyclefactor": 2.0,  # higher cyclefactor = more major cycles
     }
     for field in allfields
@@ -2860,6 +2860,8 @@ for key in list(line_imaging_parameters_default.keys()):
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
         line_imaging_parameters_default[key]["niter"] = 5000
+        line_imaging_parameters_default[key]["pblimit"] = 0.2 # added Nov 19, 2021 based on G353 success
+        line_imaging_parameters_default[key]["pbmask"] = 0.1
         # TODO: change pblimit?
     if "B6" in key:
         # set defaults for 12CO to have higher cyclefactor and higher threshold (12CO is scary)
@@ -3312,6 +3314,13 @@ line_imaging_parameters_custom = {
     "G333.60_B3_12M_robust0_n2hp": {
         "threshold": "5sigma",
         "scales": [0, 9, 28, 86],
+        "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G333.60_B3_7M12M_robust0_n2hp": {
+        "threshold": "5sigma",
+        "imsize": [4096, 4096],
+        "cell": ["0.08arcsec", "0.08arcsec"],
+        "scales": [0, 9, 28, 85],
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G337.92_B3_12M_robust0_n2hp": {
@@ -4134,26 +4143,36 @@ line_imaging_parameters_custom = {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32, 64],
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "cell": ["0.08arcsec", "0.08arcsec"],
+        "imsize": [1440, 1500],
     },
     "W51-E_B6_12M_robust0_spw1": {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32, 64],
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "cell": ["0.08arcsec", "0.08arcsec"],
+        "imsize": [1440, 1500],
     },
     "W51-E_B6_12M_robust0_spw2": {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32, 64],
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "cell": ["0.08arcsec", "0.08arcsec"],
+        "imsize": [1440, 1500],
     },
     "W51-E_B6_12M_robust0_spw3": {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32, 64],
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "cell": ["0.08arcsec", "0.08arcsec"],
+        "imsize": [1440, 1500],
     },
     "W51-E_B6_12M_robust0_spw4": {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32, 64],
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "cell": ["0.08arcsec", "0.08arcsec"],
+        "imsize": [1440, 1500],
     },
     "W51-E_B6_12M_robust0_spw5": {
         "threshold": "5sigma",
@@ -4450,14 +4469,21 @@ flag_thresholds_default = {
 }
 
 flag_thresholds_custom = {
+    "G008.67_B3_7M12M_spw0": {"nchan": 420, "tolerance": 0.01},
+    "G008.67_B3_7M12M_spw1": {"nchan": 420, "tolerance": 0.01},
     "G012.80_B3_12M_spw0": {"nchan": 20, "tolerance": 0.31},
-    "G353.41_B3_12M_spw0": {"nchan": 27, "tolerance": 0.23},
+    "G012.80_B3_7M12M_spw0": {"nchan": 20, "tolerance": 0.31},
+    "G328.25_B3_7M12M_spw0": {"nchan": 427, "tolerance": 0.57},
+    "G328.25_B3_7M12M_spw1": {"nchan": 427, "tolerance": 0.57},
+    "G353.41_B3_12M_spw0": {"nchan": 28, "tolerance": 0.23},
+    "G353.41_B3_7M12M_spw0": {"nchan": 28, "tolerance": 0.23},
     "G353.41_B6_12M_spw5": {"nchan": 102, "tolerance": 0.23},  # first 100 channels
     "G337.92_B6_12M_spw7": {"nchan": 51, "tolerance": 1.00},  # maxdiff is ~6x!
     "W51-E_B6_12M_spw3": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw5": {"nchan": 18, "tolerance": 2.25},
     "W51-E_B6_12M_spw6": {"nchan": 41, "tolerance": 0.25},
     "W51-E_B6_12M_spw7": {"nchan": 51, "tolerance": 0.25},  # again 51 channels in spw7
+    "W43-MM1_B3_7M12M_spw1": {"nchan": 26, "tolerance": 0.01},  # 25 chan with 3.0x diff
     "W43-MM2_B6_12M_spw6": {"nchan": 142, "tolerance": 0.01},  # 141 chan with 0.97x diff
     "W43-MM2_B6_12M_spw7": {"nchan": 202, "tolerance": 0.02},  # 201 channels with 1.96x diff?
     "W43-MM3_B6_12M_spw6": {"nchan": 141, "tolerance": 0.01},  # 201 above 1.92x

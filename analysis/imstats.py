@@ -95,7 +95,7 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     rr = ((dx * costh + dy * sinth)**2 / rmajmin**2 +
           (dx * sinth - dy * costh)**2 / 1**2)**0.5
 
-    rbin = (rr).astype(np.int)
+    rbin = (rr).astype(int)
 
     # assume the PSF first minimum is within 100 pixels of center
     radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(max_npix_peak))
@@ -262,10 +262,14 @@ def imstats(fn, reg=None):
                 'fluxsum': imsum / ppbeam,
                 'sumgt5sig': sumgt5sig,
                 'sumgt3sig': sumgt3sig,
+                'cellsize': (pixscale**0.5).to(u.arcsec).value
                }
 
     if reg is not None:
-        reglist = regions.read_ds9(reg)
+        try:
+            reglist = regions.read_ds9(reg)
+        except AttributeError: # newer version
+            reglist = regions.Regions.read(reg)
         data = data.squeeze()
         composite_region = reduce(operator.or_, reglist)
         if hasattr(composite_region, 'to_mask'):
@@ -289,9 +293,9 @@ def imstats(fn, reg=None):
 
     if os.path.exists(psf_fn):
         try:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, r_sidelobe, _ = get_psf_secondpeak(psf_fn)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, firstmin, r_sidelobe, _ = get_psf_secondpeak(psf_fn)
         except IndexError:
-            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, r_sidelobe, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
+            psf_secondpeak, psf_secondpeak_loc, psf_sidelobe1_fraction, epsilon, firstmin, r_sidelobe, _ = get_psf_secondpeak(psf_fn, max_npix_peak=200)
         meta['psf_secondpeak'] = psf_secondpeak
         meta['psf_epsilon'] = epsilon
         meta['psf_secondpeak_radius'] = psf_secondpeak_loc
@@ -778,7 +782,7 @@ def savestats(basepath="/orange/adamginsburg/web/secure/ALMA-IMF/October31Releas
     stats_keys = ['bmaj', 'bmin', 'bpa', 'peak', 'sum', 'fluxsum', 'sumgt3sig',
                   'sumgt5sig', 'mad', 'mad_sample', 'std_sample', 'peak/mad',
                   'psf_secondpeak', 'psf_secondpeak_radius',
-                  'psf_secondpeak_sidelobefraction',
+                  'psf_secondpeak_sidelobefraction', 'cellsize',
                  ]
     req_keys = ['B3_res', 'B3_sens', 'B6_res', 'B6_sens']
     req_keys_head = ['Req_Res', 'Req_Sens']

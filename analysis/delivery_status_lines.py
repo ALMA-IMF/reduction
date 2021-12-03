@@ -25,6 +25,7 @@ rows = []
 
 # baseband, spw: name
 line_maps = {(3,0): 'n2hp',
+             (3,1): 'h41a',
              (6,1): 'sio'}
 
 

@@ -64,6 +64,7 @@ import shutil
 import numpy as np
 import astropy.units as u
 from astropy import constants
+from spectral_cube import SpectralCube
 import re
 try:
     from tasks import tclean, uvcontsub, impbcor, concat, flagdata, makemask
@@ -104,7 +105,6 @@ with open('to_image.json', 'r') as fh:
 if os.getenv('LOGFILENAME'):
     casalog.setlogfile(os.path.join(os.getcwd(), os.getenv('LOGFILENAME')))
 
-imaging_root = "imaging_results"
 if os.getenv('PRODUCT_DIRECTORY') and os.getenv('WORK_DIRECTORY'):
     copy_files = True
     workdir = os.getenv('WORK_DIRECTORY') +"/"
@@ -114,6 +114,8 @@ if os.getenv('PRODUCT_DIRECTORY') and os.getenv('WORK_DIRECTORY'):
              .format(workdir=workdir, proddir=proddir))
 else:
     copy_files = False
+    imaging_root = os.path.join(os.getcwd(), 'imaging_results')
+    logprint("Imaging root set to '{0}'".format(imaging_root))
 
 if os.getenv('FIELD_ID'):
     if 'field_id' in locals():
@@ -543,8 +545,12 @@ for band in band_list:
                 # that indicates a severe problem
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
-                               '.contcube.model', '.image.fits',
-                               '.image.pbcor.fits'):
+                               '.contcube.model',
+                               '.image.fits',
+                               '.image.pbcor.fits',
+                               '.image.mincube.fits',
+                               '.image.pbcor.mincube.fits',
+                              ):
                     destdir = imaging_root
                     dest = os.path.join(imaging_root, baselineimagename+suffix)
                     src = os.path.join(proddir,
@@ -589,7 +595,7 @@ for band in band_list:
             coosys, racen, deccen = determine_phasecenter(ms=concatvis,
                                                           field=field)
             phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
-            check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+            # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
             (dra, ddec, pixscale) = list(determine_imsize(ms=concatvis,
                                                           field=field,
                                                           phasecenter=(racen, deccen),
@@ -602,7 +608,7 @@ for band in band_list:
                                                          ))
             imsize = [int(dra), int(ddec)]
             cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
-            check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+            # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
 
             dirty_tclean_made_residual = False
 
@@ -624,13 +630,21 @@ for band in band_list:
             if 'imsize' not in impars:
                 impars['imsize'] = imsize
             else:
+                # leave untouched
                 logprint("Overriding imsize={0} to {1}".format(imsize, impars['imsize']))
+
             if 'cell' not in impars:
                 impars['cell'] = cellsize
+            else:
+                # leave untouched
                 logprint("Overriding cell={0} to {1}".format(cellsize, impars['cell']))
+
             if 'phasecenter' not in impars:
                 impars['phasecenter'] = phasecenter
+            else:
+                # leave impars['phasecenter'] untouched
                 logprint("Overriding phasecenter={0} to {1}".format(phasecenter, impars['phasecenter']))
+
             #impars['field'] = [field.encode()]
             impars['field'] = field
 
@@ -678,7 +692,7 @@ for band in band_list:
 
                 logprint("Dirty imaging parameters are {0}".format(impars_dirty),
                          origin='almaimf_line_imaging')
-                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+                # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
                     tclean(vis=concatvis,
                            imagename=lineimagename,
@@ -687,7 +701,7 @@ for band in band_list:
                            **impars_dirty
                           )
                     sethistory(lineimagename, impars=impars_dirty, suffixes=(".image", ".residual"))
-                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+                # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 for suffix in ("mask", "model"):
                     bad_fn = lineimagename + "." + suffix
                     if os.path.exists(bad_fn):
@@ -823,12 +837,12 @@ for band in band_list:
                     if make_continuum_startmodel and not dryrun:
                         contmodel = "{0}/{1}.contcube.model".format(imaging_results_path_for_contmodel,
                                                                     baselineimagename)
-                        impars['startmodel'] = contmodel
 
                         if os.path.exists(contmodel):
                             logprint("Not creating continuum model {0} because it already exists".format(contmodel))
                         else:
-                            logprint("Creating continuum model {0}".format(contmodel))
+                            logprint("Creating continuum model {0} from cubeimagename={1}, contimagename={2}, imaging_results_path={3}, contmodel_path={4}"
+                                     .format(contmodel, baselineimagename, impars['startmodel'], imaging_results_path_for_contmodel, contmodel_path))
                             new_contmodel = create_clean_model(cubeimagename=baselineimagename,
                                                                contimagename=impars['startmodel'],
                                                                imaging_results_path=imaging_results_path_for_contmodel,
@@ -839,6 +853,8 @@ for band in band_list:
                             else:
                                 # if we're not moving these around, they should be the same file
                                 assert contmodel == new_contmodel
+
+                        impars['startmodel'] = contmodel
 
 
 
@@ -860,19 +876,12 @@ for band in band_list:
                 #     if 'usemask' in impars and impars['usemask'] != 'user':
                 #         raise ValueError("Mask exists but not specified as user.")
                 if 'mask' not in impars and not os.path.exists(lineimagename+".mask"):
-                    logprint("Copying mask from image", origin='almaimf_line_imaging')
-                    ia.open(lineimagename+".image")
-                    shape = ia.shape()
-                    csys = ia.coordsys().torecord()
-                    ia.close()
+                    pblimit = impars['pblimit'] if 'pblimit' in impars else 0.001
+                    logprint("Creating mask from pb with pblimit = {0}".format(pblimit), origin='almaimf_line_imaging')
 
-                    ia.fromshape(outfile=lineimagename+".mask", shape=shape, csys=csys, type='f')
-
-                    # makemask doesn't work
-                    #makemask(mode='copy',
-                    #        inpimage=lineimagename+".image",
-                    #        inpmask=lineimagename+".image:mask0",
-                    #        output=lineimagename+".mask")
+                    ia.calcmask(mask="{0}.pb > {1}".format(lineimagename, pblimit),
+                                name="{0}.mask".format(lineimagename)
+                               )
 
                 # this if statement is now (almost?) entirely redundant b/c the
                 # previous ensures that a mask exists
@@ -955,7 +964,7 @@ for band in band_list:
                 impars['parallel'] = parallel
 
 
-                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+                # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
                     logprint("Cleaning with pars {0}".format(impars), origin='almaimf_line_imaging')
                     tclean(vis=concatvis,
@@ -965,7 +974,7 @@ for band in band_list:
                            calcres=False,
                            **impars
                           )
-                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+                # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 # re-do the tclean once more, with niter=0, to force recalculation of the residual
                 niter = impars['niter']
                 impars['niter'] = 0
@@ -980,7 +989,7 @@ for band in band_list:
                     impars['mask'] = ''
                 else:
                     mask = ''
-                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+                # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
                     logprint("Final zero-iter clean to restore residual", origin='almaimf_line_imaging')
                     tclean(vis=concatvis,
@@ -993,7 +1002,7 @@ for band in band_list:
                     impars['startmodel'] = smod
                     impars['mask'] = mask
                     sethistory(lineimagename, nsigma=nsigma, impars=impars)
-                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+                # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
 
                 if not dryrun:
                     logprint("pbcorrecting {0}".format(lineimagename), origin='almaimf_line_imaging')
@@ -1007,12 +1016,25 @@ for band in band_list:
                         exportfits(lineimagename+".image", lineimagename+".image.fits", overwrite=True)
                         exportfits(lineimagename+".image.pbcor", lineimagename+".image.pbcor.fits", overwrite=True)
 
+                        cube = SpectralCube.read(lineimagename+".image.fits", use_dask=True)
+                        cutslc = cube.subcube_slices_from_mask(cube.mask)
+                        cube[cutslc].write(lineimagename+".image.mincube.fits", overwrite=True)
+                        del cube
+                        SpectralCube.read(lineimagename+".image.pbcor.fits", use_dask=True)[cutslc].write(lineimagename+".image.pbcor.mincube.fits", overwrite=True)
+                        SpectralCube.read(lineimagename+".model", use_dask=True, format='casa_image')[cutslc].write(lineimagename+".model.mincube.fits", overwrite=True)
+                        SpectralCube.read(lineimagename+".residual", use_dask=True, format='casa_image')[cutslc].write(lineimagename+".residual.mincube.fits", overwrite=True)
+
 
             if copy_files and not dryrun:
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
                                '.pb', '.psf', '.residual', '.sumwt', '.weight',
-                               '.contcube.model', '.image.fits',
+                               '.contcube.model',
+                               '.model.mincube.fits',
+                               '.residual.mincube.fits',
+                               '.image.fits',
+                               '.image.mincube.fits',
                                '.image.pbcor.fits',
+                               '.image.pbcor.mincube.fits',
                               ):
                     src = lineimagename+suffix
                     dest = proddir

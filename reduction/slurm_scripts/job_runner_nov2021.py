@@ -6,6 +6,7 @@ spws = {'B3': [f'spw{s}' for s in range(4)] + ['n2hp'],
 
 # baseband, spw: name
 line_maps = {'n2hp': {'band': 3, 'spw': 0},
+             'h41a': {'band': 3, 'spw': 1},
              'sio': {'band': 6, 'spw': 1}}
 
 parameters = {'W51-E': {'12M':
@@ -40,12 +41,12 @@ for field, fpars in parameters.items():
             for spw, spwpars in bandpars.items():
                 newpars[f'{field}_{array}_{band}_{spw}'] = spwpars
 
-# add the 7m12m merge for n2hp,sio only
+# add the 7m12m merge for n2hp,sio,h41a only
 newpars.update({f'{field}_{array}_{band}_{spw}':
-                      {'mem': 64, 'ntasks': 16, 'mpi': True, 'concat':True}
+                      {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
-    for array in ("7M12M", )
-    for band, spw in (('B3', 'n2hp'), ('B6', 'sio'))
+    for array in ("12M", "7M12M")
+    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'))
 })
 
 
@@ -69,11 +70,20 @@ for key in newpars:
 
 parameters = default_parameters
 
+for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
+    parameters[f'{field}_7M12M_B3_h41a']['mem'] = 128
+for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
+    parameters[f'{field}_7M12M_B3_n2hp']['mem'] = 128
+
+parameters['W51-IRS2_7M12M_B3_n2hp']['mem'] = 256
+parameters['G333.60_7M12M_B3_h41a']['mem'] = 256
+
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
 
 # something's really broken about the ms here
-del parameters['W43-MM1_7M12M_B6_sio']
+if 'W43-MM1_7M12M_B6_sio' in parameters:
+    del parameters['W43-MM1_7M12M_B6_sio']
 
 
 if __name__ == "__main__":
@@ -137,11 +147,18 @@ if __name__ == "__main__":
             if 'RUNNING' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'RUNNING')]
                 continue
-                print(f"Skipped job {jobname} because it's running as {jobid}")
+                print(f"Skipped job {jobname} because it's RUNNING as {set(jobid)}")
+            elif 'PENDING' in states:
+                jobid = tbl['JobID'][match & (tbl['State'] == 'PENDING')]
+                print(f"Skipped job {jobname} because it's PENDING as {set(jobid)}")
+                continue
             elif 'COMPLETED' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'COMPLETED')]
-                print(f"Skipped job {jobname} because it's COMPLETED as {jobid}")
-                continue
+                if '--redo-completed' in sys.argv:
+                    print(f"Redoing job {jobname} even though it's COMPLETED as {set(jobid)} (if it is not pending)")
+                else:
+                    print(f"Skipped job {jobname} because it's COMPLETED as {set(jobid)}")
+                    continue
             elif 'FAILED' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'FAILED')]
                 if '--redo-failed' in sys.argv:
@@ -149,10 +166,6 @@ if __name__ == "__main__":
                 else:
                     print(f"Skipped job {jobname} because it's FAILED as {set(jobid)}")
                     continue
-            elif 'PENDING' in states:
-                jobid = tbl['JobID'][match & (tbl['State'] == 'PENDING')]
-                print(f"Skipped job {jobname} because it's PENDING as {set(jobid)}")
-                continue
             elif 'TIMEOUT' in states:
                 jobid = tbl['JobID'][match & (tbl['State'] == 'TIMEOUT')]
                 print(f"Restarting job {jobname} because it TIMED OUT as {set(jobid)}")

@@ -191,4 +191,26 @@ tbl.write(tbldir / 'cube_metadata.html', format='ascii.html', overwrite=True)
 tbl.write(tbldir / 'cube_metadata.tex', overwrite=True)
 tbl.write(tbldir / 'cube_metadata.js.html', format='jsviewer')
 
+conttbl = Table.read('/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/June2021Release/tables/metadata_image.tt0.ecsv')
+
+for cont_col in ('bmaj', 'bmin', 'bpa', 'cellsize'):
+    # Add new column
+    tbl[f'cont_{cont_col}'] = np.nan
+
+for row in tbl:
+    if row['Config'] == '12M':
+        match = ((conttbl['region'] == row['Field']) &
+                 (conttbl['band'] == f"B{row['Band']}") &
+                 (conttbl['robust'] == 'r0.0') &
+                 (conttbl['pbcor']) & ~(conttbl['bsens']) &
+                 (conttbl['suffix'] == 'finaliter')
+                 )
+        assert match.sum() == 1
+        for cont_col in ('bmaj', 'bmin', 'bpa', 'cellsize'):
+            # Add new column
+            row[f'cont_{cont_col}'] = conttbl[cont_col][match][0]
+
+tbl.write(tbldir / 'cube_metadata_withcont.ecsv', overwrite=True)
+tbl.write(tbldir / 'cube_metadata_withcont.ipac', format='ascii.ipac', overwrite=True)
+
 os.chdir(cwd)
