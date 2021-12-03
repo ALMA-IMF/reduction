@@ -1,8 +1,6 @@
 # Script to create a startmodel for cube cleaning based on the continuum clean components
 # Last modified 04.08.2020
 
-import numpy as np
-
 try:
     from tasks import imregrid
     from taskinit import iatool
@@ -74,6 +72,7 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
     # the units of the new image need to be rescaled by the ratio of the pixel areas
     # (this scaling is applied in the pixel value calculation in the loop below)
     jypix_scalefactor = new_pixel_area / original_pixel_area
+    logprint("Rescaling image by pixel area ratio {0}".format(jypix_scalefactor))
 
     # Use CASA tools to create a model cube from the continuum model
     if os.path.exists(cubeoutmodelpath):

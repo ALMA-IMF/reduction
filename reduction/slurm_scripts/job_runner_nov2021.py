@@ -56,7 +56,7 @@ del spw
 del array
 
 default_parameters = {f'{field}_{array}_{band}_{spw}':
-                      {'mem': 64, 'ntasks': 16, 'mpi': True, 'concat':True}
+                      {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
     for array in ("12M", )
     for band in ("B3", "B6")
