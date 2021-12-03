@@ -2860,7 +2860,7 @@ for key in list(line_imaging_parameters_default.keys()):
         line_imaging_parameters_default[key]["scales"] = [0, 5, 15, 45]
         line_imaging_parameters_default[key]["threshold"] = "10sigma"
         line_imaging_parameters_default[key]["niter"] = 5000
-        line_imaging_parameters_default[key]["pblimit"] = 0.2 # added Nov 19, 2021 based on G353 success
+        line_imaging_parameters_default[key]["pblimit"] = 0.2  # added Nov 19, 2021 based on G353 success
         line_imaging_parameters_default[key]["pbmask"] = 0.1
         # TODO: change pblimit?
     if "B6" in key:
@@ -3312,7 +3312,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G328.25_B3_uid___A001_X1296_X16d_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G333.60_B3_12M_robust0_n2hp": {
-        "threshold": "5sigma",
+        "threshold": "15mJy",  # noise in peak channel ~ 5 mJy
         "scales": [0, 9, 28, 85],
         "startmodel": "G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
