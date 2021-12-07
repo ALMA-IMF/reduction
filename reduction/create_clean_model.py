@@ -96,7 +96,7 @@ def create_clean_model(cubeimagename, contimagename, imaging_results_path, contm
         #print(dnu_plane, nu_plane)
         factor = (nu_plane - temp_dict_cont_tt0['csys']['spectral2']['wcs']['crval'])/temp_dict_cont_tt0['csys']['spectral2']['wcs']['crval']
         #print(factor)
-        plane_pixvalues = tt0_pixvalues + factor*tt1_pixvalues
+        plane_pixvalues = (tt0_pixvalues + factor*tt1_pixvalues)
         blc = [0, 0, 0, plane]
         #trc = [line_im.shape()[0]-1, line_im.shape()[1]-1, 0, plane]
         line_im.putchunk(plane_pixvalues, blc=blc, replicate=False)

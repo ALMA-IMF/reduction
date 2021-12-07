@@ -89,8 +89,8 @@ for jj, band in enumerate(('B3', 'B6')):
     fig.savefig(releasepath / f'figures/{band}_psfs.png', bbox_inches='tight', dpi=300)
     fig.savefig(releasepath / f'figures/{band}_psfs.pdf', bbox_inches='tight')
 
-    pl.figure(fig2)
+    fig2 = pl.figure(fig2)
     pl.subplots_adjust(wspace=0.32)
     pl.tight_layout()
-    fig.savefig(releasepath / f'figures/{band}_psf_profiles.png', bbox_inches='tight', dpi=300)
-    fig.savefig(releasepath / f'figures/{band}_psf_profiles.pdf', bbox_inches='tight')
+    fig2.savefig(releasepath / f'figures/{band}_psf_profiles.png', bbox_inches='tight', dpi=300)
+    fig2.savefig(releasepath / f'figures/{band}_psf_profiles.pdf', bbox_inches='tight')

@@ -37,7 +37,7 @@ OMPI_COMM_WORLD_SIZE=$SLURM_NTASKS
 # OMPI_COMM_WORLD_NODE_RANK - the relative rank of this process on this node looking across ALL jobs.
 
 if [[ ! $CASAVERSION ]]; then
-    CASAVERSION=casa-6.4.0-16
+    CASAVERSION=casa-6.4.3-4
     echo "Set CASA version to default ${CASAVERSION}"
 fi
 echo "CASA version = ${CASAVERSION}"
@@ -65,6 +65,7 @@ python getversion.py
 
 cd ${WORK_DIRECTORY}
 
+export USE_TEMPORARY_WORKING_DIRECTORY=True
 export TEMP_WORKDIR=$(pwd)/${FIELD_ID}_${LINE_NAME}_${suffix12m}_${BAND_TO_IMAGE}
 if ! [[ -d ${TEMP_WORKDIR} ]]; then
     mkdir ${TEMP_WORKDIR}

@@ -30,7 +30,12 @@ echo $?
 #export CASA=/orange/adamginsburg/casa/casa-release-5.8.0-109.el7/bin/casa
 #export CASA=/orange/adamginsburg/casa/casa-6.2.1-3/bin/casa
 #export CASA=/orange/adamginsburg/casa/casa-6.3.0-39/bin/casa
-export CASA=/orange/adamginsburg/casa/casa-6.4.0-16/bin/casa
+if [[ ! $CASAVERSION ]]; then
+    CASAVERSION=casa-6.4.3-4
+    echo "Set CASA version to default ${CASAVERSION}"
+fi
+echo "CASA version = ${CASAVERSION}"
+export CASA=/orange/adamginsburg/casa/${CASAVERSION}/bin/casa
 
 
 export ALMAIMF_ROOTDIR="/orange/adamginsburg/ALMA_IMF/reduction/reduction"
@@ -39,6 +44,7 @@ python getversion.py
 
 cd ${WORK_DIRECTORY}
 
+export USE_TEMPORARY_WORKING_DIRECTORY=True
 export TEMP_WORKDIR=$(pwd)/${FIELD_ID}_${LINE_NAME}_${suffix12m}_${BAND_TO_IMAGE}
 if ! [[ -d ${TEMP_WORKDIR} ]]; then
     mkdir ${TEMP_WORKDIR}
