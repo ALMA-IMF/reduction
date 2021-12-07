@@ -10,18 +10,18 @@ line_maps = {'n2hp': {'band': 3, 'spw': 0},
              'sio': {'band': 6, 'spw': 1}}
 
 parameters = {'W51-E': {'12M':
-  {'B6': {'spw5': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': False, } },
-   'B3': {'spw2': {'mem': 256, 'ntasks': 1, 'mpi': False, 'concat': True, } }
+  {'B6': {'spw5': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': False, } },
+   'B3': {'spw2': {'mem': 256, 'ntasks': 1, 'mpi': True, 'concat': True, } }
  }},
  'W43-MM3': {'12M':
   {'B3':
-   {'spw0': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, },
-    'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, } }
+   {'spw0': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': True, },
+    'spw1': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': True, } }
   },
  },
  'W43-MM1': {'12M':
   {'B3':
-   {'spw1': {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, } },
+   {'spw1': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': True, } },
    'B6':
    {'sio':  {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat': True, } },
   },

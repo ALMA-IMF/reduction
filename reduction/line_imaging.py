@@ -51,10 +51,15 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         WORK_DIRECTORY are set.  If this is not set, and the .ms file to
         clean from exists in WORK_DIRECTORY, an error will be raised and
         the script will fail.  If this is set, it will use that file.
+    USE_TEMPORARY_WORKING_DIRECTORY
+        Boolean; if set, TEMP_WORKDIR will be used.  If unset, TEMP_WORKDIR
+        will be ignored.
     TEMP_WORKDIR
         A directory to do operations in when running the code; this will allow
         storage of temporary files.  This will be set automatically if not
         specified.
+        Note that `to_image.json` must use absolute  paths if you are using
+        a temporary working directory.
 """
 
 import json
@@ -182,18 +187,19 @@ if os.getenv('DO_NOT_CONCAT'):
 else:
     do_not_concat = False
 
-if os.getenv('TEMP_WORKDIR'):
-    temp_workdir = os.getenv('TEMP_WORKDIR')
-else:
-    temp_workdir = "_".join((field_id,
-            line_name,
-            ('7M' if only_7m else ('12M' if exclude_7m else '7M12M')),
-            "_".join(band_list)
-            ))
-if not os.path.exists(temp_workdir):
-    os.mkdir(temp_workdir)
-logprint("Working in directory {0}".format(temp_workdir))
-os.chdir(temp_workdir)
+if os.getenv('USE_TEMPORARY_WORKING_DIRECTORY'):
+    if os.getenv('TEMP_WORKDIR') or 'temp_workdir' in locals():
+        temp_workdir = os.getenv('TEMP_WORKDIR')
+    else:
+        temp_workdir = "_".join((field_id,
+                line_name,
+                ('7M' if only_7m else ('12M' if exclude_7m else '7M12M')),
+                "_".join(band_list)
+                ))
+    if not os.path.exists(temp_workdir):
+        os.mkdir(temp_workdir)
+    logprint("Working in directory {0}".format(temp_workdir))
+    os.chdir(temp_workdir)
 
 # hacky approach to paralellism
 parallel = bool(os.getenv('MPICASA'))
