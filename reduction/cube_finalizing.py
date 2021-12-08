@@ -11,10 +11,12 @@ from beam_volume_tools import epsilon_from_psf, conv_model, rescale
 from spectral_cube import SpectralCube
 from radio_beam.utils import BeamError
 
-def beam_correct_cube(basename, minimize=True):
+def beam_correct_cube(basename, minimize=True, pbcor=True):
     modcube = SpectralCube.read(basename+".model", format='casa_image')
     psfcube = SpectralCube.read(basename+".psf", format='casa_image')
     residcube = SpectralCube.read(basename+".residual", format='casa_image')
+    if pbcor:
+        pbcube = SpectralCube.read(basename+".pb", format='casa_image') 
 
     if minimize:
         cutslc = residcube.subcube_slices_from_mask(residcube.mask)
@@ -22,6 +24,8 @@ def beam_correct_cube(basename, minimize=True):
         modcube = modcube[cutslc]
         psfcube = psfcube[cutslc]
         residcube = residcube[cutslc]
+        if pbcor:
+            pbcube = pbcube[cutslc]
 
     # there are sometimes problems with identifying a common beam
     try:
@@ -40,5 +44,10 @@ def beam_correct_cube(basename, minimize=True):
                      )
 
     merged.write(basename+".JvM.image.fits", overwrite=True)
+
+    if pbcor:
+        pbc = merged / pbcube
+        pbc.write(basename+".JvM.image.pbcor.fits", overwrite=True)
+        return merged, pbc
 
     return merged
