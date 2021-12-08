@@ -24,6 +24,8 @@ def beam_correct_cube(basename, minimize=True, pbcor=True):
         modcube = modcube[cutslc]
         psfcube = psfcube[cutslc]
         residcube = residcube[cutslc]
+        if pbcor:
+            pbcube = pbcube[cutslc]
 
     # there are sometimes problems with identifying a common beam
     try:
