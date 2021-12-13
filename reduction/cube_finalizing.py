@@ -11,6 +11,9 @@ from beam_volume_tools import epsilon_from_psf, conv_model, rescale
 from spectral_cube import SpectralCube
 from radio_beam.utils import BeamError
 
+from astropy.io import fits
+from astropy.table import Table
+
 def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True):
     modcube = SpectralCube.read(basename+".model", format='casa_image')
     psfcube = SpectralCube.read(basename+".psf", format='casa_image')
@@ -48,12 +51,17 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True):
     merged.header['JvM_epsilon_min'] = np.min(epsdict['epsilon'])
     merged.meta['JvM_epsilon_median'] = np.median(epsdict['epsilon'])
     merged.header['JvM_epsilon_median'] = np.median(epsdict['epsilon'])
+    epsilon_table = fits.BinTableHDU(Table(data=epsdict['epsilon'], names=['JvM_epsilon']))
 
-    merged.write(basename+".JvM.image.fits", overwrite=True)
+    hdul = merged.hdulist
+    hdul.append(epsilon_table)
+    hdul.writeto(basename+".JvM.image.fits", overwrite=True)
 
     if pbcor:
         pbc = merged / pbcube
         if write_pbcor:
+            hdul = pbc.hdulist
+            hdul.append(epsilon_table)
             pbc.write(basename+".JvM.image.pbcor.fits", overwrite=True)
         return merged, pbc
 
