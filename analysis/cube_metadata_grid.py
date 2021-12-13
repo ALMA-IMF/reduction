@@ -60,7 +60,7 @@ default_lines = {
     "h30a": "231.900928GHz",
 }
 spws = {3: list(range(4)),
-        6: list(range(7)),}
+        6: list(range(8)),}
 
 suffix = '.image'
 
