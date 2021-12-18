@@ -2953,7 +2953,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G327.29_B6_12M_robust0_sio": {
-        "threshold": "50mJy",  # typical rms is 10-12.5 mJy, using 5sigma of lowest value for threshold (22 October 2021)
+        "threshold": "63.5mJy",  # typical rms is 10-12.7 mJy, using 5sigma of highest value for threshold (17 Dec 2021)
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
     "G328.25_B3_12M_robust0": {
@@ -3057,7 +3057,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_sio": {
-        "threshold": "60mJy",  # typical rms is 12-16 mJy, using 5sigma for threshold (02 Nov 2021)
+        "threshold": "80mJy",  # typical rms is 12-16 mJy, using 5sigma for threshold (17 Dec 2021)
         "cyclefactor": 2.0,
         "interactive": 0,
         "fastnoise": False,
@@ -3109,7 +3109,10 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 8, 16, 32],  # 4.1pix per sqrt(bmaj*bmean), pix= 0.11arcsec, max scale ~3.5arcsec
         "gain": 0.08,
     },
-    # W43-MM1 SiO 12m-only threshold: 15mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
+    # W43-MM1 SiO 12m-only threshold: 17.5mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
+    "W43-MM1_B6_12M_robust0_sio": {
+        "threshold": "17.5mJy"  # rms is 2.9-3.5 mJy, using 5 sigma (17 Dec 2021)
+    },
     "W43-MM2_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -3154,11 +3157,11 @@ line_imaging_parameters_custom = {
         # "mask": "imaging_results/W43-MM2_B6_spw5_12M_12co_multi_2.5sigma_e2_d5.mask"
     },
     "W43-MM2_B6_12M_robust0_sio": {
-        "threshold": "10mJy",  # rms is 2-3 mJy, using 5 sigma (02 Nov 2021)
+        "threshold": "15mJy",  # rms is 2-3 mJy, using 5 sigma (17 Dec 2021)
         "deconvolver": "multiscale",
         "scales": [0, 6, 18, 36],
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
-        "imsize": [1372, 1372],
+        "imsize": [1372, 1572],
     },
     "W43-MM2_B6_12M_robust0_contsub": {
         "threshold": "8.5mJy",
@@ -3236,9 +3239,9 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 12, 24],
     },
     "W43-MM3_B6_12M_robust0_sio": {
-        "threshold": "13mJy",  # typical rms is 2.6-3.3 mJy, using 5 sigma (02 Nov 2021)
+        "threshold": "16.5mJy",  # typical rms is 2.6-3.3 mJy, using 5 sigma (17 Dec 2021)
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
-        "imsize": [960, 960],
+        "imsize": [960, 1100],
         "deconvolver": "multiscale",
         "scales": [0, 4, 12],
     },
@@ -3260,8 +3263,9 @@ line_imaging_parameters_custom = {
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B6_12M_robust0_sio": {
-        "threshold": "16.5mJy",  # typical rms is 3.3-3.9 mJy, using 5sigma for threshold (02 Nov 2021)
+        "threshold": "21.0mJy",  # typical rms is 3.4- 4.2 mJy, using 5sigma for threshold (17 Dec 2021)
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "imsize":[1440,1600]
     },
     "W51-E_B6_12M_robust0_spw1": {
         "threshold": "12.3mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
@@ -4408,13 +4412,14 @@ line_parameters_custom = {
         "n2hp": {"cubewidth": "50km/s"},
     },
     "W43-MM1": {
+        "sio": {"cubewidth": "150km/s"},
         "12co": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"},  # 100 - 65 = 35km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
-        "sio": {"cubewidth": "240km/s", "vlsr": "91km/s", "width": "0.37km/s"},
+        "sio": {"cubewidth": "200km/s", "vlsr": "91km/s", "width": "0.37km/s"},
         "12co": {"cubewidth": "240km/s", "vlsr": "91km/s"},
         # "12co": {"cubewidth": "240km/s", "vlsr": "91km/s", "width": "2km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
