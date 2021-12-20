@@ -88,9 +88,14 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True):
         pbc = merged / pbcube
         log.info(f"Done pbcor.  t={time.time()-t0}")
         if write_pbcor:
+            log.info(f"Creating HDUlist.  t={time.time()-t0}")
             hdul = pbc.hdulist
+            log.info(f"appending epsilon table.  t={time.time()-t0}")
             hdul.append(epsilon_table)
-            pbc.write(basename+".JvM.image.pbcor.fits", overwrite=True)
+            log.info(f"changing dtype.  t={time.time()-t0}")
+            hdul[0].data = hdul[0].data.astype('float32')
+            log.info(f"writing HDUL.  t={time.time()-t0}")
+            hdul.writeto(basename+".JvM.image.pbcor.fits", overwrite=True)
             log.info(f"Done writing pbcor.  t={time.time()-t0}")
         return merged, pbc
 
