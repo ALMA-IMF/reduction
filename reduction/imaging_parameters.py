@@ -3110,11 +3110,9 @@ line_imaging_parameters_custom = {
         "gain": 0.08,
     },
     # W43-MM1 SiO 12m-only threshold: 17.5mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
-    "W43-MM1_B6_12M_robust0_sio": {
-        "threshold": "17.5mJy"  # rms is 2.9-3.5 mJy, using 5 sigma (17 Dec 2021)
-    },
+    "W43-MM1_B6_12M_robust0_sio": {"threshold": "17.5mJy"},  # rms is 2.9-3.5 mJy, using 5 sigma (17 Dec 2021)
     "W43-MM1_B6_12M_robust0": {
-        "startmodel": "W43-MM1_B6_uid___A002_X996c88_X87_continuum_merged_12M_robust0_selfcal4_finaliter",
+        "startmodel": "W43-MM1_B6_uid___A002_X996c88_X87_continuum_merged_12M_robust0_selfcal4_finaliter"
     },
     "W43-MM1_B6_12M_robust0_spw0": {
         "threshold": "18.6mJy",
@@ -3272,7 +3270,7 @@ line_imaging_parameters_custom = {
     "W51-E_B6_12M_robust0_sio": {
         "threshold": "21.0mJy",  # typical rms is 3.4- 4.2 mJy, using 5sigma for threshold (17 Dec 2021)
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
-        "imsize":[1440,1600]
+        "imsize": [1440, 1600],
     },
     "W51-E_B6_12M_robust0_spw1": {
         "threshold": "12.3mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
