@@ -4024,6 +4024,10 @@ line_imaging_parameters_custom = {
         "scales": [0, 3, 6, 12, 24, 48],
         "startmodel": "W43-MM2_B3_uid___A001_X1296_X11b_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
+    "W43-MM1_B6_12M_robust0_spw0": {
+        "threshold": "18.6mJy",
+        "startmodel": "W43-MM1_B6_uid___A002_X996c88_X87_continuum_merged_12M_robust0_selfcal4_finaliter",
+    },
     "W43-MM2_B6_12M_robust0_spw0": {
         "threshold": "5sigma",
         "scales": [0, 5, 10, 20, 40],
