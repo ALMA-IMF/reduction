@@ -51,15 +51,10 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         WORK_DIRECTORY are set.  If this is not set, and the .ms file to
         clean from exists in WORK_DIRECTORY, an error will be raised and
         the script will fail.  If this is set, it will use that file.
-    USE_TEMPORARY_WORKING_DIRECTORY
-        Boolean; if set, TEMP_WORKDIR will be used.  If unset, TEMP_WORKDIR
-        will be ignored.
     TEMP_WORKDIR
         A directory to do operations in when running the code; this will allow
         storage of temporary files.  This will be set automatically if not
         specified.
-        Note that `to_image.json` must use absolute  paths if you are using
-        a temporary working directory.
 """
 
 import json
@@ -94,6 +89,7 @@ from metadata_tools import (determine_imsize, determine_phasecenter, is_7m,
 from imaging_parameters import line_imaging_parameters, selfcal_pars, line_parameters, flag_thresholds
 from unite_contranges import merge_contdotdat
 from metadata_tools import effectiveResolutionAtFreq
+from cube_finalizing import beam_correct_cube
 from create_clean_model import create_clean_model
 from getversion import git_date, git_version
 msmd = msmdtool()
@@ -187,19 +183,18 @@ if os.getenv('DO_NOT_CONCAT'):
 else:
     do_not_concat = False
 
-if os.getenv('USE_TEMPORARY_WORKING_DIRECTORY'):
-    if os.getenv('TEMP_WORKDIR') or 'temp_workdir' in locals():
-        temp_workdir = os.getenv('TEMP_WORKDIR')
-    else:
-        temp_workdir = "_".join((field_id,
-                line_name,
-                ('7M' if only_7m else ('12M' if exclude_7m else '7M12M')),
-                "_".join(band_list)
-                ))
-    if not os.path.exists(temp_workdir):
-        os.mkdir(temp_workdir)
-    logprint("Working in directory {0}".format(temp_workdir))
-    os.chdir(temp_workdir)
+if os.getenv('TEMP_WORKDIR'):
+    temp_workdir = os.getenv('TEMP_WORKDIR')
+else:
+    temp_workdir = "_".join((field_id,
+            line_name,
+            ('7M' if only_7m else ('12M' if exclude_7m else '7M12M')),
+            "_".join(band_list)
+            ))
+if not os.path.exists(temp_workdir):
+    os.mkdir(temp_workdir)
+logprint("Working in directory {0}".format(temp_workdir))
+os.chdir(temp_workdir)
 
 # hacky approach to paralellism
 parallel = bool(os.getenv('MPICASA'))
@@ -1030,6 +1025,9 @@ for band in band_list:
                         SpectralCube.read(lineimagename+".model", use_dask=True, format='casa_image')[cutslc].write(lineimagename+".model.mincube.fits", overwrite=True)
                         SpectralCube.read(lineimagename+".residual", use_dask=True, format='casa_image')[cutslc].write(lineimagename+".residual.mincube.fits", overwrite=True)
 
+                        # write out JvM-corrected cubes
+                        beam_correct_cube(lineimagename)
+
 
             if copy_files and not dryrun:
                 for suffix in ('.image', '.image.pbcor', '.mask', '.model',
@@ -1041,6 +1039,8 @@ for band in band_list:
                                '.image.mincube.fits',
                                '.image.pbcor.fits',
                                '.image.pbcor.mincube.fits',
+                               '.JvM.image.pbcor.fits',
+                               '.JvM.image.fits',
                               ):
                     src = lineimagename+suffix
                     dest = proddir
