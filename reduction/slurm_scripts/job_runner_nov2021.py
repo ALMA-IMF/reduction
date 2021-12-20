@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
 spws = {'B3': [f'spw{s}' for s in range(4)] + ['n2hp'],
@@ -10,18 +11,18 @@ line_maps = {'n2hp': {'band': 3, 'spw': 0},
              'sio': {'band': 6, 'spw': 1}}
 
 parameters = {'W51-E': {'12M':
-  {'B6': {'spw5': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': False, } },
-   'B3': {'spw2': {'mem': 256, 'ntasks': 1, 'mpi': True, 'concat': True, } }
+  {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': False, } },
+   'B3': {'spw2': {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat': True, } }
  }},
  'W43-MM3': {'12M':
   {'B3':
-   {'spw0': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': True, },
-    'spw1': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': True, } }
+   {'spw0': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': True, },
+    'spw1': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': True, } }
   },
  },
  'W43-MM1': {'12M':
   {'B3':
-   {'spw1': {'mem': 128, 'ntasks': 1, 'mpi': True, 'concat': True, } },
+   {'spw1': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': True, } },
    'B6':
    {'sio':  {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat': True, } },
   },
@@ -29,7 +30,7 @@ parameters = {'W51-E': {'12M':
  'W43-MM2': {'12M':
   {
    'B6':
-   {'sio':  {'mem': 128, 'ntasks': 1, 'mpi': False, 'concat': True, } },
+   {'sio':  {'mem': 128, 'ntasks': 16, 'mpi': False, 'concat': True, } },
   },
  },
 }
@@ -77,6 +78,12 @@ for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
 
 parameters['W51-IRS2_7M12M_B3_n2hp']['mem'] = 256
 parameters['G333.60_7M12M_B3_h41a']['mem'] = 256
+
+# G327 experiments
+parameters['G327.29_7M12M_B6_spw0'] = copy.copy(parameters['G327.29_12M_B6_spw0'])
+parameters['G327.29_7M12M_B6_spw0']['array'] = '7M12M'
+# we're not doing 7m fullcubes parameters['G327.29_7M_B6_spw0'] = copy.copy(parameters['G327.29_12M_B6_spw0'])
+# we're not doing 7m fullcubes parameters['G327.29_7M_B6_spw0']['array'] = '7M'
 
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
