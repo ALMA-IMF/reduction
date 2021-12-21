@@ -14,7 +14,7 @@ from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
 
 
-def fit_psf(psf):
+def measure_epsilon_from_psf(psf):
     center = np.unravel_index(np.argmax(psf[chan]), psf[chan].shape)
     cy, cx = center
 
@@ -57,7 +57,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
                      verbose=False, **kwargs):
     """
     Determine epsilon, the ratio of the clean beam volume to the dirty beam volume within the first null, for a cube's PSFs.
-    
+
     Parameters
     ----------
     psf_image : casa image
@@ -66,7 +66,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
         The maximum separation to integrate within to estimate the beam
     export_clean_beam : bool
         Return the synthesized beam in addition to the epsilon values?
-    kwargs : 
+    kwargs :
         passed to `common_beam`
     """
 
@@ -96,7 +96,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
 
     for chan in range(len(psf)):
 
-        epsilon_arr[chan], clean_psf_sum, psf_sum = fit_psf(psf[chan])
+        epsilon_arr[chan], clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan])
 
         if verbose:
             print('\n')
