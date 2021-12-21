@@ -13,6 +13,46 @@ from radio_beam import Beam, Beams
 from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
 
+
+def fit_psf(psf):
+    center = np.unravel_index(np.argmax(psf[chan]), psf[chan].shape)
+    cy, cx = center
+
+    cutout = psf[chan,cy-max_npix_peak:cy+max_npix_peak+1, cx-max_npix_peak:cx+max_npix_peak+1]
+    shape = cutout.shape
+    sy, sx = shape
+    Y, X = np.mgrid[0:sy, 0:sx]
+
+    center = np.unravel_index(np.argmax(cutout), cutout.shape)
+    cy, cx = center
+
+    dy = (Y - cy)
+    dx = (X - cx)
+    # I guess these definitions already take into account the definition of PA (east from north)?
+    costh = np.cos(psf.beams.pa[chan].to('rad'))
+    sinth = np.sin(psf.beams.pa[chan].to('rad'))
+    # Changed variable name to rminmaj (it was rmajmin)
+    rminmaj =  psf.beams.minor[chan] / psf.beams.major[chan]
+
+    rr = ((dx * costh + dy * sinth)**2 / rminmaj**2 +
+          (dx * sinth - dy * costh)**2 / 1**2)**0.5
+    rbin = (rr).astype(int)
+
+    #From plots taking the abs looks better centered by ~ 1 pix.
+    #radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(max_npix_peak))
+    radial_mean = ndimage.mean(np.abs(cutout), labels=rbin, index=np.arange(max_npix_peak))
+    first_min_ind = signal.find_peaks(-radial_mean)[0][0]
+
+    #cutout_posit = np.where(cutout > 0, cutout, 0.)
+    radial_sum = ndimage.sum(cutout, labels=rbin, index=np.arange(first_min_ind))
+    psf_sum = np.sum(radial_sum)
+
+    clean_psf_sum = npix_clean_beam[chan]
+    epsilon = clean_psf_sum/psf_sum
+
+    return epsilon_arr, clean_psf_sum, psf_sum
+
+
 def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
                      verbose=False, **kwargs):
     """
@@ -56,41 +96,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
 
     for chan in range(len(psf)):
 
-        center = np.unravel_index(np.argmax(psf[chan]), psf[chan].shape)
-        cy, cx = center
-
-        cutout = psf[chan,cy-max_npix_peak:cy+max_npix_peak+1, cx-max_npix_peak:cx+max_npix_peak+1]
-        shape = cutout.shape
-        sy, sx = shape
-        Y, X = np.mgrid[0:sy, 0:sx]
-
-        center = np.unravel_index(np.argmax(cutout), cutout.shape)
-        cy, cx = center
-
-        dy = (Y - cy)
-        dx = (X - cx)
-        # I guess these definitions already take into account the definition of PA (east from north)?
-        costh = np.cos(psf.beams.pa[chan].to('rad'))
-        sinth = np.sin(psf.beams.pa[chan].to('rad'))
-        # Changed variable name to rminmaj (it was rmajmin)
-        rminmaj =  psf.beams.minor[chan] / psf.beams.major[chan]
-
-        rr = ((dx * costh + dy * sinth)**2 / rminmaj**2 +
-              (dx * sinth - dy * costh)**2 / 1**2)**0.5
-        rbin = (rr).astype(int)
-
-        #From plots taking the abs looks better centered by ~ 1 pix.
-        #radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(max_npix_peak))
-        radial_mean = ndimage.mean(np.abs(cutout), labels=rbin, index=np.arange(max_npix_peak))
-        first_min_ind = signal.find_peaks(-radial_mean)[0][0]
-
-        #cutout_posit = np.where(cutout > 0, cutout, 0.)
-        radial_sum = ndimage.sum(cutout, labels=rbin, index=np.arange(first_min_ind))
-        psf_sum = np.sum(radial_sum)
-
-        clean_psf_sum = npix_clean_beam[chan]
-        epsilon = clean_psf_sum/psf_sum
-        epsilon_arr[chan] = epsilon
+        epsilon_arr[chan], clean_psf_sum, psf_sum = fit_psf(psf[chan])
 
         if verbose:
             print('\n')
