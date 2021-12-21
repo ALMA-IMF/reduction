@@ -14,11 +14,11 @@ from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
 
 
-def measure_epsilon_from_psf(psf):
-    center = np.unravel_index(np.argmax(psf[chan]), psf[chan].shape)
+def measure_epsilon_from_psf(psf, beam):
+    center = np.unravel_index(np.argmax(psf), psf.shape)
     cy, cx = center
 
-    cutout = psf[chan,cy-max_npix_peak:cy+max_npix_peak+1, cx-max_npix_peak:cx+max_npix_peak+1]
+    cutout = psf[cy-max_npix_peak:cy+max_npix_peak+1, cx-max_npix_peak:cx+max_npix_peak+1]
     shape = cutout.shape
     sy, sx = shape
     Y, X = np.mgrid[0:sy, 0:sx]
@@ -29,10 +29,10 @@ def measure_epsilon_from_psf(psf):
     dy = (Y - cy)
     dx = (X - cx)
     # I guess these definitions already take into account the definition of PA (east from north)?
-    costh = np.cos(psf.beams.pa[chan].to('rad'))
-    sinth = np.sin(psf.beams.pa[chan].to('rad'))
+    costh = np.cos(beam.pa.to('rad'))
+    sinth = np.sin(beam.pa.to('rad'))
     # Changed variable name to rminmaj (it was rmajmin)
-    rminmaj =  psf.beams.minor[chan] / psf.beams.major[chan]
+    rminmaj =  beam.minor / beam.major
 
     rr = ((dx * costh + dy * sinth)**2 / rminmaj**2 +
           (dx * sinth - dy * costh)**2 / 1**2)**0.5
@@ -47,7 +47,7 @@ def measure_epsilon_from_psf(psf):
     radial_sum = ndimage.sum(cutout, labels=rbin, index=np.arange(first_min_ind))
     psf_sum = np.sum(radial_sum)
 
-    clean_psf_sum = npix_clean_beam[chan]
+    clean_psf_sum = beam.pixels_per_beam
     epsilon = clean_psf_sum/psf_sum
 
     return epsilon_arr, clean_psf_sum, psf_sum
@@ -89,14 +89,12 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
     else:
         common_beam = psf.beams.common_beam(**kwargs)
 
-    # In pixels (clean beam per channel):
-    npix_clean_beam = psf.pixels_per_beam
-
     epsilon_arr = np.zeros(len(psf))
 
     for chan in range(len(psf)):
 
-        epsilon_arr[chan], clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan])
+        epsilon_arr[chan], clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan],
+                                                                             psf.beams[chan])
 
         if verbose:
             print('\n')
