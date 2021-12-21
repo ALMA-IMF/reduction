@@ -5,6 +5,11 @@ if 'msmd' not in locals():
 import glob
 import shutil, os
 
+<<<<<<< Updated upstream
+=======
+basedir = '{basedir}'
+
+>>>>>>> Stashed changes
 asdm_eb_tbls = glob.glob("{basedir}/2017.1.01355.L/2021_QA3_Deliveries/*/*/ASDM_EXECBLOCK")
 
 mousmap = {}
@@ -18,7 +23,10 @@ for tbn in asdm_eb_tbls:
         mousmap[mous] = [tbn]
     tb.close()
 
+<<<<<<< Updated upstream
 basedir = '{basedir}'
+=======
+>>>>>>> Stashed changes
 
 # mous_pathmap = {x.split("/")[-1].split("_")[-1]:x for x in glob.glob(f"{basedir}/201*/science_goal.uid*/group*/member*")}
 
