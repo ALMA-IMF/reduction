@@ -14,7 +14,7 @@ from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
 
 
-def measure_epsilon_from_psf(psf, beam):
+def measure_epsilon_from_psf(psf, beam, max_npix_peak=100):
     center = np.unravel_index(np.argmax(psf), psf.shape)
     cy, cx = center
 
@@ -94,7 +94,8 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
     for chan in range(len(psf)):
 
         epsilon_arr[chan], clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan],
-                                                                             psf.beams[chan])
+                                                                             psf.beams[chan],
+                                                                             max_npix_peak)
 
         if verbose:
             print('\n')
