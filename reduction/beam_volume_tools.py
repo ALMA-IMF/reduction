@@ -49,8 +49,9 @@ def measure_epsilon_from_psf(psf, beam, pixels_per_beam, max_npix_peak=100):
 
     clean_psf_sum = pixels_per_beam
     epsilon = clean_psf_sum/psf_sum
+    print(f'clean_psf_sum={clean_psf_sum}, psf_sum={psf_sum}, epsilon={epsilon}')
 
-    return epsilon_arr, clean_psf_sum, psf_sum
+    return epsilon, clean_psf_sum, psf_sum
 
 
 def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
@@ -93,10 +94,11 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
 
     for chan in range(len(psf)):
 
-        epsilon_arr[chan], clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan],
-                                                                             psf.beams[chan],
-                                                                             psf.pixels_per_beam,
-                                                                             max_npix_peak)
+        epsilon, clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan],
+                                                                   psf.beams[chan],
+                                                                   psf.pixels_per_beam[chan],
+                                                                   max_npix_peak)
+        epsilon_arr[chan] = epsilon
 
         if verbose:
             print('\n')
