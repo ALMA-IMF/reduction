@@ -17,14 +17,18 @@ from astropy.table import Table
 from astropy import log
 
 import contextlib
+import tqdm
 
 import time
 
 def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
-                      pbar=False, beam_threshold=0.1, save_to_tmpdir=False):
+                      pbar=False, beam_threshold=0.1, save_to_tmp_dir=False):
 
     if not pbar:
         pbar = contextlib.nullcontext
+        tpbar = False
+    else:
+        tpbar = tqdm.tqdm
 
     t0 = time.time()
 
@@ -36,6 +40,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     log.info(f"Completed reading. t={time.time() - t0}")
 
     good_beams = psfcube.identify_bad_beams(0.1)
+    log.info(f"Found {good_beams.sum()} good beams out of {good_beams.size} channels")
 
     if minimize:
         tmin = time.time()
@@ -62,18 +67,20 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
     teps = time.time()
     log.info(f"Epsilon beginning. t={teps - t0}")
+
     # there are sometimes problems with identifying a common beam
     try:
-        epsdict = epsilon_from_psf(psfcube, export_clean_beam=True, beam_threshold=beam_threshold)
+        epsdict = epsilon_from_psf(psfcube, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar)
     except BeamError:
-        epsdict = epsilon_from_psf(psfcube, epsilon=0.005, export_clean_beam=True, beam_threshold=beam_threshold)
+        epsdict = epsilon_from_psf(psfcube, epsilon=0.005, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar)
     log.info(f"Epsilon completed. t={time.time() - t0}, eps took {time.time()-teps}")
 
 
     clean_beam = epsdict['clean_beam']
 
     log.info(f"Convolving.  t={time.time()-t0}")
-    convmod = conv_model(modcube, clean_beam, save_to_tmpdir=save_to_tmpdir)
+    with pbar:
+        convmod = conv_model(modcube, clean_beam, save_to_tmp_dir=save_to_tmp_dir)
 
     log.info(f"Done convolving, now rescaling.  t={time.time()-t0}")
 

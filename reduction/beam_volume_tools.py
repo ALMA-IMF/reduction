@@ -56,7 +56,7 @@ def measure_epsilon_from_psf(psf, beam, pixels_per_beam, max_npix_peak=100):
 
 
 def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
-                     verbose=False, beam_threshold=0.1, **kwargs):
+                     verbose=False, beam_threshold=0.1, pbar=False, **kwargs):
     """
     Determine epsilon, the ratio of the clean beam volume to the dirty beam volume within the first null, for a cube's PSFs.
 
@@ -95,7 +95,10 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
 
     epsilon_arr = np.zeros(len(psf))
 
-    for chan in range(len(psf)):
+    if not pbar:
+        pbar = lambda x: x
+
+    for chan in pbar(range(len(psf))):
 
         epsilon, clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan],
                                                                    psf.beams[chan],
