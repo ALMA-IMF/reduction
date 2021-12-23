@@ -26,14 +26,16 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True):
     psfcube = SpectralCube.read(basename+".psf", format='casa_image')
     residcube = SpectralCube.read(basename+".residual", format='casa_image')
     if pbcor:
-        pbcube = SpectralCube.read(basename+".pb", format='casa_image') 
+        pbcube = SpectralCube.read(basename+".pb", format='casa_image')
     log.info(f"Completed reading. t={time.time() - t0}")
+
+    good_beams = psfcube.identify_bad_beams(0.1)
 
     if minimize:
         tmin = time.time()
         log.info(f"Starting minimize. t={tmin - t0}")
 
-        cutslc = residcube.subcube_slices_from_mask(residcube.mask)
+        cutslc = residcube.subcube_slices_from_mask(residcube.mask & good_beams[:,None,None])
 
         log.info(f"Completed minimize. t={time.time() - t0}.  minimizing took {time.time()-tmin}")
 
@@ -44,6 +46,12 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True):
             pbcube = pbcube[cutslc]
 
         log.info(f"Completed minslice. t={time.time() - t0}")
+    else:
+        modcube = modcube[goodbeams]
+        residcube = residcube[goodbeams]
+        psfcube = psfcube[goodbeams]
+        if pbcor:
+            pbcube = pbcube[goodbeams]
 
     teps = time.time()
     log.info(f"Epsilon beginning. t={teps - t0}")

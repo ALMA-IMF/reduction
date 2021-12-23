@@ -12,6 +12,7 @@ from astropy import units as u
 from radio_beam import Beam, Beams
 from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
+from astropy import log
 
 
 def measure_epsilon_from_psf(psf, beam, pixels_per_beam, max_npix_peak=100):
@@ -49,13 +50,13 @@ def measure_epsilon_from_psf(psf, beam, pixels_per_beam, max_npix_peak=100):
 
     clean_psf_sum = pixels_per_beam
     epsilon = clean_psf_sum/psf_sum
-    print(f'clean_psf_sum={clean_psf_sum}, psf_sum={psf_sum}, epsilon={epsilon}')
+    log.debug(f'clean_psf_sum={clean_psf_sum}, psf_sum={psf_sum}, epsilon={epsilon}')
 
     return epsilon, clean_psf_sum, psf_sum
 
 
 def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
-                     verbose=False, **kwargs):
+                     verbose=False, beam_threshold=0.1, **kwargs):
     """
     Determine epsilon, the ratio of the clean beam volume to the dirty beam volume within the first null, for a cube's PSFs.
 
@@ -85,10 +86,12 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
     else:
         raise ValueError
 
+    good_beams = psf.identify_bad_beams(beam_threshold)
+
     if hasattr(psf, 'beam'):
         common_beam = psf.beam
     else:
-        common_beam = psf.beams.common_beam(**kwargs)
+        common_beam = psf.beams[good_beams].common_beam(**kwargs)
 
     epsilon_arr = np.zeros(len(psf))
 
@@ -141,7 +144,8 @@ def conv_model(model_image, clean_beam):
     return conv
 
 
-def rescale(conv_model, epsilon, residual_image, savename=None, export_fits=True):
+def rescale(conv_model, epsilon, residual_image, savename=None,
+            export_fits=True):
     if isinstance(residual_image, BaseSpectralCube):
         residual = residual_image
         if savename is None and export_fits:
@@ -154,9 +158,8 @@ def rescale(conv_model, epsilon, residual_image, savename=None, export_fits=True
 
     header = conv_model.header
 
-
     epsilon = epsilon*u.dimensionless_unscaled
-    # maybe use einsum here?
+
     print("creating restor")
     restor = conv_model.unitless + residual*epsilon[:,None,None]
     print("done creating restor")
