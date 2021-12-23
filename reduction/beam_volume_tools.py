@@ -116,7 +116,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
     return output
 
 
-def conv_model(model_image, clean_beam):
+def conv_model(model_image, clean_beam, save_to_tmp_dir=False):
     if isinstance(model_image, BaseSpectralCube):
         model = model_image
     else:
@@ -139,7 +139,7 @@ def conv_model(model_image, clean_beam):
     pix_beam = Beam(fwhm_gauss_pix, fwhm_gauss_pix, 0*u.deg)
     model = model.with_beam(pix_beam)
 
-    conv = model.convolve_to(beam) * npix_beam
+    conv = model.convolve_to(beam, save_to_tmp_dir=save_to_tmp_dir) * npix_beam
 
     return conv
 

@@ -21,7 +21,7 @@ import contextlib
 import time
 
 def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
-                      pbar=False, beam_threshold=0.1):
+                      pbar=False, beam_threshold=0.1, save_to_tmpdir=False):
 
     if not pbar:
         pbar = contextlib.nullcontext
@@ -73,7 +73,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     clean_beam = epsdict['clean_beam']
 
     log.info(f"Convolving.  t={time.time()-t0}")
-    convmod = conv_model(modcube, clean_beam)
+    convmod = conv_model(modcube, clean_beam, save_to_tmpdir=save_to_tmpdir)
 
     log.info(f"Done convolving, now rescaling.  t={time.time()-t0}")
 
