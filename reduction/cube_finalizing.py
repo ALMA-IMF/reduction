@@ -25,7 +25,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
                       pbar=False, beam_threshold=0.1, save_to_tmp_dir=False):
 
     if not pbar:
-        pbar = contextlib.nullcontext
+        pbar = contextlib.nullcontext()
         tpbar = False
     else:
         tpbar = tqdm.tqdm
@@ -46,6 +46,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         tmin = time.time()
         log.info(f"Starting minimize. t={tmin - t0}")
 
+        print(f"pbar={pbar}, {type(pbar)}")
         with pbar:
             cutslc = residcube.subcube_slices_from_mask(residcube.mask & good_beams[:,None,None])
 

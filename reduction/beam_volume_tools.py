@@ -163,9 +163,7 @@ def rescale(conv_model, epsilon, residual_image, savename=None,
 
     epsilon = epsilon*u.dimensionless_unscaled
 
-    print("creating restor")
     restor = conv_model.unitless + residual*epsilon[:,None,None]
-    print("done creating restor")
 
     if export_fits:
         print("Writing")
