@@ -5,10 +5,14 @@ import numpy as np
 
 import sys
 
-from taskinit import casalog
-from taskinit import msmdtool
-from taskinit import mstool, tbtool
-from tasks import split, flagmanager, flagdata, rmtables, concat
+try:
+    from taskinit import casalog
+    from taskinit import msmdtool
+    from taskinit import mstool, tbtool
+    from tasks import split, flagmanager, flagdata, rmtables, concat
+except ImportError:
+    from casatasks import casalog, split, flagdata, flagmanager, rmtables, concat
+    from casatools import msmetadata as msmdtool, ms as mstool, table as tbtool
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir

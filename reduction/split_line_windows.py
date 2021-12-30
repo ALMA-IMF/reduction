@@ -7,13 +7,16 @@ try:
     from taskinit import casalog
     from taskinit import msmdtool
     from taskinit import mstool, tbtool
+    from tasks import split, flagdata
+except ImportError:
+    from casatasks import casalog, split, flagdata
+    from casatools import msmetadata as msmdtool, ms as mstool, table as tbtool
 except Exception as ex:
     if 'InputRejected' in str(ex):
         pass
     else:
         raise ex
 
-from tasks import split, flagdata
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
