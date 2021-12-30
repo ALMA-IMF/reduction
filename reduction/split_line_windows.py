@@ -132,14 +132,15 @@ for band in bands:
                     # (check_channel_flags will raise an exception if there is excess flaggin)
                     check_channel_flags(invis, field=field, spw=str(spws[newid]), tolerance=0.1)
 
-                    assert split(vis=invis,
+                    result = split(vis=invis,
                                  spw=spws[newid],
                                  field=field,
                                  outputvis=outvis,
                                  # there is no corrected_data column because we're
                                  # splitting from split MSes
                                  datacolumn=datacolumn,
-                                ), "Split failed 3"
+                                )
+                    print("Split ended with result={0} in line split".format(result))
 
                     flagdata(vis=outvis, mode='manual', autocorr=True)
 
