@@ -58,7 +58,7 @@ if __name__ == "__main__":
         nthreads = int(nthreads)
         dask.config.set(scheduler='threads')
     else:
-        dask.config.set(schulder='synchronous')
+        dask.config.set(scheduler='synchronous')
 
     scheduler = dask.config.get('scheduler')
     print(f"Using {nthreads} threads with the {scheduler} scheduler")

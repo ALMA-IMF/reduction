@@ -12,12 +12,54 @@ from astropy import units as u
 from radio_beam import Beam, Beams
 from astropy.convolution import convolve_fft #, convolve
 from astropy.io import fits
+from astropy import log
+
+
+def measure_epsilon_from_psf(psf, beam, pixels_per_beam, max_npix_peak=100):
+    center = np.unravel_index(np.argmax(psf), psf.shape)
+    cy, cx = center
+
+    cutout = psf[cy-max_npix_peak:cy+max_npix_peak+1, cx-max_npix_peak:cx+max_npix_peak+1]
+    shape = cutout.shape
+    sy, sx = shape
+    Y, X = np.mgrid[0:sy, 0:sx]
+
+    center = np.unravel_index(np.argmax(cutout), cutout.shape)
+    cy, cx = center
+
+    dy = (Y - cy)
+    dx = (X - cx)
+    # I guess these definitions already take into account the definition of PA (east from north)?
+    costh = np.cos(beam.pa.to('rad'))
+    sinth = np.sin(beam.pa.to('rad'))
+    # Changed variable name to rminmaj (it was rmajmin)
+    rminmaj =  beam.minor / beam.major
+
+    rr = ((dx * costh + dy * sinth)**2 / rminmaj**2 +
+          (dx * sinth - dy * costh)**2 / 1**2)**0.5
+    rbin = (rr).astype(int)
+
+    #From plots taking the abs looks better centered by ~ 1 pix.
+    #radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(max_npix_peak))
+    radial_mean = ndimage.mean(np.abs(cutout), labels=rbin, index=np.arange(max_npix_peak))
+    first_min_ind = signal.find_peaks(-radial_mean)[0][0]
+
+    #cutout_posit = np.where(cutout > 0, cutout, 0.)
+    radial_sum = ndimage.sum(cutout, labels=rbin, index=np.arange(first_min_ind))
+    psf_sum = np.sum(radial_sum)
+
+    clean_psf_sum = pixels_per_beam
+    epsilon = clean_psf_sum/psf_sum
+    log.debug(f'clean_psf_sum={clean_psf_sum}, psf_sum={psf_sum}, epsilon={epsilon}')
+
+    return epsilon, clean_psf_sum, psf_sum
+
 
 def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
-                     verbose=False, **kwargs):
+                     verbose=False, beam_threshold=0.1, pbar=False, **kwargs):
     """
     Determine epsilon, the ratio of the clean beam volume to the dirty beam volume within the first null, for a cube's PSFs.
-    
+
     Parameters
     ----------
     psf_image : casa image
@@ -26,7 +68,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
         The maximum separation to integrate within to estimate the beam
     export_clean_beam : bool
         Return the synthesized beam in addition to the epsilon values?
-    kwargs : 
+    kwargs :
         passed to `common_beam`
     """
 
@@ -44,52 +86,24 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
     else:
         raise ValueError
 
+    good_beams = psf.identify_bad_beams(beam_threshold)
+
     if hasattr(psf, 'beam'):
         common_beam = psf.beam
     else:
-        common_beam = psf.beams.common_beam(**kwargs)
-
-    # In pixels (clean beam per channel):
-    npix_clean_beam = psf.pixels_per_beam
+        common_beam = psf.beams[good_beams].common_beam(**kwargs)
 
     epsilon_arr = np.zeros(len(psf))
 
-    for chan in range(len(psf)):
+    if not pbar:
+        pbar = lambda x: x
 
-        center = np.unravel_index(np.argmax(psf[chan]), psf[chan].shape)
-        cy, cx = center
+    for chan in pbar(range(len(psf))):
 
-        cutout = psf[chan,cy-max_npix_peak:cy+max_npix_peak+1, cx-max_npix_peak:cx+max_npix_peak+1]
-        shape = cutout.shape
-        sy, sx = shape
-        Y, X = np.mgrid[0:sy, 0:sx]
-
-        center = np.unravel_index(np.argmax(cutout), cutout.shape)
-        cy, cx = center
-
-        dy = (Y - cy)
-        dx = (X - cx)
-        # I guess these definitions already take into account the definition of PA (east from north)?
-        costh = np.cos(psf.beams.pa[chan].to('rad'))
-        sinth = np.sin(psf.beams.pa[chan].to('rad'))
-        # Changed variable name to rminmaj (it was rmajmin)
-        rminmaj =  psf.beams.minor[chan] / psf.beams.major[chan]
-
-        rr = ((dx * costh + dy * sinth)**2 / rminmaj**2 +
-              (dx * sinth - dy * costh)**2 / 1**2)**0.5
-        rbin = (rr).astype(int)
-
-        #From plots taking the abs looks better centered by ~ 1 pix.
-        #radial_mean = ndimage.mean(cutout**2, labels=rbin, index=np.arange(max_npix_peak))
-        radial_mean = ndimage.mean(np.abs(cutout), labels=rbin, index=np.arange(max_npix_peak))
-        first_min_ind = signal.find_peaks(-radial_mean)[0][0]
-
-        #cutout_posit = np.where(cutout > 0, cutout, 0.)
-        radial_sum = ndimage.sum(cutout, labels=rbin, index=np.arange(first_min_ind))
-        psf_sum = np.sum(radial_sum)
-
-        clean_psf_sum = npix_clean_beam[chan]
-        epsilon = clean_psf_sum/psf_sum
+        epsilon, clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan],
+                                                                   psf.beams[chan],
+                                                                   psf.pixels_per_beam[chan],
+                                                                   max_npix_peak)
         epsilon_arr[chan] = epsilon
 
         if verbose:
@@ -105,7 +119,7 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
     return output
 
 
-def conv_model(model_image, clean_beam):
+def conv_model(model_image, clean_beam, save_to_tmp_dir=False):
     if isinstance(model_image, BaseSpectralCube):
         model = model_image
     else:
@@ -128,12 +142,13 @@ def conv_model(model_image, clean_beam):
     pix_beam = Beam(fwhm_gauss_pix, fwhm_gauss_pix, 0*u.deg)
     model = model.with_beam(pix_beam)
 
-    conv = model.convolve_to(beam) * npix_beam
+    conv = model.convolve_to(beam, save_to_tmp_dir=save_to_tmp_dir) * npix_beam
 
     return conv
 
 
-def rescale(conv_model, epsilon, residual_image, savename=None, export_fits=True):
+def rescale(conv_model, epsilon, residual_image, savename=None,
+            export_fits=True):
     if isinstance(residual_image, BaseSpectralCube):
         residual = residual_image
         if savename is None and export_fits:
@@ -146,12 +161,9 @@ def rescale(conv_model, epsilon, residual_image, savename=None, export_fits=True
 
     header = conv_model.header
 
-
     epsilon = epsilon*u.dimensionless_unscaled
-    # maybe use einsum here?
-    print("creating restor")
+
     restor = conv_model.unitless + residual*epsilon[:,None,None]
-    print("done creating restor")
 
     if export_fits:
         print("Writing")
