@@ -65,6 +65,8 @@ if __name__ == "__main__":
 
     assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
+    redo = False
+
     basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
 
     tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/tables/cube_stats.ecsv')
@@ -82,7 +84,7 @@ if __name__ == "__main__":
 
     # simpler approach
     #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-    filenames = [f'{basepath}/{fn}' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image"))
+    filenames = [f'{basepath}/{fn}' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image")) + list(glob.glob(f"{basepath}/*_12M_sio.image"))
 
     # use tbl, ignore 7m12m
     sizes = {ii: get_size(fn)
@@ -93,11 +95,11 @@ if __name__ == "__main__":
 
     for ii in sorted(sizes, key=lambda x: sizes[x]):
 
-        fn = filenames[ii]
+        fn = filenames[ii]+".pbcor"
 
         outfn = fn+'.statcont.cont.fits'
 
-        if not os.path.exists(outfn):
+        if not os.path.exists(outfn) or redo:
             t0 = time.time()
 
             # touch the file to allow parallel runs
@@ -107,15 +109,17 @@ if __name__ == "__main__":
             print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
             target_chunk_size = int(1e5)
-            print("Target chunk size is {target_chunk_size}")
-            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size)
+            print(f"Target chunk size is {target_chunk_size}")
+            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, format='casa_image')
             print(f"Minimizing {cube}")
-            cube = cube.minimal_subcube()
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                cube = cube.minimal_subcube()
             print(cube)
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                with cube.use_dask_scheduler('multiprocessing'):
+                with cube.use_dask_scheduler('threads'):
                     print("Calculating noise")
                     if ii < len(tbl):
                         noise = tbl['std'].quantity[ii]
@@ -130,7 +134,7 @@ if __name__ == "__main__":
                     data_to_write = result[1].compute()
 
                     print(f"Writing to FITS {outfn}")
-                    fits.PrimaryHDU(data=data_to_write,
+                    fits.PrimaryHDU(data=data_to_write.value,
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
             print(f"{fn} -> {outfn} in {time.time()-t0}s")
