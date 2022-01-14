@@ -104,6 +104,8 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     log.info(f"Beginning JvM write.  t={time.time()-t0}")
     hdul = merged.hdulist
     hdul.append(epsilon_table)
+    # need to manually specify units b/c none of the model, residual, etc. have them!
+    hdul[0].header['BUNIT'] = 'Jy/beam'
     with pbar:
         hdul.writeto(basename+".JvM.image.fits", overwrite=True)
     log.info(f"Done JvM write.  t={time.time()-t0}")
@@ -115,6 +117,8 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         if write_pbcor:
             log.info(f"Creating HDUlist.  t={time.time()-t0}")
             hdul = pbc.hdulist
+            # need to manually specify units b/c none of the model, residual, etc. have them!
+            hdul[0].header['BUNIT'] = 'Jy/beam'
             log.info(f"appending epsilon table.  t={time.time()-t0}")
             hdul.append(epsilon_table)
             log.info(f"changing dtype.  t={time.time()-t0}")
