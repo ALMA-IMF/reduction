@@ -129,7 +129,10 @@ for band in bands:
                     # ever be flagged)
                     # I revised this later because it appears that at least one
                     # window legitimately had edge channels flagged out
-                    # (check_channel_flags will raise an exception if there is excess flaggin)
+                    # (check_channel_flags will raise an exception if there is excess flagging)
+                    # Also, Luke reported that there are some cases in which chunks were
+                    # flagged out because of bad atmospheric absorption lines in part of the band;
+                    # we think this only affected 7m data?
                     check_channel_flags(invis, field=field, spw=str(spws[newid]), tolerance=0.1)
 
                     result = split(vis=invis,

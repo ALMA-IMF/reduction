@@ -51,20 +51,19 @@ for field in fields:
                 beam_hd = hdu_cube[1].header
                 beam_data = hdu_cube[1].data
                 hdu_cube.close()
-                
+
                 bmaj_list = []
                 bmin_list = []
                 for beam in range(beam_data.shape[0]):
                     bmaj_list.append(beam_data[beam][0])
                     bmin_list.append(beam_data[beam][1])
-                    
+
                 # JvM cube beams
                 jvm_cube = fits.open(jvm_file)
                 jvm_hd = jvm_cube[0].header
                 jvm_bmaj = jvm_hd['BMAJ']*3600.
                 jvm_bmin = jvm_hd['BMIN']*3600.
                 jvm_cube.close()
-                
                 # Continuum beams 
                 cont_im = fits.open(cont_file)
                 cont_hd = cont_im[0].header
@@ -74,7 +73,7 @@ for field in fields:
 
                 #Plotting
                 fig, ax = plt.subplots(figsize=(9,6))
-                
+
                 ax.plot(bmaj_list[low_chans : len(bmaj_list) - 1 - high_chans], label='BMAJ_cube', linewidth=2, color='r')
                 ax.plot(bmin_list[low_chans : len(bmin_list) - 1 - high_chans], label='BMIN_cube', linewidth=2, color='b')
                 ax.axhline(y=cont_bmaj, linewidth=2, color='k', linestyle='dashed', label='BMAJ_cont')
@@ -85,9 +84,8 @@ for field in fields:
                 ax.set_ylabel('arcsec', fontsize=14)
                 ax.set_xlabel('channel', fontsize=14)
                 ax.legend(loc='best', fontsize=12)
-                
+
                 #fig.show()
                 #fig.clf()
                 plot_file = os.path.join(cube_path,jvm_name+'.beam_comparison.png')
                 fig.savefig(plot_file)
-                

@@ -32,12 +32,22 @@ echo ${jobid##* }
 
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_$(date +%Y-%m-%d_%H_%M_%S).log"
 export DO_BSENS=True
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
+if [ -z $NODEPS ]; then
+    dependency="--dependency=afterok:${jobid##* }"
+else
+    dependency=""
+fi
+jobid=$(sbatch ${dependency} --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
 echo ${jobid##* }
 
 export LOGFILENAME="casa_log_selfcalcont_${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_noco_$(date +%Y-%m-%d_%H_%M_%S).log"
 export EXCLUDE_BRIGHT_SPW=True
-jobid=$(sbatch --dependency=afterok:${jobid##* } --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_noco_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_noco_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
+if [ -z $NODEPS ]; then
+    dependency="--dependency=afterok:${jobid##* }"
+else
+    dependency=""
+fi
+jobid=$(sbatch ${dependency} --output=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_noco_selfcal_%j.log --job-name=${FIELD_ID}_${BAND_TO_IMAGE}_12M_bsens_noco_selfcal --account=${ACCOUNT} --qos=${QOS} --export=ALL $CMD)
 echo ${jobid##* }
 export DO_BSENS=False
 export EXCLUDE_BRIGHT_SPW=False
