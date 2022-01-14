@@ -146,6 +146,7 @@ if __name__ == "__main__":
     colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
 
     colnames = colnames_apriori+colnames_fromheader+colnames_stats
+    assert len(colnames) == 40
 
     def try_qty(x):
         try:
@@ -163,7 +164,7 @@ if __name__ == "__main__":
         tbl.write(tbldir / 'cube_stats.js.html', format='jsviewer')
         return tbl
 
-    start_from_cached = True # TODO: make a parameter
+    start_from_cached = False # TODO: make a parameter
     tbl = None
     if start_from_cached and os.path.exists(tbldir / 'cube_stats.ecsv'):
         tbl = Table.read(tbldir / 'cube_stats.ecsv')
@@ -224,7 +225,7 @@ if __name__ == "__main__":
 
                         print(f"Beginning field {field} band {band} config {config} line {line} spw {spw} suffix {suffix}", flush=True)
 
-                        logtable = casaTable.read(f'{fn}/logtable').as_astropy_tables()[0]
+                        logtable = casaTable.read(f'{fn}/logtable')
                         hist = logtable['MESSAGE']
 
                         #ia.open(fn)
@@ -316,6 +317,7 @@ if __name__ == "__main__":
                             [history[key] if key in history else '' for key in colnames_fromheader] +
                             [min, max, std, sum, mean] +
                             [modmin, modmax, modstd, modsum, modmean, epsilon])
+                        assert len(row) == len(colnames)
                         rows.append(row)
 
                         cache_stats_file.write(" ".join(map(str, row)) + "\n")
