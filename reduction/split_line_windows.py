@@ -7,13 +7,16 @@ try:
     from taskinit import casalog
     from taskinit import msmdtool
     from taskinit import mstool, tbtool
+    from tasks import split, flagdata
+except ImportError:
+    from casatasks import casalog, split, flagdata
+    from casatools import msmetadata as msmdtool, ms as mstool, table as tbtool
 except Exception as ex:
     if 'InputRejected' in str(ex):
         pass
     else:
         raise ex
 
-from tasks import split, flagdata
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
@@ -132,14 +135,15 @@ for band in bands:
                     # we think this only affected 7m data?
                     check_channel_flags(invis, field=field, spw=str(spws[newid]), tolerance=0.1)
 
-                    assert split(vis=invis,
+                    result = split(vis=invis,
                                  spw=spws[newid],
                                  field=field,
                                  outputvis=outvis,
                                  # there is no corrected_data column because we're
                                  # splitting from split MSes
                                  datacolumn=datacolumn,
-                                ), "Split failed 3"
+                                )
+                    print("Split ended with result={0} in line split".format(result))
 
                     flagdata(vis=outvis, mode='manual', autocorr=True)
 
