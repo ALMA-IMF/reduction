@@ -68,11 +68,13 @@ def dt():
     print(f"Elapsed: {now-then}")
     then = now
 
+width = 10*u.km/u.s
+
 for field in "G328.25 G351.77 W51-IRS2 W43-MM2 G327.29 G338.93 W51-E G353.41 G008.67 G337.92 W43-MM3 W43-MM1 G010.62 G012.80 G333.60".split():
     for band in (3,6):
         for config in ('12M',): #'7M12M',
             for line in default_lines:
-                for suffix in (".image", ".contsub.image"):
+                for suffix in (".image", ".contsub.image", '.JvM.image'):
                     globblob = f"{field}_B{band}*_{config}_*{line}{suffix}"
                     fn = glob.glob(globblob)
                     if any(fn):

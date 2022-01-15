@@ -139,8 +139,12 @@ if __name__ == "__main__":
             print(f"{fn} -> {outfn} in {time.time()-t0}s")
 
         else:
-            print(f"Loaded {fn}")
-            cont = fits.getdata(outfn)
+            try:
+                cont = fits.getdata(outfn)
+            except Exception as ex:
+                print(ex)
+                continue
+            print(f"{fn} is done, loaded {outfn}")
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -160,7 +164,7 @@ if __name__ == "__main__":
 
                     if frq > cube.spectral_axis.min() and frq < cube.spectral_axis.max():
                         outmoment = f'{basepath}/moments/{field}/{basefn}.{line}.m0.fits'
-                        if (not os.path.exists(outmoment)) or True:
+                        if (not os.path.exists(outmoment)) or redo:
 
                             vcube = scube.with_spectral_unit(u.km/u.s, velocity_convention='radio', rest_value=frq)
                             cutout = vcube.spectral_slab(restvel-10*u.km/u.s, restvel+10*u.km/u.s)

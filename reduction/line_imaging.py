@@ -67,7 +67,7 @@ from astropy import constants
 from spectral_cube import SpectralCube
 import re
 try:
-    from tasks import tclean, uvcontsub, impbcor, concat, flagdata, makemask
+    from tasks import tclean, uvcontsub, impbcor, concat, flagdata, makemask, immath
     from taskinit import casalog
     from exportfits_cli import exportfits_cli as exportfits
     from casa_system_defaults import casa
@@ -75,7 +75,7 @@ try:
     version = map(int, re.split("[-.]", casa['version']))
 except (ImportError,ModuleNotFoundError):
     # futureproofing: CASA 6 imports this way
-    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata, makemask
+    from casatasks import tclean, uvcontsub, impbcor, concat, exportfits, flagdata, makemask, immath
     from casatasks import casalog
     import casatools
     version = casatools.version()
@@ -876,13 +876,25 @@ for band in band_list:
                 # elif os.path.exists(lineimagename+".mask"):
                 #     if 'usemask' in impars and impars['usemask'] != 'user':
                 #         raise ValueError("Mask exists but not specified as user.")
-                if 'mask' not in impars and not os.path.exists(lineimagename+".mask"):
+                if ((('mask' not in impars) or ('mask-ranges' in linpars))
+                    and (not os.path.exists(lineimagename+".mask"))):
                     pblimit = impars['pblimit'] if 'pblimit' in impars else 0.001
-                    logprint("Creating mask from pb with pblimit = {0}".format(pblimit), origin='almaimf_line_imaging')
+                    logprint("Creating mask from pb with pblimit = {0}"
+                             .format(pblimit), origin='almaimf_line_imaging')
 
-                    ia.calcmask(mask="{0}.pb > {1}".format(lineimagename, pblimit),
-                                name="{0}.mask".format(lineimagename)
-                               )
+                    #ia.open("{0}.pb".format(lineimagename))
+                    #ia.calcmask(mask="{0}.pb > {1}".format(lineimagename, pblimit),
+                    #            name="pbmask"
+                    #           )
+                    #ia.close()
+                    #makemask(inpimage='{0}.pb'.format(lineimagename),
+                    #         inpmask='{0}.pb:pbmask'.format(lineimagename),
+                    #         output='{0}.mask'.format(lineimagename),
+                    #         mode='copy')
+                    immath(imagename="{0}.pb".format(lineimagename),
+                           outfile="{0}.mask".format(lineimagename),
+                           expr="iif(IM0>{0},1.0,0.0)".format(pblimit))
+                    assert os.path.exists(lineimagename+".mask"), "bug"
 
                 # this if statement is now (almost?) entirely redundant b/c the
                 # previous ensures that a mask exists

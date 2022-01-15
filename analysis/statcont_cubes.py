@@ -84,7 +84,8 @@ if __name__ == "__main__":
 
     # simpler approach
     #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-    filenames = [f'{basepath}/{fn}' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image")) + list(glob.glob(f"{basepath}/*_12M_sio.image"))
+    #filenames = [f'{basepath}/{fn}' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image")) + list(glob.glob(f"{basepath}/*_12M_sio.image"))
+    filenames = glob.glob(f'{basepath}/*.JvM.image.pbcor.fits')
 
     # use tbl, ignore 7m12m
     sizes = {ii: get_size(fn)
@@ -93,11 +94,14 @@ if __name__ == "__main__":
             } # ignore 7m12m
 
 
+    target_chunk_size = int(1e8)
+
     for ii in sorted(sizes, key=lambda x: sizes[x]):
 
-        fn = filenames[ii]+".pbcor"
+        fn = filenames[ii]#+".pbcor"
 
         outfn = fn+'.statcont.cont.fits'
+        fileformat = 'fits'
 
         if not os.path.exists(outfn) or redo:
             t0 = time.time()
@@ -108,13 +112,14 @@ if __name__ == "__main__":
 
             print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
-            target_chunk_size = int(1e5)
             print(f"Target chunk size is {target_chunk_size}")
-            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, format='casa_image')
-            print(f"Minimizing {cube}")
-            with warnings.catch_warnings():
-                warnings.simplefilter("ignore")
-                cube = cube.minimal_subcube()
+            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size,
+                                     format=fileformat, use_dask=True)
+            if 'JvM' not in fn:
+                print(f"Minimizing {cube}")
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    cube = cube.minimal_subcube()
             print(cube)
 
             with warnings.catch_warnings():
@@ -140,3 +145,9 @@ if __name__ == "__main__":
             print(f"{fn} -> {outfn} in {time.time()-t0}s")
         else:
             print(f"Skipped {fn}")
+
+        if os.path.exists(outfn):
+            if os.path.getsize(outfn) == 0:
+                print(f"{outfn} had size {os.path.getsize(outfn)}")
+                os.remove(outfn)
+
