@@ -137,17 +137,33 @@ if __name__ == "__main__":
                                                save_to_tmp_dir=True)
                     print("Running the compute step")
                     data_to_write = result[1].compute()
+                    cont = data_to_write.value
 
                     print(f"Writing to FITS {outfn}")
-                    fits.PrimaryHDU(data=data_to_write.value,
+                    fits.PrimaryHDU(data=cont,
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
             print(f"{fn} -> {outfn} in {time.time()-t0}s")
         else:
-            print(f"Skipped {fn}")
+            try:
+                cont = fits.getdata(outfn)
+            except Exception as ex:
+                print(ex)
+                continue
+            print(f"{fn} is done, loaded {outfn}")
 
         if os.path.exists(outfn):
             if os.path.getsize(outfn) == 0:
                 print(f"{outfn} had size {os.path.getsize(outfn)}")
                 os.remove(outfn)
 
+        if fn.endswith('.fits'):
+            outcube = fn[:-5]+'.statcont.contsub.fits'
+            if (not os.path.exists(outcube)) or redo:
+                print(f"Writing contsub cube to {outcube}")
+                cube = SpectralCube.read(fn,
+                                         target_chunk_size=target_chunk_size,
+                                         use_dask=True, format=fileformat)
+                cube.allow_huge_operations=True
+                scube = cube - cont*cube.unit
+                scube.write(outcube, overwrite=True)
