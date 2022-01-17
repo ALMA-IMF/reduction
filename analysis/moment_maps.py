@@ -21,6 +21,10 @@ import glob
 import tempfile
 
 import os
+import sys
+
+import matplotlib
+matplotlib.use('agg')
 
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
@@ -109,14 +113,18 @@ if __name__ == "__main__":
             with open(outfn, 'w') as fh:
                 fh.write("")
 
+            print(f"{outfn} does not exist, making it")
             print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
             print(f"Target chunk size is {target_chunk_size}")
             cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
+            sys.stdout.flush()
+            sys.stderr.flush()
 
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
+                print(f"Doing statcont with {nthreads} threads")
                 with cube.use_dask_scheduler('threads', num_workers=nthreads):
                     print("Calculating noise")
                     if ii < len(tbl):
@@ -142,6 +150,7 @@ if __name__ == "__main__":
             try:
                 cont = fits.getdata(outfn)
             except Exception as ex:
+                print(f"File {outfn} exists but could not be opened; skipping moment making", flush=True)
                 print(ex)
                 continue
             print(f"{fn} is done, loaded {outfn}")

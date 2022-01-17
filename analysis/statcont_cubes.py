@@ -24,6 +24,7 @@ import glob
 import tempfile
 
 import os
+import sys
 
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
@@ -110,60 +111,66 @@ if __name__ == "__main__":
             with open(outfn, 'w') as fh:
                 fh.write("")
 
-            print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
+            print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB", flush=True)
 
-            print(f"Target chunk size is {target_chunk_size}")
+            print(f"Target chunk size is {target_chunk_size}", flush=True)
             cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size,
                                      format=fileformat, use_dask=True)
             if 'JvM' not in fn:
-                print(f"Minimizing {cube}")
+                print(f"Minimizing {cube}", flush=True)
                 with warnings.catch_warnings():
                     warnings.simplefilter("ignore")
                     cube = cube.minimal_subcube()
-            print(cube)
+            print(cube, flush=True)
+            sys.stdout.flush()
+            sys.stderr.flush()
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
+                print(f"Doing statcont with {nthreads} threads")
                 with cube.use_dask_scheduler('threads', num_workers=nthreads):
-                    print("Calculating noise")
+                    print("Calculating noise", flush=True)
                     if ii < len(tbl):
                         noise = tbl['std'].quantity[ii]
                     else:
                         noise = cube.std()
 
-                    print("Sigma clipping")
+                    print("Sigma clipping", flush=True)
                     result = c_sigmaclip_scube(cube, noise,
                                                verbose=True,
                                                save_to_tmp_dir=True)
-                    print("Running the compute step")
+                    print("Running the compute step", flush=True)
                     data_to_write = result[1].compute()
                     cont = data_to_write.value
 
-                    print(f"Writing to FITS {outfn}")
+                    print(f"Writing to FITS {outfn}", flush=True)
                     fits.PrimaryHDU(data=cont,
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
-            print(f"{fn} -> {outfn} in {time.time()-t0}s")
+            print(f"{fn} -> {outfn} in {time.time()-t0}s", flush=True)
         else:
             try:
                 cont = fits.getdata(outfn)
             except Exception as ex:
+                print(f"File {outfn} exists but could not be opened; skipping contsub step", flush=True)
                 print(ex)
                 continue
-            print(f"{fn} is done, loaded {outfn}")
+            print(f"{fn} is done, loaded {outfn}", flush=True)
 
         if os.path.exists(outfn):
             if os.path.getsize(outfn) == 0:
-                print(f"{outfn} had size {os.path.getsize(outfn)}")
+                print(f"{outfn} had size {os.path.getsize(outfn)}", flush=True)
                 os.remove(outfn)
 
         if fn.endswith('.fits'):
             outcube = fn[:-5]+'.statcont.contsub.fits'
             if (not os.path.exists(outcube)) or redo:
-                print(f"Writing contsub cube to {outcube}")
+                print(f"Writing contsub cube to {outcube}", flush=True)
                 cube = SpectralCube.read(fn,
                                          target_chunk_size=target_chunk_size,
                                          use_dask=True, format=fileformat)
                 cube.allow_huge_operations=True
                 scube = cube - cont*cube.unit
                 scube.write(outcube, overwrite=True)
+        sys.stdout.flush()
+        sys.stderr.flush()
