@@ -9,6 +9,10 @@ from spectral_cube import SpectralCube
 from astropy.io import fits
 import dask
 from astropy import units as u
+from astropy import constants
+
+import matplotlib
+matplotlib.use('agg')
 
 from statcont.cont_finding import c_sigmaclip_scube
 
@@ -21,10 +25,6 @@ import glob
 import tempfile
 
 import os
-import sys
-
-import matplotlib
-matplotlib.use('agg')
 
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
@@ -113,18 +113,14 @@ if __name__ == "__main__":
             with open(outfn, 'w') as fh:
                 fh.write("")
 
-            print(f"{outfn} does not exist, making it")
             print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
             print(f"Target chunk size is {target_chunk_size}")
             cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
-            sys.stdout.flush()
-            sys.stderr.flush()
 
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                print(f"Doing statcont with {nthreads} threads")
                 with cube.use_dask_scheduler('threads', num_workers=nthreads):
                     print("Calculating noise")
                     if ii < len(tbl):
@@ -150,7 +146,6 @@ if __name__ == "__main__":
             try:
                 cont = fits.getdata(outfn)
             except Exception as ex:
-                print(f"File {outfn} exists but could not be opened; skipping moment making", flush=True)
                 print(ex)
                 continue
             print(f"{fn} is done, loaded {outfn}")
@@ -170,8 +165,9 @@ if __name__ == "__main__":
 
                 for line,frq in imaging_parameters.default_lines.items():
                     frq = u.Quantity(frq)
+                    zz = (restvel / constants.c).decompose().value
 
-                    if frq > cube.spectral_axis.min() and frq < cube.spectral_axis.max():
+                    if frq * (1-zz) > cube.spectral_axis.min() and frq * (1-zz) < cube.spectral_axis.max():
                         outmoment = f'{basepath}/moments/{field}/{basefn}.{line}.m0.fits'
                         if (not os.path.exists(outmoment)) or redo:
 
