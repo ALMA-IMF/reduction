@@ -105,6 +105,7 @@ if __name__ == "__main__":
         basefn = os.path.basename(fn)
 
         outfn = fn.replace(".fits","")+'.statcont.cont.fits'
+        assert outfn.count('.fits') == 1
 
         if not os.path.exists(outfn) or redo:
             t0 = time.time()
