@@ -103,6 +103,7 @@ if __name__ == "__main__":
 
         outfn = fn+'.statcont.cont.fits'
         fileformat = 'fits'
+        assert outfn.count('.fits') == 1
 
         if not os.path.exists(outfn) or redo:
             t0 = time.time()
@@ -164,6 +165,7 @@ if __name__ == "__main__":
 
         if fn.endswith('.fits'):
             outcube = fn[:-5]+'.statcont.contsub.fits'
+            assert outcube.count('.fits') == 1
             if (not os.path.exists(outcube)) or redo:
                 print(f"Writing contsub cube to {outcube}", flush=True)
                 cube = SpectralCube.read(fn,
