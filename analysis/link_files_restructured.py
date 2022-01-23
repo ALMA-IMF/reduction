@@ -69,7 +69,8 @@ with open(basepath / '../scigoals/file_list.txt', 'w') as fh1:
                             #filelist += glob.glob(fitsglobbo)
                             #print(field, band, dirname, config, filelist)
                             for fn in filelist:
-                                #print(f"Linking {dotdot / fn} to {os.getcwd()}")
+                                if 'contsub' in fn:
+                                    print(f"Linking {fn} to {os.getcwd()}")
                                 basename = os.path.basename(fn)
                                 if not os.path.exists(basename):
                                     symlink(fn, basename)

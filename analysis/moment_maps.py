@@ -1,30 +1,30 @@
 """
-This script is a work in progress as of Nov 26
-
-It is intended to be run in `imaging_results/` and will produce statcont contfiles
-
-It is partly a performance test - for the bigger cubes, there were sometimes memory problems
-
-The noise estimation region and num_workers are both hard-coded and should be
-customized.
-
-We should eventually allow multi-cube combination using full statcont abilities
+Moment maps!
 """
+import numpy as np
 import time
 import warnings
 from astropy.table import Table
 from spectral_cube import SpectralCube
 from astropy.io import fits
 import dask
+from astropy import units as u
+from astropy import constants
+
+import matplotlib
+matplotlib.use('agg')
 
 from statcont.cont_finding import c_sigmaclip_scube
+
+import sys
+sys.path.append('/orange/adamginsburg/ALMA_IMF/reduction/reduction')
+import imaging_parameters
 
 import glob
 
 import tempfile
 
 import os
-import sys
 
 # for zarr storage
 os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
@@ -69,10 +69,14 @@ if __name__ == "__main__":
     redo = False
 
     basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
+    if not os.path.exists(f'{basepath}/moments'):
+        os.mkdir(f'{basepath}/moments')
 
     tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/tables/cube_stats.ecsv')
 
     def get_size(start_path='.'):
+        if start_path.endswith('fits'):
+            return os.path.getsize(start_path)
         total_size = 0
         for dirpath, dirnames, filenames in os.walk(start_path):
             for f in filenames:
@@ -85,8 +89,7 @@ if __name__ == "__main__":
 
     # simpler approach
     #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-    #filenames = [f'{basepath}/{fn}' for fn in tbl['filename']] + list(glob.glob(f"{basepath}/*_12M_spw[0-9].image")) + list(glob.glob(f"{basepath}/*_12M_sio.image"))
-    filenames = glob.glob(f'{basepath}/*.JvM.image.pbcor.fits')
+    filenames = [f'{fn}.pbcor.fits'.replace('.image', '.JvM.image') for fn in tbl['filename']]
 
     # use tbl, ignore 7m12m
     sizes = {ii: get_size(fn)
@@ -96,13 +99,12 @@ if __name__ == "__main__":
 
 
     target_chunk_size = int(1e8)
-
     for ii in sorted(sizes, key=lambda x: sizes[x]):
 
-        fn = filenames[ii]#+".pbcor"
+        fn = filenames[ii]
+        basefn = os.path.basename(fn)
 
-        outfn = fn+'.statcont.cont.fits'
-        fileformat = 'fits'
+        outfn = fn.replace(".fits","")+'.statcont.cont.fits'
         assert outfn.count('.fits') == 1
 
         if not os.path.exists(outfn) or redo:
@@ -112,67 +114,69 @@ if __name__ == "__main__":
             with open(outfn, 'w') as fh:
                 fh.write("")
 
-            print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB", flush=True)
+            print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
 
-            print(f"Target chunk size is {target_chunk_size}", flush=True)
-            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size,
-                                     format=fileformat, use_dask=True)
-            if 'JvM' not in fn:
-                print(f"Minimizing {cube}", flush=True)
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    cube = cube.minimal_subcube()
-            print(cube, flush=True)
-            sys.stdout.flush()
-            sys.stderr.flush()
+            print(f"Target chunk size is {target_chunk_size}")
+            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
+
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                print(f"Doing statcont with {nthreads} threads")
                 with cube.use_dask_scheduler('threads', num_workers=nthreads):
-                    print("Calculating noise", flush=True)
+                    print("Calculating noise")
                     if ii < len(tbl):
                         noise = tbl['std'].quantity[ii]
                     else:
                         noise = cube.std()
 
-                    print("Sigma clipping", flush=True)
+                    print("Sigma clipping")
                     result = c_sigmaclip_scube(cube, noise,
                                                verbose=True,
                                                save_to_tmp_dir=True)
-                    print("Running the compute step", flush=True)
+                    print("Running the compute step")
                     data_to_write = result[1].compute()
-                    cont = data_to_write.value
 
-                    print(f"Writing to FITS {outfn}", flush=True)
-                    fits.PrimaryHDU(data=cont,
+                    print(f"Writing to FITS {outfn}")
+                    fits.PrimaryHDU(data=data_to_write.value,
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
-            print(f"{fn} -> {outfn} in {time.time()-t0}s", flush=True)
+                    cont = data_to_write.value
+            print(f"{fn} -> {outfn} in {time.time()-t0}s")
+
         else:
             try:
                 cont = fits.getdata(outfn)
             except Exception as ex:
-                print(f"File {outfn} exists but could not be opened; skipping contsub step", flush=True)
                 print(ex)
                 continue
-            print(f"{fn} is done, loaded {outfn}", flush=True)
+            print(f"{fn} is done, loaded {outfn}")
 
-        if os.path.exists(outfn):
-            if os.path.getsize(outfn) == 0:
-                print(f"{outfn} had size {os.path.getsize(outfn)}", flush=True)
-                os.remove(outfn)
-
-        if fn.endswith('.fits'):
-            outcube = fn[:-5]+'.statcont.contsub.fits'
-            assert outcube.count('.fits') == 1
-            if (not os.path.exists(outcube)) or redo:
-                print(f"Writing contsub cube to {outcube}", flush=True)
-                cube = SpectralCube.read(fn,
-                                         target_chunk_size=target_chunk_size,
-                                         use_dask=True, format=fileformat)
-                cube.allow_huge_operations=True
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            # do moments
+            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
+            cube.allow_huge_operations=True
+            with cube.use_dask_scheduler('threads', num_workers=nthreads):
                 scube = cube - cont*cube.unit
-                scube.write(outcube, overwrite=True)
-        sys.stdout.flush()
-        sys.stderr.flush()
+
+                for field,restvel in imaging_parameters.field_vlsr.items():
+                    if field in fn:
+                        restvel = u.Quantity(restvel)
+                        break
+
+                for line,frq in imaging_parameters.default_lines.items():
+                    frq = u.Quantity(frq)
+                    zz = (restvel / constants.c).decompose().value
+
+                    if frq * (1-zz) > cube.spectral_axis.min() and frq * (1-zz) < cube.spectral_axis.max():
+                        outmoment = f'{basepath}/moments/{field}/{basefn}.{line}.m0.fits'
+                        if (not os.path.exists(outmoment)) or redo:
+
+                            vcube = scube.with_spectral_unit(u.km/u.s, velocity_convention='radio', rest_value=frq)
+                            cutout = vcube.spectral_slab(restvel-10*u.km/u.s, restvel+10*u.km/u.s)
+                            assert cutout.shape[0] > 1
+                            mom0 = cutout.moment0()
+                            assert not np.all(mom0[np.isfinite(mom0)] == 0)
+                            if not os.path.exists(f'{basepath}/moments/{field}'):
+                                os.mkdir(f'{basepath}/moments/{field}')
+                            mom0.write(outmoment, overwrite=True)

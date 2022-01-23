@@ -3089,6 +3089,16 @@ line_imaging_parameters_custom = {
         "threshold": "48mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
+    "G353.41_B6_12M_robust0_spw4": {
+        "threshold": "60mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+        "cyclefactor": 2.0,
+    },
+    "G353.41_B6_12M_robust0_spw5": {
+        "threshold": "60mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
+        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
+        "cyclefactor": 2.0,
+    },
     "G353.41_B6_12M_robust0_sio": {
         "threshold": "48mJy",  # typical rms is 12.5-16 mJy, using 3sigma for threshold (14 Dec. 2020)
         "cyclefactor": 2.0,
@@ -3922,7 +3932,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw6": {
-        "threshold": "10sigma",
+        "threshold": "11sigma",
         "pblimit": 0.2,
         "pbmask": 0.25,
         "scales": [0, 3, 6, 12, 24],
@@ -4264,6 +4274,9 @@ line_imaging_parameters_custom = {
 
 
 default_lines = {
+    "dcop": "216.11258000GHz",
+    "dcn": "217.23853000GHz",
+    "hc3n": "218.32471100GHz",
     "h41a": "92.034434GHz",
     "ch3cnv8=1": "92.26144GHz",
     "ch3cn": "91.97GHz",  # range from 91.987 to 91.567
@@ -4281,6 +4294,8 @@ default_lines = {
     "ocs_19-18": "231.06099340GHz",
     "13cs_5-4": "231.22068520GHz",
     "h30a": "231.900928GHz",
+    "ch3oh51-42": "216.94552100GHz",
+    "ch3oh422-312": "218.44005000GHz",
 }
 
 for key in line_imaging_parameters_custom:
