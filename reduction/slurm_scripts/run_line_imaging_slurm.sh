@@ -8,7 +8,9 @@ env
 pwd; hostname; date
 echo "Memory=${MEM}"
 
-export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
+if [ -z $WORK_DIRECTORY ]; then
+    export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
+fi
 export PRODUCT_DIRECTORY='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
 
 # https://github.com/ipython/ipython/issues/2426/#issuecomment-8822369

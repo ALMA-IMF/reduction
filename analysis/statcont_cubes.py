@@ -1,9 +1,10 @@
-"""
-This script is a work in progress as of Nov 26
+""" This script is a work in progress as of Nov 26
 
-It is intended to be run in `imaging_results/` and will produce statcont contfiles
+It is intended to be run in `imaging_results/` and will produce statcont
+contfiles
 
-It is partly a performance test - for the bigger cubes, there were sometimes memory problems
+It is partly a performance test - for the bigger cubes, there were sometimes
+memory problems
 
 The noise estimation region and num_workers are both hard-coded and should be
 customized.
@@ -101,7 +102,8 @@ if __name__ == "__main__":
 
         fn = filenames[ii]#+".pbcor"
 
-        outfn = fn+'.statcont.cont.fits'
+        #outfn = fn+'.statcont.cont.fits'
+        outfn = fn.replace(".image.pbcor.fits", ".image.pbcor.statcont.cont.fits")
         fileformat = 'fits'
         assert outfn.count('.fits') == 1
 

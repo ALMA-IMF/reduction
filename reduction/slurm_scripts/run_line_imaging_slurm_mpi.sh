@@ -9,7 +9,9 @@ pwd; hostname; date
 echo "Memory=${MEM}"
 
 #WORK_DIR='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L'
-export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
+if [ -z $WORK_DIRECTORY ]; then
+    export WORK_DIRECTORY='/blue/adamginsburg/adamginsburg/almaimf/workdir'
+fi
 export PRODUCT_DIRECTORY='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
 
 module load git
