@@ -52,7 +52,7 @@ for field, fpars in parameters.items():
 
 # add the 7m12m merge for n2hp,sio,h41a only
 newpars.update({f'{field}_{array}_{band}_{spw}':
-                      {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat':True}
+                      {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
     for array in ("12M", "7M12M",)# "7M")
     for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), ('B6', 'spw5'), ('B3', 'spw1'))
@@ -154,6 +154,7 @@ if __name__ == "__main__":
             fullcube = spw
             suffix = ''
 
+        workdir = '/blue/adamginsburg/adamginsburg/almaimf/workdir'
         jobname = f"{field}_{band}_{fullcube}_{array}{suffix}"
 
         match = tbl['JobName'] == jobname
@@ -186,7 +187,6 @@ if __name__ == "__main__":
                 print(f"Restarting job {jobname} because it TIMED OUT as {set(jobid)}")
 
 
-        workdir = '/blue/adamginsburg/adamginsburg/almaimf/workdir'
 
         # handle specific parameters
         mem = int(spwpars["mem"])
@@ -209,22 +209,25 @@ if __name__ == "__main__":
         os.environ['LINE_NAME'] = spw
         os.environ['FIELD_ID'] = field
 
-        basename = f'{field}_{band}_spw{spwn}_{array}_{spwn}'
+        basename = f'{field}_{band}_spw{spwn}_{array}_{spw}'
         # basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
 
         # it is safe to remove things beyond here because at this point we're committed
         # to re-running
         if '--dry-run' not in sys.argv:
             if '--remove-failed' in sys.argv:
+                #print(f"Removing files matching '{workdir}/{basename}.*'")
                 failed_files = glob.glob(f'{workdir}/{basename}.*')
                 if any('.image' in x for x in failed_files):
-                    raise ValueError(f"Found a .image in the failed file list: {failed_files}")
+                    print(f"Found a .image in the failed file list: {failed_files}.  Continuing.")
+                    #raise ValueError(f"Found a .image in the failed file list: {failed_files}")
                 else:
                     for ff in failed_files:
                         print(f"Removing {ff}")
                         shutil.rmtree(ff)
             
             tempdir_name = f'{field}_{spw}_{array}_{band}'
+            print(f"Removing files matching '{workdir}/{tempdir_name}/IMAGING_WEIGHT.*'")
             old_tempfiles = (glob.glob(f'{workdir}/{tempdir_name}/IMAGING_WEIGHT*') +
                              glob.glob(f'{workdir}/{tempdir_name}/TempLattice*'))
             for tfn in old_tempfiles:
