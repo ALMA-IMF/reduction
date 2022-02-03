@@ -1,4 +1,6 @@
 import numpy as np
+import glob
+import shutil
 import copy
 
 allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
@@ -34,6 +36,11 @@ parameters = {'W51-E': {'12M':
    {'sio':  {'mem': 128, 'ntasks': 16, 'mpi': False, 'concat': True, } },
   },
  },
+  'G333.60': {'7M12M':
+              {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': True},
+                     },
+              },
+             },
 }
 
 newpars = {}
@@ -45,10 +52,10 @@ for field, fpars in parameters.items():
 
 # add the 7m12m merge for n2hp,sio,h41a only
 newpars.update({f'{field}_{array}_{band}_{spw}':
-                      {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat':True}
+                      {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
-    for array in ("12M", "7M12M")
-    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'))
+    for array in ("12M", "7M12M",)# "7M")
+    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), ('B6', 'spw5'), ('B3', 'spw1'))
 })
 
 
@@ -147,6 +154,7 @@ if __name__ == "__main__":
             fullcube = spw
             suffix = ''
 
+        workdir = '/blue/adamginsburg/adamginsburg/almaimf/workdir'
         jobname = f"{field}_{band}_{fullcube}_{array}{suffix}"
 
         match = tbl['JobName'] == jobname
@@ -178,6 +186,8 @@ if __name__ == "__main__":
                 jobid = tbl['JobID'][match & (tbl['State'] == 'TIMEOUT')]
                 print(f"Restarting job {jobname} because it TIMED OUT as {set(jobid)}")
 
+
+
         # handle specific parameters
         mem = int(spwpars["mem"])
         os.environ['MEM'] = mem = f'{mem}gb'
@@ -187,15 +197,42 @@ if __name__ == "__main__":
         os.environ['DO_NOT_CONCAT'] = str(not spwpars["concat"])
         os.environ['EXCLUDE_7M'] = str('7M' not in array)
         os.environ['ONLY_7M'] = str(array == '7M')
+        os.environ['WORK_DIRECTORY'] = workdir
         os.environ['BAND_TO_IMAGE'] = band
         os.environ['BAND_NUMBERS'] = band[1]
         if spw in line_maps:
-            os.environ['SPW_TO_IMAGE'] = str(line_maps[spw]['spw'])
+            spwn = line_maps[spw]['spw']
+            os.environ['SPW_TO_IMAGE'] = str(spwn)
         else:
-            int(spw[-1]) # check that is int
-            os.environ['SPW_TO_IMAGE'] = spw[-1]
+            spwn = int(spw[-1]) # check that is int
+            os.environ['SPW_TO_IMAGE'] = str(spwn)
         os.environ['LINE_NAME'] = spw
         os.environ['FIELD_ID'] = field
+
+        basename = f'{field}_{band}_spw{spwn}_{array}_{spw}'
+        # basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
+
+        # it is safe to remove things beyond here because at this point we're committed
+        # to re-running
+        if '--dry-run' not in sys.argv:
+            if '--remove-failed' in sys.argv:
+                #print(f"Removing files matching '{workdir}/{basename}.*'")
+                failed_files = glob.glob(f'{workdir}/{basename}.*')
+                if any('.image' in x for x in failed_files):
+                    print(f"Found a .image in the failed file list: {failed_files}.  Continuing.")
+                    #raise ValueError(f"Found a .image in the failed file list: {failed_files}")
+                else:
+                    for ff in failed_files:
+                        print(f"Removing {ff}")
+                        shutil.rmtree(ff)
+            
+            tempdir_name = f'{field}_{spw}_{array}_{band}'
+            print(f"Removing files matching '{workdir}/{tempdir_name}/IMAGING_WEIGHT.*'")
+            old_tempfiles = (glob.glob(f'{workdir}/{tempdir_name}/IMAGING_WEIGHT*') +
+                             glob.glob(f'{workdir}/{tempdir_name}/TempLattice*'))
+            for tfn in old_tempfiles:
+                print(f"Removing {tfn}")
+                shutil.rmtree(tfn)
 
         if spwpars['mpi']:
             mpisuffix = '_mpi'
