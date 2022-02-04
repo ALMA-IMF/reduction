@@ -30,6 +30,19 @@ parameters = {'W51-E': {'12M':
     'spw0': {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat': True, } },
   },
  },
+# 'G327.29':
+# {'12M':
+#     {'B6':
+#         {'spw0': {'do_contsub': True},
+#          'spw1': {'do_contsub': True},
+#          'spw2': {'do_contsub': True},
+#          'spw3': {'do_contsub': True},
+#          'spw4': {'do_contsub': True},
+#          'spw5': {'do_contsub': True},
+#          'spw6': {'do_contsub': True},
+#          'spw7': {'do_contsub': True}},
+#         }
+#     },
  'W43-MM2': {'12M':
   {
    'B6':
@@ -55,7 +68,7 @@ newpars.update({f'{field}_{array}_{band}_{spw}':
                       {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
     for array in ("12M", "7M12M",)# "7M")
-    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), ('B6', 'spw5'), ('B3', 'spw1'))
+    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), )#('B6', 'spw5'), ('B3', 'spw1'))
 })
 
 
@@ -92,6 +105,10 @@ parameters['G327.29_7M12M_B6_spw0'] = copy.copy(parameters['G327.29_12M_B6_spw0'
 parameters['G327.29_7M12M_B6_spw0']['array'] = '7M12M'
 # we're not doing 7m fullcubes parameters['G327.29_7M_B6_spw0'] = copy.copy(parameters['G327.29_12M_B6_spw0'])
 # we're not doing 7m fullcubes parameters['G327.29_7M_B6_spw0']['array'] = '7M'
+
+# G327: do the continuum subtraction for an experiment
+for spwii in range(8):
+    parameters[f'G327.29_12M_B6_spw{spwii}']['do_contsub'] = True
 
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
@@ -131,8 +148,11 @@ if __name__ == "__main__":
     for row,spwpars in parameters.items():
         field, array, band, spw = row.split("_")
 
+        do_contsub = bool(spwpars.get('do_contsub'))
+        contsub_suffix = '.contsub' if do_contsub else ''
+
         #print(f'row={row}')
-        imstatus = imaging_status[field][band][spw][array]
+        imstatus = imaging_status[field][band][spw][array+contsub_suffix]
         if imstatus['image'] and imstatus['pbcor']:
             #print(f"field {field} {band} {spw} {array} is done: imstatus={imstatus}")
             continue
@@ -154,8 +174,9 @@ if __name__ == "__main__":
             fullcube = spw
             suffix = ''
 
+
         workdir = '/blue/adamginsburg/adamginsburg/almaimf/workdir'
-        jobname = f"{field}_{band}_{fullcube}_{array}{suffix}"
+        jobname = f"{field}_{band}_{fullcube}_{array}{suffix}{contsub_suffix}"
 
         match = tbl['JobName'] == jobname
         if any(match):
@@ -187,12 +208,12 @@ if __name__ == "__main__":
                 print(f"Restarting job {jobname} because it TIMED OUT as {set(jobid)}")
 
 
-
         # handle specific parameters
         mem = int(spwpars["mem"])
         os.environ['MEM'] = mem = f'{mem}gb'
         ntasks = spwpars["ntasks"]
         os.environ['NTASKS'] = str(ntasks)
+        os.environ['DO_CONTSUB'] = str(do_contsub)
         os.environ['SLURM_NTASKS'] = str(ntasks)
         os.environ['DO_NOT_CONCAT'] = str(not spwpars["concat"])
         os.environ['EXCLUDE_7M'] = str('7M' not in array)
@@ -209,7 +230,7 @@ if __name__ == "__main__":
         os.environ['LINE_NAME'] = spw
         os.environ['FIELD_ID'] = field
 
-        basename = f'{field}_{band}_spw{spwn}_{array}_{spw}'
+        basename = f'{field}_{band}_spw{spwn}_{array}_{spw}{contsub_suffix}'
         # basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
 
         # it is safe to remove things beyond here because at this point we're committed
@@ -226,7 +247,7 @@ if __name__ == "__main__":
                         print(f"Removing {ff}")
                         shutil.rmtree(ff)
             
-            tempdir_name = f'{field}_{spw}_{array}_{band}'
+            tempdir_name = f'{field}_{spw}_{array}_{band}{contsub_suffix}'
             print(f"Removing files matching '{workdir}/{tempdir_name}/IMAGING_WEIGHT.*'")
             old_tempfiles = (glob.glob(f'{workdir}/{tempdir_name}/IMAGING_WEIGHT*') +
                              glob.glob(f'{workdir}/{tempdir_name}/TempLattice*'))
