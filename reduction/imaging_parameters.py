@@ -4395,6 +4395,7 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-43km/s"},
     },
     "G333.60": {
+        "spw5": {"mask-ranges": [(-56, -48)]},  # km/s units
         "12co": {"cubewidth": "150km/s"},
         "sio": {"cubewidth": "150km/s", "vlsr": "-48km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
@@ -4403,7 +4404,7 @@ line_parameters_custom = {
     },
     "G337.92": {
         "sio": {"cubewidth": "150km/s", "vlsr": "-39km/s"},
-        "12co": {"cubewidth": "150km/s"},
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-56, -48)]},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-100km/s"},  # -35 - 65 = -100km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-35km/s"},
@@ -4425,8 +4426,8 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
-        "spw5": {"mask-ranges": [(-27, -20)]},  # km/s units
-        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-27, -20)]},  # km/s units
+        "spw5": {"mask-ranges": [(-29, -20)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-29, -20)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-81km/s"},  # -16 - 65 = -81km/s to accomodate He and C.
@@ -4441,8 +4442,9 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "100km/s"},
     },
     "W43-MM2": {
+        "spw5": {"mask-ranges": [(71, 87)]},  # km/s units
         "sio": {"cubewidth": "200km/s", "vlsr": "91km/s", "width": "0.37km/s"},
-        "12co": {"cubewidth": "240km/s", "vlsr": "91km/s"},
+        "12co": {"cubewidth": "240km/s", "vlsr": "91km/s", "mask-ranges": [(71, 87)]},
         # "12co": {"cubewidth": "240km/s", "vlsr": "91km/s", "width": "2km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "35km/s"},  # 100 - 65 = 35km/s to accomodate He and C.
