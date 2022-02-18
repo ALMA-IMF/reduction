@@ -35,25 +35,26 @@ for imtype,dirname in zip(('12M', '7M12M', '12M', '7M12M'),
     rows.append(f"{imtype} - {dirname}\n")
     for band in (3,6):
         sband = f'B{band}'
-        rows.append(f"{sband} {imtype} {dirname}\n")
+        for contsub_suffix in ('', '.contsub'):
+            rows.append(f"{sband} {imtype} {dirname} {contsub_suffix}\n")
 
-        rows.append("    " + " ".join([f"{x:10s}" for x in fieldlist.split()]) + "\n")
-        spws = range(4) if band == 3 else range(8)
-        for spw in spws:
-            if 'fullcube' in dirname:
-                spw2 = f'spw{spw}'
-            else:
-                if (band, spw) in line_maps:
-                    spw2 = line_maps[(band, spw)]
+            rows.append("    " + " ".join([f"{x:10s}" for x in fieldlist.split()]) + "\n")
+            spws = range(4) if band == 3 else range(8)
+            for spw in spws:
+                if 'fullcube' in dirname:
+                    spw2 = f'spw{spw}'
                 else:
-                    continue
-            exists = [os.path.exists(f'{basepath}/{field}_B{band}_spw{spw}_{imtype}_{spw2}.image.pbcor')
-                      or ("WIPim" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}.image')
-                          else "WIPpsf" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}.psf')
-                          else False)
-                      for field in fieldlist.split()]
+                    if (band, spw) in line_maps:
+                        spw2 = line_maps[(band, spw)]
+                    else:
+                        continue
+                exists = [os.path.exists(f'{basepath}/{field}_B{band}_spw{spw}_{imtype}_{spw2}{contsub_suffix}.image.pbcor')
+                          or ("WIPim" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}{contsub_suffix}.image')
+                              else "WIPpsf" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}{contsub_suffix}.psf')
+                              else False)
+                          for field in fieldlist.split()]
 
-            rows.append(f"{spw2:5s}" + " ".join([f"{str(x):10s}" for x in exists]) + "\n")
+                rows.append(f"{spw2:5s}" + " ".join([f"{str(x):10s}" for x in exists]) + "\n")
 
         for field in fieldlist.split():
             if field not in datatable:
@@ -70,14 +71,17 @@ for imtype,dirname in zip(('12M', '7M12M', '12M', '7M12M'),
                             datatable[field][sband][spw2] = {}
                     else:
                         continue
+                
+                for contsub_suffix in ('', '.contsub'):
 
-                # /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/G008.67_B6_spw5_12M_spw5.image/
-                datatable[field][sband][spw2][imtype] = {"image": os.path.exists(f'{basepath}/{field}_B{band}_spw{spw}_{imtype}_{spw2}.image'),
-                                                         "pbcor": os.path.exists(f'{basepath}/{field}_B{band}_spw{spw}_{imtype}_{spw2}.image.pbcor'),
-                                                         "WIP": ("WIPim" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}.image')
-                                                                 else "WIPpsf" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}.psf')
-                                                                 else False)
-                                                        }
+                    # /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/G008.67_B6_spw5_12M_spw5.image/
+                    datatable[field][sband][spw2][imtype+contsub_suffix] = {
+                            "image": os.path.exists(f'{basepath}/{field}_B{band}_spw{spw}_{imtype}_{spw2}{contsub_suffix}.image'),
+                            "pbcor": os.path.exists(f'{basepath}/{field}_B{band}_spw{spw}_{imtype}_{spw2}{contsub_suffix}.image.pbcor'),
+                            "WIP": ("WIPim" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}{contsub_suffix}.image')
+                                    else "WIPpsf" if os.path.exists(f'/blue/adamginsburg/adamginsburg/almaimf/workdir/{field}_B{band}_spw{spw}_{imtype}_{spw2}{contsub_suffix}.psf')
+                                    else False)
+                            }
     rows.append("\n")
 
 import json
