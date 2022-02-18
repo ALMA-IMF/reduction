@@ -952,9 +952,15 @@ for band in band_list:
                             if endchan < startchan:
                                 startchan, endchan = endchan, startchan
 
+                            logprint("Masking out selected channels {0}-{1}".format(startchan, endchan),
+                                     origin="almaimf_line_imaging")
                             flagchans = ia.getchunk(blc=[0,0,0, startchan],
                                                   trc=[-1,-1,-1, endchan])
+                            logprint("Nchan flagged before {0}".format(flagchans.sum()),
+                                     origin="almaimf_line_imaging")
                             flagchans[:] = 0
+                            logprint("Nchan flagged after {0}".format(flagchans.sum()),
+                                     origin="almaimf_line_imaging")
                             ia.putchunk(pixels=flagchans, blc=[0,0,0, startchan],)
 
                         ia.close()

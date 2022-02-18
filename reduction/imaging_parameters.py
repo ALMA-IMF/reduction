@@ -4372,8 +4372,8 @@ line_parameters_custom = {
         "n2hp": {"cubewidth": "60km/s"},
     },
     "G012.80": {
-        "spw5": {"mask-ranges": [(31, 36)]},  # km/s units
-        "12co": {"cubewidth": "150km/s", "mask-ranges": [(31, 36)]},  # km/s units
+        "spw5": {"mask-ranges": [(17, 36)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(17, 36)]},  # km/s units
         "sio": {"cubewidth": "150km/s", "vlsr": "35.5km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-29km/s"},  # 36 - 65 = -29km/s to accomodate He and C.
