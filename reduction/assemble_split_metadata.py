@@ -6,10 +6,16 @@ import numpy as np
 
 import sys
 
-from taskinit import casalog
-from taskinit import msmdtool
-from taskinit import mstool, tbtool
-
+try:
+    from taskinit import casalog
+    from taskinit import msmdtool
+    from taskinit import mstool, tbtool
+except (ImportError,ModuleNotFoundError):
+    # futureproofing: CASA 6 imports this way
+    from casatasks import casalog
+    from casatools import msmetadata as msmdtool
+    from casatoosl import ms as mstool
+    from casatools import table as tbtool
 
 if 'almaimf_rootdir' in locals():
     os.environ['ALMAIMF_ROOTDIR'] = almaimf_rootdir
