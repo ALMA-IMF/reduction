@@ -19,22 +19,41 @@ tab_list = ['G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_phase1_inf.ca
 #'G333.60_B3_uid___A001_X1296_X1a3_continuum_merged_12M_phase5_inf.cal']
 
 
-
+import numpy as np
 from casatasks import vishead
 from casatools import table
 tb = table()
 
-def get_spw_map(vis, caltables):
+def get_spw_map(vis, caltables, verbose=False):
+    """
+    Get mapping from spectral window ID from a calibration table to a given
+    visibility file.
 
-    vhead_spw = vishead(vis=vis, mode='get', hdkey='spw_name')
-    vis_spwname = vhead_spw[0][0]
-    vhead_spw = vishead(vis=vis, mode='get', hdkey='schedule')
-    vis_ebname = vhead_spw[0]['r1']
+    The return value should be the `spw` and `spwmap` parameters to give to applycal:
 
-    print('Visibility spw name:')
-    print(vis_spwname)
-    print('Visibility EB name:')
-    print(vis_ebname)
+    spwmap      Spectral windows combinations to form for gaintables(s)
+            Subparameter of callib=False
+            default: [] (apply solutions from each spw to
+            that spw only)
+            
+               Examples:
+               spwmap=[0,0,1,1] means apply the caltable
+               solutions from spw = 0 to the spw 0,1 and spw
+               1 to spw 2,3.
+               spwmap=[[0,0,1,1],[0,1,0,1]] (for multiple
+               gaintables)
+    """
+
+    vhead_spw_name = vishead(vis=vis, mode='get', hdkey='spw_name')
+    vis_spwname = vhead_spw_name[0][0]
+    vhead_spw_sched = vishead(vis=vis, mode='get', hdkey='schedule')
+    vis_ebname = vhead_spw_sched[0]['r1']
+
+    if verbose:
+        print(f'Visibility spw name: {vis_spwname}.')
+        print(f'Visibility spw: {vhead_spw_name}')
+        print('Visibility EB name:')
+        print(vis_ebname)
 
     spwmap = []
     for table in caltables:
@@ -42,24 +61,28 @@ def get_spw_map(vis, caltables):
         # Extract spw index to use from calibration table 
         tab = table
         
-        print(f"\nWorking on table {tab}")
+        if verbose:
+            print(f"\nWorking on table {tab}")
         
         tb.open(tab+'/OBSERVATION')
         obsid_schedule = tb.getcol('SCHEDULE')
         tb.close()
         
-        #print(f"obsid_schedule: {obsid_schedule}\n\nvis_ebname={vis_ebname}")
+        if verbose:
+            print(f"obsid_schedule: {obsid_schedule}\n\nvis_ebname={vis_ebname}")
         
         obsid_match = np.where(np.all(obsid_schedule == vis_ebname, axis=0))[0]
         if len(obsid_match) == 1:
             obsid_match = obsid_match[0]
         else:
             raise ValueError("Found multiple obsid matches, which shouldn't happen.")
-        #print(f"obsid_match={obsid_match}")
+        if verbose:
+            print(f"obsid_match={obsid_match}")
         
         tb.open(tab+'/SPECTRAL_WINDOW')
-        #print('\n Colnames in SPECTRAL_WINDOW table:')
-        #print(tb.colnames())
+        if verbose:
+            print('\n Colnames in SPECTRAL_WINDOW table:')
+            print(tb.colnames())
         tab_spws = tb.getcol('NAME')
         tb.close()
         
@@ -68,28 +91,39 @@ def get_spw_map(vis, caltables):
         obs_id_num = tb.getcol('OBSERVATION_ID')
         tb.close()
 
-        index_spw = np.where(tab_spws == vis_spwname)
+        vhead_list = list(vhead_spw_name[0])
+        spwmap.append([vhead_list.index(tab_spw_name) if tab_spw_name in vhead_list else None  for tab_spw_name in tab_spws])
+        #print(spwmap)
+
+        #print("np.searchsorted tabs, vhead:", np.searchsorted(tab_spws, vhead_spw_name[0]))
+        #print("np.searchsorted vhead, tabs:", np.searchsorted(vhead_spw_name[0], tab_spws, ))
+        #index_spw = np.where(tab_spws == vis_spwname)
+        #print(f"tab_spws names = {tab_spws}")
         #print(f"index_spw={index_spw}")
         #print(f"spw_id_num={spw_id_num}")
-        
-        spw_match = np.any(spw_id_num[None,:] == index_spw[0][:,None], axis=0)
-        assert spw_match.shape == obs_id_num.shape
-        
-        match = (obs_id_num == obsid_match) & spw_match
-        unique_spw_id = np.unique(spw_id_num[match])
-        print(f"unique_spw_id={unique_spw_id}")
-        if len(unique_spw_id) != 1:
-            raise ValueError("Found 0 or >1 SPW ids")
+        #
+        #spw_match = np.any(spw_id_num[None,:] == index_spw[0][:,None], axis=0)
+        #assert spw_match.shape == obs_id_num.shape
+        #
+        #match = (obs_id_num == obsid_match) & spw_match
+        #unique_spw_id = np.unique(spw_id_num[match])
+        #print(f"unique_spw_id={unique_spw_id}")
+        #if len(unique_spw_id) != 1:
+        #    raise ValueError(f"Found 0 or >1 SPW ids: {unique_spw_id}")
 
-        # unique_spw_id should be a length-1 array
-        spwmap.append(unique_spw_id[0])
-        print(f'Index in cal table of spw corresponding to ms file is: {unique_spw_id}')
+        ## unique_spw_id should be a length-1 array
+        #spwmap.append(unique_spw_id[0])
+        #print(f'Index in cal table of spw corresponding to ms file is: {unique_spw_id}')
+    spwmap = [[x.index(y) for y in x if y is not None] for x in spwmap]
     return spwmap
+    #spw = [','.join(map(str, [x.index(y)  for y in x if y is not None])) for x in spwmap]
+    #spwmap = [[y for y in x if y is not None] for x in spwmap]
+    #return spw, spwmap
 
 
 if __name__ == "__main__":
     #Clearcal with addmodel
-    clearcal(vis=vis, addmodel=True)
+    #clearcal(vis=vis, addmodel=True)
 
     # Run applycal
     '''
@@ -105,7 +139,7 @@ if __name__ == "__main__":
     # 2021-02-27 01:44:33	INFO	applycal::::	   T Jones: In: 448892160 / 1862784000   (24.0979179551%) --> Out: 817658880 / 1862784000   (43.8944547516%) (G333.60_B3__continuum_merged_12M_phase1_inf.cal)
     '''
 
-    print('Running applycal ...')
-    applycal(vis=vis, gaintable=tab_list, gainfield='nearest', interp='linear', spwmap=spwmap, applymode='calonly', calwt=False)
+    #print('Running applycal ...')
+    #applycal(vis=vis, gaintable=tab_list, gainfield='nearest', interp='linear', spwmap=spwmap, applymode='calonly', calwt=False)
     # applymode='trial' for trial tests
 
