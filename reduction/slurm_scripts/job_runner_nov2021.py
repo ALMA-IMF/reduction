@@ -147,6 +147,9 @@ if __name__ == "__main__":
         account = os.environ['ACCOUNT'] = 'adamginsburg' if 'adamginsburg' in qos else 'astronomy-dept'
         if 'astronomy-dept' not in qos and 'adamginsburg' not in qos:
             raise ValueError(f"Invalid QOS {qos}")
+    else:
+        account = 'astronomy-dept'
+        qos = 'astronomy-dept-b'
     logpath = os.environ['LOGPATH']='/blue/adamginsburg/adamginsburg/slurmjobs/'
 
 

@@ -19,45 +19,75 @@ if [[ $3 ]]; then
     echo "Imaging only spw $SPW_TO_IMAGE"
 fi
 
+
+if [[ $CMD == *"mpi"* ]]; then
+    export NTASKS=32
+    export CPUS_PER_TASK=1 # mem/4
+    export SLURM_TASKS_PER_NODE=$NTASKS
+else
+    export NTASKS=1
+    export CPUS_PER_TASK=32 # mem/4
+fi
+export SLURM_NTASKS=$NTASKS
+
+
+export LOGPATH=/blue/adamginsburg/adamginsburg/slurmjobs/
+
+if [ -z $QOS ]; then
+    export QOS=adamginsburg-b
+fi
+
+case $QOS in
+    *adamginsburg*)
+        export ACCOUNT=adamginsburg
+        ;;
+    *astronomy-dept*)
+        export ACCOUNT=astronomy-dept
+        ;;
+esac
+
+echo "Using account=${ACCOUNT} and QOS=${QOS}"
+
+if [ $CONTINUE_IF_MS_EXISTS ]; then
+    echo "Continue if ms exists: ${CONTINUE_IF_MS_EXISTS}"
+else
+    # default: let's allow for the existence of the MS file
+    # (this can happen if the cleaning times out)
+    export CONTINUE_IF_MS_EXISTS=True
+fi
+
+
+if [ -z $EXCLUDE_7M ]; then
+    export EXCLUDE_7M=True
+    suffix12m="12M"
+else
+    if [ $EXCLUDE_7M == "True" ]; then
+        suffix12m="12M"
+    else
+        suffix12m="7M12M"
+    fi
+fi
+
+if [ -z $DO_CONTSUB ]; then
+    suffix_contsub=""
+else
+    if [ $DO_CONTSUB == "True" ]; then
+        suffix_contsub="_cs"
+    else
+        suffix_contsub=""
+    fi
+fi
+
+
+if [ $EXCLUDE_7M == "False" ]; then
+    if [ $suffix12m != "7M12M" ]; then
+        exit 1;
+    fi
+fi
+
 if [[ $BAND_TO_IMAGE == "B3" ]]; then
     export MEM=64gb
     export MEM=128gb
-
-    if [[ $CMD == *"mpi"* ]]; then
-        export NTASKS=32
-        export CPUS_PER_TASK=1 # mem/4
-        export SLURM_TASKS_PER_NODE=$NTASKS
-    else
-        export NTASKS=1
-        export CPUS_PER_TASK=32 # mem/4
-    fi
-    export SLURM_NTASKS=$NTASKS
-
-
-    export LOGPATH=/blue/adamginsburg/adamginsburg/slurmjobs/
-
-    if [ -z $QOS ]; then
-        export QOS=adamginsburg-b
-    fi
-
-    case $QOS in
-        *adamginsburg*)
-            export ACCOUNT=adamginsburg
-            ;;
-        *astronomy-dept*)
-            export ACCOUNT=astronomy-dept
-            ;;
-    esac
-
-    if [ $CONTINUE_IF_MS_EXISTS ]; then
-        echo "Continue if ms exists: ${CONTINUE_IF_MS_EXISTS}"
-    else
-        # default: let's allow for the existence of the MS file
-        # (this can happen if the cleaning times out)
-        export CONTINUE_IF_MS_EXISTS=True
-    fi
-
-
     # re-trying without specifying giant memory - chanchunks should be able to handle this, right?
     # WRONG! Chanchunks doesn't help because automultithresh is a poop.
     case $FIELD_ID in
@@ -80,34 +110,7 @@ if [[ $BAND_TO_IMAGE == "B3" ]]; then
     #    export CHANCHUNKS=16 ;;
     esac
 
-    if [ -z $EXCLUDE_7M ]; then
-        export EXCLUDE_7M=True
-        suffix12m="12M"
-    else
-        if [ $EXCLUDE_7M == "True" ]; then
-            suffix12m="12M"
-        else
-            suffix12m="7M12M"
-        fi
-    fi
-
-    if [ -z $DO_CONTSUB ]; then
-        suffix_contsub=""
-    else
-        if [ $DO_CONTSUB == "True" ]; then
-            suffix_contsub="_cs"
-        else
-            suffix_contsub=""
-        fi
-    fi
-
     echo field=$FIELD_ID band=$BAND_TO_IMAGE mem=$MEM exclude_7m=$EXCLUDE_7M suffix=${suffix12m} contsub=${suffix_contsub} nodeps=${NODEPS} QOS=${QOS}
-
-    if [ $EXCLUDE_7M == "False" ]; then
-        if [ $suffix12m != "7M12M" ]; then
-            exit 1;
-        fi
-    fi
 
     jobid=""
     for SPW in {0..3}; do
@@ -159,16 +162,6 @@ if [[ $BAND_TO_IMAGE == "B6" ]]; then
     export MEM=32gb
     export MEM=128gb
 
-    if [[ $CMD == *"mpi"* ]]; then
-        export NTASKS=32
-        export CPUS_PER_TASK=1 # mem/4
-        export SLURM_TASKS_PER_NODE=$NTASKS
-    else
-        export NTASKS=1
-        export CPUS_PER_TASK=32 # mem/4
-    fi
-    export SLURM_NTASKS=$NTASKS
-
     case $FIELD_ID in
     W51-IRS2|G10.62|G333.60|W51-E|G353.41|G351.77|G338.93|G337.92|G328.25)
         declare -A mem_map=( ["0"]="128gb" ["1"]="128gb" ["3"]="128gb" ["6"]="128gb" ["7"]="128gb" ) ;;
@@ -209,7 +202,7 @@ if [[ $BAND_TO_IMAGE == "B6" ]]; then
             echo "Skipped job $jobname because it's running"
         else
             jobid=$(sbatch --ntasks=${NTASKS} --cpus-per-task=${CPUS_PER_TASK} --mem=${MEM} --output=${jobname}_%j.log --job-name=$jobname --account=${ACCOUNT} --qos=${QOS} --export=ALL ${dependency} $CMD)
-            echo ${jobid##* }
+            echo "Running job ${jobid##* } for spw $SPW"
         fi
         #export EXCLUDE_7M=False
         #export LOGFILENAME="${LOGPATH}/casa_log_line_${FIELD_ID}_${BAND_TO_IMAGE}_${SPW}_fullcube_7M${suffix12m}_$(date +%Y-%m-%d_%H_%M_%S).log"

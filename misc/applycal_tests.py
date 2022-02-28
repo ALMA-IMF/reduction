@@ -42,6 +42,12 @@ def get_spw_map(vis, caltables, verbose=False):
                1 to spw 2,3.
                spwmap=[[0,0,1,1],[0,1,0,1]] (for multiple
                gaintables)
+
+    Example:
+
+    >>> spwmap = get_spw_map(vis, caltables)
+    >>> applycal(vis=vis, gaintable=caltables, spwmap=spwmap)
+
     """
 
     vhead_spw_name = vishead(vis=vis, mode='get', hdkey='spw_name')
