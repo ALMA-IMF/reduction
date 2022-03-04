@@ -143,7 +143,7 @@ if __name__ == "__main__":
 
     colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
     colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
-    colnames_stats = 'min max std sum mean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
+    colnames_stats = 'min max std sum mean'.split() + 'lowmin lowmax lowstd lowsum lowmean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
 
     colnames = colnames_apriori+colnames_fromheader+colnames_stats
     assert len(colnames) == 40
@@ -253,6 +253,12 @@ if __name__ == "__main__":
                             # use the middle-ish beam
                             beam = beams[len(beams)//2]
 
+
+                        # mask to select the channels with little/less emission
+                        meanspec = cube.mean(axis=(1,2))
+                        lowsignal = meanspec < np.percentile(meanspec, 25)
+
+
                         print(cube)
 
                         minfreq = cube.spectral_axis.min()
@@ -275,6 +281,14 @@ if __name__ == "__main__":
                         std = stats['sigma']
                         sum = stats['sum']
                         mean = stats['mean']
+
+                        faintstats = cube.with_mask(lowsignal[:,None,None]).statistics()
+                        print("finished low-signal cube stats", flush=True)
+                        lowmin = stats['min']
+                        lowmax = stats['max']
+                        lowstd = stats['sigma']
+                        lowsum = stats['sum']
+                        lowmean = stats['mean']
 
 
                         #min = cube.min()
@@ -316,6 +330,7 @@ if __name__ == "__main__":
                         row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
                             [history[key] if key in history else '' for key in colnames_fromheader] +
                             [min, max, std, sum, mean] +
+                            [lowmin, lowmax, lowstd, lowsum, lowmean] +
                             [modmin, modmax, modstd, modsum, modmean, epsilon])
                         assert len(row) == len(colnames)
                         rows.append(row)
