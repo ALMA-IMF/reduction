@@ -104,6 +104,7 @@ for field in ('G333.60', 'G008.67', 'G328.25', 'G010.62', 'W43-MM1'):
 
 parameters['W51-IRS2_7M12M_B3_n2hp']['mem'] = 256
 parameters['G333.60_7M12M_B3_h41a']['mem'] = 256
+parameters['G333.60_12M_B3_spw3']['mem'] = 256
 
 # G327 experiments
 parameters['G327.29_7M12M_B6_spw0'] = copy.copy(parameters['G327.29_12M_B6_spw0'])
@@ -112,8 +113,8 @@ parameters['G327.29_7M12M_B6_spw0']['array'] = '7M12M'
 # we're not doing 7m fullcubes parameters['G327.29_7M_B6_spw0']['array'] = '7M'
 
 # G327: do the continuum subtraction for an experiment
-for spwii in range(8):
-    parameters[f'G327.29_12M_B6_spw{spwii}']['do_contsub'] = True
+#for spwii in range(8):
+#    parameters[f'G327.29_12M_B6_spw{spwii}']['do_contsub'] = True
 
 assert 'G008.67_12M_B6_n2hp' not in parameters
 assert 'W43-MM1_12M_B3_spw1' in parameters
@@ -147,6 +148,9 @@ if __name__ == "__main__":
         account = os.environ['ACCOUNT'] = 'adamginsburg' if 'adamginsburg' in qos else 'astronomy-dept'
         if 'astronomy-dept' not in qos and 'adamginsburg' not in qos:
             raise ValueError(f"Invalid QOS {qos}")
+    else:
+        account = 'astronomy-dept'
+        qos = 'astronomy-dept-b'
     logpath = os.environ['LOGPATH']='/blue/adamginsburg/adamginsburg/slurmjobs/'
 
 
