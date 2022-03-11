@@ -4372,6 +4372,7 @@ line_parameters_custom = {
         "n2hp": {"cubewidth": "60km/s"},
     },
     "G012.80": {
+        "spw4": {"mask-ranges": [(35, 36)]},  # km/s units
         "spw5": {"mask-ranges": [(17, 36)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(17, 36)]},  # km/s units
         "sio": {"cubewidth": "150km/s", "vlsr": "35.5km/s"},
@@ -4387,6 +4388,7 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
+        "spw4": {"mask-ranges": [(-43, -44)]},  # km/s units
         "spw5": {"mask-ranges": [(-48, -51)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(-48, -51)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
@@ -4417,7 +4419,8 @@ line_parameters_custom = {
         "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
-        "spw5": {"mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
+        "spw5": {"mask-ranges": [(277, 281)]},  # km/s units
+        "spw6": {"mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
