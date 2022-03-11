@@ -15,7 +15,9 @@ fi
 export PRODUCT_DIRECTORY='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
 
 module load git
-module load cuda/11.0.207  gcc/9.3.0 openmpi/4.0.4
+#module load cuda/11.0.207  gcc/9.3.0 openmpi/4.0.4
+module load intel/2020.0.166
+module load openmpi/4.1.1 
 
 which python
 which git
@@ -89,9 +91,9 @@ export PYTHONPATH=$SCRIPT_DIR
 
 echo logfile=$LOGFILENAME
 
-echo Running command: ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+echo Running command: ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=/tmp  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 
-${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=/tmp  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 ppid="$!"; childPID="$(ps -C ${CASA} -o ppid=,pid= | awk -v ppid="$ppid" '$1==ppid {print $2}')"
 echo PID=${ppid} childPID=${childPID}
 

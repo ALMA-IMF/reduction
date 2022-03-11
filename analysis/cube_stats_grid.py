@@ -146,7 +146,7 @@ if __name__ == "__main__":
     colnames_stats = 'min max std sum mean'.split() + 'lowmin lowmax lowstd lowsum lowmean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
 
     colnames = colnames_apriori+colnames_fromheader+colnames_stats
-    assert len(colnames) == 40
+    assert len(colnames) == 45
 
     def try_qty(x):
         try:
