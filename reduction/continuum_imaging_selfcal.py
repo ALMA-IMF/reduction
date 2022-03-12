@@ -362,9 +362,16 @@ for continuum_ms in continuum_mses:
              "{0}".format(selfcal_ms), origin='contim_selfcal')
     assert os.path.exists(selfcal_ms)
 
-    flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
-    if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
-        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
+    try:
+        flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
+        if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+            raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
+    except RuntimeError as ex:
+        if "The selected table has zero rows" in str(ex):
+            # this is OK: there are no autocorrs!
+            pass
+        else:
+            raise ex
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
