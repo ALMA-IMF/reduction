@@ -477,7 +477,7 @@ for continuum_ms in continuum_mses:
                  origin='almaimf_cont_selfcal')
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',
@@ -548,7 +548,7 @@ for continuum_ms in continuum_mses:
                  origin='almaimf_cont_selfcal')
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',
@@ -783,7 +783,7 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
             if not dryrun:
                 tclean(vis=selfcal_ms,
-                       field=field.encode(),
+                       field=field,
                        imagename=imname,
                        phasecenter=phasecenter,
                        startmodel=modelname,
@@ -961,7 +961,7 @@ for continuum_ms in continuum_mses:
             logprint("Final imaging parameters are: {0} for image name {1}".format(impars_finaliter, finaliterimname),
                      origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=finaliterimname,
                    phasecenter=phasecenter,
                    startmodel=modelname,
@@ -988,7 +988,7 @@ for continuum_ms in continuum_mses:
                  origin='almaimf_cont_selfcal')
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',
@@ -1037,7 +1037,7 @@ for continuum_ms in continuum_mses:
 
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',
