@@ -384,7 +384,7 @@ for continuum_ms in continuum_mses:
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
-    for key, value in imaging_parameters.items():
+    for key, value in list(imaging_parameters.items()):
         if 'cell' not in imaging_parameters[key]:
             imaging_parameters[key]['cell'] = cellsize
         if 'imsize' not in imaging_parameters[key]:
@@ -466,7 +466,7 @@ for continuum_ms in continuum_mses:
             raise IOError("Mask {0} not found".format(maskname))
 
     # remove any parameters that are dictionaries; we don't want them for the dirty imaging
-    for key, val in dirty_impars.items():
+    for key, val in list(dirty_impars.items()):
         if isinstance(val, dict):
             del dirty_impars[key]
 
@@ -534,7 +534,7 @@ for continuum_ms in continuum_mses:
         if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             raise IOError("Mask {0} not found".format(maskname))
 
-    for key, val in impars_thisiter.items():
+    for key, val in list(impars_thisiter.items()):
         if isinstance(val, dict) and 0 in val:
             impars_thisiter[key] = val[0]
         elif isinstance(val, dict):
