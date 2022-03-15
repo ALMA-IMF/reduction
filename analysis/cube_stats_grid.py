@@ -256,7 +256,12 @@ if __name__ == "__main__":
 
                         # mask to select the channels with little/less emission
                         meanspec = cube.mean(axis=(1,2))
-                        lowsignal = meanspec < np.percentile(meanspec, 25)
+                        lowsignal = meanspec < np.nanpercentile(meanspec, 25)
+                        print(f"Low-signal region selected {lowsignal.sum()} channels out of {lowsignal.size}."
+                              f" ({lowsignal.sum() / lowsignal.size * 100:0.2f}) %")
+
+                        assert lowsignal.sum() > 0
+                        assert lowsignal.sum() < lowsignal.size
 
 
                         print(cube)
@@ -275,7 +280,7 @@ if __name__ == "__main__":
                         #mean = cube.mean()
                         print(f"Computing cube statistics with scheduler {scheduler} and sched args {cube._scheduler_kwargs}", flush=True)
                         stats = cube.statistics()
-                        print("finished cube stats", flush=True)
+                        print(f"finished cube stats for {fn}", flush=True)
                         min = stats['min']
                         max = stats['max']
                         std = stats['sigma']
@@ -283,12 +288,12 @@ if __name__ == "__main__":
                         mean = stats['mean']
 
                         faintstats = cube.with_mask(lowsignal[:,None,None]).statistics()
-                        print("finished low-signal cube stats", flush=True)
-                        lowmin = stats['min']
-                        lowmax = stats['max']
-                        lowstd = stats['sigma']
-                        lowsum = stats['sum']
-                        lowmean = stats['mean']
+                        print(f"finished low-signal cube stats for {fn}", flush=True)
+                        lowmin = faintstats['min']
+                        lowmax = faintstats['max']
+                        lowstd = faintstats['sigma']
+                        lowsum = faintstats['sum']
+                        lowmean = faintstats['mean']
 
 
                         #min = cube.min()
@@ -299,6 +304,7 @@ if __name__ == "__main__":
                         #mean = cube.mean()
 
                         del stats
+                        del faintstats
 
                         if os.path.exists(modfn):
                             modcube = SpectralCube.read(modfn, format='casa_image', target_chunksize=target_chunksize)
