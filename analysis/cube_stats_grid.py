@@ -259,8 +259,9 @@ if __name__ == "__main__":
                         lowsignal = meanspec < np.percentile(meanspec, 25)
 
 
-                        noiseregion = get_noise_region(field, band)
-                        noiseest_cube = cube.subcube_from_ds9region(noiseregion)
+                        noiseregion = get_noise_region(field, f'B{band}')
+                        assert noiseregion is not None
+                        noiseest_cube = cube.subcube_from_regions(regions.Regions.read(noiseregion))
 
 
                         print(cube)
