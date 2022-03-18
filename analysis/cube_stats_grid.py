@@ -2,6 +2,7 @@ import glob
 from astropy.io import fits
 from astropy import visualization
 import pylab as pl
+import regions
 
 
 import os
@@ -256,7 +257,7 @@ if __name__ == "__main__":
 
                         # mask to select the channels with little/less emission
                         meanspec = cube.mean(axis=(1,2))
-                        lowsignal = meanspec < np.percentile(meanspec, 25)
+                        lowsignal = meanspec < np.nanpercentile(meanspec, 25)
 
 
                         noiseregion = get_noise_region(field, f'B{band}')
@@ -296,7 +297,9 @@ if __name__ == "__main__":
                         lowsum = stats['sum']
                         lowmean = stats['mean']
                         print("Doing low-signal cube mad-std", flush=True)
-                        lowmadstd = noiseest_cube.with_mask(lowsignal[:,None,None]).mad_std()
+                        flatdata = noiseest_cube.with_mask(lowsignal[:,None,None]).flattened()
+                        print("Loaded flatdata")
+                        lowmadstd = mad_std(flatdata)
                         print("Done low-signal cube mad-std", flush=True)
 
 
