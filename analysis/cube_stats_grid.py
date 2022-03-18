@@ -23,7 +23,7 @@ from casa_formats_io import Table as casaTable
 # from casatools import image
 # ia = image()
 
-from imstats import get_psf_secondpeak
+from imstats import get_psf_secondpeak, get_noise_region
 
 from pathlib import Path
 tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
@@ -143,10 +143,10 @@ if __name__ == "__main__":
 
     colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
     colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
-    colnames_stats = 'min max std sum mean'.split() + 'lowmin lowmax lowstd lowsum lowmean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
+    colnames_stats = 'min max std sum mean'.split() + 'lowmin lowmax lowstd lowmadstd lowsum lowmean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
 
     colnames = colnames_apriori+colnames_fromheader+colnames_stats
-    assert len(colnames) == 45
+    assert len(colnames) == 46
 
     def try_qty(x):
         try:
@@ -181,7 +181,7 @@ if __name__ == "__main__":
         for band in (3,6):
             for config in ('12M',): # '7M12M',
                 for line in spws[band] + list(default_lines.keys()):
-                    for suffix in (".image", ".contsub.image"):
+                    for suffix in (".image", ".contsub.image", ".contsub.JvM.image.fits", ".JvM.image.fits"):
 
                         if line not in default_lines:
                             spw = line
@@ -259,7 +259,12 @@ if __name__ == "__main__":
                         lowsignal = meanspec < np.percentile(meanspec, 25)
 
 
+                        noiseregion = get_noise_region(field, band)
+                        noiseest_cube = cube.subcube_from_ds9region(noiseregion)
+
+
                         print(cube)
+                        print(noiseest_cube)
 
                         minfreq = cube.spectral_axis.min()
                         maxfreq = cube.spectral_axis.max()
@@ -282,13 +287,16 @@ if __name__ == "__main__":
                         sum = stats['sum']
                         mean = stats['mean']
 
-                        faintstats = cube.with_mask(lowsignal[:,None,None]).statistics()
+                        faintstats = noiseest_cube.with_mask(lowsignal[:,None,None]).statistics()
                         print("finished low-signal cube stats", flush=True)
                         lowmin = stats['min']
                         lowmax = stats['max']
                         lowstd = stats['sigma']
                         lowsum = stats['sum']
                         lowmean = stats['mean']
+                        print("Doing low-signal cube mad-std", flush=True)
+                        lowmadstd = noiseest_cube.with_mask(lowsignal[:,None,None]).mad_std()
+                        print("Done low-signal cube mad-std", flush=True)
 
 
                         #min = cube.min()
@@ -330,7 +338,7 @@ if __name__ == "__main__":
                         row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
                             [history[key] if key in history else '' for key in colnames_fromheader] +
                             [min, max, std, sum, mean] +
-                            [lowmin, lowmax, lowstd, lowsum, lowmean] +
+                            [lowmin, lowmax, lowstd, lowmadstd, lowsum, lowmean] +
                             [modmin, modmax, modstd, modsum, modmean, epsilon])
                         assert len(row) == len(colnames)
                         rows.append(row)
