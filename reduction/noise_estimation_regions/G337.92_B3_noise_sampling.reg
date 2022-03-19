@@ -1,7 +1,6 @@
-# Region file format: DS9 version 4.1
-# Filename: /Users/ctimea/Downloads/G337.92_B3_uid___A001_X1296_X145_continuum_merged_12M_robust2_selfcal4_finaliter.image.tt0.fits
-global color=green dashlist=8 3 width=1 font="helvetica 10 normal" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
-physical
-polygon(981,2032,1157,2108,1169,2124,1189,2156,1201,2160,1213,2156,1217,2152,1265,1856,861,1624,829,1904)
-polygon(1720.999,440.001,1721.001,440.001,1721.001,439.999,1720.999,439.999)
-polygon(1417,424,1833,400,1841,424,1873,300,1297,328,1337,424)
+# Region file format: DS9 CARTA 3.0.0-beta.1b
+global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=1 highlite=1 dash=0 fixed=0 edit=1 move=1 delete=1 include=1 source=1
+icrs
+polygon(250.3110, -47.1195, 250.3060, -47.1180, 250.3057, -47.1177, 250.3051, -47.1171, 250.3047, -47.1170, 250.3044, -47.1171, 250.3043, -47.1172, 250.3029, -47.1229, 250.3145, -47.1274, 250.3154, -47.1220) # color=green width=1
+polygon(250.2899, -47.1505, 250.2899, -47.1505, 250.2899, -47.1505) # color=green width=1
+polygon(250.2986, -47.1508, 250.2867, -47.1512, 250.2864, -47.1508, 250.2855, -47.1532, 250.3020, -47.1526, 250.3009, -47.1508) # color=green width=1

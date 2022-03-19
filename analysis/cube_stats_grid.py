@@ -182,7 +182,7 @@ if __name__ == "__main__":
         for band in (3,6):
             for config in ('12M',): # '7M12M',
                 for line in spws[band] + list(default_lines.keys()):
-                    for suffix in (".image", ".contsub.image", ".contsub.JvM.image.fits", ".JvM.image.fits"):
+                    for suffix in (".image", ".contsub.image"):#, ".contsub.JvM.image.fits", ".JvM.image.fits"):
 
                         if line not in default_lines:
                             spw = line
@@ -237,12 +237,21 @@ if __name__ == "__main__":
                                         for x in hist if '=' in x})
                         #ia.close()
 
-                        if os.path.exists(fn):
+                        jvmimage = fn.replace(".image", ".JvM.image")
+                        if os.path.exists(jvmimage):
+                            cube = SpectralCube.read(jvmimage, format='casa_image', target_chunksize=target_chunksize)
+                            suffix = '.JvM.image'
+                        elif os.path.exists(jvmimage+".fits"):
+                            cube = SpectralCube.read(jvmimage+".fits", format='fits', use_dask=True)
+                            suffix = '.JvM.image.fits'
+                        elif os.path.exists(fn):
                             cube = SpectralCube.read(fn, format='casa_image', target_chunksize=target_chunksize)
-                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                            suffix = '.image'
                         elif os.path.exists(fn+".fits"):
                             cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
-                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                            suffix = '.image.fits'
+
+                        cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
                             # print(f"Rechunking {cube} to tmp dir", flush=True)
                             # cube = cube.rechunk(save_to_tmp_dir=True)
                             # cube.use_dask_scheduler(scheduler)
