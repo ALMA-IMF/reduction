@@ -72,14 +72,14 @@ suffix = '.image'
 
 global then
 then = time.time()
-def dt():
+def dt(message=""):
     global then
     now = time.time()
-    print(f"Elapsed: {now-then}")
+    print(f"Elapsed: {now-then}.  {message}", flush=True)
     then = now
 
 num_workers = None
-print(f"PID = {os.getpid()}")
+dt(f"PID = {os.getpid()}")
 
 if __name__ == "__main__":
     if threads:
@@ -239,22 +239,23 @@ if __name__ == "__main__":
 
                         jvmimage = fn.replace(".image", ".JvM.image")
                         if os.path.exists(jvmimage):
-                            cube = SpectralCube.read(jvmimage, format='casa_image', target_chunksize=target_chunksize)
-                            suffix = '.JvM.image'
+                            fn = jvmimage
                         elif os.path.exists(jvmimage+".fits"):
-                            cube = SpectralCube.read(jvmimage+".fits", format='fits', use_dask=True)
-                            suffix = '.JvM.image.fits'
+                            fn = jvmimage+".fits"
                         elif os.path.exists(fn):
-                            cube = SpectralCube.read(fn, format='casa_image', target_chunksize=target_chunksize)
-                            suffix = '.image'
+                            pass
                         elif os.path.exists(fn+".fits"):
-                            cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
-                            suffix = '.image.fits'
+                            fn = fn+".fits"
 
-                        cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
-                            # print(f"Rechunking {cube} to tmp dir", flush=True)
-                            # cube = cube.rechunk(save_to_tmp_dir=True)
-                            # cube.use_dask_scheduler(scheduler)
+                        if 'fits' in fn:
+                            cube = SpectralCube.read(fn, format='fits', use_dask=True)
+                        else:
+                            cube = SpectralCube.read(fn, format='casa_image', target_chunksize=target_chunksize)
+
+                        sched = cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                        # print(f"Rechunking {cube} to tmp dir", flush=True)
+                        # cube = cube.rechunk(save_to_tmp_dir=True)
+                        # cube.use_dask_scheduler(scheduler)
 
                         if hasattr(cube, 'beam'):
                             beam = cube.beam
@@ -264,52 +265,54 @@ if __name__ == "__main__":
                             beam = beams[len(beams)//2]
 
 
-                        # mask to select the channels with little/less emission
-                        meanspec = cube.mean(axis=(1,2))
-                        lowsignal = meanspec < np.nanpercentile(meanspec, 25)
+                        with sched:
+                            # mask to select the channels with little/less emission
+                            meanspec = cube.mean(axis=(1,2))
+                            lowsignal = meanspec < np.nanpercentile(meanspec, 25)
 
 
-                        noiseregion = get_noise_region(field, f'B{band}')
-                        assert noiseregion is not None
-                        noiseest_cube = cube.subcube_from_regions(regions.Regions.read(noiseregion))
+                            noiseregion = get_noise_region(field, f'B{band}')
+                            dt(f"Getting noise region {noisregion}")
+                            assert noiseregion is not None
+                            noiseest_cube = cube.subcube_from_regions(regions.Regions.read(noiseregion))
 
 
-                        print(cube)
-                        print(noiseest_cube)
+                            dt(cube)
+                            dt(noiseest_cube)
 
-                        minfreq = cube.spectral_axis.min()
-                        maxfreq = cube.spectral_axis.max()
-                        restfreq = cube.wcs.wcs.restfrq
+                            minfreq = cube.spectral_axis.min()
+                            maxfreq = cube.spectral_axis.max()
+                            restfreq = cube.wcs.wcs.restfrq
 
-                        # print("getting filled data")
-                        # data = cube._get_filled_data(fill=np.nan)
-                        # print("finished getting filled data")
-                        # del data
+                            # print("getting filled data")
+                            # data = cube._get_filled_data(fill=np.nan)
+                            # print("finished getting filled data")
+                            # del data
 
-                        # try this as an experiment?  Maybe it's statistics that causes problems?
-                        #print(f"Computing cube mean with scheduler {scheduler} and sched args {cube._scheduler_kwargs}", flush=True)
-                        #mean = cube.mean()
-                        print(f"Computing cube statistics with scheduler {scheduler} and sched args {cube._scheduler_kwargs}", flush=True)
-                        stats = cube.statistics()
-                        print("finished cube stats", flush=True)
-                        min = stats['min']
-                        max = stats['max']
-                        std = stats['sigma']
-                        sum = stats['sum']
-                        mean = stats['mean']
+                            # try this as an experiment?  Maybe it's statistics that causes problems?
+                            #print(f"Computing cube mean with scheduler {scheduler} and sched args {cube._scheduler_kwargs}")
+                            #mean = cube.mean()
+                            dt(f"Computing cube statistics with scheduler {scheduler} and sched args {cube._scheduler_kwargs}")
+                            stats = cube.statistics()
+                            dt("finished cube stats")
+                            min = stats['min']
+                            max = stats['max']
+                            std = stats['sigma']
+                            sum = stats['sum']
+                            mean = stats['mean']
 
-                        faintstats = noiseest_cube.with_mask(lowsignal[:,None,None]).statistics()
-                        print("finished low-signal cube stats", flush=True)
-                        lowmin = stats['min']
-                        lowmax = stats['max']
-                        lowstd = stats['sigma']
-                        lowsum = stats['sum']
-                        lowmean = stats['mean']
-                        print("Doing low-signal cube mad-std", flush=True)
-                        flatdata = noiseest_cube.with_mask(lowsignal[:,None,None]).flattened()
-                        print("Loaded flatdata")
-                        lowmadstd = mad_std(flatdata)
-                        print("Done low-signal cube mad-std", flush=True)
+                            faintstats = noiseest_cube.with_mask(lowsignal[:,None,None]).statistics()
+                            dt("finished low-signal cube stats")
+                            lowmin = stats['min']
+                            lowmax = stats['max']
+                            lowstd = stats['sigma']
+                            lowsum = stats['sum']
+                            lowmean = stats['mean']
+                            dt("Doing low-signal cube mad-std")
+                            flatdata = noiseest_cube.with_mask(lowsignal[:,None,None]).flattened()
+                            dt("Loaded flatdata")
+                            lowmadstd = mad_std(flatdata)
+                            dt("Done low-signal cube mad-std")
 
 
                         #min = cube.min()
@@ -323,17 +326,15 @@ if __name__ == "__main__":
 
                         if os.path.exists(modfn):
                             modcube = SpectralCube.read(modfn, format='casa_image', target_chunksize=target_chunksize)
-                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
-                            # print(f"Rechunking {modcube} to tmp dir", flush=True)
-                            # modcube = modcube.rechunk(save_to_tmp_dir=True)
-                            # modcube.use_dask_scheduler(scheduler)
                         elif os.path.exists(modfn+".fits"):
                             modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
-                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                        modsched = modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
 
-                        print(modcube, flush=True)
-                        print(f"Computing model cube statistics with scheduler {scheduler} and sched args {modcube._scheduler_kwargs}", flush=True)
-                        modstats = modcube.statistics()
+                        dt(modcube)
+                        dt(f"Computing model cube statistics with scheduler {scheduler} and sched args {modcube._scheduler_kwargs}")
+                        with modsched:
+                            modstats = modcube.statistics()
+                        dt(f"Done with model stats")
                         modmin = modstats['min']
                         modmax = modstats['max']
                         modstd = modstats['sigma']
