@@ -10,7 +10,7 @@ import pylab as pl
 pl.rcParams['font.size'] = 14
 
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/RestructuredImagingResults'
-basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release'
+#basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/February2021Release'
 
 cutoutinfo = {'W51-IRS2': {'norm_kwargs': {'min_percent': 0.1, 'max_percent': 99.9, 'stretch': 'asinh'}, 'cutout_lims': [slice(1000,2800), slice(1000,2800)]},
               'G327.29': {'norm_kwargs': {},
@@ -21,10 +21,10 @@ cutoutinfo = {'W51-IRS2': {'norm_kwargs': {'min_percent': 0.1, 'max_percent': 99
              }
 
 
-#for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
-for field in ("G327.29",):
+for field in "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split():
+#for field in ("G327.29",):
     #for imtype in ('cleanest', 'bsens', '7m12m', ):
-    for imtype in ('cleanest',):
+    for imtype in ('cleanest', 'bsens'):
 
         #pl.close('all')
         pl.figure(1).clf()

@@ -264,6 +264,8 @@ if __name__ == "__main__":
                             # use the middle-ish beam
                             beam = beams[len(beams)//2]
 
+                        print(f"Beam: {beam}, {beam.major}, {beam.minor}", flush=True)
+
 
                         with sched:
                             # mask to select the channels with little/less emission
@@ -272,7 +274,7 @@ if __name__ == "__main__":
 
 
                             noiseregion = get_noise_region(field, f'B{band}')
-                            dt(f"Getting noise region {noisregion}")
+                            dt(f"Getting noise region {noiseregion}")
                             assert noiseregion is not None
                             noiseest_cube = cube.subcube_from_regions(regions.Regions.read(noiseregion))
 
@@ -349,7 +351,7 @@ if __name__ == "__main__":
 
                         del cube
 
-                        row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
+                        row = ([field, band, config, spw, line, suffix, fn, beam.major.to(u.arcsec).value, beam.minor.to(u.arcsec).value, beam.pa.value, restfreq, minfreq, maxfreq] +
                             [history[key] if key in history else '' for key in colnames_fromheader] +
                             [min, max, std, sum, mean] +
                             [lowmin, lowmax, lowstd, lowmadstd, lowsum, lowmean] +
