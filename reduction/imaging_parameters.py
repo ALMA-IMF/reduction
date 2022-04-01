@@ -3935,6 +3935,7 @@ line_imaging_parameters_custom = {
         "threshold": "11sigma",
         "pblimit": 0.2,
         "pbmask": 0.25,
+        "cyclefactor": 2.5,
         "scales": [0, 3, 6, 12, 24],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
@@ -4296,6 +4297,7 @@ default_lines = {
     "h30a": "231.900928GHz",
     "ch3oh51-42": "216.94552100GHz",
     "ch3oh422-312": "218.44005000GHz",
+    "so2_22-21": "216.643303GHz",
 }
 
 for key in line_imaging_parameters_custom:
@@ -4341,22 +4343,31 @@ line_parameters_default = {
 }
 for field in allfields:
     line_parameters_default[field]["12co"]["cubewidth"] = "150km/s"
+
     # a hack for spw5, which contains 12CO and needs to be special-cased
     # This is tricky, though, as it breaks the generalization: spw5 is lucky in that there is no B3 SPW5!
     # If there were, this would not work and would be a little disastrous.
     # The only fix is to add a "band" specification ...
-    line_parameters_default[field]["spw5"] = {
+    # (which is what I've now done b/c we have to do this for spw4 too)
+    line_parameters_default[field]["spw5_B6"] = {
         "restfreq": line_parameters_default[field]["12co"]["restfreq"],
         "vlsr": line_parameters_default[field]["12co"]["vlsr"],
         "band": "B6",
     }
+    line_parameters_default[field]["spw4_B6"] = {
+        "restfreq": line_parameters_default[field]["c18o"]["restfreq"],
+        "vlsr": line_parameters_default[field]["c18o"]["vlsr"],
+        "band": "B6",
+    }
     line_parameters_default[field]["ch3cnv8=1"]["cubewidth"] = "150km/s"  # is 150 wide enough?
     line_parameters_default[field]["ch3cn"]["cubewidth"] = "150km/s"  # is 150 wide enough?
+
+
 line_parameters = copy.deepcopy(line_parameters_default)
 
 line_parameters_custom = {
     "G008.67": {
-        "spw5": {"mask-ranges": [(20, 34)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(20, 34)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(20, 34)]},  # km/s units
         "sio": {"cubewidth": "150km/s", "vlsr": "35km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
@@ -4372,8 +4383,8 @@ line_parameters_custom = {
         "n2hp": {"cubewidth": "60km/s"},
     },
     "G012.80": {
-        "spw4": {"mask-ranges": [(35, 36)]},  # km/s units
-        "spw5": {"mask-ranges": [(17, 36)]},  # km/s units
+        "spw4_B6": {"mask-ranges": [(35, 36)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(17, 36)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(17, 36)]},  # km/s units
         "sio": {"cubewidth": "150km/s", "vlsr": "35.5km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
@@ -4388,8 +4399,8 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
-        "spw4": {"mask-ranges": [(-43, -44)]},  # km/s units
-        "spw5": {"mask-ranges": [(-48, -51)]},  # km/s units
+        "spw4_B6": {"mask-ranges": [(-43, -44)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(-48, -51)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(-48, -51)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
@@ -4419,8 +4430,8 @@ line_parameters_custom = {
         "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
-        "spw6": {"mask-ranges": [(277, 281)]},  # km/s units
-        "spw5": {"mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
+        # spw6 doesn't allow overrides (yet) "spw6_B6": {"mask-ranges": [(277, 281)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(-11, -2), (-27, -17), (-32, -31)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
@@ -4428,7 +4439,7 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
-        "spw5": {"mask-ranges": [(-27, -20)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(-27, -20)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(-27, -20)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
