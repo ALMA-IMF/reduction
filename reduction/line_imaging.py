@@ -502,20 +502,27 @@ for band in band_list:
                 # if do_contsub, we want to use the contsub'd MS
                 concatvis = concatvis + contsub_suffix
 
-            # check that autocorrs are flagged out
-            if 'concat' in concatvis:
-                flagsum = flagdata(vis=concatvis, mode='summary', uvrange='0~1m')
-                if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
-                    # if 'flagged' isn't in flagsum, it's an empty dict
-                    raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(concatvis))
-
-                check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
-
-            elif isinstance(concatvis, list):
-                for vv in concatvis:
-                    flagsum = flagdata(vis=vv, mode='summary', uvrange='0~1m')
+            try:
+                # check that autocorrs are flagged out
+                if 'concat' in concatvis:
+                    flagsum = flagdata(vis=concatvis, mode='summary', uvrange='0~1m')
                     if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
-                        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {vv}".format(vv=vv))
+                        # if 'flagged' isn't in flagsum, it's an empty dict
+                        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(concatvis))
+
+                    check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
+
+                elif isinstance(concatvis, list):
+                    for vv in concatvis:
+                        flagsum = flagdata(vis=vv, mode='summary', uvrange='0~1m')
+                        if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+                            raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {vv}".format(vv=vv))
+            except RuntimeError as ex:
+                if "The selected table has zero rows" in str(ex):
+                    # this is OK: there are no autocorrs!
+                    pass
+                else:
+                    raise ex
 
 
             if 'spw' in line_name:

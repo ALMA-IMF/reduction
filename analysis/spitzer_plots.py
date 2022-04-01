@@ -327,7 +327,7 @@ if __name__ == "__main__":
 
                 m0 = Projection(data, wcs=wcs.WCS(fh[0].header))
                 std = stats.mad_std(data, ignore_nan=True)
-                levels = np.array([3, 5, 10, 20, 30, 50, 100])*std
+                levels = np.array([3, 5, 10, 20, 30])*std
                 fig = show_contours_on_spitzer(image=m0, fieldid=fieldid, mips=True, spitzerpath='spitzer_datapath', contour_levels=levels, zoom=2, line=line, color=color)
                 fig.savefig(f'mips_datapath/m0_contour_plots/{field}_{line}_contour_plot_mips.png', bbox_inches='tight', dpi=300)
                 fig = show_contours_on_spitzer(image=m0, fieldid=fieldid, mips=False, spitzerpath='spitzer_datapath', contour_levels=levels, zoom=2, line=line, color=color)

@@ -362,9 +362,16 @@ for continuum_ms in continuum_mses:
              "{0}".format(selfcal_ms), origin='contim_selfcal')
     assert os.path.exists(selfcal_ms)
 
-    flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
-    if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
-        raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
+    try:
+        flagsum = flagdata(vis=selfcal_ms, mode='summary', uvrange='0~1m')
+        if flagsum is not None and 'flagged' in flagsum and flagsum['flagged'] != flagsum['total']:
+            raise ValueError("Found unflagged autocorrelation data (or at least, short baselines) in {0}".format(selfcal_ms))
+    except RuntimeError as ex:
+        if "The selected table has zero rows" in str(ex):
+            # this is OK: there are no autocorrs!
+            pass
+        else:
+            raise ex
 
     coosys,racen,deccen = determine_phasecenter(ms=selfcal_ms, field=field)
     phasecenter = "{0} {1}deg {2}deg".format(coosys, racen, deccen)
@@ -377,7 +384,7 @@ for continuum_ms in continuum_mses:
     imsize = [dra, ddec]
     cellsize = ['{0:0.2f}arcsec'.format(pixscale)] * 2
 
-    for key, value in imaging_parameters.items():
+    for key, value in list(imaging_parameters.items()):
         if 'cell' not in imaging_parameters[key]:
             imaging_parameters[key]['cell'] = cellsize
         if 'imsize' not in imaging_parameters[key]:
@@ -459,7 +466,7 @@ for continuum_ms in continuum_mses:
             raise IOError("Mask {0} not found".format(maskname))
 
     # remove any parameters that are dictionaries; we don't want them for the dirty imaging
-    for key, val in dirty_impars.items():
+    for key, val in list(dirty_impars.items()):
         if isinstance(val, dict):
             del dirty_impars[key]
 
@@ -470,7 +477,7 @@ for continuum_ms in continuum_mses:
                  origin='almaimf_cont_selfcal')
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',
@@ -527,7 +534,7 @@ for continuum_ms in continuum_mses:
         if 'maskname' in locals() and not os.path.exists(maskname) and maskname != '':
             raise IOError("Mask {0} not found".format(maskname))
 
-    for key, val in impars_thisiter.items():
+    for key, val in list(impars_thisiter.items()):
         if isinstance(val, dict) and 0 in val:
             impars_thisiter[key] = val[0]
         elif isinstance(val, dict):
@@ -541,7 +548,7 @@ for continuum_ms in continuum_mses:
                  origin='almaimf_cont_selfcal')
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',
@@ -776,7 +783,7 @@ for continuum_ms in continuum_mses:
                      origin='almaimf_cont_selfcal')
             if not dryrun:
                 tclean(vis=selfcal_ms,
-                       field=field.encode(),
+                       field=field,
                        imagename=imname,
                        phasecenter=phasecenter,
                        startmodel=modelname,
@@ -954,7 +961,7 @@ for continuum_ms in continuum_mses:
             logprint("Final imaging parameters are: {0} for image name {1}".format(impars_finaliter, finaliterimname),
                      origin='almaimf_cont_selfcal')
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=finaliterimname,
                    phasecenter=phasecenter,
                    startmodel=modelname,
@@ -981,7 +988,7 @@ for continuum_ms in continuum_mses:
                  origin='almaimf_cont_selfcal')
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',
@@ -1030,7 +1037,7 @@ for continuum_ms in continuum_mses:
 
         if not dryrun:
             tclean(vis=selfcal_ms,
-                   field=field.encode(),
+                   field=field,
                    imagename=imname,
                    phasecenter=phasecenter,
                    outframe='LSRK',

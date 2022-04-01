@@ -272,6 +272,12 @@ if __name__ == "__main__":
                             meanspec = cube.mean(axis=(1,2))
                             lowsignal = meanspec < np.nanpercentile(meanspec, 25)
 
+                            print(f"Low-signal region selected {lowsignal.sum()} channels out of {lowsignal.size}."
+                                  f" ({lowsignal.sum() / lowsignal.size * 100:0.2f}) %")
+
+                            assert lowsignal.sum() > 0
+                            assert lowsignal.sum() < lowsignal.size
+
 
                             noiseregion = get_noise_region(field, f'B{band}')
                             dt(f"Getting noise region {noiseregion}")
@@ -325,6 +331,7 @@ if __name__ == "__main__":
                         #mean = cube.mean()
 
                         del stats
+                        del faintstats
 
                         if os.path.exists(modfn):
                             modcube = SpectralCube.read(modfn, format='casa_image', target_chunksize=target_chunksize)

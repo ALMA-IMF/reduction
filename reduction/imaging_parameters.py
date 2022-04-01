@@ -4491,7 +4491,8 @@ line_parameters_custom = {
 
 for field in line_parameters_custom:
     for line in line_parameters_custom[field]:
-        line_parameters[field][line].update(line_parameters_custom[field][line])
+        if line in line_parameters[field]: # we have some spw4's that can't go into b3
+            line_parameters[field][line].update(line_parameters_custom[field][line])
 
 
 # Define the maximum number of channels that can be flagged out
