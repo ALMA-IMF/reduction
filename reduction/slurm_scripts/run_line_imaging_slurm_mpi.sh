@@ -41,7 +41,8 @@ OMPI_COMM_WORLD_SIZE=$SLURM_NTASKS
 # OMPI_COMM_WORLD_NODE_RANK - the relative rank of this process on this node looking across ALL jobs.
 
 if [[ ! $CASAVERSION ]]; then
-    CASAVERSION=casa-6.4.3-4
+    #CASAVERSION=casa-6.4.3-4
+    CASAVERSION=casa-6.4.4-31-py3.8
     echo "Set CASA version to default ${CASAVERSION}"
 fi
 echo "CASA version = ${CASAVERSION}"

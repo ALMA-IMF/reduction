@@ -276,6 +276,8 @@ def set_impars(impars, line_name, vis, linpars, spwnames=None):
             local_impars['start'] = '{0:.1f}km/s'.format(vstart.value)
             local_impars['chanchunks'] = int(chanchunks)
 
+            # in this case, line_name is OK because we only specify nchan for non-full-cubes
+            # (but if we specify nchan for any fullcubes, this could break)
             local_impars['nchan'] = int((u.Quantity(line_parameters[field][line_name]['cubewidth'])
                                         / u.Quantity(local_impars['width'])).value)
             if local_impars['nchan'] < local_impars['chanchunks']:
@@ -404,8 +406,9 @@ for band in band_list:
 
             linpars = {}
             # load in the line parameter info
-            if line_name in line_parameters[field] and line_parameters[field][line_name]["band"] == band:
-                linpars = line_parameters[field][line_name]
+            line_band_name = f'{line_name}_{band}' if 'spw' in line_name else line_name
+            if line_band_name in line_parameters[field]:
+                linpars = line_parameters[field][line_band_name]
                 restfreq = u.Quantity(linpars['restfreq'])
                 vlsr = u.Quantity(linpars['vlsr'])
 
@@ -418,12 +421,12 @@ for band in band_list:
                     # Skip this spw: it is not in range
                     logprint("Skipped spectral window {0} for line {1}"
                              " with frequency {2} because it's out of range"
-                             .format(spw, line_name, targetfreq),
+                             .format(spw, line_band_name, targetfreq),
                              origin='almaimf_line_imaging')
                     continue
                 else:
                     logprint("Matched spectral window {0} to line {1}"
-                             .format(spw, line_name),
+                             .format(spw, line_band_name),
                              origin='almaimf_line_imaging')
             elif line_name in spwnames and line_name.lstrip("spw") != spw:
                 logprint("Skipped spectral window {0} because it's not {1}"
@@ -945,8 +948,7 @@ for band in band_list:
                                     )
 
                         ia.close()
-                    if ((line_name in line_parameters[field]
-                         and line_parameters[field][line_name]["band"] == band
+                    if ((line_band_name in line_parameters[field]
                          and 'mask-ranges' in linpars)):
                         ia.open(infile=lineimagename+".mask")
                         for maskrange in linpars['mask-ranges']:
@@ -971,8 +973,7 @@ for band in band_list:
                             ia.putchunk(pixels=flagchans, blc=[0,0,0, startchan],)
 
                         ia.close()
-                elif ((line_name in line_parameters[field]
-                     and line_parameters[field][line_name]["band"] == band
+                elif ((line_band_name in line_parameters[field]
                      and 'mask-ranges' in linpars)):
                     raise ValueError("Mask-ranges was specified but no mask is available - this might "
                                      "be a corner case that needs to be implemented")

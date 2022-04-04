@@ -101,6 +101,9 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     merged.header['JvM_epsilon_median'] = np.median(epsdict['epsilon'])
     epsilon_table = fits.BinTableHDU(Table(data=[epsdict['epsilon']], names=['JvM_epsilon'], dtype=[np.float]))
 
+    flatpb = pbcube.mean(axis=0)
+    flatpb.hdu.writeto(basename+".flatpb.fits", overwrite=True)
+
     log.info(f"Beginning JvM write.  t={time.time()-t0}")
     hdul = merged.hdulist
     hdul.append(epsilon_table)

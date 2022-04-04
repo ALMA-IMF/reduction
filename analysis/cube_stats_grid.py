@@ -2,6 +2,7 @@ import glob
 from astropy.io import fits
 from astropy import visualization
 import pylab as pl
+import regions
 
 
 import os
@@ -23,7 +24,7 @@ from casa_formats_io import Table as casaTable
 # from casatools import image
 # ia = image()
 
-from imstats import get_psf_secondpeak
+from imstats import get_psf_secondpeak, get_noise_region
 
 from pathlib import Path
 tbldir = Path('/orange/adamginsburg/web/secure/ALMA-IMF/tables')
@@ -71,14 +72,14 @@ suffix = '.image'
 
 global then
 then = time.time()
-def dt():
+def dt(message=""):
     global then
     now = time.time()
-    print(f"Elapsed: {now-then}")
+    print(f"Elapsed: {now-then}.  {message}", flush=True)
     then = now
 
 num_workers = None
-print(f"PID = {os.getpid()}")
+dt(f"PID = {os.getpid()}")
 
 if __name__ == "__main__":
     if threads:
@@ -143,10 +144,10 @@ if __name__ == "__main__":
 
     colnames_apriori = ['Field', 'Band', 'Config', 'spw', 'line', 'suffix', 'filename', 'bmaj', 'bmin', 'bpa', 'wcs_restfreq', 'minfreq', 'maxfreq']
     colnames_fromheader = ['imsize', 'cell', 'threshold', 'niter', 'pblimit', 'pbmask', 'restfreq', 'nchan', 'width', 'start', 'chanchunks', 'deconvolver', 'weighting', 'robust', 'git_version', 'git_date', ]
-    colnames_stats = 'min max std sum mean'.split() + 'lowmin lowmax lowstd lowsum lowmean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
+    colnames_stats = 'min max std sum mean'.split() + 'lowmin lowmax lowstd lowmadstd lowsum lowmean'.split() + ['mod'+x for x in 'min max std sum mean'.split()] + ['epsilon']
 
     colnames = colnames_apriori+colnames_fromheader+colnames_stats
-    assert len(colnames) == 45
+    assert len(colnames) == 46
 
     def try_qty(x):
         try:
@@ -181,7 +182,7 @@ if __name__ == "__main__":
         for band in (3,6):
             for config in ('12M',): # '7M12M',
                 for line in spws[band] + list(default_lines.keys()):
-                    for suffix in (".image", ".contsub.image"):
+                    for suffix in (".image", ".contsub.image"):#, ".contsub.JvM.image.fits", ".JvM.image.fits"):
 
                         if line not in default_lines:
                             spw = line
@@ -236,15 +237,25 @@ if __name__ == "__main__":
                                         for x in hist if '=' in x})
                         #ia.close()
 
-                        if os.path.exists(fn):
-                            cube = SpectralCube.read(fn, format='casa_image', target_chunksize=target_chunksize)
-                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                        jvmimage = fn.replace(".image", ".JvM.image")
+                        if os.path.exists(jvmimage):
+                            fn = jvmimage
+                        elif os.path.exists(jvmimage+".fits"):
+                            fn = jvmimage+".fits"
+                        elif os.path.exists(fn):
+                            pass
                         elif os.path.exists(fn+".fits"):
-                            cube = SpectralCube.read(fn+".fits", format='fits', use_dask=True)
-                            cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
-                            # print(f"Rechunking {cube} to tmp dir", flush=True)
-                            # cube = cube.rechunk(save_to_tmp_dir=True)
-                            # cube.use_dask_scheduler(scheduler)
+                            fn = fn+".fits"
+
+                        if 'fits' in fn:
+                            cube = SpectralCube.read(fn, format='fits', use_dask=True)
+                        else:
+                            cube = SpectralCube.read(fn, format='casa_image', target_chunksize=target_chunksize)
+
+                        sched = cube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                        # print(f"Rechunking {cube} to tmp dir", flush=True)
+                        # cube = cube.rechunk(save_to_tmp_dir=True)
+                        # cube.use_dask_scheduler(scheduler)
 
                         if hasattr(cube, 'beam'):
                             beam = cube.beam
@@ -253,47 +264,63 @@ if __name__ == "__main__":
                             # use the middle-ish beam
                             beam = beams[len(beams)//2]
 
-
-                        # mask to select the channels with little/less emission
-                        meanspec = cube.mean(axis=(1,2))
-                        lowsignal = meanspec < np.nanpercentile(meanspec, 25)
-                        print(f"Low-signal region selected {lowsignal.sum()} channels out of {lowsignal.size}."
-                              f" ({lowsignal.sum() / lowsignal.size * 100:0.2f}) %")
-
-                        assert lowsignal.sum() > 0
-                        assert lowsignal.sum() < lowsignal.size
+                        print(f"Beam: {beam}, {beam.major}, {beam.minor}", flush=True)
 
 
-                        print(cube)
+                        with sched:
+                            # mask to select the channels with little/less emission
+                            meanspec = cube.mean(axis=(1,2))
+                            lowsignal = meanspec < np.nanpercentile(meanspec, 25)
 
-                        minfreq = cube.spectral_axis.min()
-                        maxfreq = cube.spectral_axis.max()
-                        restfreq = cube.wcs.wcs.restfrq
+                            print(f"Low-signal region selected {lowsignal.sum()} channels out of {lowsignal.size}."
+                                  f" ({lowsignal.sum() / lowsignal.size * 100:0.2f}) %")
 
-                        # print("getting filled data")
-                        # data = cube._get_filled_data(fill=np.nan)
-                        # print("finished getting filled data")
-                        # del data
+                            assert lowsignal.sum() > 0
+                            assert lowsignal.sum() < lowsignal.size
 
-                        # try this as an experiment?  Maybe it's statistics that causes problems?
-                        #print(f"Computing cube mean with scheduler {scheduler} and sched args {cube._scheduler_kwargs}", flush=True)
-                        #mean = cube.mean()
-                        print(f"Computing cube statistics with scheduler {scheduler} and sched args {cube._scheduler_kwargs}", flush=True)
-                        stats = cube.statistics()
-                        print(f"finished cube stats for {fn}", flush=True)
-                        min = stats['min']
-                        max = stats['max']
-                        std = stats['sigma']
-                        sum = stats['sum']
-                        mean = stats['mean']
 
-                        faintstats = cube.with_mask(lowsignal[:,None,None]).statistics()
-                        print(f"finished low-signal cube stats for {fn}", flush=True)
-                        lowmin = faintstats['min']
-                        lowmax = faintstats['max']
-                        lowstd = faintstats['sigma']
-                        lowsum = faintstats['sum']
-                        lowmean = faintstats['mean']
+                            noiseregion = get_noise_region(field, f'B{band}')
+                            dt(f"Getting noise region {noiseregion}")
+                            assert noiseregion is not None
+                            noiseest_cube = cube.subcube_from_regions(regions.Regions.read(noiseregion))
+
+
+                            dt(cube)
+                            dt(noiseest_cube)
+
+                            minfreq = cube.spectral_axis.min()
+                            maxfreq = cube.spectral_axis.max()
+                            restfreq = cube.wcs.wcs.restfrq
+
+                            # print("getting filled data")
+                            # data = cube._get_filled_data(fill=np.nan)
+                            # print("finished getting filled data")
+                            # del data
+
+                            # try this as an experiment?  Maybe it's statistics that causes problems?
+                            #print(f"Computing cube mean with scheduler {scheduler} and sched args {cube._scheduler_kwargs}")
+                            #mean = cube.mean()
+                            dt(f"Computing cube statistics with scheduler {scheduler} and sched args {cube._scheduler_kwargs}")
+                            stats = cube.statistics()
+                            dt("finished cube stats")
+                            min = stats['min']
+                            max = stats['max']
+                            std = stats['sigma']
+                            sum = stats['sum']
+                            mean = stats['mean']
+
+                            faintstats = noiseest_cube.with_mask(lowsignal[:,None,None]).statistics()
+                            dt("finished low-signal cube stats")
+                            lowmin = stats['min']
+                            lowmax = stats['max']
+                            lowstd = stats['sigma']
+                            lowsum = stats['sum']
+                            lowmean = stats['mean']
+                            dt("Doing low-signal cube mad-std")
+                            flatdata = noiseest_cube.with_mask(lowsignal[:,None,None]).flattened()
+                            dt("Loaded flatdata")
+                            lowmadstd = mad_std(flatdata)
+                            dt("Done low-signal cube mad-std")
 
 
                         #min = cube.min()
@@ -308,17 +335,15 @@ if __name__ == "__main__":
 
                         if os.path.exists(modfn):
                             modcube = SpectralCube.read(modfn, format='casa_image', target_chunksize=target_chunksize)
-                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
-                            # print(f"Rechunking {modcube} to tmp dir", flush=True)
-                            # modcube = modcube.rechunk(save_to_tmp_dir=True)
-                            # modcube.use_dask_scheduler(scheduler)
                         elif os.path.exists(modfn+".fits"):
                             modcube = SpectralCube.read(modfn+".fits", format='fits', use_dask=True)
-                            modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
+                        modsched = modcube.use_dask_scheduler(scheduler=scheduler, num_workers=num_workers)
 
-                        print(modcube, flush=True)
-                        print(f"Computing model cube statistics with scheduler {scheduler} and sched args {modcube._scheduler_kwargs}", flush=True)
-                        modstats = modcube.statistics()
+                        dt(modcube)
+                        dt(f"Computing model cube statistics with scheduler {scheduler} and sched args {modcube._scheduler_kwargs}")
+                        with modsched:
+                            modstats = modcube.statistics()
+                        dt(f"Done with model stats")
                         modmin = modstats['min']
                         modmax = modstats['max']
                         modstd = modstats['sigma']
@@ -333,10 +358,10 @@ if __name__ == "__main__":
 
                         del cube
 
-                        row = ([field, band, config, spw, line, suffix, fn, beam.major.value, beam.minor.value, beam.pa.value, restfreq, minfreq, maxfreq] +
+                        row = ([field, band, config, spw, line, suffix, fn, beam.major.to(u.arcsec).value, beam.minor.to(u.arcsec).value, beam.pa.value, restfreq, minfreq, maxfreq] +
                             [history[key] if key in history else '' for key in colnames_fromheader] +
                             [min, max, std, sum, mean] +
-                            [lowmin, lowmax, lowstd, lowsum, lowmean] +
+                            [lowmin, lowmax, lowstd, lowmadstd, lowsum, lowmean] +
                             [modmin, modmax, modstd, modsum, modmean, epsilon])
                         assert len(row) == len(colnames)
                         rows.append(row)
