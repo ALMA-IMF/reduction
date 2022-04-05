@@ -90,11 +90,25 @@ export PYTHONPATH=$ALMAIMF_ROOTDIR
 export SCRIPT_DIR=$ALMAIMF_ROOTDIR
 export PYTHONPATH=$SCRIPT_DIR
 
+cp -v ~/.casa/config.py /tmp
+cp -v ~/.casarc /tmp/rc
+cp -v ~/.casarc /tmp/.casarc
+casamem=$(python -c "print(${SLURM_MEM_PER_NODE}/${NTASKS})")
+echo "system.resources.memory: ${casamem}" >> /tmp/rc
+
+echo "config.py: "
+cat /tmp/config.py
+echo "rc: "
+cat /tmp/.casarc
+
+echo "CASA memory set to: $casamem"
+ 
+
 echo logfile=$LOGFILENAME
 
-echo Running command: ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=/tmp  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+echo Running command: ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=/tmp --rcdir=/tmp  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 
-${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=/tmp  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=/tmp --rcdir=/tmp  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 ppid="$!"; childPID="$(ps -C ${CASA} -o ppid=,pid= | awk -v ppid="$ppid" '$1==ppid {print $2}')"
 echo PID=${ppid} childPID=${childPID}
 
