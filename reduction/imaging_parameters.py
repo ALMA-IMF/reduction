@@ -3932,11 +3932,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw6": {
-        "threshold": "11sigma",
+        "threshold": "5sigma",
         "pblimit": 0.2,
         "pbmask": 0.25,
-        "cyclefactor": 2.5,
-        "scales": [0, 3, 6, 12, 24],
+        "cyclefactor": 3.5,
+        "scales": [0, 3, 9],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw7": {
@@ -4491,8 +4491,7 @@ line_parameters_custom = {
 
 for field in line_parameters_custom:
     for line in line_parameters_custom[field]:
-        if line in line_parameters[field]: # we have some spw4's that can't go into b3
-            line_parameters[field][line].update(line_parameters_custom[field][line])
+        line_parameters[field][line].update(line_parameters_custom[field][line])
 
 
 # Define the maximum number of channels that can be flagged out

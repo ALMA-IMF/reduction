@@ -14,8 +14,8 @@ line_maps = {'n2hp': {'band': 3, 'spw': 0},
 
 parameters = {'W51-E': {'12M':
   {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': False, } },
-   'B3': {'spw2': {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat': True, } },
-   'B3': {'spw0': {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat': True, } }
+   'B3': {'spw2': {'mem': 256, 'ntasks': 64, 'mpi': True, 'concat': True, } },
+   'B3': {'spw0': {'mem': 256, 'ntasks': 64, 'mpi': True, 'concat': True, } }
  }},
  'W43-MM3': {'12M':
   {'B3':
@@ -84,7 +84,7 @@ del spw
 del array
 
 default_parameters = {f'{field}_{array}_{band}_{spw}':
-                      {'mem': 128, 'ntasks': 32, 'mpi': True, 'concat':True}
+                      {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
     for array in ("12M", )
     for band in ("B3", "B6")
