@@ -15,7 +15,7 @@ line_maps = {'n2hp': {'band': 3, 'spw': 0},
 parameters = {'W51-E': {'12M':
   {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': False, } },
    'B3': {'spw2': {'mem': 256, 'ntasks': 64, 'mpi': True, 'concat': True, } },
-   'B3': {'spw0': {'mem': 256, 'ntasks': 64, 'mpi': True, 'concat': True, } }
+   'B3': {'spw0': {'mem': 256, 'ntasks': 64, 'mpi': False, 'concat': True, } }
  }},
  'W43-MM3': {'12M':
   {'B3':
@@ -270,9 +270,10 @@ if __name__ == "__main__":
             cpus_per_task = 1
             os.environ['SLURM_TASKS_PER_NODE'] = str(ntasks)
         else:
-            assert ntasks == 1
+            #assert ntasks == 1
             mpisuffix = ''
             cpus_per_task = ntasks
+            ntasks = 1
 
         os.environ['CPUS_PER_TASK'] = str(cpus_per_task)
 
