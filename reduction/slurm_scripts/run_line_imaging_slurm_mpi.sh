@@ -4,6 +4,9 @@
 #SBATCH --nodes=1
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
 
+# set the path to exclude conda
+export PATH=/apps/gcc/9.3.0/gsl/2.6/bin:/apps/compilers/gcc/9.3.0/bin:/apps/libfuse/3.10.4/bin:/apps/ufrc/bin:/apps/screen/4.8.0/bin:/opt/slurm/bin:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/opt/puppetlabs/bin:/bin:/opt/dell/srvadmin/bin:/home/adamginsburg/bin
+
 env
 pwd; hostname; date
 echo "Memory=${MEM}"
@@ -60,7 +63,7 @@ echo "CASA version = ${CASAVERSION}"
 #export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-CAS-13609-1/bin/mpicasa
 #export CASA=/orange/adamginsburg/casa/casa-6.4.0-12/bin/casa
 #export MPICASA=/blue/adamginsburg/adamginsburg/casa/casa-6.4.0-12/bin/mpicasa
-export CASA=/orange/adamginsburg/casa/${CASAVERSION}/bin/casa
+export CASA=/blue/adamginsburg/adamginsburg/casa/${CASAVERSION}/bin/casa
 export MPICASA=/blue/adamginsburg/adamginsburg/casa/${CASAVERSION}/bin/mpicasa
 
 
@@ -105,6 +108,11 @@ echo "CASA memory set to: $casamem"
  
 
 echo logfile=$LOGFILENAME
+
+echo "Printing CASA path"
+${CASA} --nogui --nologger --ipython-dir=/tmp --rcdir=/tmp  --logfile=${LOGFILENAME} -c "import sys; print(sys.path)"
+
+
 
 echo Running command: ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=/tmp --rcdir=/tmp  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 

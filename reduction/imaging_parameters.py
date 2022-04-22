@@ -3715,7 +3715,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G333.60_B6_12M_robust0_spw1": {
-        "threshold": "5sigma",
+        "threshold": "4sigma", #set to clean a little deeper b/c of "zigzag" pattern in model
         "scales": [0, 5, 10, 20],
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
@@ -4143,7 +4143,7 @@ line_imaging_parameters_custom = {
     },
     "W51-E_B3_12M_robust0_spw0": {
         "threshold": "5sigma",
-        "scales": [0, 4, 8, 16, 32, 64],
+        "scales": [0, 4, 16, 64],
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-E_B3_12M_robust0_spw1": {
