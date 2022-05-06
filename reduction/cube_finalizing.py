@@ -17,7 +17,12 @@ from astropy.table import Table
 from astropy import log
 
 import contextlib
-import tqdm
+try:
+    from tqdm import tqdm
+except ImportError:
+    # no progressbar; we could perhaps warn about this but it's not
+    # functionally important
+    tqdm = False
 
 import time
 
@@ -28,7 +33,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         pbar = contextlib.nullcontext()
         tpbar = False
     else:
-        tpbar = tqdm.tqdm
+        tpbar = tqdm
 
     t0 = time.time()
 

@@ -15,7 +15,7 @@ line_maps = {'n2hp': {'band': 3, 'spw': 0},
 parameters = {'W51-E': {'12M':
   {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': False, } },
    'B3': {'spw2': {'mem': 256, 'ntasks': 64, 'mpi': True, 'concat': True, } },
-   'B3': {'spw0': {'mem': 1028, 'ntasks': 128, 'mpi': True, 'concat': True, 'exclusive': True, 'partition': 'hpg-default'} }
+   'B3': {'spw0': {'mem': 500, 'ntasks': 64, 'mpi': True, 'concat': True, 'exclusive': True, 'partition': 'hpg-milan'} }
  }},
  'W43-MM3': {'12M':
   {'B3':
@@ -58,8 +58,7 @@ parameters = {'W51-E': {'12M':
                  {"B3":
                      {"spw3": {"mem": 128, "ntasks": 32, "mpi": True, "concat": True},
                      },
-                 },
-                 {"B6":
+                  "B6":
                      {"spw1": {"mem": 128, "ntasks": 32, "mpi": True, "concat": True, 'exclusive': True, 'partition': 'hpg2-compute'},
                      },
                  },
@@ -246,7 +245,7 @@ if __name__ == "__main__":
 
 
         exclusive = ' --exclusive' if spwpars.get('EXCLUSIVE') else ''
-        partition = spwpars.get('partition') if spwpars.get('partition') else ''
+        partition = f" --partition={spwpars.get('partition')}" if spwpars.get('partition') else ''
 
         basename = f'{field}_{band}_spw{spwn}_{array}_{spw}{contsub_suffix}'
         # basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
