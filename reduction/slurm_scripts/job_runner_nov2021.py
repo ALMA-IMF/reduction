@@ -15,7 +15,7 @@ line_maps = {'n2hp': {'band': 3, 'spw': 0},
 parameters = {'W51-E': {'12M':
   {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': False, } },
    'B3': {'spw2': {'mem': 256, 'ntasks': 64, 'mpi': True, 'concat': True, } },
-   'B3': {'spw0': {'mem': 256, 'ntasks': 33, 'mpi': True, 'concat': True, } }
+   'B3': {'spw0': {'mem': 1028, 'ntasks': 128, 'mpi': True, 'concat': True, 'exclusive': True, 'partition': 'hpg-default'} }
  }},
  'W43-MM3': {'12M':
   {'B3':
@@ -56,7 +56,11 @@ parameters = {'W51-E': {'12M':
               },
               '12M':
                  {"B3":
-                     {"spw3": {"mem": 256, "ntasks": 32, "mpi": True, "concat": True},
+                     {"spw3": {"mem": 128, "ntasks": 32, "mpi": True, "concat": True},
+                     },
+                 },
+                 {"B6":
+                     {"spw1": {"mem": 128, "ntasks": 32, "mpi": True, "concat": True, 'exclusive': True, 'partition': 'hpg2-compute'},
                      },
                  },
              },
@@ -185,7 +189,7 @@ if __name__ == "__main__":
             suffix = ''
 
 
-        workdir = '/blue/adamginsburg/adamginsburg/almaimf/workdir'
+        workdir = os.getenv('WORK_DIRECTORY') or '/blue/adamginsburg/adamginsburg/almaimf/workdir'
         jobname = f"{field}_{band}_{fullcube}_{array}{suffix}{contsub_suffix}"
 
         match = tbl['JobName'] == jobname
@@ -240,6 +244,10 @@ if __name__ == "__main__":
         os.environ['LINE_NAME'] = spw
         os.environ['FIELD_ID'] = field
 
+
+        exclusive = ' --exclusive' if spwpars.get('EXCLUSIVE') else ''
+        partition = spwpars.get('partition') if spwpars.get('partition') else ''
+
         basename = f'{field}_{band}_spw{spwn}_{array}_{spw}{contsub_suffix}'
         # basename = "{0}_{1}_spw{2}_{3}".format(field, band, spw, arrayname)
 
@@ -283,7 +291,7 @@ if __name__ == "__main__":
         os.environ['LOGFILENAME'] = f"{logpath}/casa_log_line_{jobname}_{now}.log"
 
 
-        cmd = f'sbatch --ntasks={ntasks} --cpus-per-task={cpus_per_task} --mem={mem} --output={jobname}_%j.log --job-name={jobname} --account={account} --qos={qos} --export=ALL  {runcmd}'
+        cmd = f'sbatch --ntasks={ntasks} --cpus-per-task={cpus_per_task} --mem={mem} {exclusive} {partition} --output={jobname}_%j.log --job-name={jobname} --account={account} --qos={qos} --export=ALL  {runcmd}'
 
         if '--dry-run' in sys.argv:
             if verbose:

@@ -1023,6 +1023,7 @@ for band in band_list:
                            imagename=lineimagename,
                            restoringbeam='',
                            calcres=True,
+                           calcPSF=False, # not needed; PSF already exists
                            **impars
                           )
                     impars['niter'] = niter
