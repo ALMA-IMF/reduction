@@ -133,16 +133,19 @@ echo "DEBUG STUFF"
 echo "Printing CASA path"
 ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=${LOGFILENAME} -c "import sys; print(sys.path)"
 
+# try running with 1 fewer job under the theory that the always-one-broken is
+# b/c we need a separate 'master' thread
+mpi_ntasks=$(echo "${SLURM_NTASKS} - 1" | bc -l)
 
 echo "global env var CASAPATH=$CASAPATH"
 echo "Using MPICASA to determine CASAPATH"
-${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=${LOGFILENAME} -c "import os; print(f'mpi inside casa CASAPATH=', os.getenv('CASAPATH'))"
+${MPICASA} -n ${mpi_ntasks} ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=${LOGFILENAME} -c "import os; print(f'mpi inside casa CASAPATH=', os.getenv('CASAPATH'))"
 
 
 
-echo Running command: ${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+echo Running command: ${MPICASA} -n ${mpi_ntasks} ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 
-${MPICASA} -n ${SLURM_NTASKS} ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
+${MPICASA} -n ${mpi_ntasks} ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=${LOGFILENAME} -c "execfile('$SCRIPT_DIR/line_imaging.py')" &
 ppid="$!"; childPID="$(ps -C ${CASA} -o ppid=,pid= | awk -v ppid="$ppid" '$1==ppid {print $2}')"
 echo PID=${ppid} childPID=${childPID}
 echo "DEBUG: ps -C CASA -o ppid=,pid= : $(ps -C ${CASA} -o ppid=,pid=)"

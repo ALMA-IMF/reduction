@@ -990,6 +990,9 @@ for band in band_list:
                 # when being run from an MPI session.
                 impars['parallel'] = parallel
 
+                if os.path.exists(lineimagename+".psf"):
+                    psf_exists = True
+                    logprint("Found existing PSF file", origin='almaimf_line_imaging')
 
                 # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)
                 if not dryrun:
@@ -999,6 +1002,7 @@ for band in band_list:
                            restoringbeam='', # do not use restoringbeam='common'
                            # it results in bad edge channels dominating the beam
                            calcres=False,
+                           calcpsf=not psf_exists,
                            **impars
                           )
                 # check_channel_flags(concatvis, tolerance=flagging_tolerance, nchan_tolerance=nflag_threshold)

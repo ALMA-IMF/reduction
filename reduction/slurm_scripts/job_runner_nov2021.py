@@ -15,7 +15,7 @@ line_maps = {'n2hp': {'band': 3, 'spw': 0},
 parameters = {'W51-E': {'12M':
   {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': False, } },
    'B3': {'spw2': {'mem': 256, 'ntasks': 64, 'mpi': True, 'concat': True, } },
-   'B3': {'spw0': {'mem': 500, 'ntasks': 64, 'mpi': True, 'concat': True, 'exclusive': True, 'partition': 'hpg-milan'} }
+   'B3': {'spw0': {'mem': 500, 'ntasks': 64, 'mpi': True, 'concat': True, } }
  }},
  'W43-MM3': {'12M':
   {'B3':
@@ -59,7 +59,7 @@ parameters = {'W51-E': {'12M':
                      {"spw3": {"mem": 128, "ntasks": 32, "mpi": True, "concat": True},
                      },
                   "B6":
-                     {"spw1": {"mem": 128, "ntasks": 32, "mpi": True, "concat": True, 'exclusive': True, 'partition': 'hpg2-compute'},
+                     {"spw1": {"mem": 123, "ntasks": 32, "mpi": True, "concat": True,},
                      },
                  },
              },

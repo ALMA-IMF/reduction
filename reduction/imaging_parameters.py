@@ -4298,6 +4298,7 @@ default_lines = {
     "ch3oh51-42": "216.94552100GHz",
     "ch3oh422-312": "218.44005000GHz",
     "so2_22-21": "216.643303GHz",
+    "n2dp_3-2": "231.32163500GHz",
 }
 
 for key in line_imaging_parameters_custom:
