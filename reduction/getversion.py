@@ -17,6 +17,8 @@ almaimf_rootdir = os.getenv('ALMAIMF_ROOTDIR')
 # almaimf_rootdir must be set to this file's path!
 try:
     # however, this very assertion seems to break things unnecessarily
+    print(f"path={path}")
+    print(f"ALMAIMF_ROOTDIR={almaimf_rootdir}")
     assert os.path.dirname(almaimf_rootdir) == os.path.dirname(path)
 except Exception as ex:
     print("Possible getversion failure:")
