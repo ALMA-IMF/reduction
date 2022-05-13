@@ -51,6 +51,10 @@ For now, please pick chanchunks so that nchan/chanchunks is an integer.
         WORK_DIRECTORY are set.  If this is not set, and the .ms file to
         clean from exists in WORK_DIRECTORY, an error will be raised and
         the script will fail.  If this is set, it will use that file.
+    USE_EXISTING_PSF
+        A boolean flag that will continue imaging even if a PSF already exists.
+        This can be used to resume a partially-completed run, but it's not clear
+        if it's ever safe to use.
     TEMP_WORKDIR
         A directory to do operations in when running the code; this will allow
         storage of temporary files.  This will be set automatically if not
@@ -680,17 +684,23 @@ for band in band_list:
             # step 1 is dirty imaging
 
             if make_dirty_image and not os.path.exists(lineimagename+".image") and not os.path.exists(lineimagename+".residual"):
-                if os.path.exists(lineimagename+".psf"):
-                    logprint("WARNING: The PSF for {0} exists, but no image exists."
-                             "  This likely implies that an ongoing or incomplete "
-                             "imaging run for this file exists.  It will not be "
-                             "imaged this time; please check what is happening.  "
-                             "(this warning issued /before/ dirty imaging)"
-                             .format(lineimagename),
-                             origin='almaimf_line_imaging',
-                             priority='WARNING'
-                             )
-                    continue
+                psf_exists = os.path.exists(lineimagename+".psf")
+                if psf_exists:
+                    if os.getenv('USE_EXISTING_PSF'):
+                        logprint(f"WARNING: The PSF for {lineimagename} exists, but no image exists.  "
+                                 "USE_EXISTING_PSF was set, though, so imaging will continue.",
+                                 origin='almaimf_line_imaging')
+                    else:
+                        logprint("WARNING: The PSF for {0} exists, but no image exists."
+                                 "  This likely implies that an ongoing or incomplete "
+                                 "imaging run for this file exists.  It will not be "
+                                 "imaged this time; please check what is happening.  "
+                                 "(this warning issued /before/ dirty imaging)"
+                                 .format(lineimagename),
+                                 origin='almaimf_line_imaging',
+                                 priority='WARNING'
+                                 )
+                        continue
                 # first iteration makes a dirty image to estimate the RMS
                 impars_dirty = impars.copy()
                 impars_dirty['niter'] = 0
@@ -708,6 +718,7 @@ for band in band_list:
                     tclean(vis=concatvis,
                            imagename=lineimagename,
                            restoringbeam='', # do not use restoringbeam='common'
+                           calcpsf=not psf_exists,
                            # it results in bad edge channels dominating the beam
                            **impars_dirty
                           )
@@ -1027,7 +1038,7 @@ for band in band_list:
                            imagename=lineimagename,
                            restoringbeam='',
                            calcres=True,
-                           calcPSF=False, # not needed; PSF already exists
+                           calcpsf=False, # not needed; PSF already exists
                            **impars
                           )
                     impars['niter'] = niter
