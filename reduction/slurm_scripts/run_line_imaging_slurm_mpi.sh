@@ -104,6 +104,7 @@ export PYTHONPATH=$ALMAIMF_ROOTDIR
 export SCRIPT_DIR=$ALMAIMF_ROOTDIR
 export PYTHONPATH=$SCRIPT_DIR
 
+export TMPDIR=/red/adamginsburg/
 cp -v ~/.casa/config.py ${TMPDIR}/
 cp -v ~/.casarc ${TMPDIR}/rc
 cp -v ~/.casarc ${TMPDIR}/.casarc
