@@ -3267,6 +3267,14 @@ line_imaging_parameters_custom = {
         "threshold": "4mJy",  # sigma is ~0.8 mJy
         "pblimit": 0.05,  # per Nov 6 telecon
     },
+    "W51-E_B3_12M_robust0_spw0": {
+        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
+        "threshold": "4mJy",  # sigma is ~0.8 mJy so this is about 5-sigma
+        "pblimit": 0.05,  # per Nov 6 telecon
+        "nchan": 1930,
+        "start": "93.0977GHz"
+        # default scales are [0, 5, 15], other W51 windows use "scales": [0, 4, 16, 64],
+    },
     "W51-E_B3_12M_robust0_h41a": {
         "threshold": "5.5mJy",  # noise ~1mJy in channels off line peak.
         "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
@@ -3671,7 +3679,7 @@ line_imaging_parameters_custom = {
     },
     "G328.25_B6_12M_robust0_spw4": {
         "threshold": "5sigma",
-        "scales": [0, 4, 8, 16, 32],
+        "scales": [0, 4, 16], #redo May 13 2022
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G328.25_B6_12M_robust0_spw5": {
@@ -3715,7 +3723,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G333.60_B6_12M_robust0_spw1": {
-        "threshold": "5sigma",
+        "threshold": "2sigma", #set to clean a little deeper b/c of "zigzag" pattern in model
         "scales": [0, 5, 10, 20],
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
@@ -3932,11 +3940,11 @@ line_imaging_parameters_custom = {
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw6": {
-        "threshold": "11sigma",
+        "threshold": "5sigma",
         "pblimit": 0.2,
         "pbmask": 0.25,
-        "cyclefactor": 2.5,
-        "scales": [0, 3, 6, 12, 24],
+        "cyclefactor": 3.5,
+        "scales": [0, 3, 9],
         "startmodel": "G351.77_B6_uid___A001_X1296_X201_continuum_merged_12M_robust0_selfcal4_finaliter",
     },
     "G351.77_B6_12M_robust0_spw7": {
@@ -4141,11 +4149,6 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 8, 16, 32],
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
-    "W51-E_B3_12M_robust0_spw0": {
-        "threshold": "5sigma",
-        "scales": [0, 4, 8, 16, 32, 64],
-        "startmodel": "W51-E_B3_uid___A001_X1296_X10b_continuum_merged_12M_robust0_selfcal7_finaliter",
-    },
     "W51-E_B3_12M_robust0_spw1": {
         "threshold": "5sigma",
         "scales": [0, 4, 8, 16, 32, 64],
@@ -4298,6 +4301,7 @@ default_lines = {
     "ch3oh51-42": "216.94552100GHz",
     "ch3oh422-312": "218.44005000GHz",
     "so2_22-21": "216.643303GHz",
+    "n2dp_3-2": "231.32163500GHz",
 }
 
 for key in line_imaging_parameters_custom:
@@ -4491,8 +4495,7 @@ line_parameters_custom = {
 
 for field in line_parameters_custom:
     for line in line_parameters_custom[field]:
-        if line in line_parameters[field]: # we have some spw4's that can't go into b3
-            line_parameters[field][line].update(line_parameters_custom[field][line])
+        line_parameters[field][line].update(line_parameters_custom[field][line])
 
 
 # Define the maximum number of channels that can be flagged out

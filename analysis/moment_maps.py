@@ -26,8 +26,8 @@ import tempfile
 
 import os
 
-# for zarr storage
-os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
+# for zarr storage (we can just use local - it's faster)
+#os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
 
 if __name__ == "__main__":
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     scheduler = dask.config.get('scheduler')
     print(f"Using {nthreads} threads with the {scheduler} scheduler")
 
-    assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
+    #assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
     redo = False
 
@@ -89,7 +89,9 @@ if __name__ == "__main__":
 
     # simpler approach
     #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
-    filenames = [f'{fn}.pbcor.fits'.replace('.image', '.JvM.image') for fn in tbl['filename']]
+    #filenames = [f'{fn}.pbcor.fits'.replace('.image', '.JvM.image') for fn in tbl['filename']]
+    filenames = [fn for fn in tbl['filename']]
+    filenames = [fn.replace(".image", ".image.pbcor") for fn in tbl['filename']]
 
     # use tbl, ignore 7m12m
     sizes = {ii: get_size(fn)
@@ -154,11 +156,16 @@ if __name__ == "__main__":
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             # do moments
-            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
-            cube.allow_huge_operations=True
-            with cube.use_dask_scheduler('threads', num_workers=nthreads):
-                scube = cube - cont*cube.unit
+            cscubefn = fn.replace(".fits", ".statcont.contsub.fits")
+            if os.path.exists(cscubefn):
+                scube = SpectralCube.read(cscubefn, target_chunk_size=target_chunk_size, use_dask=True)
+            else:
+                cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
+                cube.allow_huge_operations=True
+                with cube.use_dask_scheduler('threads', num_workers=nthreads):
+                    scube = cube - cont*cube.unit
 
+            with scube.use_dask_scheduler('threads', num_workers=nthreads):
                 for field,restvel in imaging_parameters.field_vlsr.items():
                     if field in fn:
                         restvel = u.Quantity(restvel)
@@ -168,7 +175,8 @@ if __name__ == "__main__":
                     frq = u.Quantity(frq)
                     zz = (restvel / constants.c).decompose().value
 
-                    if frq * (1-zz) > cube.spectral_axis.min() and frq * (1-zz) < cube.spectral_axis.max():
+                    if frq * (1-zz) > scube.spectral_axis.min() and frq * (1-zz) < scube.spectral_axis.max():
+                        print(f"Moment mapping {line} at {frq}")
                         outmoment = f'{basepath}/moments/{field}/{basefn}.{line}.m0.fits'
                         if (not os.path.exists(outmoment)) or redo:
 
@@ -180,3 +188,5 @@ if __name__ == "__main__":
                             if not os.path.exists(f'{basepath}/moments/{field}'):
                                 os.mkdir(f'{basepath}/moments/{field}')
                             mom0.write(outmoment, overwrite=True)
+
+print("Moment mapping completed")
