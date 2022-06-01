@@ -17,6 +17,8 @@ import glob
 from spectral_cube import SpectralCube,DaskSpectralCube
 from spectral_cube.lower_dimensional_structures import Projection
 
+from show_pv_quicklook import show_pv
+
 if os.getenv('NO_PROGRESSBAR') is None:
     from dask.diagnostics import ProgressBar
     pbar = ProgressBar()
@@ -49,7 +51,7 @@ default_lines = {'n2hp': '93.173700GHz',
 
 suffix = '.image'
 
-os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
+#os.environ['TEMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp/'
 
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
@@ -239,6 +241,30 @@ for field in "G328.25 G351.77 W51-IRS2 W43-MM2 G327.29 G338.93 W51-E G353.41 G00
                                overwrite=True)
                     mn_K.quicklook('collapse/min/pngs/{0}'.format(fn.replace(suffix,"_min_K.png")))
 
+                    restvel = np.nanmedian(mom1)
+
+                    print(f"PV mapping {line} at {rest_value} with velocity {restvel}")
+                    outpv = 'collapse/pvs/'+ fn.replace(suffix, f'{line}.pv_ra.fits')
+                    if (not os.path.exists(outpv)):
+
+                        vcube = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio', rest_value=rest_value)
+                        cutout = vcube.spectral_slab(restvel-50*u.km/u.s, restvel+50*u.km/u.s)
+                        assert cutout.shape[0] > 1
+                        pvra = cutout.mean(axis=1)
+                        assert not np.all(pvra[np.isfinite(pvra)] == 0)
+                        pvra.write(outpv, overwrite=True)
+                        fig,ax,cb = show_pv(pvra.hdu)
+                        fig.savefig(outpv.replace(".fits",".png"), bbox_inches='tight')
+                    outpv = 'collapse/pvs/'+ fn.replace(suffix, f'{line}.pv_dec.fits')
+                    if (not os.path.exists(outpv)):
+                        vcube = mcube.with_spectral_unit(u.km/u.s, velocity_convention='radio', rest_value=rest_value)
+                        cutout = vcube.spectral_slab(restvel-50*u.km/u.s, restvel+50*u.km/u.s)
+                        assert cutout.shape[0] > 1
+                        pvdec = cutout.mean(axis=2)
+                        assert not np.all(pvdec[np.isfinite(pvdec)] == 0)
+                        pvdec.write(outpv, overwrite=True)
+                        fig,ax,cb = show_pv(pvdec.hdu)
+                        fig.savefig(outpv.replace(".fits",".png"), bbox_inches='tight')
 
 
                     for pct in (25,50,75):
