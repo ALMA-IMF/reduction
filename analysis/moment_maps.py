@@ -71,6 +71,8 @@ if __name__ == "__main__":
     basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
     if not os.path.exists(f'{basepath}/moments'):
         os.mkdir(f'{basepath}/moments')
+    if not os.path.exists(f'{basepath}/pvs'):
+        os.mkdir(f'{basepath}/pvs')
 
     tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/tables/cube_stats.ecsv')
 
@@ -91,7 +93,6 @@ if __name__ == "__main__":
     #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
     #filenames = [f'{fn}.pbcor.fits'.replace('.image', '.JvM.image') for fn in tbl['filename']]
     filenames = [fn for fn in tbl['filename']]
-    filenames = [fn.replace(".image", ".image.pbcor") for fn in tbl['filename']]
 
     # use tbl, ignore 7m12m
     sizes = {ii: get_size(fn)
@@ -156,16 +157,11 @@ if __name__ == "__main__":
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             # do moments
-            cscubefn = fn.replace(".fits", ".statcont.contsub.fits")
-            if os.path.exists(cscubefn):
-                scube = SpectralCube.read(cscubefn, target_chunk_size=target_chunk_size, use_dask=True)
-            else:
-                cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
-                cube.allow_huge_operations=True
-                with cube.use_dask_scheduler('threads', num_workers=nthreads):
-                    scube = cube - cont*cube.unit
+            cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
+            cube.allow_huge_operations=True
+            with cube.use_dask_scheduler('threads', num_workers=nthreads):
+                scube = cube - cont*cube.unit
 
-            with scube.use_dask_scheduler('threads', num_workers=nthreads):
                 for field,restvel in imaging_parameters.field_vlsr.items():
                     if field in fn:
                         restvel = u.Quantity(restvel)
@@ -175,7 +171,7 @@ if __name__ == "__main__":
                     frq = u.Quantity(frq)
                     zz = (restvel / constants.c).decompose().value
 
-                    if frq * (1-zz) > scube.spectral_axis.min() and frq * (1-zz) < scube.spectral_axis.max():
+                    if frq * (1-zz) > cube.spectral_axis.min() and frq * (1-zz) < cube.spectral_axis.max():
                         print(f"Moment mapping {line} at {frq}")
                         outmoment = f'{basepath}/moments/{field}/{basefn}.{line}.m0.fits'
                         if (not os.path.exists(outmoment)) or redo:
@@ -189,4 +185,26 @@ if __name__ == "__main__":
                                 os.mkdir(f'{basepath}/moments/{field}')
                             mom0.write(outmoment, overwrite=True)
 
-print("Moment mapping completed")
+                        print(f"PV mapping {line} at {frq}")
+                        outpv = f'{basepath}/pvs/{field}/{basefn}.{line}.pv_ra.fits'
+                        if (not os.path.exists(outpv)) or redo:
+
+                            vcube = scube.with_spectral_unit(u.km/u.s, velocity_convention='radio', rest_value=frq)
+                            cutout = vcube.spectral_slab(restvel-50*u.km/u.s, restvel+50*u.km/u.s)
+                            assert cutout.shape[0] > 1
+                            pvra = cutout.mean(axis=1)
+                            assert not np.all(pvra[np.isfinite(pvra)] == 0)
+                            if not os.path.exists(f'{basepath}/pvs/{field}'):
+                                os.mkdir(f'{basepath}/pvs/{field}')
+                            pvra.write(outpv, overwrite=True)
+                        outpv = f'{basepath}/pvs/{field}/{basefn}.{line}.pv_dec.fits'
+                        if (not os.path.exists(outpv)) or redo:
+
+                            vcube = scube.with_spectral_unit(u.km/u.s, velocity_convention='radio', rest_value=frq)
+                            cutout = vcube.spectral_slab(restvel-50*u.km/u.s, restvel+50*u.km/u.s)
+                            assert cutout.shape[0] > 1
+                            pvdec = cutout.mean(axis=2)
+                            assert not np.all(pvdec[np.isfinite(pvdec)] == 0)
+                            if not os.path.exists(f'{basepath}/pvs/{field}'):
+                                os.mkdir(f'{basepath}/pvs/{field}')
+                            pvdec.write(outpv, overwrite=True)

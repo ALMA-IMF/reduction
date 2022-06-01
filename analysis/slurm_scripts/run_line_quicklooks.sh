@@ -3,12 +3,13 @@
 #SBATCH --mail-type=END,FAIL          # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=adamginsburg@ufl.edu     # Where to send mail	
 #SBATCH --ntasks=1
+#SBATCH --nodes=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32gb                     # Job memory request
 #SBATCH --time=96:00:00               # Time limit hrs:min:sec
 #SBATCH --output=line_quicklooks_%j.log   # Standard output and error log
 #SBATCH --qos=adamginsburg
-#SBATCH --account=adamginsburg
+#SBATCH --account=adamginsburg-b
 
 
 WORK_DIR='/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results'
@@ -27,6 +28,6 @@ export OVERWRITE=True
 env
 
 
-echo xvfb-run -d /orange/adamginsburg/miniconda3/bin/python /orange/adamginsburg/ALMA_IMF/reduction/analysis/line_quicklooks.py
+echo xvfb-run -d /orange/adamginsburg/miniconda3/envs/python39/bin/python /orange/adamginsburg/ALMA_IMF/reduction/analysis/line_quicklooks.py
 
-xvfb-run -d /orange/adamginsburg/miniconda3/bin/python /orange/adamginsburg/ALMA_IMF/reduction/analysis/line_quicklooks.py
+xvfb-run -d /orange/adamginsburg/miniconda3/envs/python39/bin/python /orange/adamginsburg/ALMA_IMF/reduction/analysis/line_quicklooks.py
