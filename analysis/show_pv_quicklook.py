@@ -12,6 +12,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 def show_pv(hdu, origin=0*u.arcsec, vrange=None,
             vcen=5*u.km/u.s, imvmin=0, imvmax=1, contour=False,
             spectral_axis=0,
+            fignum=1,
+            **kwargs
             ):
 
     data = hdu.data
@@ -32,7 +34,7 @@ def show_pv(hdu, origin=0*u.arcsec, vrange=None,
     #                 slice(None,None),
     #                )
 
-    fig = pl.figure(1, figsize=(8,8))
+    fig = pl.figure(fignum, figsize=(8,8))
     fig.clf()
     ax = fig.add_axes([0.15, 0.1, 0.8, 0.8],projection=ww)
     assert ww.wcs.cunit[1] == 'm/s' # this is BAD BAD BAD but necessary
@@ -54,8 +56,9 @@ def show_pv(hdu, origin=0*u.arcsec, vrange=None,
 
     im = ax.imshow(data, cmap='gray_r',
                    #vmin=imvmin, vmax=imvmax*1.1,
-                   interpolation='none')
-    ax.set_xlabel("Offset [\"]")
+                   interpolation='none',
+                   **kwargs)
+    #ax.set_xlabel("Offset [\"]")
     ax.set_ylabel("$V_{LSR}$ [km/s]")
 
     if contour:
@@ -79,7 +82,7 @@ def show_pv(hdu, origin=0*u.arcsec, vrange=None,
     ax.set_aspect(aspect)
 
     ax.coords[1].set_format_unit(u.km/u.s)
-    ax.coords[0].set_format_unit(u.arcsec)
+    ax.coords[0].set_format_unit(u.deg)
     #ax.coords[0].set_major_formatter('x.xx')
 
     cb = pl.colorbar(mappable=im)

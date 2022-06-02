@@ -104,7 +104,6 @@ export PYTHONPATH=$ALMAIMF_ROOTDIR
 export SCRIPT_DIR=$ALMAIMF_ROOTDIR
 export PYTHONPATH=$SCRIPT_DIR
 
-export TMPDIR=/red/adamginsburg/
 cp -v ~/.casa/config.py ${TMPDIR}/
 cp -v ~/.casarc ${TMPDIR}/rc
 cp -v ~/.casarc ${TMPDIR}/.casarc
@@ -136,7 +135,8 @@ ${CASA} --nogui --nologger --ipython-dir=${TMPDIR} --rcdir=${TMPDIR}  --logfile=
 
 # try running with 1 fewer job under the theory that the always-one-broken is
 # b/c we need a separate 'master' thread
-mpi_ntasks=$(echo "${SLURM_NTASKS} - 1" | bc -l)
+#mpi_ntasks=$(echo "${SLURM_NTASKS} - 1" | bc -l)
+mpi_ntasks=$(python -c "print(int(${SLURM_NTASKS}/2+1))")
 
 echo "global env var CASAPATH=$CASAPATH"
 echo "Using MPICASA to determine CASAPATH"

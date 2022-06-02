@@ -185,6 +185,7 @@ if __name__ == "__main__":
                                 os.mkdir(f'{basepath}/moments/{field}')
                             mom0.write(outmoment, overwrite=True)
 
+                        # PNGs are made in PVDiagramPNGs.ipynb
                         print(f"PV mapping {line} at {frq}")
                         outpv = f'{basepath}/pvs/{field}/{basefn}.{line}.pv_ra.fits'
                         if (not os.path.exists(outpv)) or redo:
