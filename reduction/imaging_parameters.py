@@ -3332,7 +3332,8 @@ line_imaging_parameters_custom = {
     },
     "G327.29_B3_12M_robust0_n2hp": {
         "threshold": "5sigma",
-        "scales": [0, 8, 16, 32, 48, 64, 80, 96],
+        "scales": [0, 4, 8, 16, 32],
+        "cyclefactor": 3.5,
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G328.25_B3_12M_robust0_n2hp": {
@@ -3580,6 +3581,7 @@ line_imaging_parameters_custom = {
     "G327.29_B3_12M_robust0_spw0": {
         "threshold": "5sigma",
         "scales": [0, 5, 10, 20, 40],
+        "cyclefactor": 3.5,
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
     },
     "G327.29_B3_12M_robust0_spw1": {
