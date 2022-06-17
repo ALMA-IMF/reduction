@@ -3331,7 +3331,7 @@ line_imaging_parameters_custom = {
         "startmodel": "G012.80_B3_uid___A001_X1296_X1fb_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "G327.29_B3_12M_robust0_n2hp": {
-        "threshold": "3sigma",
+        "threshold": "20mJy", # June 17, 2022: go much deeper (fingers crossed it doesn't diverge...)
         "scales": [0, 4, 8, 16, 32],
         "cyclefactor": 3.5,
         "startmodel": "G327.29_B3_uid___A001_X1296_X17d_continuum_merged_12M_robust0_selfcal2_finaliter",
