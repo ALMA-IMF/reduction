@@ -20,6 +20,7 @@ from zoom_figures import determine_asinh_ticklocs
 def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest', writediff=False, allow_reproj=False, nticks=9,
                           asinh_scaling_factor=10, scalebarlength=15, diff_suffix='.preselfcal-diff',
                           convert_to_unit=None,
+                          slice_number=0, minv=None, maxv=None,
                           sigma_scale=15, cm='gray_r', inset_cm='inferno', allow_zero_diff=False):
     #fh_pre = fits.open()
     #fh_post = fits.open()
@@ -52,11 +53,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     #cube_pre = cube_pre.minimal_subcube()
     #cube_post = cube_post.minimal_subcube()
     if convert_to_unit is None:
-        data_pre = cube_pre[0].value * 1e3
-        data_post = cube_post[0].value * 1e3
+        data_pre = cube_pre[slice_number].value * 1e3
+        data_post = cube_post[slice_number].value * 1e3
     else:
-        data_pre = cube_pre[0].value
-        data_post = cube_post[0].value
+        data_pre = cube_pre[slice_number].value
+        data_post = cube_post[slice_number].value
 
     #data_pre[np.abs(data_pre) < 1e-7] = np.nan
     #data_post[np.abs(data_post) < 1e-7] = np.nan
@@ -74,7 +75,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
         ppbeam = (beam.sr / pixscale).decompose()
         assert ppbeam.unit.is_equivalent(u.dimensionless_unscaled)
         ppbeam = ppbeam.value
-    except NoBeamError:
+    except (NoBeamError,AttributeError):
         beam = np.nan*u.sr
         ppbeam = np.nan
 
@@ -98,8 +99,10 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     data_post_display = data_post
     diff_display = diff
 
-    minv = np.nanpercentile(data_pre_display, 0.05)
-    maxv = np.nanpercentile(data_pre_display, 99.995)
+    if minv is None:
+        minv = np.nanpercentile(data_pre_display, 0.05)
+    if maxv is None:
+        maxv = np.nanpercentile(data_pre_display, 99.995)
     #if maxv > np.arcsinh(1000):
     #    maxv = np.arcsinh(1000)
     #if np.abs(minv) > maxv:
@@ -137,7 +140,7 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
 
     ax1.imshow(data_pre_display, norm=linear_norm, origin='lower', interpolation='nearest', cmap=cm)
     ax1.imshow(np.ma.masked_where(data_pre_display < asinh_norm.vmin, data_pre_display),
-               norm=asinh_norm, origin='lower', interpolation='nearest', cmap=inset_cm, vmin=asinh_norm.vmin)
+               norm=asinh_norm, origin='lower', interpolation='nearest', cmap=inset_cm)
     ax1.set_title(title1)
 
     # scalebar
@@ -154,11 +157,11 @@ def make_comparison_image(filename1, filename2, title1='bsens', title2='cleanest
     tx.set_horizontalalignment('center')
 
     ax2.imshow(data_post_display, norm=linear_norm, origin='lower', interpolation='nearest', cmap=cm)
-    ax2.imshow(data_post_display, norm=asinh_norm, origin='lower', interpolation='nearest', cmap=inset_cm, vmin=asinh_norm.vmin)
+    ax2.imshow(data_post_display, norm=asinh_norm, origin='lower', interpolation='nearest', cmap=inset_cm)
     ax2.set_title(title2)
 
     im_lin = ax3.imshow(diff_display.squeeze(), norm=linear_norm, origin='lower', interpolation='nearest', cmap=cm)
-    im_in = ax3.imshow(diff_display.squeeze(), norm=asinh_norm, origin='lower', interpolation='nearest', cmap=inset_cm, vmin=asinh_norm.vmin)
+    im_in = ax3.imshow(diff_display.squeeze(), norm=asinh_norm, origin='lower', interpolation='nearest', cmap=inset_cm)
     ax3.set_title(f"{title2} - {title1}")
 
     for ax in (ax1,ax2,ax3):
