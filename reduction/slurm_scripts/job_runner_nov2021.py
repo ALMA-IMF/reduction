@@ -60,6 +60,7 @@ parameters = {'W51-E': {'12M':
                      },
                   "B6":
                      {"spw1": {"mem": 123, "ntasks": 32, "mpi": True, "concat": True,},
+                      "spw0": {"mem": 256, "ntasks": 8, "mpi": False, "concat": True,}
                      },
                  },
              },
