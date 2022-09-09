@@ -4531,7 +4531,7 @@ line_parameters_custom = {
         "n2hp": {"cubewidth": "60km/s"},
     },
     "G012.80": {
-        "spw4_B6": {"mask-ranges": [(35, 36)]},  # km/s units
+        "spw4_B6": {"mask-ranges": [(31, 37)]},  # km/s units
         "spw5_B6": {"mask-ranges": [(17, 36)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(17, 36)]},  # km/s units
         "sio": {"cubewidth": "150km/s", "vlsr": "35.5km/s"},
