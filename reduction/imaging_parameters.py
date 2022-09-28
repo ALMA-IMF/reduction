@@ -4587,7 +4587,8 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
-        "spw5_B6": {"mask-ranges": [(-27, -20)]},  # km/s units
+        "spw4_B6": {"mask-ranges": [(-14, -19)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(-16, -37)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(-27, -20)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
