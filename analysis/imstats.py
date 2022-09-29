@@ -41,7 +41,7 @@ def get_requested_sens():
 def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
                        max_radial_extent=5*u.arcsec, max_npix_peak=100,
                        specslice=slice(0,1)):
-    """ REDUNDANT with get_psf_secondpeak, but this one is better
+    """ REDUNDANT with get_psf_secondpeak_old, but this one is better
 
     Process:
         1. Find the first minimum of the PSF by taking the radial profile within 50 pixels
@@ -69,10 +69,11 @@ def get_psf_secondpeak(fn, show_image=False, min_radial_extent=1.5*u.arcsec,
     psfim = cutout
 
     try:
-        beam = cube.beam
+        beam = psfim.beam
     except AttributeError:
         # assume we've appropriately sliced to get a single beam above
-        beam = cube.beams[0]
+        log.debug(f"Cube[specslice][0] did not have a .beam attribute: cube[specslice]={cube[specslice]}")
+        beam = psfim.beams[0]
 
     fullbeam = beam.as_kernel(pixscale, x_size=npix*2+1, y_size=npix*2+1,)
 
