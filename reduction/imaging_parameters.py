@@ -2867,8 +2867,13 @@ for key in list(line_imaging_parameters_default.keys()):
         # set defaults for 12CO to have higher cyclefactor and higher threshold (12CO is scary)
         line_imaging_parameters_default[key + "_12co"] = {}
         line_imaging_parameters_default[key + "_12co"].update(line_imaging_parameters_default[key])
-        line_imaging_parameters_default[key + "_12co"]["cyclefactor"] = 3.0
+        line_imaging_parameters_default[key + "_12co"]["cyclefactor"] = 4.0
         line_imaging_parameters_default[key + "_12co"]["threshold"] = "5sigma"
+
+        line_imaging_parameters_default[key + "_c18o"] = {}
+        line_imaging_parameters_default[key + "_c18o"].update(line_imaging_parameters_default[key])
+        line_imaging_parameters_default[key + "_c18o"]["cyclefactor"] = 4.0
+        line_imaging_parameters_default[key + "_c18o"]["threshold"] = "5sigma"
         # spw5 is the 12CO SPW
         line_imaging_parameters_default[key + "_spw5"] = {}
         line_imaging_parameters_default[key + "_spw5"].update(line_imaging_parameters_default[key])
@@ -2895,11 +2900,11 @@ line_imaging_parameters_custom = {
         "threshold": "2sigma",
         "deconvolver": "multiscale",
         "scales": [0, 3, 6, 12],
-        "pblimit": 0.2 ,
+        "pblimit": 0.2,
         "pbmask": 0.2,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "G008.67_B6_12M_robust0": {
         "threshold": "33mJy",  # "28mJy",#estimated noise: 9-11 mJy, from sio-only cube
         "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -2958,7 +2963,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.15,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "G012.80_B6_12M_robust0": {
         "threshold": "39mJy",  # "24mJy", #estimated noise: 13 mJy, from sio-only cube
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
@@ -2987,7 +2992,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.23,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "G327.29_B6_12M_robust0": {
         "threshold": "34.5mJy",  # "6mJy", #estimated noise: 9.5-11.5 mJy, from sio-only cube
         "startmodel": "G327.29_B6_uid___A001_X1296_X175_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -3016,7 +3021,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.2,
         "cyclefactor": 5,
         "gain":0.06,
-    },    
+    },
     "G328.25_B6_12M_robust0": {
         "threshold": "63mJy",  # "6mJy", #estimated noise: 15-21 mJy, from sio-only cube
         "startmodel": "G328.25_B6_uid___A001_X1296_X163_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -3045,7 +3050,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.1,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "G333.60_B6_12M_robust0": {
         "threshold": "15.6mJy",  # "6mJy",#estimated noise: 4.3-5.2 mJy, from sio-only cube
         "startmodel": "G333.60_B6_uid___A001_X1296_X19b_continuum_merged_12M_robust0_selfcal6_finaliter",
@@ -3074,7 +3079,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.18,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "G337.92_B6_12M_robust0": {
         "threshold": "16.8mJy",  # "12mJy", #estimated noise: 4.8-5.6 mJy, from sio-only cube
         "startmodel": "G337.92_B6_uid___A001_X1296_X13b_continuum_merged_12M_robust0_selfcal4_finaliter",
@@ -3094,10 +3099,6 @@ line_imaging_parameters_custom = {
         "scales": [0, 4, 8, 16, 32],  # 4.2pix per sqrt(bmaj*bmean), pix=0.11 arcsec, max scale ~ 3.5arcsec
         "gain": 0.08,
     },
-    "G338.93_B3_12M_robust0_n2hp": {
-        "threshold": "5mJy",
-        "startmodel": "G338.93_B3_uid___A001_X1296_X159_continuum_merged_12M_robust0_selfcal3_finaliter",
-    },
     "G338.93_B3_7M12M_robust0": {
         "niter": 5000000,
         "threshold": "2sigma",
@@ -3107,7 +3108,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.25,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "G338.93_B6_12M_robust0": {
         "threshold": "18mJy",  # "6mJy", #estimated noise: 5-6 mJy, from sio-only cube
         "startmodel": "G338.93_B6_uid___A001_X1296_X14f_continuum_merged_12M_robust0_selfcal6_finaliter",
@@ -3139,7 +3140,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.2,
         "cyclefactor": 2.0,
         "gain":0.06
-    },    
+    },
     "G351.77_B6_12M_robust0": {
         "threshold": "80mJy",  # "6mJy",#estimated noise: 12-16 mJy, from sio-only cube
         "perchanweightdensity": True,
@@ -3180,16 +3181,6 @@ line_imaging_parameters_custom = {
         "threshold": "48mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
         "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
-    "G353.41_B6_12M_robust0_spw4": {
-        "threshold": "60mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
-        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
-        "cyclefactor": 2.0,
-    },
-    "G353.41_B6_12M_robust0_spw5": {
-        "threshold": "60mJy",  # "6mJy", #estimated noise: 12.5-16 mJy, from sio-only cube
-        "startmodel": "G353.41_B6_uid___A001_X1296_X1c9_continuum_merged_12M_robust0_selfcal6_finaliter",
-        "cyclefactor": 2.0,
-    },
     "G353.41_B6_12M_robust0_sio": {
         "threshold": "48mJy",  # typical rms is 12.5-16 mJy, using 3sigma for threshold (14 Dec. 2020)
         "cyclefactor": 2.0,
@@ -3219,7 +3210,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.22,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     # W43-MM1 SiO 12m-only threshold: 17.5mJy (5 sigma of rms, rms is 3.0-3.7 mJy)
     "W43-MM1_B6_12M_robust0_sio": {
         "threshold": "17.5mJy"  # rms is 2.9-3.5 mJy, using 5 sigma (17 Dec 2021)
@@ -3270,7 +3261,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.25,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "W43-MM2_B6_12M_robust0": {
         "threshold": "8.1mJy",  # "6mJy", #estimated noise: 2.7 mJy, from sio-only cube
         "startmodel": "W43-MM2_B6_uid___A001_X1296_X113_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -3375,7 +3366,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.25,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "W43-MM3_B6_12M_robust0_sio": {
         "threshold": "16.5mJy",  # typical rms is 2.6-3.3 mJy, using 5 sigma (17 Dec 2021)
         "startmodel": "W43-MM3_B6_uid___A001_X1296_X129_continuum_merged_12M_robust0_selfcal5_finaliter",
@@ -3412,7 +3403,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.18,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "W51-E_B6_12M_robust0": {
         "pblimit": 0.1,
         "threshold": "16mJy",  # sigma is ~ 4 mJy  (from sio cube, noise is 3.3-4.1 mJy)
@@ -3422,10 +3413,6 @@ line_imaging_parameters_custom = {
         "threshold": "21.0mJy",  # typical rms is 3.4- 4.2 mJy, using 5sigma for threshold (17 Dec 2021)
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
         "imsize":[1440,1600]
-    },
-    "W51-E_B6_12M_robust0_spw1": {
-        "threshold": "12.3mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
-        "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
     },
     "W51-IRS2_B3_12M_robust0": {
         "threshold": "6mJy",
@@ -3447,7 +3434,7 @@ line_imaging_parameters_custom = {
         "pbmask": 0.3,
         "cyclefactor": 5.0,
         "gain":0.06,
-    },    
+    },
     "W51-IRS2_B6_12M_robust0": {
         "threshold": "9.6mJy",  # "6mJy", #estimated noise: 3.2 mJy, from sio-only cube
         "startmodel": "W51-IRS2_B6_uid___A001_X1296_X187_continuum_merged_12M_robust0_selfcal9_finaliter",
@@ -4316,7 +4303,7 @@ line_imaging_parameters_custom = {
         "imsize": [1440, 1500],
     },
     "W51-E_B6_12M_robust0_spw1": {
-        "threshold": "5sigma",
+        "threshold": "12.3mJy",  # typical rms is 3.3-4.1 mJy, using 3sigma for threshold (14 Dec. 2020)
         "scales": [0, 4, 8, 16, 32, 64],
         "startmodel": "W51-E_B6_uid___A001_X1296_X213_continuum_merged_12M_robust0_selfcal7_finaliter",
         "cell": ["0.08arcsec", "0.08arcsec"],
@@ -4575,7 +4562,6 @@ line_parameters_custom = {
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-127km/s"},  # -62 - 65 = -127km/s to accomodate He and C.
         "h30a": {"cubewidth": "120km/s", "vlsr": "-62km/s"},
-        "sio": {"cubewidth": "120km/s"},
     },
     "G351.77": {
         # spw6 doesn't allow overrides (yet) "spw6_B6": {"mask-ranges": [(277, 281)]},  # km/s units
@@ -4587,8 +4573,8 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-2km/s"},
     },
     "G353.41": {
-        "spw4_B6": {"mask-ranges": [(-14, -19)]},  # km/s units
-        "spw5_B6": {"mask-ranges": [(-16, -37)]},  # km/s units
+        "spw4_B6": {"mask-ranges": [(-19, -13)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(-37, -7)]},  # km/s units
         "12co": {"cubewidth": "150km/s", "mask-ranges": [(-27, -20)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},

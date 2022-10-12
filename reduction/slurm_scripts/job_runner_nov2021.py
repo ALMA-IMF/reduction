@@ -10,7 +10,10 @@ spws = {'B3': [f'spw{s}' for s in range(4)] + ['n2hp'],
 # baseband, spw: name
 line_maps = {'n2hp': {'band': 3, 'spw': 0},
              'h41a': {'band': 3, 'spw': 1},
-             'sio': {'band': 6, 'spw': 1}}
+             'sio': {'band': 6, 'spw': 1},
+             'c18o': {'band': 6, 'spw': 4},
+             '12co': {'band': 6, 'spw': 5},
+             }
 
 parameters = {'W51-E': {'12M':
   {'B6': {'spw5': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': False, } },

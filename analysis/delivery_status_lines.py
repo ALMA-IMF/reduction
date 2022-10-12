@@ -11,7 +11,10 @@ from astropy.stats import mad_std
 from astropy import log
 import pylab as pl
 import subprocess
+import time
 
+
+t0 = time.time()
 
 cwd = os.getcwd()
 basepath = '/orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/'
@@ -26,7 +29,10 @@ rows = []
 # baseband, spw: name
 line_maps = {(3,0): 'n2hp',
              (3,1): 'h41a',
-             (6,1): 'sio'}
+             (6,1): 'sio',
+             (6,5): '12co',
+             (6,4): 'c18o',
+             }
 
 
 for imtype,dirname in zip(('12M', '7M12M', '12M', '7M12M'),
@@ -71,7 +77,7 @@ for imtype,dirname in zip(('12M', '7M12M', '12M', '7M12M'),
                             datatable[field][sband][spw2] = {}
                     else:
                         continue
-                
+
                 for contsub_suffix in ('', '.contsub'):
 
                     # /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/G008.67_B6_spw5_12M_spw5.image/
@@ -93,3 +99,6 @@ with open('/orange/adamginsburg/web/secure/ALMA-IMF/tables/line_completeness_gri
 
 
 os.chdir(cwd)
+
+t1 = time.time()
+print(f"delivery_status took {t1 - t0} seconds = {(t1-t0)/60} minutes = {(t1 - t0)/3600} hours")

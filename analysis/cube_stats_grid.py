@@ -162,7 +162,11 @@ if __name__ == "__main__":
         tbl.write(tbldir / 'cube_stats.ipac', format='ascii.ipac', overwrite=True)
         tbl.write(tbldir / 'cube_stats.html', format='ascii.html', overwrite=True)
         tbl.write(tbldir / 'cube_stats.tex', overwrite=True)
-        tbl.write(tbldir / 'cube_stats.js.html', format='jsviewer')
+        try:
+            tbl.write(tbldir / 'cube_stats.js.html', format='jsviewer', overwrite=True)
+        except OSError:
+            os.remove(tbldir / 'cube_stats.js.html')
+            tbl.write(tbldir / 'cube_stats.js.html', format='jsviewer', overwrite=True)
         return tbl
 
     start_from_cached = False # TODO: make a parameter
