@@ -5,7 +5,7 @@ import copy
 
 allfields = "G008.67 G337.92 W43-MM3 G328.25 G351.77 G012.80 G327.29 W43-MM1 G010.62 W51-IRS2 W43-MM2 G333.60 G338.93 W51-E G353.41".split()
 spws = {'B3': [f'spw{s}' for s in range(4)] + ['n2hp'],
-        'B6': [f'spw{s}' for s in range(8)] + ['sio']}
+        'B6': [f'spw{s}' for s in range(8)] + ['sio', '12co', 'c18o']}
 
 # baseband, spw: name
 line_maps = {'n2hp': {'band': 3, 'spw': 0},
@@ -81,7 +81,7 @@ newpars.update({f'{field}_{array}_{band}_{spw}':
                       {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
     for array in ("12M", "7M12M",)# "7M")
-    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), )#('B6', 'spw5'), ('B3', 'spw1'))
+    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), ('B6', '12co'), ('B6', 'c18o'), ('B6', 'spw4') )#('B6', 'spw5'), ('B3', 'spw1'))
 })
 
 
@@ -267,7 +267,7 @@ if __name__ == "__main__":
                     for ff in failed_files:
                         print(f"Removing {ff}")
                         shutil.rmtree(ff)
-            
+
             tempdir_name = f'{field}_{spw}_{array}_{band}{contsub_suffix}'
             print(f"Removing files matching '{workdir}/{tempdir_name}/IMAGING_WEIGHT.*'")
             old_tempfiles = (glob.glob(f'{workdir}/{tempdir_name}/IMAGING_WEIGHT*') +

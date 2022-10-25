@@ -1083,6 +1083,7 @@ for band in band_list:
                                '.image.pbcor.mincube.fits',
                                '.JvM.image.pbcor.fits',
                                '.JvM.image.fits',
+                               '.flatpb.fits',
                               ):
                     src = lineimagename+suffix
                     dest = proddir

@@ -37,6 +37,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
     t0 = time.time()
 
+    imcube = SpectralCube.read(basename+".image", format='casa_image') # needed for header
     modcube = SpectralCube.read(basename+".model", format='casa_image')
     psfcube = SpectralCube.read(basename+".psf", format='casa_image')
     residcube = SpectralCube.read(basename+".residual", format='casa_image')
@@ -98,6 +99,9 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
     log.info(f"Done rescaling.  t={time.time()-t0}")
 
+
+    merged.meta.update(imcube.meta)
+    merged.header.update(imcube.header)
     merged.meta['JvM_epsilon_max'] = np.max(epsdict['epsilon'])
     merged.header['JvM_epsilon_max'] = np.max(epsdict['epsilon'])
     merged.meta['JvM_epsilon_min'] = np.min(epsdict['epsilon'])
