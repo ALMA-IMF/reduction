@@ -4535,9 +4535,9 @@ line_parameters_custom = {
         "h30a": {"cubewidth": "120km/s", "vlsr": "-40km/s"},
     },
     "G328.25": {
-        "spw4_B6": {"mask-ranges": [(-43, -44)]},  # km/s units
-        "spw5_B6": {"mask-ranges": [(-48, -51)]},  # km/s units
-        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-48, -51)]},  # km/s units
+        "spw4_B6": {"mask-ranges": [(-44, -43)]},  # km/s units
+        "spw5_B6": {"mask-ranges": [(-48, -51), (-39, -36)]},  # km/s units
+        "12co": {"cubewidth": "150km/s", "mask-ranges": [(-48, -51), (-39, -36)]},  # km/s units
         "sio": {"cubewidth": "150km/s"},
         "ch3cnv8=1": {"cubewidth": "150km/s"},
         "h41a": {"cubewidth": "270km/s", "vlsr": "-108km/s"},  # -43 - 65 = -108km/s to accomodate He and C.
