@@ -81,8 +81,13 @@ newpars.update({f'{field}_{array}_{band}_{spw}':
                       {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat':True}
     for field in allfields
     for array in ("12M", "7M12M",)# "7M")
-    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), ('B6', '12co'), ('B6', 'c18o'), ('B6', 'spw4') )#('B6', 'spw5'), ('B3', 'spw1'))
+    for band, spw in (('B3', 'h41a'), ('B3', 'n2hp'), ('B6', 'sio'), ('B6', '12co'),  ('B6', 'spw4'), ('B6', 'c18o') )#('B6', 'spw5'), ('B3', 'spw1')), ,
 })
+for key in list(newpars.keys()):
+    # remove C18O from loop because several fields were experiencing weird
+    # recurring errors related to indices (only for 7m12m though)
+    if '7M' in key and ('spw4' in key or 'c18o' in key):
+        del newpars[key]
 
 
 del band

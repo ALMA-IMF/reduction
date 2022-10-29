@@ -16,6 +16,8 @@ from astropy import log
 
 
 def measure_epsilon_from_psf(psf, beam, pixels_per_beam, max_npix_peak=100):
+    if psf.max() <= 0:
+        raise ValueError("Invalid PSF")
     center = np.unravel_index(np.argmax(psf), psf.shape)
     cy, cx = center
 
@@ -99,6 +101,10 @@ def epsilon_from_psf(psf_image, max_npix_peak=100, export_clean_beam=True,
         pbar = lambda x: x
 
     for chan in pbar(range(len(psf))):
+
+        if psf[chan].max() == 0:
+            print("INVALID PSF for channel {chan}")
+            epsilon_arr[chan] = 0
 
         epsilon, clean_psf_sum, psf_sum = measure_epsilon_from_psf(psf[chan],
                                                                    psf.beams[chan],
