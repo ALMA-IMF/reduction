@@ -26,6 +26,7 @@ parameters = {'W51-E': {'12M':
     'spw1': {'mem': 128, 'ntasks': 16, 'mpi': True, 'concat': True, } }
   },
  },
+ 'G328.25': {'12M': {'B6': {'spw5': {'mem': 256, 'ntasks': 32, 'mpi': False, 'concat': True, }}}},
  'W43-MM1': {'12M':
   {'B3':
    {'spw1': {'mem': 256, 'ntasks': 32, 'mpi': True, 'concat': True, } },
