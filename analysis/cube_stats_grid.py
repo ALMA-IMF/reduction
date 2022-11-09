@@ -358,7 +358,11 @@ if __name__ == "__main__":
                         del modstats
 
                         if os.path.exists(psffn):
-                            (residual_peak, peakloc_as, frac, epsilon, firstnull, r_sidelobe, _) = get_psf_secondpeak(psffn, specslice=slice(cube.shape[0]//2, cube.shape[0]//2+1))
+                            try:
+                                (residual_peak, peakloc_as, frac, epsilon, firstnull, r_sidelobe, _) = get_psf_secondpeak(psffn, specslice=slice(cube.shape[0]//2, cube.shape[0]//2+1))
+                            except Exception as ex:
+                                print("Failed to get_psf_secondpeak with error {ex}")
+                                continue
 
                         del cube
 
