@@ -32,8 +32,7 @@ import os
 default_lines = imaging_parameters.default_lines
 default_lines['ch3cn_k3'] = 91.97146500*u.GHz
 
-global
-then = time.time()
+global then = time.time()
 def dt(message=""):
     global then
     now = time.time()
