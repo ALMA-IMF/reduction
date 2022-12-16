@@ -47,6 +47,9 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
     good_beams = psfcube.identify_bad_beams(0.1)
     log.info(f"Found {good_beams.sum()} good beams out of {good_beams.size} channels")
+    psf_max = psfcube.max(axis=(1,2))
+    good_beams &= (psf_max > 0)
+    log.info(f"Found {good_beams.sum()} good beams out of {good_beams.size} channels after excluding PSFs with zero value")
 
     if minimize:
         tmin = time.time()
@@ -54,9 +57,13 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
         print(f"pbar={pbar}, {type(pbar)}")
         with pbar:
-            cutslc = residcube.subcube_slices_from_mask(residcube.mask & good_beams[:,None,None])
+            # apparently the residualcube can be maskless; if it is, we want to
+            # instead use the image mask.  This is essential for "minimize" to
+            # work, since it is cutting out the "padding" around the edges
+            residmask = residcube.mask if residcube.mask is not None else imcube.mask if imcube.mask is not None else True
+            cutslc = residcube.subcube_slices_from_mask(residmask & good_beams[:,None,None])
 
-        log.info(f"Completed minimize. t={time.time() - t0}.  minimizing took {time.time()-tmin}")
+        log.info(f"Completed minimize.  cutslc={cutslc} t={time.time() - t0}.  minimizing took {time.time()-tmin}")
 
         modcube = modcube[cutslc]
         psfcube = psfcube[cutslc]
@@ -66,18 +73,19 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
         log.info(f"Completed minslice. t={time.time() - t0}")
     else:
-        modcube = modcube[goodbeams]
-        residcube = residcube[goodbeams]
-        psfcube = psfcube[goodbeams]
+        modcube = modcube[good_beams]
+        residcube = residcube[good_beams]
+        psfcube = psfcube[good_beams]
         if pbcor:
-            pbcube = pbcube[goodbeams]
+            pbcube = pbcube[good_beams]
+
 
     teps = time.time()
     log.info(f"Epsilon beginning. t={teps - t0}")
 
     # there are sometimes problems with identifying a common beam
     try:
-        epsdict = epsilon_from_psf(psfcube, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar)
+        epsdict = epsilon_from_psf(psfcube, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar, max_epsilon=0.01)
     except BeamError:
         print("Needed to calculate commonbeam with epsilon=0.005")
         epsdict = epsilon_from_psf(psfcube, epsilon=0.005, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar)

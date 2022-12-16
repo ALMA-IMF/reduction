@@ -29,6 +29,40 @@ import os
 # for zarr storage (we can just use local - it's faster)
 #os.environ['TMPDIR'] = '/blue/adamginsburg/adamginsburg/tmp'
 
+default_lines = imaging_parameters.default_lines
+default_lines['ch3cn_k3'] = 91.97146500*u.GHz
+
+global then = time.time()
+def dt(message=""):
+    global then
+    now = time.time()
+    dt(f"Elapsed: {now-then:0.1g}.  {message}", flush=True)
+    then = now
+
+
+def force_str(x):
+    try:
+        return x.decode()
+    except AttributeError as ex:
+        # numpy arrays are byte arrays.
+        return str(x)
+
+def get_size(start_path='.'):
+    if start_path.endswith('fits'):
+        return os.path.getsize(start_path)
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(force_str(start_path)):
+        for f in filenames:
+            f = force_str(f)
+            dirpath = force_str(dirpath)
+            fp = os.path.join(dirpath, f)
+            assert type(fp) == str
+            # skip if it is symbolic link
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+
+    return total_size
+
 
 if __name__ == "__main__":
     # need to be in main block for dask to work
@@ -62,7 +96,7 @@ if __name__ == "__main__":
         dask.config.set(scheduler='synchronous')
 
     scheduler = dask.config.get('scheduler')
-    print(f"Using {nthreads} threads with the {scheduler} scheduler")
+    dt(f"Using {nthreads} threads with the {scheduler} scheduler", flush=True)
 
     #assert tempfile.gettempdir() == '/blue/adamginsburg/adamginsburg/tmp'
 
@@ -76,28 +110,15 @@ if __name__ == "__main__":
 
     tbl = Table.read('/orange/adamginsburg/web/secure/ALMA-IMF/tables/cube_stats.ecsv')
 
-    def get_size(start_path='.'):
-        if start_path.endswith('fits'):
-            return os.path.getsize(start_path)
-        total_size = 0
-        for dirpath, dirnames, filenames in os.walk(start_path):
-            for f in filenames:
-                fp = os.path.join(dirpath, f)
-                # skip if it is symbolic link
-                if not os.path.islink(fp):
-                    total_size += os.path.getsize(fp)
-
-        return total_size
-
     # simpler approach
     #sizes = {fn: get_size(fn) for fn in glob.glob(f"{basepath}/*_12M_spw[0-9].image")}
     #filenames = [f'{fn}.pbcor.fits'.replace('.image', '.JvM.image') for fn in tbl['filename']]
-    filenames = [fn for fn in tbl['filename']]
+    filenames = [force_str(fn) for fn in tbl['filename']]
 
     # use tbl, ignore 7m12m
-    sizes = {ii: get_size(fn)
+    sizes = {ii: get_size(force_str(fn))
              for ii, fn in enumerate(filenames)
-             if '_12M_spw' in fn and os.path.exists(fn)
+             if '_12M_spw' in fn and os.path.exists(force_str(fn))
             } # ignore 7m12m
 
 
@@ -117,42 +138,42 @@ if __name__ == "__main__":
             with open(outfn, 'w') as fh:
                 fh.write("")
 
-            print(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB")
+            dt(f"{fn}->{outfn}, size={sizes[ii]/1024**3} GB", flush=True)
 
-            print(f"Target chunk size is {target_chunk_size}")
+            dt(f"Target chunk size is {target_chunk_size}", flush=True)
             cube = SpectralCube.read(fn, target_chunk_size=target_chunk_size, use_dask=True)
 
 
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 with cube.use_dask_scheduler('threads', num_workers=nthreads):
-                    print("Calculating noise")
+                    dt("Calculating noise", flush=True)
                     if ii < len(tbl):
                         noise = tbl['std'].quantity[ii]
                     else:
                         noise = cube.std()
 
-                    print("Sigma clipping")
+                    dt("Sigma clipping", flush=True)
                     result = c_sigmaclip_scube(cube, noise,
                                                verbose=True,
                                                save_to_tmp_dir=True)
-                    print("Running the compute step")
+                    dt("Running the compute step", flush=True)
                     data_to_write = result[1].compute()
 
-                    print(f"Writing to FITS {outfn}")
+                    dt(f"Writing to FITS {outfn}", flush=True)
                     fits.PrimaryHDU(data=data_to_write.value,
                                     header=cube[0].header).writeto(outfn,
                                                                    overwrite=True)
                     cont = data_to_write.value
-            print(f"{fn} -> {outfn} in {time.time()-t0}s")
+            dt(f"{fn} -> {outfn} in {time.time()-t0}s", flush=True)
 
         else:
             try:
                 cont = fits.getdata(outfn)
             except Exception as ex:
-                print(ex)
+                dt(ex, flush=True)
                 continue
-            print(f"{fn} is done, loaded {outfn}")
+            dt(f"{fn} is done, loaded {outfn}", flush=True)
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -167,12 +188,12 @@ if __name__ == "__main__":
                         restvel = u.Quantity(restvel)
                         break
 
-                for line,frq in imaging_parameters.default_lines.items():
+                for line,frq in default_lines.items():
                     frq = u.Quantity(frq)
                     zz = (restvel / constants.c).decompose().value
 
                     if frq * (1-zz) > cube.spectral_axis.min() and frq * (1-zz) < cube.spectral_axis.max():
-                        print(f"Moment mapping {line} at {frq}")
+                        dt(f"Moment mapping {line} at {frq}", flush=True)
                         outmoment = f'{basepath}/moments/{field}/{basefn}.{line}.m0.fits'
                         if (not os.path.exists(outmoment)) or redo:
 
@@ -186,7 +207,7 @@ if __name__ == "__main__":
                             mom0.write(outmoment, overwrite=True)
 
                         # PNGs are made in PVDiagramPNGs.ipynb
-                        print(f"PV mapping {line} at {frq}")
+                        dt(f"PV mapping {line} at {frq}", flush=True)
                         outpv = f'{basepath}/pvs/{field}/{basefn}.{line}.pv_ra.fits'
                         if (not os.path.exists(outpv)) or redo:
 
