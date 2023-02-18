@@ -8,6 +8,9 @@ Cube finalizing:
 """
 import numpy as np
 
+import gzip
+import bz2 as bzip
+import os
 from beam_volume_tools import epsilon_from_psf, conv_model, rescale
 from spectral_cube import SpectralCube
 from radio_beam.utils import BeamError
@@ -26,6 +29,16 @@ except ImportError:
 
 import time
 
+def gzip_file(fn):
+    with open(fn, "rb") as f_in:
+        with gzip.open(fn+".gz", "wb") as f_out:
+            f_out.writelines(f_in)
+
+def bzip_file(fn):
+    with open(fn, "rb") as f_in:
+        with bzip.open(fn+".bz2", "wb") as f_out:
+            f_out.writelines(f_in)
+
 def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
                       pbar=False, beam_threshold=0.1, save_to_tmp_dir=False):
 
@@ -37,10 +50,12 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
     t0 = time.time()
 
+    basemodelname = basename+".model"
+    baseresidualname = basename+".residual"
     imcube = SpectralCube.read(basename+".image", format='casa_image') # needed for header
-    modcube = SpectralCube.read(basename+".model", format='casa_image')
+    modcube = SpectralCube.read(basemodelname, format='casa_image')
     psfcube = SpectralCube.read(basename+".psf", format='casa_image')
-    residcube = SpectralCube.read(basename+".residual", format='casa_image')
+    residcube = SpectralCube.read(baseresidualname, format='casa_image')
     if pbcor:
         pbcube = SpectralCube.read(basename+".pb", format='casa_image')
     log.info(f"Completed reading. t={time.time() - t0}")
@@ -70,6 +85,19 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         residcube = residcube[cutslc]
         if pbcor:
             pbcube = pbcube[cutslc]
+
+        if not os.path.exists(basemodelname+".minimized.fits.gz"):
+            print(f"gzipping model {basemodelname}")
+            modcube.write(basemodelname+".minimized.fits")
+            gzip_file(basemodelname+".minimized.fits")
+            print(f"bzipping model {basemodelname}")
+            bzip_file(basemodelname+".minimized.fits")
+        if not os.path.exists(baseresidualname+".minimized.fits.gz"):
+            print(f"gzipping residual {baseresidualname}")
+            modcube.write(baseresidualname+".minimized.fits")
+            gzip_file(baseresidualname+".minimized.fits")
+            print(f"bzipping residual {baseresidualname}")
+            bzip_file(baseresidualname+".minimized.fits")
 
         log.info(f"Completed minslice. t={time.time() - t0}")
     else:
