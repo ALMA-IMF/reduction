@@ -137,7 +137,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
 
     merged.meta.update(imcube.meta)
-    merged.header.update(imcube.header)
+    merged.header.update(imcube.header) # this was supposed to preserve header info but seems not to have
     merged.meta['JvM_epsilon_max'] = np.max(epsdict['epsilon'])
     merged.header['JvM_epsilon_max'] = np.max(epsdict['epsilon'])
     merged.meta['JvM_epsilon_min'] = np.min(epsdict['epsilon'])
@@ -167,6 +167,8 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     with pbar:
         hdul.writeto(basename+".JvM.image.fits", overwrite=True)
     log.info(f"Done JvM write.  t={time.time()-t0}")
+    
+    header = hdul[0].header
 
     if pbcor:
         log.info(f"Beginning pbcor.  t={time.time()-t0}")
@@ -175,8 +177,8 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         if write_pbcor:
             log.info(f"Creating HDUlist.  t={time.time()-t0}")
             hdul = pbc.hdulist
-            # need to manually specify units b/c none of the model, residual, etc. have them!
-            hdul[0].header['BUNIT'] = 'Jy/beam'
+            # copy header from non-pbcor
+            hdul[0].header = header
             log.info(f"appending epsilon table.  t={time.time()-t0}")
             hdul.append(epsilon_table)
             log.info(f"changing dtype.  t={time.time()-t0}")
