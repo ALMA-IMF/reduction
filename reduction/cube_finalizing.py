@@ -18,6 +18,7 @@ from radio_beam.utils import BeamError
 from astropy.io import fits
 from astropy.table import Table
 from astropy import log
+from astropy import units as u
 
 import contextlib
 try:
@@ -40,6 +41,7 @@ def bzip_file(fn):
             f_out.writelines(f_in)
 
 def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
+                      use_velocity=False,
                       pbar=False, beam_threshold=0.1, save_to_tmp_dir=False):
 
     if not pbar:
@@ -59,6 +61,13 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     if pbcor:
         pbcube = SpectralCube.read(basename+".pb", format='casa_image')
     log.info(f"Completed reading. t={time.time() - t0}")
+
+    if use_velocity:
+        imcube = imcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        modcube = modcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        residcube = residcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        pbcube = pbcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        psfcube = psfcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
 
     good_beams = psfcube.identify_bad_beams(0.1)
     log.info(f"Found {good_beams.sum()} good beams out of {good_beams.size} channels")
@@ -164,6 +173,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     # need to manually specify units b/c none of the model, residual, etc. have them!
     hdul[0].header['BUNIT'] = 'Jy/beam'
     hdul[0].header['CREDIT'] = 'Please cite Ginsburg et al 2022A&A...662A...9G when using these data, and Motte et al 2022A&A...662A...8M for the ALMA-IMF program'
+    hdul[0].header['FILENAME'] = basename+".JvM.image.fits"
     with pbar:
         hdul.writeto(basename+".JvM.image.fits", overwrite=True)
     log.info(f"Done JvM write.  t={time.time()-t0}")
@@ -179,6 +189,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
             hdul = pbc.hdulist
             # copy header from non-pbcor
             hdul[0].header = header
+            hdul[0].header['FILENAME'] = basename+".JvM.image.pbcor.fits"
             log.info(f"appending epsilon table.  t={time.time()-t0}")
             hdul.append(epsilon_table)
             log.info(f"changing dtype.  t={time.time()-t0}")
