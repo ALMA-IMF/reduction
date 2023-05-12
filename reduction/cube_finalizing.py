@@ -152,6 +152,15 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     log.info(f"Beginning JvM write.  t={time.time()-t0}")
     hdul = merged.hdulist
     hdul.append(epsilon_table)
+    # add any missing header keywords
+    for key in imcube.header:
+        # don't overwrite any WCS though
+        if key not in hdul[0].header and key != 'HISTORY':
+            hdul[0].header[key] = imcube.header[key]
+    if 'HISTORY' in imcube.header:
+        hdul[0].header['HISTORY'] = ''
+        for row in imcube.header['HISTORY']:
+            hdul[0].header['HISTORY'] = row
     # need to manually specify units b/c none of the model, residual, etc. have them!
     hdul[0].header['BUNIT'] = 'Jy/beam'
     with pbar:
