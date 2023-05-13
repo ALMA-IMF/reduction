@@ -30,6 +30,8 @@ except ImportError:
 
 import time
 
+multirowkeys = ('HISTORY', 'COMMENT')
+
 def gzip_file(fn):
     with open(fn, "rb") as f_in:
         with gzip.open(fn+".gz", "wb") as f_out:
@@ -164,12 +166,13 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     # add any missing header keywords
     for key in imcube.header:
         # don't overwrite any WCS though
-        if key not in hdul[0].header and key != 'HISTORY':
+        if key not in hdul[0].header and key not in multirowkeys:
             hdul[0].header[key] = imcube.header[key]
-    if 'HISTORY' in imcube.header:
-        hdul[0].header['HISTORY'] = ''
-        for row in imcube.header['HISTORY']:
-            hdul[0].header['HISTORY'] = row
+    for multirowkey in multirowkeys:
+        if multirowkey in imcube.header:
+            hdul[0].header[multirowkey] = ''
+            for row in imcube.header[multirowkey]:
+                hdul[0].header[multirowkey] = row
     # need to manually specify units b/c none of the model, residual, etc. have them!
     hdul[0].header['BUNIT'] = 'Jy/beam'
     hdul[0].header['CREDIT'] = 'Please cite Ginsburg et al 2022A&A...662A...9G when using these data, and Motte et al 2022A&A...662A...8M for the ALMA-IMF program'
@@ -177,7 +180,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     with pbar:
         hdul.writeto(basename+".JvM.image.fits", overwrite=True)
     log.info(f"Done JvM write.  t={time.time()-t0}")
-    
+
     header = hdul[0].header
 
     if pbcor:
