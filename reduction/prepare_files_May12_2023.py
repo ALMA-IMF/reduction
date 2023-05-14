@@ -21,7 +21,7 @@ failures = {}
 for fn in glob.glob("*.JvM.image.pbcor.fits"):
     jvm = fits.open(fn, mode='update')
     try:
-        if 'CREDIT' not in jvm[0].header:
+        if 'BIBCODE' not in jvm[0].header:
             notjvm = SpectralCube.read(fn.replace(".JvM.", "."))
             print(fn)
 
