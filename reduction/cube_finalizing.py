@@ -176,6 +176,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     # need to manually specify units b/c none of the model, residual, etc. have them!
     hdul[0].header['BUNIT'] = 'Jy/beam'
     hdul[0].header['CREDIT'] = 'Please cite Ginsburg et al 2022A&A...662A...9G when using these data, and Motte et al 2022A&A...662A...8M for the ALMA-IMF program'
+    hdul[0].header['BIBCODE'] = '2022A&A...662A...9G'
     hdul[0].header['FILENAME'] = basename+".JvM.image.fits"
     with pbar:
         hdul.writeto(basename+".JvM.image.fits", overwrite=True)
