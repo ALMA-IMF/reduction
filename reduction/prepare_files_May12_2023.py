@@ -21,7 +21,7 @@ failures = {}
 for fn in glob.glob("*.JvM.image.pbcor.fits"):
     jvm = fits.open(fn, mode='update')
     try:
-        if 'BIBCODE' not in jvm[0].header:
+        if 'REFERENC' not in jvm[0].header:
             notjvm = SpectralCube.read(fn.replace(".JvM.", "."))
             print(fn)
 
@@ -44,8 +44,8 @@ for fn in glob.glob("*.JvM.image.pbcor.fits"):
                         jvm[0].header[multirowkey] = row
 
             jvm[0].header['BUNIT'] = 'Jy/beam'
-            jvm[0].header['CREDIT'] = 'Please cite Ginsburg et al 2022A&A...662A...9G when using these data, and Motte et al 2022A&A...662A...8M for the ALMA-IMF program'
-            jvm[0].header['BIBCODE'] = '2022A&A...662A...9G'
+            jvm[0].header['AUTHOR'] = jvm[0].header['CREDIT'] = 'Please cite Ginsburg et al 2022A&A...662A...9G when using these data, and Motte et al 2022A&A...662A...8M for the ALMA-IMF program.  Cunningham et al (2023) describes the line data.'
+            jvm[0].header['REFERENC'] = jvm[0].header['BIBCODE'] = '2022A&A...662A...9G,2022A&A...662A...8M'
             jvm[0].header['FILENAME'] = fn
 
             jvm.close()
