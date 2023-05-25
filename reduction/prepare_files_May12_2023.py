@@ -49,6 +49,8 @@ for fn in glob.glob("*.JvM.image.pbcor.fits"):
             jvm[0].header['FILENAME'] = fn
 
             jvm.close()
+        else:
+            print(f'{fn} is up to date')
     except Exception as ex:
         failures[fn] = ex
         print(ex)
