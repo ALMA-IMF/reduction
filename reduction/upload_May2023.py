@@ -99,12 +99,12 @@ if __name__ == "__main__":
         api_key = token = fh.read().strip()
 
     print("Uploading models")
-    models = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_January_JVM_contsub_and_models/model/*.model.minimized.fits.gz')
+    models = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/model/*.model.minimized.fits.gz')
     models = [x for x in models if not any((y in x for y in ('12co', 'n2hp', 'h41a')))]
     upload_dataset(models, persistentId='doi:10.7910/DVN/YWW5BY', overwrite=False, n_retries=10)
 
     print("Uploading PBs")
-    pbs = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_January_JVM_contsub_and_models/pb/*.flatpb.fits')
+    pbs = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/pb/*.flatpb.fits')
     pbs = [x for x in pbs if not any((y in x for y in ('12co', 'n2hp', 'h41a')))]
     upload_dataset(pbs, persistentId='doi:10.7910/DVN/RBS6KT', overwrite=False, n_retries=10)
 

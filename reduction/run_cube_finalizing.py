@@ -33,7 +33,7 @@ else:
     pbar = ProgressBar()
 
 print("Checking for images.")
-imlist = glob.glob("*.image")
+imlist = glob.glob("*spw[0-7].image")
 print(f"Found {len(imlist)} images")
 
 import spectral_cube
@@ -112,4 +112,6 @@ for fn in imlist:
         beam_correct_cube(fn.replace(".image",""), pbcor=True,
                           use_velocity=use_velocity,
                           write_pbcor=True, pbar=pbar, save_to_tmp_dir=True)
+    else:
+        print(f"{fn} was all done - no actions taken!")
 
