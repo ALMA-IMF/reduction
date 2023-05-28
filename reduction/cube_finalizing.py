@@ -99,13 +99,19 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
         if not os.path.exists(basemodelname+".minimized.fits.gz"):
             print(f"gzipping model {basemodelname}")
-            modcube.write(basemodelname+".minimized.fits")
+            if os.path.exists(basemodelname+".minimized.fits"):
+                print("Model cube (unzipped) exists.")
+            else:
+                modcube.write(basemodelname+".minimized.fits")
             gzip_file(basemodelname+".minimized.fits")
             print(f"bzipping model {basemodelname}")
             bzip_file(basemodelname+".minimized.fits")
         if not os.path.exists(baseresidualname+".minimized.fits.gz"):
             print(f"gzipping residual {baseresidualname}")
-            modcube.write(baseresidualname+".minimized.fits")
+            if os.path.exists(baseresidualname+".minimized.fits"):
+                print("Residual cube exists")
+            else:
+                residcube.write(baseresidualname+".minimized.fits")
             gzip_file(baseresidualname+".minimized.fits")
             print(f"bzipping residual {baseresidualname}")
             bzip_file(baseresidualname+".minimized.fits")

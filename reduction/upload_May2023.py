@@ -1,3 +1,11 @@
+"""
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_spw[0-7].flatpb.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/pb/
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_sio.flatpb.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/pb/
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_spw[0-7].model.minimized.fits.gz /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/model/
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_sio.model.minimized.fits.gz /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/model/
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_spw[0-7].JvM.image.pbcor.statcont.contsub.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_sio.JvM.image.pbcor.statcont.contsub.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/
+"""
 import os
 
 import glob
@@ -100,20 +108,20 @@ if __name__ == "__main__":
 
     print("Uploading models")
     models = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/model/*.model.minimized.fits.gz')
-    models = [x for x in models if not any((y in x for y in ('12co', 'n2hp', 'h41a')))]
+    models = [x for x in models if not any((y in x for y in ('12co', 'n2hp', 'h41a', '7M12M')))]
     upload_dataset(models, persistentId='doi:10.7910/DVN/YWW5BY', overwrite=False, n_retries=10)
 
     print("Uploading PBs")
     pbs = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/pb/*.flatpb.fits')
-    pbs = [x for x in pbs if not any((y in x for y in ('12co', 'n2hp', 'h41a')))]
+    pbs = [x for x in pbs if not any((y in x for y in ('12co', 'n2hp', 'h41a', '7M12M')))]
     upload_dataset(pbs, persistentId='doi:10.7910/DVN/RBS6KT', overwrite=False, n_retries=10)
 
     print("Uploading statconts")
-    statconts = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/*.JvM.image.pbcor.statcont.cont.fits')
-    statconts = [x for x in statconts if not any((y in x for y in ('12co', 'n2hp', 'h41a')))]
+    statconts = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/cont/*.JvM.image.pbcor.statcont.cont.fits')
+    statconts = [x for x in statconts if not any((y in x for y in ('12co', 'n2hp', 'h41a', '7M12M')))]
     upload_dataset(statconts, persistentId='doi:10.7910/DVN/SF09HK', overwrite=False, n_retries=10)
 
     print("Uploading contsubbed cubes")
     jvm_statcont_pbcor = glob.glob('/orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/*.JvM.image.pbcor.statcont.contsub.fits')
-    jvm_statcont_pbcor = [x for x in jvm_statcont_pbcor if not any((y in x for y in ('12co', 'n2hp', 'h41a')))]
+    jvm_statcont_pbcor = [x for x in jvm_statcont_pbcor if not any((y in x for y in ('12co', 'n2hp', 'h41a', '7M12M')))]
     upload_dataset(jvm_statcont_pbcor, persistentId='doi:10.7910/DVN/CJ3YXU', overwrite=False, n_retries=10)
