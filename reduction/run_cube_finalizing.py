@@ -34,7 +34,10 @@ else:
 
 print("Checking for images.")
 imlist = glob.glob("*spw[0-7].image")
-print(f"Found {len(imlist)} images")
+has_model_minimized = [os.path.exists(x.replace(".image",
+                                                ".model.minimized.fits.gz"))
+                       for x in imlist]
+print(f"Found {len(imlist)} images.  Of these, {sum(has_model_minimized)} have minimized models.")
 
 import spectral_cube
 from spectral_cube import SpectralCube
@@ -79,7 +82,22 @@ for fn in imlist:
     else:
         raise ValueError(f'{fn} is not a recognized filename type')
 
-    if os.path.exists(jvmfn) and good_beams.sum() < good_beams.size:
+    if not os.path.exists(fn.replace(".image", ".model.minimized.fits.gz")):
+        print(f"{fn} didn't have gzipped")
+        sys.stdout.flush()
+        sys.stderr.flush()
+        beam_correct_cube(fn.replace(".image",""), pbcor=True,
+                          use_velocity=use_velocity,
+                          write_pbcor=True, pbar=pbar, save_to_tmp_dir=True)
+    elif not os.path.exists(jvmfn):
+        print(f"{fn} didn't have JvM")
+        sys.stdout.flush()
+        sys.stderr.flush()
+        beam_correct_cube(fn.replace(".image",""), pbcor=True,
+                          use_velocity=use_velocity,
+                          write_pbcor=True, pbar=pbar, save_to_tmp_dir=True)
+
+    elif os.path.exists(jvmfn) and good_beams.sum() < good_beams.size:
         print(f"{fn} had {(~good_beams).sum()} bad beams")
         sys.stdout.flush()
         sys.stderr.flush()
@@ -93,25 +111,11 @@ for fn in imlist:
 
         if np.abs(jvcube.beam.sr - commonbeam.sr)/commonbeam.sr < 1e-5:
             print(f"Beams are equal: common={commonbeam}, jvbeam={jvcube.beam}")
+            print(f"No actions taken: {fn} was skipped")
         else:
             beam_correct_cube(fn.replace(".image",""), pbcor=True,
                               use_velocity=use_velocity,
                               write_pbcor=True, pbar=pbar, save_to_tmp_dir=True)
-    elif not os.path.exists(jvmfn):
-        print(f"{fn} didn't have JvM")
-        sys.stdout.flush()
-        sys.stderr.flush()
-        beam_correct_cube(fn.replace(".image",""), pbcor=True,
-                          use_velocity=use_velocity,
-                          write_pbcor=True, pbar=pbar, save_to_tmp_dir=True)
-
-    elif not os.path.exists(fn.replace(".image", ".model.minimized.fits.gz")):
-        print(f"{fn} didn't have gzipped")
-        sys.stdout.flush()
-        sys.stderr.flush()
-        beam_correct_cube(fn.replace(".image",""), pbcor=True,
-                          use_velocity=use_velocity,
-                          write_pbcor=True, pbar=pbar, save_to_tmp_dir=True)
     else:
         print(f"{fn} was all done - no actions taken!")
 

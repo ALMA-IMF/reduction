@@ -81,7 +81,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         tmin = time.time()
         log.info(f"Starting minimize. t={tmin - t0}")
 
-        print(f"pbar={pbar}, {type(pbar)}")
+        print(f"pbar={pbar}, {type(pbar)}", flush=True)
         with pbar:
             # apparently the residualcube can be maskless; if it is, we want to
             # instead use the image mask.  This is essential for "minimize" to
@@ -98,23 +98,25 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
             pbcube = pbcube[cutslc]
 
         if not os.path.exists(basemodelname+".minimized.fits.gz"):
-            print(f"gzipping model {basemodelname}")
+            print(f"gzipping model {basemodelname}", flush=True)
             if os.path.exists(basemodelname+".minimized.fits"):
-                print("Model cube (unzipped) exists.")
+                print("Model cube (unzipped) exists.", flush=True)
             else:
                 modcube.write(basemodelname+".minimized.fits")
             gzip_file(basemodelname+".minimized.fits")
-            print(f"bzipping model {basemodelname}")
+            print(f"bzipping model {basemodelname} at {time.time()-t0}", flush=True)
             bzip_file(basemodelname+".minimized.fits")
+            print(f"bzip completed at {time.time()-t0}", flush=True)
         if not os.path.exists(baseresidualname+".minimized.fits.gz"):
-            print(f"gzipping residual {baseresidualname}")
+            print(f"gzipping residual {baseresidualname} at {time.time()-t0}", flush=True)
             if os.path.exists(baseresidualname+".minimized.fits"):
-                print("Residual cube exists")
+                print("Residual cube exists", flush=True)
             else:
                 residcube.write(baseresidualname+".minimized.fits")
             gzip_file(baseresidualname+".minimized.fits")
-            print(f"bzipping residual {baseresidualname}")
+            print(f"bzipping residual {baseresidualname} at {time.time()-t0}", flush=True)
             bzip_file(baseresidualname+".minimized.fits")
+            print(f"bzip completed at {time.time()-t0}", flush=True)
 
         log.info(f"Completed minslice. t={time.time() - t0}")
     else:
@@ -132,7 +134,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     try:
         epsdict = epsilon_from_psf(psfcube, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar, max_epsilon=0.01)
     except BeamError:
-        print("Needed to calculate commonbeam with epsilon=0.005")
+        print("Needed to calculate commonbeam with epsilon=0.005", flush=True)
         epsdict = epsilon_from_psf(psfcube, epsilon=0.005, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar)
     log.info(f"Epsilon completed. t={time.time() - t0}, eps took {time.time()-teps}")
 
