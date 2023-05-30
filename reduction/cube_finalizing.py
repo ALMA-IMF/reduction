@@ -104,9 +104,9 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
             else:
                 modcube.write(basemodelname+".minimized.fits")
             gzip_file(basemodelname+".minimized.fits")
-            print(f"bzipping model {basemodelname} at {time.time()-t0}", flush=True)
-            bzip_file(basemodelname+".minimized.fits")
-            print(f"bzip completed at {time.time()-t0}", flush=True)
+            #print(f"bzipping model {basemodelname} at {time.time()-t0}", flush=True)
+            #bzip_file(basemodelname+".minimized.fits")
+            #print(f"bzip completed at {time.time()-t0}", flush=True)
         if not os.path.exists(baseresidualname+".minimized.fits.gz"):
             print(f"gzipping residual {baseresidualname} at {time.time()-t0}", flush=True)
             if os.path.exists(baseresidualname+".minimized.fits"):
@@ -114,9 +114,9 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
             else:
                 residcube.write(baseresidualname+".minimized.fits")
             gzip_file(baseresidualname+".minimized.fits")
-            print(f"bzipping residual {baseresidualname} at {time.time()-t0}", flush=True)
-            bzip_file(baseresidualname+".minimized.fits")
-            print(f"bzip completed at {time.time()-t0}", flush=True)
+            #print(f"bzipping residual {baseresidualname} at {time.time()-t0}", flush=True)
+            #bzip_file(baseresidualname+".minimized.fits")
+            #print(f"bzip completed at {time.time()-t0}", flush=True)
 
         log.info(f"Completed minslice. t={time.time() - t0}")
     else:
