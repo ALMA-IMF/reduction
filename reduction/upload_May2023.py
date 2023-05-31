@@ -5,6 +5,8 @@ ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M
 ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_sio.model.minimized.fits.gz /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/model/
 ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_spw[0-7].JvM.image.pbcor.statcont.contsub.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/
 ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_sio.JvM.image.pbcor.statcont.contsub.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_spw[0-7].JvM.image.pbcor.statcont.cont.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/cont/
+ln -v /orange/adamginsburg/ALMA_IMF/2017.1.01355.L/imaging_results/*spw[0-7]_12M_sio.JvM.image.pbcor.statcont.cont.fits /orange/adamginsburg/ALMA_IMF/distributions/2023_May_JVM_contsub/cont/
 """
 import os
 
