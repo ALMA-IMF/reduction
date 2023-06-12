@@ -34,6 +34,7 @@ else:
 
 print("Checking for images.")
 imlist = glob.glob("*spw[0-7].image")
+imlist += glob.glob("*spw1_12M_sio.image")
 has_model_minimized = [os.path.exists(x.replace(".image",
                                                 ".model.minimized.fits.gz"))
                        for x in imlist]
@@ -44,6 +45,7 @@ from spectral_cube import SpectralCube
 
 import random
 random.shuffle(imlist)
+#imlist.insert(0, 'W51-IRS2_B6_spw1_12M_sio.image')
 
 nthreads = os.getenv('SLURM_NTASKS')
 print(f"Setting nthreads={nthreads}")
@@ -113,6 +115,7 @@ for fn in imlist:
             print(f"Beams are equal: common={commonbeam}, jvbeam={jvcube.beam}")
             print(f"No actions taken: {fn} was skipped")
         else:
+            print(f"Cube needed beam correction.  Creating common beam cube for {fn}.")
             beam_correct_cube(fn.replace(".image",""), pbcor=True,
                               use_velocity=use_velocity,
                               write_pbcor=True, pbar=pbar, save_to_tmp_dir=True)

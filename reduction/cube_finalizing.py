@@ -133,7 +133,8 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     # there are sometimes problems with identifying a common beam
     try:
         epsdict = epsilon_from_psf(psfcube, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar, max_epsilon=0.01)
-    except BeamError:
+    except BeamError as ex:
+        print(f"Exception {ex}")
         print("Needed to calculate commonbeam with epsilon=0.005", flush=True)
         epsdict = epsilon_from_psf(psfcube, epsilon=0.005, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar)
     log.info(f"Epsilon completed. t={time.time() - t0}, eps took {time.time()-teps}")
