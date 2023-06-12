@@ -18,6 +18,7 @@ from radio_beam.utils import BeamError
 from astropy.io import fits
 from astropy.table import Table
 from astropy import log
+from astropy import units as u
 
 import contextlib
 try:
@@ -28,6 +29,8 @@ except ImportError:
     tqdm = False
 
 import time
+
+multirowkeys = ('HISTORY', 'COMMENT')
 
 def gzip_file(fn):
     with open(fn, "rb") as f_in:
@@ -40,6 +43,7 @@ def bzip_file(fn):
             f_out.writelines(f_in)
 
 def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
+                      use_velocity=False,
                       pbar=False, beam_threshold=0.1, save_to_tmp_dir=False):
 
     if not pbar:
@@ -60,6 +64,13 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         pbcube = SpectralCube.read(basename+".pb", format='casa_image')
     log.info(f"Completed reading. t={time.time() - t0}")
 
+    if use_velocity:
+        imcube = imcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        modcube = modcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        residcube = residcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        pbcube = pbcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+        psfcube = psfcube.with_spectral_unit(u.km/u.s, velocity_convention='radio')
+
     good_beams = psfcube.identify_bad_beams(0.1)
     log.info(f"Found {good_beams.sum()} good beams out of {good_beams.size} channels")
     psf_max = psfcube.max(axis=(1,2))
@@ -70,7 +81,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         tmin = time.time()
         log.info(f"Starting minimize. t={tmin - t0}")
 
-        print(f"pbar={pbar}, {type(pbar)}")
+        print(f"pbar={pbar}, {type(pbar)}", flush=True)
         with pbar:
             # apparently the residualcube can be maskless; if it is, we want to
             # instead use the image mask.  This is essential for "minimize" to
@@ -87,17 +98,25 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
             pbcube = pbcube[cutslc]
 
         if not os.path.exists(basemodelname+".minimized.fits.gz"):
-            print(f"gzipping model {basemodelname}")
-            modcube.write(basemodelname+".minimized.fits")
+            print(f"gzipping model {basemodelname}", flush=True)
+            if os.path.exists(basemodelname+".minimized.fits"):
+                print("Model cube (unzipped) exists.", flush=True)
+            else:
+                modcube.write(basemodelname+".minimized.fits")
             gzip_file(basemodelname+".minimized.fits")
-            print(f"bzipping model {basemodelname}")
-            bzip_file(basemodelname+".minimized.fits")
+            #print(f"bzipping model {basemodelname} at {time.time()-t0}", flush=True)
+            #bzip_file(basemodelname+".minimized.fits")
+            #print(f"bzip completed at {time.time()-t0}", flush=True)
         if not os.path.exists(baseresidualname+".minimized.fits.gz"):
-            print(f"gzipping residual {baseresidualname}")
-            modcube.write(baseresidualname+".minimized.fits")
+            print(f"gzipping residual {baseresidualname} at {time.time()-t0}", flush=True)
+            if os.path.exists(baseresidualname+".minimized.fits"):
+                print("Residual cube exists", flush=True)
+            else:
+                residcube.write(baseresidualname+".minimized.fits")
             gzip_file(baseresidualname+".minimized.fits")
-            print(f"bzipping residual {baseresidualname}")
-            bzip_file(baseresidualname+".minimized.fits")
+            #print(f"bzipping residual {baseresidualname} at {time.time()-t0}", flush=True)
+            #bzip_file(baseresidualname+".minimized.fits")
+            #print(f"bzip completed at {time.time()-t0}", flush=True)
 
         log.info(f"Completed minslice. t={time.time() - t0}")
     else:
@@ -114,8 +133,9 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     # there are sometimes problems with identifying a common beam
     try:
         epsdict = epsilon_from_psf(psfcube, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar, max_epsilon=0.01)
-    except BeamError:
-        print("Needed to calculate commonbeam with epsilon=0.005")
+    except BeamError as ex:
+        print(f"Exception {ex}")
+        print("Needed to calculate commonbeam with epsilon=0.005", flush=True)
         epsdict = epsilon_from_psf(psfcube, epsilon=0.005, export_clean_beam=True, beam_threshold=beam_threshold, pbar=tpbar)
     log.info(f"Epsilon completed. t={time.time() - t0}, eps took {time.time()-teps}")
 
@@ -137,7 +157,7 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
 
 
     merged.meta.update(imcube.meta)
-    merged.header.update(imcube.header)
+    merged.header.update(imcube.header) # this was supposed to preserve header info but seems not to have
     merged.meta['JvM_epsilon_max'] = np.max(epsdict['epsilon'])
     merged.header['JvM_epsilon_max'] = np.max(epsdict['epsilon'])
     merged.meta['JvM_epsilon_min'] = np.min(epsdict['epsilon'])
@@ -152,11 +172,26 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
     log.info(f"Beginning JvM write.  t={time.time()-t0}")
     hdul = merged.hdulist
     hdul.append(epsilon_table)
+    # add any missing header keywords
+    for key in imcube.header:
+        # don't overwrite any WCS though
+        if key not in hdul[0].header and key not in multirowkeys:
+            hdul[0].header[key] = imcube.header[key]
+    for multirowkey in multirowkeys:
+        if multirowkey in imcube.header:
+            hdul[0].header[multirowkey] = ''
+            for row in imcube.header[multirowkey]:
+                hdul[0].header[multirowkey] = row
     # need to manually specify units b/c none of the model, residual, etc. have them!
     hdul[0].header['BUNIT'] = 'Jy/beam'
+    hdul[0].header['CREDIT'] = 'Please cite Ginsburg et al 2022A&A...662A...9G when using these data, and Motte et al 2022A&A...662A...8M for the ALMA-IMF program.  Cunningham et al (2023) describes the line data.'
+    hdul[0].header['BIBCODE'] = '2022A&A...662A...9G,2022A&A...662A...8M'
+    hdul[0].header['FILENAME'] = basename+".JvM.image.fits"
     with pbar:
         hdul.writeto(basename+".JvM.image.fits", overwrite=True)
     log.info(f"Done JvM write.  t={time.time()-t0}")
+
+    header = hdul[0].header
 
     if pbcor:
         log.info(f"Beginning pbcor.  t={time.time()-t0}")
@@ -165,8 +200,9 @@ def beam_correct_cube(basename, minimize=True, pbcor=True, write_pbcor=True,
         if write_pbcor:
             log.info(f"Creating HDUlist.  t={time.time()-t0}")
             hdul = pbc.hdulist
-            # need to manually specify units b/c none of the model, residual, etc. have them!
-            hdul[0].header['BUNIT'] = 'Jy/beam'
+            # copy header from non-pbcor
+            hdul[0].header = header
+            hdul[0].header['FILENAME'] = basename+".JvM.image.pbcor.fits"
             log.info(f"appending epsilon table.  t={time.time()-t0}")
             hdul.append(epsilon_table)
             log.info(f"changing dtype.  t={time.time()-t0}")
