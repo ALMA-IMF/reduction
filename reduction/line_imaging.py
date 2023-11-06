@@ -104,6 +104,8 @@ def logprint(msg, origin="almaimf_line_imaging", **kwargs):
     print(msg)
     return logprint_(msg, origin=origin, **kwargs)
 
+logprint(f"Environment:\n {os.environ}\n\n\n")
+
 with open('to_image.json', 'r') as fh:
     to_image = json.load(fh)
 
@@ -752,17 +754,20 @@ for band in band_list:
                             )
 
             if os.path.exists(lineimagename+".psf") and not os.path.exists(lineimagename+".image"):
-                logprint("WARNING: The PSF for {0} exists, but no image exists."
-                         "  This likely implies that an ongoing or incomplete "
-                         "imaging run for this file exists.  It will not be "
-                         "imaged this time; please check what is happening."
-                         "(warning issued /after/ dirty imaging)"
-                         .format(lineimagename),
-                         origin='almaimf_line_imaging',
-                         priority='WARNING'
-                         )
-                # just skip the rest here
-                continue
+                if os.getenv("USE_EXISTING_PSF") and os.getenv("IGNORE_NOIMAGE"):
+                    logprint(f"The PSF for {lineimagename} exists.  The image does not.  Continuing anyway because IGNORE_NOIMAGE was set")
+                else:
+                    logprint("WARNING: The PSF for {0} exists, but no image exists."
+                            "  This likely implies that an ongoing or incomplete "
+                            "imaging run for this file exists.  It will not be "
+                            "imaged this time; please check what is happening."
+                            "(warning issued /after/ dirty imaging)"
+                            .format(lineimagename),
+                            origin='almaimf_line_imaging',
+                            priority='WARNING'
+                            )
+                    # just skip the rest here
+                    continue
 
             # if the dirty image was made or exists
             if make_dirty_image and not dryrun:

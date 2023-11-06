@@ -6,12 +6,16 @@ import regions
 from astropy import stats, convolution
 from spectral_cube import SpectralCube
 import pylab as pl
+import matplotlib
 import spectral_cube
 
 import warnings
 warnings.filterwarnings('ignore', category=spectral_cube.utils.StokesWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
-warnings.filterwarnings('ignore', category=pl.matplotlib.cbook.MatplotlibDeprecationWarning)
+try:
+    warnings.filterwarnings('ignore', category=matplotlib.MatplotlibDeprecationWarning)
+except AttributeError:
+    pass
 np.seterr('ignore')
 
 

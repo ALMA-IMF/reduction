@@ -35,6 +35,7 @@ else:
 print("Checking for images.")
 imlist = glob.glob("*spw[0-7].image")
 imlist += glob.glob("*spw1_12M_sio.image")
+imlist += glob.glob("*spw1_7M12M_sio.image")
 has_model_minimized = [os.path.exists(x.replace(".image",
                                                 ".model.minimized.fits.gz"))
                        for x in imlist]
@@ -44,7 +45,8 @@ import spectral_cube
 from spectral_cube import SpectralCube
 
 import random
-random.shuffle(imlist)
+#random.shuffle(imlist)
+imlist = imlist[::-1] # July 2023: do SiO first
 #imlist.insert(0, 'W51-IRS2_B6_spw1_12M_sio.image')
 
 nthreads = os.getenv('SLURM_NTASKS')

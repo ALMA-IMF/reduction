@@ -2913,6 +2913,13 @@ line_imaging_parameters_custom = {
         "threshold": "33mJy",  # typical rms is 9-11 mJy, using 3sigma for threshold (14 Dec. 2020)
         "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
     },
+    "G008.67_B6_7M12M_robust0_sio": {
+        "threshold": "2sigma",
+        "cyclefactor": 5.0,
+        "deconvolver": "multiscale",
+        "scales": [0, 3, 6, 12],
+        "startmodel": "G008.67_B6_uid___A001_X1296_X1b7_continuum_merged_12M_robust0_selfcal5_finaliter",
+    },
     "G010.62_B3_12M_robust0": {
         "threshold": "6mJy",
         "startmodel": "G010.62_B3_uid___A001_X1296_X1e5_continuum_merged_12M_robust0_selfcal9_finaliter",
@@ -2970,6 +2977,13 @@ line_imaging_parameters_custom = {
     },
     "G012.80_B6_12M_robust0_sio": {
         "threshold": "39mJy",  # typical rms values are 10-13 mJy, using 3sigma as threshold (14 Dec. 2020)
+        "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
+    },
+    "G012.80_B6_7M12M_robust0_sio": {
+        "threshold": "2sigma",
+        "cyclefactor": 5.0,
+        "deconvolver": "multiscale",
+        "scales": [0, 3, 6, 12],
         "startmodel": "G012.80_B6_uid___A001_X1296_X1ef_continuum_merged_12M_robust0_selfcal6_finaliter",
     },
     "G327.29_B3_12M_robust0": {
