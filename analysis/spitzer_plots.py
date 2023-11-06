@@ -15,13 +15,17 @@ import pylab as pl
 import spectral_cube
 from spectral_cube import Projection,SpectralCube
 import reproject
+import matplotlib
 
 from spectralindex import prefixes
 
 import warnings
 warnings.filterwarnings('ignore', category=spectral_cube.utils.StokesWarning)
 warnings.filterwarnings('ignore', category=UserWarning)
-warnings.filterwarnings('ignore', category=pl.matplotlib.cbook.MatplotlibDeprecationWarning)
+try:
+    warnings.filterwarnings('ignore', category=pl.matplotlib.cbook.MatplotlibDeprecationWarning)
+except AttributeError:
+    warnings.filterwarnings('ignore', category=matplotlib.MatplotlibDeprecationWarning)
 np.seterr('ignore')
 
 
